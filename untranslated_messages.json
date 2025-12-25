@@ -4,7 +4,15 @@
     "featureVisionCreation",
     "featureAdvancedFinance",
     "featurePremiumThemes",
-    "featureBackup"
+    "featureBackup",
+    "createWithAi",
+    "aiInputHint",
+    "generate",
+    "aiPreviewTitle",
+    "confirmHabits",
+    "aiRetry",
+    "manualFallback",
+    "aiHabitAddedMessage"
   ],
 
   "de": [
@@ -12,7 +20,15 @@
     "featureVisionCreation",
     "featureAdvancedFinance",
     "featurePremiumThemes",
-    "featureBackup"
+    "featureBackup",
+    "createWithAi",
+    "aiInputHint",
+    "generate",
+    "aiPreviewTitle",
+    "confirmHabits",
+    "aiRetry",
+    "manualFallback",
+    "aiHabitAddedMessage"
   ],
 
   "es": [
@@ -20,7 +36,15 @@
     "featureVisionCreation",
     "featureAdvancedFinance",
     "featurePremiumThemes",
-    "featureBackup"
+    "featureBackup",
+    "createWithAi",
+    "aiInputHint",
+    "generate",
+    "aiPreviewTitle",
+    "confirmHabits",
+    "aiRetry",
+    "manualFallback",
+    "aiHabitAddedMessage"
   ],
 
   "fr": [
@@ -28,7 +52,15 @@
     "featureVisionCreation",
     "featureAdvancedFinance",
     "featurePremiumThemes",
-    "featureBackup"
+    "featureBackup",
+    "createWithAi",
+    "aiInputHint",
+    "generate",
+    "aiPreviewTitle",
+    "confirmHabits",
+    "aiRetry",
+    "manualFallback",
+    "aiHabitAddedMessage"
   ],
 
   "hi": [
@@ -36,7 +68,15 @@
     "featureVisionCreation",
     "featureAdvancedFinance",
     "featurePremiumThemes",
-    "featureBackup"
+    "featureBackup",
+    "createWithAi",
+    "aiInputHint",
+    "generate",
+    "aiPreviewTitle",
+    "confirmHabits",
+    "aiRetry",
+    "manualFallback",
+    "aiHabitAddedMessage"
   ],
 
   "it": [
@@ -44,7 +84,15 @@
     "featureVisionCreation",
     "featureAdvancedFinance",
     "featurePremiumThemes",
-    "featureBackup"
+    "featureBackup",
+    "createWithAi",
+    "aiInputHint",
+    "generate",
+    "aiPreviewTitle",
+    "confirmHabits",
+    "aiRetry",
+    "manualFallback",
+    "aiHabitAddedMessage"
   ],
 
   "ja": [
@@ -52,7 +100,15 @@
     "featureVisionCreation",
     "featureAdvancedFinance",
     "featurePremiumThemes",
-    "featureBackup"
+    "featureBackup",
+    "createWithAi",
+    "aiInputHint",
+    "generate",
+    "aiPreviewTitle",
+    "confirmHabits",
+    "aiRetry",
+    "manualFallback",
+    "aiHabitAddedMessage"
   ],
 
   "ko": [
@@ -60,7 +116,15 @@
     "featureVisionCreation",
     "featureAdvancedFinance",
     "featurePremiumThemes",
-    "featureBackup"
+    "featureBackup",
+    "createWithAi",
+    "aiInputHint",
+    "generate",
+    "aiPreviewTitle",
+    "confirmHabits",
+    "aiRetry",
+    "manualFallback",
+    "aiHabitAddedMessage"
   ],
 
   "nl": [
@@ -68,7 +132,15 @@
     "featureVisionCreation",
     "featureAdvancedFinance",
     "featurePremiumThemes",
-    "featureBackup"
+    "featureBackup",
+    "createWithAi",
+    "aiInputHint",
+    "generate",
+    "aiPreviewTitle",
+    "confirmHabits",
+    "aiRetry",
+    "manualFallback",
+    "aiHabitAddedMessage"
   ],
 
   "pt": [
@@ -76,7 +148,15 @@
     "featureVisionCreation",
     "featureAdvancedFinance",
     "featurePremiumThemes",
-    "featureBackup"
+    "featureBackup",
+    "createWithAi",
+    "aiInputHint",
+    "generate",
+    "aiPreviewTitle",
+    "confirmHabits",
+    "aiRetry",
+    "manualFallback",
+    "aiHabitAddedMessage"
   ],
 
   "ru": [
@@ -84,7 +164,15 @@
     "featureVisionCreation",
     "featureAdvancedFinance",
     "featurePremiumThemes",
-    "featureBackup"
+    "featureBackup",
+    "createWithAi",
+    "aiInputHint",
+    "generate",
+    "aiPreviewTitle",
+    "confirmHabits",
+    "aiRetry",
+    "manualFallback",
+    "aiHabitAddedMessage"
   ],
 
   "zh": [
@@ -92,6 +180,14 @@
     "featureVisionCreation",
     "featureAdvancedFinance",
     "featurePremiumThemes",
-    "featureBackup"
+    "featureBackup",
+    "createWithAi",
+    "aiInputHint",
+    "generate",
+    "aiPreviewTitle",
+    "confirmHabits",
+    "aiRetry",
+    "manualFallback",
+    "aiHabitAddedMessage"
   ]
 }

@@ -3030,4 +3030,30 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get manageVisionTasks => 'Manage Tasks';
+
+  @override
+  String get createWithAi => 'AI ile Oluştur';
+
+  @override
+  String get aiInputHint => 'Kazanmak istediğiniz alışkanlığı tarif edin...';
+
+  @override
+  String get generate => 'Oluştur';
+
+  @override
+  String get aiPreviewTitle => 'AI Önerileri';
+
+  @override
+  String get confirmHabits => 'Alışkanlıkları Onayla';
+
+  @override
+  String get aiRetry => 'Tekrar Dene (Sıkı Kurallar)';
+
+  @override
+  String get manualFallback => 'Manuel Oluştur';
+
+  @override
+  String aiHabitAddedMessage(Object count) {
+    return 'AI ile $count alışkanlık eklendi';
+  }
 }

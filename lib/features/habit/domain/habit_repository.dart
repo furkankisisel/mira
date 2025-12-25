@@ -65,6 +65,11 @@ class HabitRepository extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> reload() async {
+    _initialized = false;
+    await initialize();
+  }
+
   /// Clears all habit data from memory and SharedPreferences.
   Future<void> wipeAllStoredData() async {
     try {

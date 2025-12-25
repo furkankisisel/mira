@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Added for HapticFeedback
 import 'dart:math' as math;
 import '../../l10n/app_localizations.dart';
 import '../../core/timer/timer_controller.dart';
@@ -109,6 +110,34 @@ class _TimerScreenState extends State<TimerScreen>
             ),
           ),
           actions: [
+            IconButton(
+              tooltip: 'Hard Mode', // TODO: Localize
+              icon: AnimatedBuilder(
+                animation: controller,
+                builder: (context, _) {
+                  final isHardMode = controller.hardMode;
+                  return Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: isHardMode
+                          ? Colors.red.withValues(alpha: 0.1)
+                          : accent.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      isHardMode ? Icons.lock : Icons.lock_open,
+                      color: isHardMode ? Colors.red : accent,
+                      size: 20,
+                    ),
+                  );
+                },
+              ),
+              onPressed: () {
+                _feedback();
+                controller.toggleHardMode();
+              },
+            ),
+            const SizedBox(width: 8),
             IconButton(
               icon: Container(
                 padding: const EdgeInsets.all(8),
@@ -600,6 +629,10 @@ class _TimerScreenState extends State<TimerScreen>
     );
   }
 
+  void _feedback() {
+    HapticFeedback.lightImpact();
+  }
+
   // Compact action buttons for Pomodoro screen
   Widget _buildCompactActionButtons(
     BuildContext context, {
@@ -679,13 +712,14 @@ class _TimerScreenState extends State<TimerScreen>
         Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (onSkip != null)
+            if (onSkip != null) ...[
               _buildMiniIconAction(
                 icon: Icons.skip_next_rounded,
                 tooltip: l10n.timerPomodoroSkipPhase,
                 onPressed: onSkip,
               ),
-            if (onSkip != null && onSettings != null) const SizedBox(height: 8),
+              const SizedBox(height: 8),
+            ],
             if (onSettings != null)
               _buildMiniIconAction(
                 icon: Icons.tune_rounded,
@@ -1108,8 +1142,8 @@ class _TimerScreenState extends State<TimerScreen>
         // Buttons - same layout as stopwatch and countdown
         Expanded(
           flex: 2,
-          child: SingleChildScrollView(
-            child: _buildFloatingActionButtons(
+          child: Center(
+            child: _buildCompactActionButtons(
               context,
               isRunning: isRunning,
               onPlayPause: () =>

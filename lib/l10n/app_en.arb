@@ -1149,5 +1149,13 @@
     "yourCharacterType": "Your Character Type",
     "yourEmail": "Your Email",
     "yourEmailAddress": "Your Email Address",
-    "yourMoodToday": "Your Mood Today"
+    "yourMoodToday": "Your Mood Today",
+    "createWithAi": "Create with AI",
+    "aiInputHint": "Describe the habit you want to build...",
+    "generate": "Generate",
+    "aiPreviewTitle": "AI Suggestions",
+    "confirmHabits": "Confirm Habits",
+    "aiRetry": "Retry with Stricter Rules",
+    "manualFallback": "Create Manually",
+    "aiHabitAddedMessage": "{count} habits added via AI"
 }

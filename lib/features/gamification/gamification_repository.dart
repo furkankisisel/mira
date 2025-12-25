@@ -95,6 +95,11 @@ class GamificationRepository extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> reload() async {
+    _initialized = false;
+    await initialize();
+  }
+
   Future<void> _save() async {
     if (!_initialized) return;
     try {

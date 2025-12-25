@@ -1034,5 +1034,13 @@
     "noTasksYet": "Henüz görev eklenmedi",
     "deleteTaskConfirm": "Bu görevi silmek istediğinize emin misiniz?",
     "taskAdded": "Görev eklendi",
-    "manageVisionTasks": "Görevleri Yönet"
+    "manageVisionTasks": "Görevleri Yönet",
+    "createWithAi": "AI ile Oluştur",
+    "aiInputHint": "Kazanmak istediğiniz alışkanlığı tarif edin...",
+    "generate": "Oluştur",
+    "aiPreviewTitle": "AI Önerileri",
+    "confirmHabits": "Alışkanlıkları Onayla",
+    "aiRetry": "Tekrar Dene (Sıkı Kurallar)",
+    "manualFallback": "Manuel Oluştur",
+    "aiHabitAddedMessage": "AI ile {count} alışkanlık eklendi"
 }

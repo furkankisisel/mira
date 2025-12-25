@@ -17,6 +17,7 @@ class VisionHabitTemplate {
   final String? numericalTargetType;
   final String? timerTargetType;
   // Frequency configuration (optional; defaults to daily if null)
+  // Frequency configuration (optional; defaults to daily if null)
   final String?
   frequencyType; // 'daily' | 'specificWeekdays' | 'specificMonthDays' | 'specificYearDays' | 'periodic'
   final List<int>? selectedWeekdays; // 1=Mon..7=Sun (ISO-8601)

@@ -5749,6 +5749,54 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Görevleri Yönet'**
   String get manageVisionTasks;
+
+  /// No description provided for @createWithAi.
+  ///
+  /// In tr, this message translates to:
+  /// **'AI ile Oluştur'**
+  String get createWithAi;
+
+  /// No description provided for @aiInputHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kazanmak istediğiniz alışkanlığı tarif edin...'**
+  String get aiInputHint;
+
+  /// No description provided for @generate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oluştur'**
+  String get generate;
+
+  /// No description provided for @aiPreviewTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'AI Önerileri'**
+  String get aiPreviewTitle;
+
+  /// No description provided for @confirmHabits.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alışkanlıkları Onayla'**
+  String get confirmHabits;
+
+  /// No description provided for @aiRetry.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tekrar Dene (Sıkı Kurallar)'**
+  String get aiRetry;
+
+  /// No description provided for @manualFallback.
+  ///
+  /// In tr, this message translates to:
+  /// **'Manuel Oluştur'**
+  String get manualFallback;
+
+  /// No description provided for @aiHabitAddedMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'AI ile {count} alışkanlık eklendi'**
+  String aiHabitAddedMessage(Object count);
 }
 
 class _AppLocalizationsDelegate

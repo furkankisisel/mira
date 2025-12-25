@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart'; // Added for WidgetsBindingObserver
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/habit/domain/habit_repository.dart';
 import '../../features/habit/domain/habit_types.dart';
 import '../../features/notifications/services/notification_service.dart';
+import 'package:vibration/vibration.dart';
 
 /// Zamanlayıcı modları
 enum TimerMode { stopwatch, countdown, pomodoro }
@@ -55,7 +57,7 @@ class TimerSession {
 }
 
 /// Paneldeki mini widget ve tam ekran zamanlayıcı arasında paylaşılan denetleyici.
-class TimerController extends ChangeNotifier {
+class TimerController extends ChangeNotifier with WidgetsBindingObserver {
   TimerController._() {
     // Set up notification action handler
     NotificationService.instance.setTimerActionHandler(
@@ -69,6 +71,9 @@ class TimerController extends ChangeNotifier {
     _loadSessions();
     // Timer state'ini yükle
     _loadState();
+
+    // Lifecycle observer'ı ekle
+    WidgetsBinding.instance.addObserver(this);
   }
   static final TimerController instance = TimerController._();
 
@@ -83,6 +88,27 @@ class TimerController extends ChangeNotifier {
   static const MethodChannel _methodChannel = MethodChannel(
     'com.koralabs.mira/timer_actions',
   );
+
+  // Hard Mode state
+  bool _hardMode = false;
+  bool get hardMode => _hardMode;
+
+  void toggleHardMode() {
+    _hardMode = !_hardMode;
+    notifyListeners();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (_hardMode &&
+        isRunning &&
+        (state == AppLifecycleState.paused ||
+            state == AppLifecycleState.inactive)) {
+      pause();
+      // Opsiyonel: Kullanıcıya bildirim gönderilebilir veya loglanabilir
+      print('Hard mode aktif: Uygulama terk edildiği için sayaç durduruldu.');
+    }
+  }
 
   void _setupMethodChannel() {
     _methodChannel.setMethodCallHandler((call) async {
@@ -515,9 +541,10 @@ class TimerController extends ChangeNotifier {
             _pomodoroRemaining -= const Duration(seconds: 1);
             if (_pomodoroRemaining <= Duration.zero) {
               _pomodoroRemaining = Duration.zero;
-              // Otomatik faz geçişi veya kayıt yok; kullanıcı Bitir'e basacak
-              _pomodoroRunning = false;
-              _timer?.cancel();
+              // Vibrate on completion
+              Vibration.vibrate();
+              // Automatically advance to next phase (auto-continue)
+              _advancePomodoroPhase();
             }
           }
         }

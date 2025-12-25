@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../core/timer/timer_controller.dart';
 import '../../../design_system/theme/theme_variations.dart';
@@ -75,14 +76,15 @@ class _LandscapeTimerScreenState extends State<LandscapeTimerScreen>
       : _isWorld
       ? _accent(context)
       : Theme.of(context).colorScheme.onPrimaryContainer;
+  // Increased opacity for better visibility
   Color _inactiveFill(BuildContext context) => _useOledTheme
-      ? Colors.white10
+      ? Colors.white24
       : Theme.of(context).colorScheme.surfaceContainerHighest;
   Color _inactiveIcon(BuildContext context) => _useOledTheme
-      ? Colors.white38
+      ? Colors.white70
       : Theme.of(context).colorScheme.onSurfaceVariant;
   Color _trackColor(BuildContext context) => _useOledTheme
-      ? Colors.white12
+      ? Colors.white24
       : Theme.of(context).colorScheme.surfaceContainerHighest;
   Color _primaryColor(BuildContext context) =>
       _useOledTheme ? Colors.white : _accent(context);
@@ -98,6 +100,10 @@ class _LandscapeTimerScreenState extends State<LandscapeTimerScreen>
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
+
+    // Enable wakelock to keep screen on
+    WakelockPlus.enable();
+
     // Very slow drift for burn-in mitigation
     _driftCtl = AnimationController(
       vsync: this,
@@ -115,6 +121,10 @@ class _LandscapeTimerScreenState extends State<LandscapeTimerScreen>
     _hideUiDebounce?.cancel();
     _dimDebounce?.cancel();
     _driftCtl.dispose();
+
+    // Disable wakelock
+    WakelockPlus.disable();
+
     // Restore orientation and system UI
     SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -354,20 +364,13 @@ class _LandscapeTimerScreenState extends State<LandscapeTimerScreen>
   }
 
   Widget _controls({required List<Widget> actions}) {
-    // Make horizontally scrollable to avoid overflow on narrow widths
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: actions
-            .map(
-              (w) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: w,
-              ),
-            )
-            .toList(),
-      ),
+    // Use Wrap to handle overflow by wrapping to next line if needed,
+    // avoiding horizontal scrolling which hides buttons.
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 12, // Horizontal spacing
+      runSpacing: 12, // Vertical spacing if wrapped
+      children: actions,
     );
   }
 
@@ -533,7 +536,11 @@ class _LandscapeTimerScreenState extends State<LandscapeTimerScreen>
       color: _bg(context),
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
       child: Center(
-        child: SingleChildScrollView(
+        // Removed SingleChildScrollView to fit on one screen
+        // Removed SingleChildScrollView to fit on one screen
+        // Added FittedBox to scale down content if it exceeds screen height
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -542,18 +549,21 @@ class _LandscapeTimerScreenState extends State<LandscapeTimerScreen>
                 phase,
                 style: TextStyle(
                   color: _onBgMuted(context),
-                  fontSize: 20,
+                  fontSize: 18, // Reduced from 20
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 12),
-              _bigTime(
-                controller.formattedTime,
-                subtitle: l10n.timerPomodoroCompletedWork(
-                  controller.pomodoroCompletedWorkSessions,
+              const SizedBox(height: 8), // Reduced from 12
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: _bigTime(
+                  controller.formattedTime,
+                  subtitle: l10n.timerPomodoroCompletedWork(
+                    controller.pomodoroCompletedWorkSessions,
+                  ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16), // Reduced from 24
               _controls(
                 actions: [
                   _btn(

@@ -22,6 +22,11 @@ class SettingsRepository extends ChangeNotifier {
     _initialized = true;
   }
 
+  Future<void> reload() async {
+    _initialized = false;
+    await initialize();
+  }
+
   Future<void> setShowStreakIndicators(bool value) async {
     _showStreakIndicators = value;
     final p = _prefs ?? await SharedPreferences.getInstance();

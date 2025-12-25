@@ -3019,4 +3019,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get manageVisionTasks => 'Manage Tasks';
+
+  @override
+  String get createWithAi => 'Create with AI';
+
+  @override
+  String get aiInputHint => 'Describe the habit you want to build...';
+
+  @override
+  String get generate => 'Generate';
+
+  @override
+  String get aiPreviewTitle => 'AI Suggestions';
+
+  @override
+  String get confirmHabits => 'Confirm Habits';
+
+  @override
+  String get aiRetry => 'Retry with Stricter Rules';
+
+  @override
+  String get manualFallback => 'Create Manually';
+
+  @override
+  String aiHabitAddedMessage(Object count) {
+    return '$count habits added via AI';
+  }
 }
