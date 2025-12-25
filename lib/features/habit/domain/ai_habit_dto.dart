@@ -69,11 +69,13 @@ class AiHabitDto {
   static AiHabitDto? tryFromJson(Map<String, dynamic> json) {
     try {
       final title = json['title'] as String?;
-      final description = json['description'] as String?;
-      final frequency = json['frequency'] as String?;
-      final dayList = (json['days'] as List?)
+      var description = json['description'] as String?;
+      var frequency = json['frequency'] as String?;
+      // Handle days: might be missing or capitalized
+      var dayList = (json['days'] as List?)
           ?.map((e) => e.toString().toLowerCase())
           .toList();
+
       final target = json['target_value'] as num?;
       final category = json['category'] as String?;
       final emoji = json['emoji'] as String?;
@@ -89,37 +91,49 @@ class AiHabitDto {
 
       // Validate required fields
       if (title == null || title.trim().isEmpty) return null;
-      if (description == null)
-        return null; // Empty desc allowed, but key must exist? Let's say yes.
-      if (frequency != 'daily' && frequency != 'weekly') return null;
-      if (dayList == null) return null;
 
-      // Validate weekday strings
+      // Defaults and salvaging
+      description ??= '';
+
+      // Frequency fallback
+      if (frequency == null ||
+          (frequency != 'daily' && frequency != 'weekly')) {
+        frequency = 'daily';
+      }
+
+      // Days fallback
       const validDays = {'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'};
-      if (!dayList.every((d) => validDays.contains(d))) return null;
+      final allDays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
-      // Validate target value sanity (optional but strictly checked if present)
-      // Example: A daily water habit count of 1000 is likely wrong/typo.
-      // A daily reading minute count of 6000 is wrong.
-      // Let's set a generic sane limit: 0 < target <= 300 (minutes/count).
-      // We can adjust this based on more specific context if available, but generic safety is key.
+      if (dayList == null || dayList.isEmpty) {
+        // If days missing, default to All Days for daily, or just Mon for weekly?
+        // Let's default to all days to be safe and visible.
+        dayList = allDays;
+      } else {
+        // Filter invalid days
+        dayList = dayList.where((d) => validDays.contains(d)).toList();
+        if (dayList.isEmpty) {
+          dayList = allDays;
+        }
+      }
+
+      // Target value safety
+      // Allow larger numbers for steps (e.g. 10000) or water (2000 ml)
+      // New cap: 50000
       int? finalTarget;
       if (target != null) {
         final val = target.toInt();
-        if (val < 0 || val > 500) return null; // Reject unrealistic numbers
-        finalTarget = val;
+        if (val > 0 && val <= 50000) {
+          finalTarget = val;
+        } else {
+          finalTarget = 1; // Default to 1 if weird number
+        }
       }
-
-      // Turkish Language Check (Heuristic: "contains Turkish characters or common words"
-      // validation is hard without an NLP library, but simpler:
-      // the system PROMPT enforces Turkish.
-      // We assume if it came back as JSON, it followed instructions.
-      // We could check if title is empty.)
 
       return AiHabitDto(
         title: title.trim(),
-        description: description?.trim() ?? '',
-        frequency: frequency!,
+        description: description.trim(),
+        frequency: frequency,
         days: dayList,
         targetValue: finalTarget,
         category: category ?? 'Other',

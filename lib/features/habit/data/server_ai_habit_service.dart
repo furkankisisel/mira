@@ -445,4 +445,86 @@ RULES:
       throw Exception('Groq API Error: ${response.statusCode}');
     }
   }
+
+  @override
+  Future<AiVisionDto> analyzePersonality(String prompt) async {
+    final systemPrompt = '''
+You are an expert Personality Psychologist and Habit Coach.
+Analyze the user's answers to find their "Character Archetype".
+Return a JSON object with their profile and 3-5 recommended habits.
+
+JSON SCHEMA:
+{
+  "vision": {
+    "title": "Archetype Name",
+    "description": "Personality analysis",
+    "emoji": "Char",
+    "color_code": "Hex",
+    "motivation_sentence": "Affirmation",
+    "time_horizon": "Life",
+    "tasks": ["Quick Win 1", "Quick Win 2"], 
+    "habits": [
+      {
+         "title": "Habit Title",
+         "description": "Why this fits",
+         "frequency": "daily",
+         "days": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"], 
+         "type": "simple",
+         "target_value": 1,
+         "color_code": "Hex",
+         "emoji": "Char",
+         "category": "Health"
+      }
+    ]
+  }
+}
+
+IMPORTANT RULES:
+1. "habits" ARRAY MUST NOT BE EMPTY. PROVIDE 3-5 HABITS.
+2. "days" property is REQUIRED for every habit (e.g. ["mon", "tue"...]).
+3. "tasks" should be 2-3 one-time actions.
+4. Language: Detect user language (Turkish/English) and output in that language.
+''';
+
+    final messages = [
+      {"role": "system", "content": systemPrompt},
+      {"role": "user", "content": prompt},
+    ];
+
+    final response = await http.post(
+      Uri.parse(_baseUrl),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $apiKey',
+      },
+      body: jsonEncode({
+        'model': model,
+        'messages': messages,
+        'response_format': {'type': 'json_object'},
+        'temperature': 0.7,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
+      final content = data['choices'][0]['message']['content'];
+
+      try {
+        final jsonContent = jsonDecode(content);
+        final dto = AiVisionDto.tryFromJson(jsonContent);
+        if (dto != null) return dto;
+        throw FormatException(
+          'Parsed JSON is not a valid Vision/Personality object',
+        );
+      } catch (e) {
+        throw FormatException(
+          'Failed to parse AI Personality response: $content',
+        );
+      }
+    } else {
+      throw Exception(
+        'Groq API Error: ${response.statusCode} - ${response.body}',
+      );
+    }
+  }
 }

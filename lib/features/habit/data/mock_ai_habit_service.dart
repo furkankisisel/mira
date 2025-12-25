@@ -167,4 +167,68 @@ class MockAiHabitService implements AiHabitService {
       vision: vision,
     );
   }
+
+  @override
+  Future<AiVisionDto> analyzePersonality(String prompt) async {
+    await Future.delayed(const Duration(seconds: 2));
+
+    // Simple keyword-based mock
+    if (prompt.contains('likertStronglyAgree')) {
+      return AiVisionDto(
+        title: "The Visionary Leader",
+        description:
+            "You have a natural ability to see the big picture and inspire others.",
+        emoji: "🚀",
+        colorCode: "#FF9800",
+        motivationSentence: "Lead with courage and clarity.",
+        timeHorizon: "Life",
+        tasks: ["Write 3 goals", "Read a leadership book"],
+        habits: [
+          AiHabitDto(
+            title: "Morning Strategic Review",
+            description: "15 mins to plan the day's big moves",
+            frequency: "daily",
+            days: ["mon", "tue", "wed", "thu", "fri"],
+            category: "Productivity",
+            type: "timer",
+            targetValue: 15,
+            emoji: "📅",
+          ),
+          AiHabitDto(
+            title: "Mentorship",
+            description: "Share knowledge with someone",
+            frequency: "weekly",
+            days: ["fri"],
+            category: "Social",
+            type: "simple",
+            emoji: "🤝",
+          ),
+        ],
+      );
+    }
+
+    return AiVisionDto(
+      title: "The Balanced Harmonizer",
+      description:
+          "You seek balance in all things and bring peace to your environment.",
+      emoji: "⚖️",
+      colorCode: "#4CAF50",
+      motivationSentence:
+          "Balance is not something you find, it's something you create.",
+      timeHorizon: "Life",
+      tasks: ["Declutter desk", "Download a meditation app"],
+      habits: [
+        AiHabitDto(
+          title: "Meditation",
+          description: "10 mins mindfulness",
+          frequency: "daily",
+          days: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
+          category: "Mindfulness",
+          type: "timer",
+          targetValue: 10,
+          emoji: "🧘",
+        ),
+      ],
+    );
+  }
 }

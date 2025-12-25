@@ -40,4 +40,7 @@ abstract class AiHabitService {
   /// Returns [AiChatResponse] which may contain text (clarification questions)
   /// or a [vision] object (when ready).
   Future<AiChatResponse> sendVisionMessage(List<Map<String, String>> history);
+
+  /// Analyzes the user's personality based on quiz answers and suggests a profile and habits.
+  Future<AiVisionDto> analyzePersonality(String prompt);
 }

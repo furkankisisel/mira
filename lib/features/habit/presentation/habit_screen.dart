@@ -1321,14 +1321,28 @@ class HabitScreenState extends State<HabitScreen> {
   }
 
   Future<void> _deleteHabit(Habit habit) async {
+    print('DEBUG: _deleteHabit called for ${habit.title}');
     final confirmed = await _confirmDelete(
       title: AppLocalizations.of(context).delete,
       message: AppLocalizations.of(context).deleteHabitConfirm(habit.title),
       confirmText: AppLocalizations.of(context).delete,
       cancelText: AppLocalizations.of(context).cancel,
     );
+    print('DEBUG: _confirmDelete returned $confirmed');
     if (confirmed) {
-      _repo.removeHabit(habit.id);
+      try {
+        print('DEBUG: Calling _repo.removeHabit...');
+        await _repo.removeHabit(habit.id);
+        print('DEBUG: _repo.removeHabit completed');
+        if (mounted) setState(() {});
+      } catch (e) {
+        print('DEBUG: Error deleting habit: $e');
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        }
+      }
     }
   }
 

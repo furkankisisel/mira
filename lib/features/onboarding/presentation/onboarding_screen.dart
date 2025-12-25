@@ -3,7 +3,8 @@ import '../../../l10n/app_localizations.dart';
 import '../domain/onboarding_question.dart';
 import '../domain/onboarding_result.dart';
 import '../data/onboarding_repository.dart';
-import 'character_result_screen.dart';
+import '../../habit/data/server_ai_habit_service.dart';
+import 'ai_character_result_screen.dart';
 
 /// Onboarding flow with welcome, quiz, and result screens
 class OnboardingScreen extends StatefulWidget {
@@ -33,30 +34,128 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
+  String _getQuestionText(BuildContext context, String key) {
+    final l10n = AppLocalizations.of(context);
+    switch (key) {
+      case 'onboardingQ1':
+        return l10n.onboardingQ1;
+      case 'onboardingQ2':
+        return l10n.onboardingQ2;
+      case 'onboardingQ3':
+        return l10n.onboardingQ3;
+      case 'onboardingQ4':
+        return l10n.onboardingQ4;
+      case 'onboardingQ5':
+        return l10n.onboardingQ5;
+      case 'onboardingQ6':
+        return l10n.onboardingQ6;
+      case 'onboardingQ7':
+        return l10n.onboardingQ7;
+      case 'onboardingQ8':
+        return l10n.onboardingQ8;
+      case 'onboardingQ9':
+        return l10n.onboardingQ9;
+      case 'onboardingQ10':
+        return l10n.onboardingQ10;
+      case 'onboardingQ11':
+        return l10n.onboardingQ11;
+      case 'onboardingQ12':
+        return l10n.onboardingQ12;
+      default:
+        return key;
+    }
+  }
+
+  String _getAnswerText(BuildContext context, String key) {
+    final l10n = AppLocalizations.of(context);
+    switch (key) {
+      case 'likertStronglyDisagree':
+        return l10n.likertStronglyDisagree;
+      case 'likertDisagree':
+        return l10n.likertDisagree;
+      case 'likertNeutral':
+        return l10n.likertNeutral;
+      case 'likertAgree':
+        return l10n.likertAgree;
+      case 'likertStronglyAgree':
+        return l10n.likertStronglyAgree;
+      default:
+        return key;
+    }
+  }
+
   Future<void> _finishOnboarding() async {
-    // Calculate result
-    final traitScores = OnboardingResult.calculateTraitScores(
-      OnboardingQuestions.questions,
-      _answers,
-    );
-    final characterType = OnboardingResult.calculateCharacterType(traitScores);
-    final result = OnboardingResult(
-      characterType: characterType,
-      traitScores: traitScores,
-      completedAt: DateTime.now(),
+    // Show loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
     );
 
-    // Save result
-    final repository = OnboardingRepository();
-    await repository.saveOnboardingResult(result);
+    try {
+      // Generate prompt from answers
+      final buffer = StringBuffer();
+      buffer.writeln("Analyze the following personality test answers:");
 
-    // Navigate to character result screen
-    if (mounted) {
-      await Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => CharacterResultScreen(result: result),
-        ),
+      for (final question in OnboardingQuestions.questions) {
+        final answerIndex = _answers[question.id];
+        if (answerIndex != null) {
+          final qText = _getQuestionText(context, question.questionKey);
+          final aText = _getAnswerText(
+            context,
+            question.answerKeys[answerIndex],
+          );
+          buffer.writeln("Q: $qText");
+          buffer.writeln("A: $aText");
+          buffer.writeln("");
+        }
+      }
+
+      // Call AI Service
+      // Ideally use a DI container or proper config for API key
+      final service = ServerAiHabitService(
+        apiKey: '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',
       );
+
+      final aiPdf = await service.analyzePersonality(buffer.toString());
+
+      // Save legacy result just in case
+      // Calculate result
+      final traitScores = OnboardingResult.calculateTraitScores(
+        OnboardingQuestions.questions,
+        _answers,
+      );
+      final characterType = OnboardingResult.calculateCharacterType(
+        traitScores,
+      );
+      final result = OnboardingResult(
+        characterType: characterType,
+        traitScores: traitScores,
+        completedAt: DateTime.now(),
+      );
+
+      final repository = OnboardingRepository();
+      await repository.saveOnboardingResult(result);
+
+      if (mounted) {
+        // Pop loading dialog
+        Navigator.of(context).pop();
+
+        // Navigate to AI Result Screen
+        await Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => AiCharacterResultScreen(result: aiPdf),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.of(context).pop(); // Pop loading
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('AI Analysis Failed: $e')));
+        // Fallback to legacy screen logic could go here if desired
+      }
     }
   }
 
