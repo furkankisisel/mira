@@ -666,6 +666,20 @@ class VisionRepository {
             return null;
           })(),
           subtasks: subtasksList,
+          // Vision Fix: Pass frequency details
+          frequencyType: h['frequencyType']?.toString(),
+          selectedWeekdays: (h['selectedWeekdays'] as List?)
+              ?.whereType<num>()
+              .map((e) => e.toInt())
+              .toList(),
+          selectedMonthDays: (h['selectedMonthDays'] as List?)
+              ?.whereType<num>()
+              .map((e) => e.toInt())
+              .toList(),
+          selectedYearDays: (h['selectedYearDays'] as List?)
+              ?.map((e) => e.toString())
+              .toList(),
+          periodicDays: (h['periodicDays'] as num?)?.toInt(),
         );
         await habitRepo.addHabit(habit);
         linked.add(id);

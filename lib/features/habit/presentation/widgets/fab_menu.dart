@@ -6,7 +6,6 @@ class FabMenu extends StatefulWidget {
   final Function(bool) onToggle;
   final VoidCallback onDailyTaskPressed;
   final VoidCallback onHabitPressed;
-  final VoidCallback onAiHabitPressed;
   final VoidCallback onListPressed;
 
   const FabMenu({
@@ -15,7 +14,6 @@ class FabMenu extends StatefulWidget {
     required this.onToggle,
     required this.onDailyTaskPressed,
     required this.onHabitPressed,
-    required this.onAiHabitPressed,
     required this.onListPressed,
   });
 
@@ -119,16 +117,6 @@ class _FabMenuState extends State<FabMenu> with TickerProviderStateMixin {
             ),
           ),
           const SizedBox(height: 16),
-          ScaleTransition(
-            scale: _scaleAnimation,
-            child: _FabMenuItem(
-              icon: Icons.auto_awesome, // Wand/Sparkles icon
-              label: l10n.createWithAi,
-              onPressed: () => _handleMenuTap(widget.onAiHabitPressed),
-              backgroundColor: colorScheme.tertiaryContainer,
-              foregroundColor: colorScheme.onTertiaryContainer,
-            ),
-          ),
           const SizedBox(height: 16),
         ],
 

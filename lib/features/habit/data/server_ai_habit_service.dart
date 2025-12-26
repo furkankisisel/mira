@@ -17,13 +17,23 @@ class ServerAiHabitService implements AiHabitService {
     this.model = 'llama-3.3-70b-versatile',
   });
 
+  String _getLanguageInstruction(String? code) {
+    if (code == null)
+      return "Detect user language (Turkish/English) and reply in that language.";
+    final langName = code.toLowerCase() == 'tr' ? 'Turkish' : 'English';
+    return "IMPORTANT: You MUST reply in $langName. Language Code: $code";
+  }
+
   @override
   Future<AiHabitResponse> generateHabits(
     String prompt, {
     String? imageBase64,
+    String? languageCode,
   }) async {
+    final langInstruction = _getLanguageInstruction(languageCode);
     // Construct the system prompt with strict schema for one-shot generation
-    final systemPrompt = '''
+    final systemPrompt =
+        '''
 You are a "Science-informed habit design assistant". 
 Your goal is to suggest niche, scientifically-grounded habits to solve the user's specific problem.
 
@@ -55,7 +65,7 @@ Output MUST be valid JSON strictly matching this schema:
     }
   ]
 }
-Context: The user speaks Turkish or English. Detect the language and output the content in that language.
+Context: $langInstruction
 Ensure "days" is a list of strings: mon, tue, wed, thu, fri, sat, sun.
 Max 5 habits.
 IMPORTANT:
@@ -123,7 +133,9 @@ IMPORTANT:
   Future<AiChatResponse> sendMessage(
     List<Map<String, String>> history, {
     List<String>? existingHabits,
+    String? languageCode,
   }) async {
+    final langInstruction = _getLanguageInstruction(languageCode);
     final systemPrompt =
         '''
 You are a "Science-informed habit design assistant".
@@ -183,7 +195,7 @@ The JSON schema MUST match:
   ]
 }
 Max 5 habits.
-Language: Detect user language (Turkish/English) and reply in that language.
+Language: $langInstruction
 ''';
 
     final List<Map<String, dynamic>> fullMessages = [
@@ -257,8 +269,13 @@ Language: Detect user language (Turkish/English) and reply in that language.
   }
 
   @override
-  Future<AiVisionDto> generateVisionBoard(String prompt) async {
-    final systemPrompt = '''
+  Future<AiVisionDto> generateVisionBoard(
+    String prompt, {
+    String? languageCode,
+  }) async {
+    final langInstruction = _getLanguageInstruction(languageCode);
+    final systemPrompt =
+        '''
 You are a "Vision Board Coach" & "Habit Architect".
 Your goal is to turn the user's dream into a COMPLETE, ACTIONABLE PROGRAM.
 
@@ -299,7 +316,7 @@ JSON SCHEMA:
 RULES:
 - "days" MUST be provided for every habit. Use ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] for daily.
 - "habits" must contain at least 3 items.
-- Language: Detect user language (Turkish/English) and output in that language.
+- Language: $langInstruction
 ''';
 
     final messages = [
@@ -342,9 +359,12 @@ RULES:
 
   @override
   Future<AiChatResponse> sendVisionMessage(
-    List<Map<String, String>> history,
-  ) async {
-    final systemPrompt = '''
+    List<Map<String, String>> history, {
+    String? languageCode,
+  }) async {
+    final langInstruction = _getLanguageInstruction(languageCode);
+    final systemPrompt =
+        '''
 You are a "Vision Board Coach" & "Habit Architect".
 Phase 1: Ask 1-2 powerful questions to clarify the user's dream and find their deep motivation.
 Phase 2: Once you have enough clarity, generate the "COMPLETE, ACTIONABLE PROGRAM".
@@ -370,7 +390,7 @@ JSON SCHEMA for Phase 2:
 
 RULES:
 - Do not output JSON until you are sure.
-- Language: Detect user language and use it.
+- Language: $langInstruction
 ''';
 
     final messages = [
@@ -447,8 +467,13 @@ RULES:
   }
 
   @override
-  Future<AiVisionDto> analyzePersonality(String prompt) async {
-    final systemPrompt = '''
+  Future<AiVisionDto> analyzePersonality(
+    String prompt, {
+    String? languageCode,
+  }) async {
+    final langInstruction = _getLanguageInstruction(languageCode);
+    final systemPrompt =
+        '''
 You are an expert Personality Psychologist and Habit Coach.
 Analyze the user's answers to find their "Character Archetype".
 Return a JSON object with their profile and 3-5 recommended habits.
@@ -483,7 +508,7 @@ IMPORTANT RULES:
 1. "habits" ARRAY MUST NOT BE EMPTY. PROVIDE 3-5 HABITS.
 2. "days" property is REQUIRED for every habit (e.g. ["mon", "tue"...]).
 3. "tasks" should be 2-3 one-time actions.
-4. Language: Detect user language (Turkish/English) and output in that language.
+4. Language: $langInstruction
 ''';
 
     final messages = [
@@ -521,6 +546,62 @@ IMPORTANT RULES:
           'Failed to parse AI Personality response: $content',
         );
       }
+    } else {
+      throw Exception(
+        'Groq API Error: ${response.statusCode} - ${response.body}',
+      );
+    }
+  }
+
+  @override
+  Future<String> sendSupportMessage(
+    List<Map<String, String>> history, {
+    String? languageCode,
+  }) async {
+    final langInstruction = _getLanguageInstruction(languageCode);
+    final systemPrompt =
+        '''
+You are Mira’s in-app assistant.
+
+Your role:
+- Help users understand how to use Mira’s features
+- Give step-by-step guidance
+- Suggest the most relevant feature
+- NEVER create habits or visions automatically
+- Always guide the user to do it themselves
+
+Mira Features:
+- Vision: Long-term goals
+- Habits: Daily or weekly recurring actions
+- Tasks: One-time actions inside a Vision
+- Timer: Focus sessions
+- Mood: Daily emotional check-in
+- Finance: Simple income/expense tracking
+
+Language: $langInstruction
+''';
+
+    final messages = [
+      {"role": "system", "content": systemPrompt},
+      ...history,
+    ];
+
+    final response = await http.post(
+      Uri.parse(_baseUrl),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $apiKey',
+      },
+      body: jsonEncode({
+        'model': model,
+        'messages': messages,
+        'temperature': 0.7,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
+      return data['choices'][0]['message']['content'] as String;
     } else {
       throw Exception(
         'Groq API Error: ${response.statusCode} - ${response.body}',

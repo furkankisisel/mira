@@ -5,8 +5,6 @@ import 'widgets/list_creation_dialog.dart';
 import 'widgets/habit_card.dart';
 import 'simple_habit_screen.dart';
 
-import '../data/server_ai_habit_service.dart';
-import 'ai_habit_creation_screen.dart';
 import 'advanced_habit_screen.dart';
 import 'habit_analysis_screen.dart';
 import 'package:mira/l10n/app_localizations.dart';
@@ -20,7 +18,6 @@ import '../domain/daily_task_repository.dart';
 import '../domain/daily_task_model.dart';
 import '../../vision/data/vision_repository.dart';
 import '../../vision/data/vision_model.dart';
-import '../domain/ai_habit_repository.dart'; // Added this import
 // removed unused imports
 
 /// Represents a grouped item for the habit/task list view
@@ -1553,20 +1550,6 @@ class HabitScreenState extends State<HabitScreen> {
     _showHabitTypeSelectionModal();
   }
 
-  void _navigateToAiHabitCreation() {
-    setState(() => _isFabExpanded = false);
-    // Instantiate real AI service
-    final service = ServerAiHabitService(
-      apiKey: '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',
-    );
-    final repository = AiHabitRepository(service);
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => AiHabitCreationScreen(repository: repository),
-      ),
-    );
-  }
-
   void _showHabitTypeSelectionModal() {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
@@ -2482,7 +2465,6 @@ class HabitScreenState extends State<HabitScreen> {
         onToggle: (expanded) => setState(() => _isFabExpanded = expanded),
         onDailyTaskPressed: _showDailyTaskDialog,
         onHabitPressed: _navigateToCreateHabit,
-        onAiHabitPressed: _navigateToAiHabitCreation,
         onListPressed: _showListCreationDialog,
       ),
     );

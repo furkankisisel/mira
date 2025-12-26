@@ -11,6 +11,10 @@ import '../habit/domain/habit_repository.dart';
 import '../habit/domain/habit_model.dart';
 import '../../l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
+import 'widgets/dashboard_tip_card.dart';
+import 'presentation/ai_support_screen.dart';
+import '../habit/domain/ai_habit_repository.dart';
+import '../habit/data/server_ai_habit_service.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key, required this.variant});
@@ -24,6 +28,26 @@ class DashboardScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _DashboardHeader(variant: variant),
+          const SizedBox(height: 16),
+          // Tip of the day - opens AI Support
+          DashboardTipCard(
+            variant: variant,
+            onTap: () {
+              // Instantiate AI service and repository
+              final service = ServerAiHabitService(
+                apiKey:
+                    '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', // Hardcoded for now
+              );
+              final repository = AiHabitRepository(service);
+
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) =>
+                      AiSupportScreen(repository: repository, variant: variant),
+                ),
+              );
+            },
+          ),
           const SizedBox(height: 16),
           // Top row: Mood card and Fortune Egg card side-by-side
           // Top row: give both cards the same vertical size so they line up visually

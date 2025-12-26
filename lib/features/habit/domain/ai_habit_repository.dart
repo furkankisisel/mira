@@ -21,6 +21,7 @@ class AiHabitRepository {
   Future<List<AiHabitDto>> generateHabits({
     required String prompt,
     String? imageBase64,
+    String? languageCode,
   }) async {
     int attempts = 0;
     const maxAttempts = 2; // Original try + 1 retry
@@ -33,6 +34,7 @@ class AiHabitRepository {
         final response = await _service.generateHabits(
           currentPrompt,
           imageBase64: imageBase64,
+          languageCode: languageCode,
         );
 
         // Additional business validation if needed
@@ -59,7 +61,10 @@ class AiHabitRepository {
     return []; // Should not reach here
   }
 
-  Future<AiChatResponse> sendMessage(List<Map<String, String>> history) async {
+  Future<AiChatResponse> sendMessage(
+    List<Map<String, String>> history, {
+    String? languageCode,
+  }) async {
     // We could add retry logic here too if needed, but for chat it's less critical strictly.
     // However, if JSON generation fails in chat, we might want to retry.
     // For now, let's just pass through.
@@ -70,19 +75,35 @@ class AiHabitRepository {
         .map((h) => "${h.title} (${h.categoryName ?? h.habitType.name})")
         .toList();
 
-    return _service.sendMessage(history, existingHabits: currentHabitContext);
+    return _service.sendMessage(
+      history,
+      existingHabits: currentHabitContext,
+      languageCode: languageCode,
+    );
   }
 
   /// Generates a Vision Board plan.
-  Future<AiVisionDto> generateVisionBoard({required String prompt}) async {
-    return _service.generateVisionBoard(prompt);
+  Future<AiVisionDto> generateVisionBoard({
+    required String prompt,
+    String? languageCode,
+  }) async {
+    return _service.generateVisionBoard(prompt, languageCode: languageCode);
   }
 
   /// Sends a message for Vision Board creation flow.
   Future<AiChatResponse> sendVisionMessage(
-    List<Map<String, String>> history,
-  ) async {
-    return _service.sendVisionMessage(history);
+    List<Map<String, String>> history, {
+    String? languageCode,
+  }) async {
+    return _service.sendVisionMessage(history, languageCode: languageCode);
+  }
+
+  /// Sends a message to the AI Support Assistant.
+  Future<String> sendSupportMessage(
+    List<Map<String, String>> history, {
+    String? languageCode,
+  }) async {
+    return _service.sendSupportMessage(history, languageCode: languageCode);
   }
 }
 

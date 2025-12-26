@@ -4610,6 +4610,84 @@ abstract class AppLocalizations {
   /// **'Şükür Pratiği'**
   String get habitMindfulGratitude;
 
+  /// No description provided for @aiAssistantTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mira Asistan'**
+  String get aiAssistantTitle;
+
+  /// No description provided for @aiAssistantOnline.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çevrimiçi'**
+  String get aiAssistantOnline;
+
+  /// No description provided for @aiTip0.
+  ///
+  /// In tr, this message translates to:
+  /// **'Biliyor muydunuz? Uzun vadeli hedefleriniz için bir Vizyon Panosu oluşturabilirsiniz.'**
+  String get aiTip0;
+
+  /// No description provided for @aiTip1.
+  ///
+  /// In tr, this message translates to:
+  /// **'İpucu: Odaklanmış çalışma oturumları için Zamanlayıcıyı kullanın.'**
+  String get aiTip1;
+
+  /// No description provided for @aiTip2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Zaman içindeki değişimleri görmek için günlük ruh halinizi takip edin.'**
+  String get aiTip2;
+
+  /// No description provided for @aiTip3.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alışkanlıklar her gün aynı saatte yapıldığında daha kalıcı olur.'**
+  String get aiTip3;
+
+  /// No description provided for @aiTip4.
+  ///
+  /// In tr, this message translates to:
+  /// **'Büyük Vizyonları daha küçük, yönetilebilir Görevlere bölün.'**
+  String get aiTip4;
+
+  /// No description provided for @aiTip5.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük harcamalarınızı takip etmek için Finans sekmesini kullanın.'**
+  String get aiTip5;
+
+  /// No description provided for @aiTip6.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yardıma mı ihtiyacınız var? AI asistana sormak için buraya dokunun!'**
+  String get aiTip6;
+
+  /// No description provided for @aiTip7.
+  ///
+  /// In tr, this message translates to:
+  /// **'İstikrar anahtardır! Zinciri kırmayın.'**
+  String get aiTip7;
+
+  /// No description provided for @aiWelcomeMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Merhaba! Ben Mira asistanınızım. Size bugün nasıl yardımcı olabilirim? Vizyonlar, alışkanlıklar, zamanlayıcılar veya diğer özellikler hakkında soru sorabilirsiniz.'**
+  String get aiWelcomeMessage;
+
+  /// No description provided for @aiContextMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Merhaba! Bu ipucuyla ilgilendiğinizi fark ettim:\n\n\"{tip}\"\n\nBunu Mira\'da nasıl uygulayacağınızı göstermemi ister misiniz?'**
+  String aiContextMessage(Object tip);
+
+  /// No description provided for @aiShowMeHow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Evet, nasıl yapacağımı göster'**
+  String get aiShowMeHow;
+
   /// No description provided for @habitMindfulGratitudeDesc.
   ///
   /// In tr, this message translates to:
@@ -5797,6 +5875,54 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'AI ile {count} alışkanlık eklendi'**
   String aiHabitAddedMessage(Object count);
+
+  /// No description provided for @aiQuickHabit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni alışkanlık oluştur'**
+  String get aiQuickHabit;
+
+  /// No description provided for @aiQuickVision.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vizyon Panosu yardımı'**
+  String get aiQuickVision;
+
+  /// No description provided for @aiQuickTimer.
+  ///
+  /// In tr, this message translates to:
+  /// **'Zamanlayıcı nasıl kullanılır?'**
+  String get aiQuickTimer;
+
+  /// No description provided for @aiQuickGamification.
+  ///
+  /// In tr, this message translates to:
+  /// **'XP sistemi nedir?'**
+  String get aiQuickGamification;
+
+  /// No description provided for @aiQuickMood.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ruh halimi analiz et'**
+  String get aiQuickMood;
+
+  /// No description provided for @aiQuickFinance.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bütçe önerileri'**
+  String get aiQuickFinance;
+
+  /// No description provided for @aiQuickMotivation.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bana motivasyon ver'**
+  String get aiQuickMotivation;
+
+  /// No description provided for @aiQuickProfile.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yapay Zeka Karakterim'**
+  String get aiQuickProfile;
 }
 
 class _AppLocalizationsDelegate

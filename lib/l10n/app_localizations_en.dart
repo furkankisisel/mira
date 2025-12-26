@@ -2405,6 +2405,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String get habitMindfulGratitude => 'Gratitude Practice';
 
   @override
+  String get aiAssistantTitle => 'AI Assistant';
+
+  @override
+  String get aiAssistantOnline => 'Online';
+
+  @override
+  String get aiTip0 =>
+      'Did you know? You can create a Vision Board for your long-term goals.';
+
+  @override
+  String get aiTip1 => 'Tip: Use the Timer for focused work sessions.';
+
+  @override
+  String get aiTip2 => 'Track your mood daily to see patterns over time.';
+
+  @override
+  String get aiTip3 =>
+      'Habits stick better when you do them at the same time every day.';
+
+  @override
+  String get aiTip4 => 'Break down big Visions into smaller, manageable Tasks.';
+
+  @override
+  String get aiTip5 =>
+      'Use the Finance tab to keep track of your daily expenses.';
+
+  @override
+  String get aiTip6 => 'Need help? Tap here to ask the AI assistant!';
+
+  @override
+  String get aiTip7 => 'Consistency is key! Don\'t break the chain';
+
+  @override
+  String get aiWelcomeMessage =>
+      'Hello! I\'m your Mira assistant. How can I help you today? You can ask me how to use visions, habits, timers, or any other feature.';
+
+  @override
+  String aiContextMessage(Object tip) {
+    return 'Hello! I noticed you are interested in this tip:\n\n\"$tip\"\n\nWould you like me to show you how to apply this in Mira?';
+  }
+
+  @override
+  String get aiShowMeHow => 'Yes, show me how';
+
+  @override
   String get habitMindfulGratitudeDesc =>
       'Write down three things you\'re grateful for today.';
 
@@ -3045,4 +3090,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String aiHabitAddedMessage(Object count) {
     return '$count habits added via AI';
   }
+
+  @override
+  String get aiQuickHabit => 'Create a new habit';
+
+  @override
+  String get aiQuickVision => 'Help with Vision Board';
+
+  @override
+  String get aiQuickTimer => 'How to use Timer?';
+
+  @override
+  String get aiQuickGamification => 'Explain XP system';
+
+  @override
+  String get aiQuickMood => 'Analyze my mood';
+
+  @override
+  String get aiQuickFinance => 'Budgeting tips';
+
+  @override
+  String get aiQuickMotivation => 'Give me motivation';
+
+  @override
+  String get aiQuickProfile => 'My AI Character';
 }

@@ -2376,6 +2376,55 @@ class AppLocalizationsZh extends AppLocalizations {
   String get habitMindfulGratitude => 'Gratitude Practice';
 
   @override
+  String get aiAssistantTitle => 'Mira Asistan';
+
+  @override
+  String get aiAssistantOnline => 'Çevrimiçi';
+
+  @override
+  String get aiTip0 =>
+      'Biliyor muydunuz? Uzun vadeli hedefleriniz için bir Vizyon Panosu oluşturabilirsiniz.';
+
+  @override
+  String get aiTip1 =>
+      'İpucu: Odaklanmış çalışma oturumları için Zamanlayıcıyı kullanın.';
+
+  @override
+  String get aiTip2 =>
+      'Zaman içindeki değişimleri görmek için günlük ruh halinizi takip edin.';
+
+  @override
+  String get aiTip3 =>
+      'Alışkanlıklar her gün aynı saatte yapıldığında daha kalıcı olur.';
+
+  @override
+  String get aiTip4 =>
+      'Büyük Vizyonları daha küçük, yönetilebilir Görevlere bölün.';
+
+  @override
+  String get aiTip5 =>
+      'Günlük harcamalarınızı takip etmek için Finans sekmesini kullanın.';
+
+  @override
+  String get aiTip6 =>
+      'Yardıma mı ihtiyacınız var? AI asistana sormak için buraya dokunun!';
+
+  @override
+  String get aiTip7 => 'İstikrar anahtardır! Zinciri kırmayın.';
+
+  @override
+  String get aiWelcomeMessage =>
+      'Merhaba! Ben Mira asistanınızım. Size bugün nasıl yardımcı olabilirim? Vizyonlar, alışkanlıklar, zamanlayıcılar veya diğer özellikler hakkında soru sorabilirsiniz.';
+
+  @override
+  String aiContextMessage(Object tip) {
+    return 'Merhaba! Bu ipucuyla ilgilendiğinizi fark ettim:\n\n\"$tip\"\n\nBunu Mira\'da nasıl uygulayacağınızı göstermemi ister misiniz?';
+  }
+
+  @override
+  String get aiShowMeHow => 'Evet, nasıl yapacağımı göster';
+
+  @override
   String get habitMindfulGratitudeDesc =>
       'Write down three things you\'re grateful for today.';
 
@@ -3016,4 +3065,28 @@ class AppLocalizationsZh extends AppLocalizations {
   String aiHabitAddedMessage(Object count) {
     return 'AI ile $count alışkanlık eklendi';
   }
+
+  @override
+  String get aiQuickHabit => 'Yeni alışkanlık oluştur';
+
+  @override
+  String get aiQuickVision => 'Vizyon Panosu yardımı';
+
+  @override
+  String get aiQuickTimer => 'Zamanlayıcı nasıl kullanılır?';
+
+  @override
+  String get aiQuickGamification => 'XP sistemi nedir?';
+
+  @override
+  String get aiQuickMood => 'Ruh halimi analiz et';
+
+  @override
+  String get aiQuickFinance => 'Bütçe önerileri';
+
+  @override
+  String get aiQuickMotivation => 'Bana motivasyon ver';
+
+  @override
+  String get aiQuickProfile => 'Yapay Zeka Karakterim';
 }

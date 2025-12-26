@@ -798,6 +798,24 @@
     "perYear": "/yr",
     "periodic": "Periodic",
     "periodicSelection": "Periodic Selection",
+    "aiAssistantTitle": "AI Assistant",
+    "aiAssistantOnline": "Online",
+    "aiTip0": "Did you know? You can create a Vision Board for your long-term goals.",
+    "aiTip1": "Tip: Use the Timer for focused work sessions.",
+    "aiTip2": "Track your mood daily to see patterns over time.",
+    "aiTip3": "Habits stick better when you do them at the same time every day.",
+    "aiTip4": "Break down big Visions into smaller, manageable Tasks.",
+    "aiTip5": "Use the Finance tab to keep track of your daily expenses.",
+    "aiTip6": "Need help? Tap here to ask the AI assistant!",
+    "aiTip7": "Consistency is key! Don't break the chain",
+    "aiWelcomeMessage": "Hello! I'm your Mira assistant. How can I help you today? You can ask me how to use visions, habits, timers, or any other feature.",
+    "aiContextMessage": "Hello! I noticed you are interested in this tip:\n\n\"{tip}\"\n\nWould you like me to show you how to apply this in Mira?",
+    "@aiContextMessage": {
+        "placeholders": {
+            "tip": {}
+        }
+    },
+    "aiShowMeHow": "Yes, show me how",
     "personalizedInsights": "Personalized Insights",
     "pickTime": "Pick Time",
     "pickTodaysMood": "Pick today's mood",
@@ -1157,5 +1175,13 @@
     "confirmHabits": "Confirm Habits",
     "aiRetry": "Retry with Stricter Rules",
     "manualFallback": "Create Manually",
-    "aiHabitAddedMessage": "{count} habits added via AI"
+    "aiHabitAddedMessage": "{count} habits added via AI",
+    "aiQuickHabit": "Create a new habit",
+    "aiQuickVision": "Help with Vision Board",
+    "aiQuickTimer": "How to use Timer?",
+    "aiQuickGamification": "Explain XP system",
+    "aiQuickMood": "Analyze my mood",
+    "aiQuickFinance": "Budgeting tips",
+    "aiQuickMotivation": "Give me motivation",
+    "aiQuickProfile": "My AI Character"
 }

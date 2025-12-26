@@ -14,11 +14,7 @@ import '../data/vision_model.dart';
 import '../data/vision_repository.dart';
 import '../data/vision_template_repository.dart';
 import '../data/vision_template.dart';
-import 'ai_vision_creation_screen.dart'; // Added
-import '../../habit/domain/ai_habit_repository.dart'; // Verified path
 
-import '../../habit/data/server_ai_habit_service.dart'; // Verified path
-import '../../vision/domain/ai_vision_dto.dart'; // Corrected path to generated file
 import '../../../design_system/theme/theme_variations.dart';
 import '../../gamification/gamification_repository.dart';
 import '../../../core/utils/emoji_presets.dart';
@@ -93,35 +89,7 @@ class _VisionCreateScreenState extends State<VisionCreateScreen>
                     Tab(text: AppLocalizations.of(context).templatesTabManual),
                   ],
                 ),
-          actions: [
-            if (!isEdit)
-              IconButton(
-                icon: const Icon(Icons.auto_awesome),
-                tooltip: "Create with AI",
-                onPressed: () async {
-                  // Navigate to AI screen
-                  final repo = AiHabitRepository(
-                    ServerAiHabitService(
-                      apiKey:
-                          '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', // Hardcoded key for now, ideally from environment or config
-                    ),
-                  );
-
-                  final result = await Navigator.push<AiVisionDto>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => AiVisionCreationScreen(repository: repo),
-                    ),
-                  );
-
-                  if (result != null) {
-                    // Apply result to manual tab
-                    _manualKey.currentState?.applyAiVision(result);
-                    _tabController.animateTo(1);
-                  }
-                },
-              ),
-          ],
+          actions: [],
         ),
         body: isEdit
             ? _ManualTab(
@@ -834,60 +802,6 @@ class _ManualTabState extends State<_ManualTab> {
   }
 
   // Apply AI Vision DTO to manual tab
-  void applyAiVision(AiVisionDto vision) {
-    setState(() {
-      _titleCtrl.text = vision.title;
-      _descCtrl.text =
-          "${vision.description}\n\nMotivation: ${vision.motivationSentence}\nHorizon: ${vision.timeHorizon}";
-      _color = Color(int.parse(vision.colorCode.replaceFirst('#', '0xFF')));
-      _emoji = vision.emoji;
-      _imagePath = null;
-
-      if (vision.tasks.isNotEmpty) {
-        _descCtrl.text +=
-            "\n\nInitial Tasks:\n" +
-            vision.tasks.map((t) => "- [ ] $t").join("\n");
-      }
-
-      _newHabits
-        ..clear()
-        ..addAll(
-          vision.habits.map((h) {
-            final weekMap = {
-              "mon": 1,
-              "tue": 2,
-              "wed": 3,
-              "thu": 4,
-              "fri": 5,
-              "sat": 6,
-              "sun": 7,
-            };
-            final selectedWeekdays = h.days
-                .map((d) => weekMap[d.toLowerCase()] ?? 1)
-                .toList();
-
-            return VisionHabitTemplate(
-              title: h.title,
-              description: h.description,
-              type: h.type ?? 'simple',
-              target: h.targetValue,
-              unit: 'time', // fallback
-              emoji: h.emoji,
-              iconName: 'check_circle', // Default icon
-              colorValue:
-                  int.tryParse(
-                    (h.colorCode ?? '#2196F3').replaceFirst('#', '0xFF'),
-                  ) ??
-                  Colors.blue.value,
-              startDay: 1, // Start immediately
-              endDay: null, // Indefinite? Or vision duration?
-              frequencyType: FrequencyType.specificWeekdays.name,
-              selectedWeekdays: selectedWeekdays,
-            );
-          }),
-        );
-    });
-  }
 
   Future<void> _openColorDialog() async {
     await showModalBottomSheet(
@@ -2336,6 +2250,9 @@ class _ManualTabState extends State<_ManualTab> {
             reminderTime: template.reminderTime,
             linkedVisionId: widget.initial!.id, // Link to this vision
             subtasks: subtasksList,
+            // AI Vision Fix: Pass frequency details
+            frequencyType: template.frequencyType,
+            selectedWeekdays: template.selectedWeekdays,
           );
 
           await repo.addHabit(habit);

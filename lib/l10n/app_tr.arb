@@ -798,6 +798,24 @@
     "habitMindfulMeditation": "Meditasyon",
     "habitMindfulMeditationDesc": "10-15 dakika bilinçli meditasyon yapın.",
     "habitMindfulGratitude": "Şükür Pratiği",
+    "aiAssistantTitle": "Mira Asistan",
+    "aiAssistantOnline": "Çevrimiçi",
+    "aiTip0": "Biliyor muydunuz? Uzun vadeli hedefleriniz için bir Vizyon Panosu oluşturabilirsiniz.",
+    "aiTip1": "İpucu: Odaklanmış çalışma oturumları için Zamanlayıcıyı kullanın.",
+    "aiTip2": "Zaman içindeki değişimleri görmek için günlük ruh halinizi takip edin.",
+    "aiTip3": "Alışkanlıklar her gün aynı saatte yapıldığında daha kalıcı olur.",
+    "aiTip4": "Büyük Vizyonları daha küçük, yönetilebilir Görevlere bölün.",
+    "aiTip5": "Günlük harcamalarınızı takip etmek için Finans sekmesini kullanın.",
+    "aiTip6": "Yardıma mı ihtiyacınız var? AI asistana sormak için buraya dokunun!",
+    "aiTip7": "İstikrar anahtardır! Zinciri kırmayın.",
+    "aiWelcomeMessage": "Merhaba! Ben Mira asistanınızım. Size bugün nasıl yardımcı olabilirim? Vizyonlar, alışkanlıklar, zamanlayıcılar veya diğer özellikler hakkında soru sorabilirsiniz.",
+    "aiContextMessage": "Merhaba! Bu ipucuyla ilgilendiğinizi fark ettim:\n\n\"{tip}\"\n\nBunu Mira'da nasıl uygulayacağınızı göstermemi ister misiniz?",
+    "@aiContextMessage": {
+        "placeholders": {
+            "tip": {}
+        }
+    },
+    "aiShowMeHow": "Evet, nasıl yapacağımı göster",
     "habitMindfulGratitudeDesc": "Bugün minnettar olduğunuz üç şeyi yazın.",
     "habitMindfulNatureWalk": "Doğa Yürüyüşü",
     "habitMindfulNatureWalkDesc": "Çevrenize dikkat ederek doğada bilinçli bir yürüyüş yapın.",
@@ -1042,5 +1060,13 @@
     "confirmHabits": "Alışkanlıkları Onayla",
     "aiRetry": "Tekrar Dene (Sıkı Kurallar)",
     "manualFallback": "Manuel Oluştur",
-    "aiHabitAddedMessage": "AI ile {count} alışkanlık eklendi"
+    "aiHabitAddedMessage": "AI ile {count} alışkanlık eklendi",
+    "aiQuickHabit": "Yeni alışkanlık oluştur",
+    "aiQuickVision": "Vizyon Panosu yardımı",
+    "aiQuickTimer": "Zamanlayıcı nasıl kullanılır?",
+    "aiQuickGamification": "XP sistemi nedir?",
+    "aiQuickMood": "Ruh halimi analiz et",
+    "aiQuickFinance": "Bütçe önerileri",
+    "aiQuickMotivation": "Bana motivasyon ver",
+    "aiQuickProfile": "Yapay Zeka Karakterim"
 }

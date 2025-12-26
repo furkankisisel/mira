@@ -9,6 +9,7 @@ class MockAiHabitService implements AiHabitService {
   Future<AiHabitResponse> generateHabits(
     String prompt, {
     String? imageBase64,
+    String? languageCode,
   }) async {
     // Simulate network delay
     await Future.delayed(const Duration(seconds: 2));
@@ -110,6 +111,7 @@ class MockAiHabitService implements AiHabitService {
   Future<AiChatResponse> sendMessage(
     List<Map<String, String>> history, {
     List<String>? existingHabits,
+    String? languageCode,
   }) async {
     await Future.delayed(const Duration(seconds: 1));
     return AiChatResponse(
@@ -119,7 +121,10 @@ class MockAiHabitService implements AiHabitService {
   }
 
   @override
-  Future<AiVisionDto> generateVisionBoard(String prompt) async {
+  Future<AiVisionDto> generateVisionBoard(
+    String prompt, {
+    String? languageCode,
+  }) async {
     await Future.delayed(const Duration(seconds: 2));
 
     // Mock response
@@ -147,8 +152,9 @@ class MockAiHabitService implements AiHabitService {
 
   @override
   Future<AiChatResponse> sendVisionMessage(
-    List<Map<String, String>> history,
-  ) async {
+    List<Map<String, String>> history, {
+    String? languageCode,
+  }) async {
     await Future.delayed(const Duration(seconds: 1));
 
     // Simulate a short conversation before generating
@@ -169,7 +175,10 @@ class MockAiHabitService implements AiHabitService {
   }
 
   @override
-  Future<AiVisionDto> analyzePersonality(String prompt) async {
+  Future<AiVisionDto> analyzePersonality(
+    String prompt, {
+    String? languageCode,
+  }) async {
     await Future.delayed(const Duration(seconds: 2));
 
     // Simple keyword-based mock
@@ -230,5 +239,14 @@ class MockAiHabitService implements AiHabitService {
         ),
       ],
     );
+  }
+
+  @override
+  Future<String> sendSupportMessage(
+    List<Map<String, String>> history, {
+    String? languageCode,
+  }) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return "This is a mock support response. The actual AI will guide you through Mira's features.";
   }
 }
