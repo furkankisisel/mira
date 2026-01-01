@@ -3283,4 +3283,81 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get subEmotionUnstoppable => 'Durdurulamaz';
+
+  @override
+  String get gamesTitle => 'Oyunlar';
+
+  @override
+  String get letsPlayGame => 'Hadi oynayalım! 🎮';
+
+  @override
+  String get gamesDescription =>
+      'Karar vermekte zorlanıyor musun? Eğlenceli oyunlarla kararını ver!';
+
+  @override
+  String get decisionEggTitle => 'Karar Yumurtası';
+
+  @override
+  String get decisionEggDescription => 'Mistik yumurtalardan birini seç';
+
+  @override
+  String get coinFlipTitle => 'Yazı Tura';
+
+  @override
+  String get coinFlipDescription => 'İki seçenek arasında karar ver';
+
+  @override
+  String get wheelOfFortuneTitle => 'Çark Çevirme';
+
+  @override
+  String get wheelOfFortuneDescription => 'Seçeneklerini yaz ve çarkı çevir';
+
+  @override
+  String get eggSelectMessage =>
+      'Aklından bir soru tut ve bir yumurtaya dokun 🥚';
+
+  @override
+  String get eggRevealMessage => 'Mistik yumurta cevabını verdi! ✨';
+
+  @override
+  String get playAgain => 'Tekrar Oyna';
+
+  @override
+  String get coinFlipInstruction => 'İki seçeneği yaz ve parayı çevir!';
+
+  @override
+  String get option1 => 'Seçenek 1';
+
+  @override
+  String get option2 => 'Seçenek 2';
+
+  @override
+  String get enterBothOptions => 'Lütfen her iki seçeneği de girin';
+
+  @override
+  String get flipCoin => 'Parayı Çevir';
+
+  @override
+  String get theWinnerIs => 'Kazanan:';
+
+  @override
+  String get addOptionHint => 'Seçenek ekle...';
+
+  @override
+  String get spin => 'ÇEVİR';
+
+  @override
+  String get spinAgain => 'Tekrar Çevir';
+
+  @override
+  String get maxOptionsReached => 'Maksimum 12 seçenek ekleyebilirsin';
+
+  @override
+  String get needAtLeastTwoOptions => 'En az 2 seçenek gerekli';
+
+  @override
+  String get addOptionsToStart => 'Başlamak için seçenek ekle';
+
+  @override
+  String get tapSpinToStart => 'Çarkı çevirmek için ortadaki butona dokun';
 }

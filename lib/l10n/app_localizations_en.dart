@@ -3261,4 +3261,80 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get subEmotionUnstoppable => 'Unstoppable';
+
+  @override
+  String get gamesTitle => 'Games';
+
+  @override
+  String get letsPlayGame => 'Let\'s play! 🎮';
+
+  @override
+  String get gamesDescription =>
+      'Having trouble deciding? Let fun games help you decide!';
+
+  @override
+  String get decisionEggTitle => 'Decision Egg';
+
+  @override
+  String get decisionEggDescription => 'Pick a mystical egg for answers';
+
+  @override
+  String get coinFlipTitle => 'Coin Flip';
+
+  @override
+  String get coinFlipDescription => 'Decide between two options';
+
+  @override
+  String get wheelOfFortuneTitle => 'Wheel of Fortune';
+
+  @override
+  String get wheelOfFortuneDescription => 'Add options and spin the wheel';
+
+  @override
+  String get eggSelectMessage => 'Think of a question and tap an egg 🥚';
+
+  @override
+  String get eggRevealMessage => 'The mystical egg has spoken! ✨';
+
+  @override
+  String get playAgain => 'Play Again';
+
+  @override
+  String get coinFlipInstruction => 'Enter two options and flip the coin!';
+
+  @override
+  String get option1 => 'Option 1';
+
+  @override
+  String get option2 => 'Option 2';
+
+  @override
+  String get enterBothOptions => 'Please enter both options';
+
+  @override
+  String get flipCoin => 'Flip Coin';
+
+  @override
+  String get theWinnerIs => 'The winner is:';
+
+  @override
+  String get addOptionHint => 'Add option...';
+
+  @override
+  String get spin => 'SPIN';
+
+  @override
+  String get spinAgain => 'Spin Again';
+
+  @override
+  String get maxOptionsReached => 'Maximum 12 options allowed';
+
+  @override
+  String get needAtLeastTwoOptions => 'Need at least 2 options';
+
+  @override
+  String get addOptionsToStart => 'Add options to start';
+
+  @override
+  String get tapSpinToStart => 'Tap spin to start';
 }

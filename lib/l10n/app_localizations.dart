@@ -6211,6 +6211,156 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Durdurulamaz'**
   String get subEmotionUnstoppable;
+
+  /// No description provided for @gamesTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyunlar'**
+  String get gamesTitle;
+
+  /// No description provided for @letsPlayGame.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hadi oynayalım! 🎮'**
+  String get letsPlayGame;
+
+  /// No description provided for @gamesDescription.
+  ///
+  /// In tr, this message translates to:
+  /// **'Karar vermekte zorlanıyor musun? Eğlenceli oyunlarla kararını ver!'**
+  String get gamesDescription;
+
+  /// No description provided for @decisionEggTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Karar Yumurtası'**
+  String get decisionEggTitle;
+
+  /// No description provided for @decisionEggDescription.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mistik yumurtalardan birini seç'**
+  String get decisionEggDescription;
+
+  /// No description provided for @coinFlipTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yazı Tura'**
+  String get coinFlipTitle;
+
+  /// No description provided for @coinFlipDescription.
+  ///
+  /// In tr, this message translates to:
+  /// **'İki seçenek arasında karar ver'**
+  String get coinFlipDescription;
+
+  /// No description provided for @wheelOfFortuneTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çark Çevirme'**
+  String get wheelOfFortuneTitle;
+
+  /// No description provided for @wheelOfFortuneDescription.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seçeneklerini yaz ve çarkı çevir'**
+  String get wheelOfFortuneDescription;
+
+  /// No description provided for @eggSelectMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aklından bir soru tut ve bir yumurtaya dokun 🥚'**
+  String get eggSelectMessage;
+
+  /// No description provided for @eggRevealMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mistik yumurta cevabını verdi! ✨'**
+  String get eggRevealMessage;
+
+  /// No description provided for @playAgain.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tekrar Oyna'**
+  String get playAgain;
+
+  /// No description provided for @coinFlipInstruction.
+  ///
+  /// In tr, this message translates to:
+  /// **'İki seçeneği yaz ve parayı çevir!'**
+  String get coinFlipInstruction;
+
+  /// No description provided for @option1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seçenek 1'**
+  String get option1;
+
+  /// No description provided for @option2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seçenek 2'**
+  String get option2;
+
+  /// No description provided for @enterBothOptions.
+  ///
+  /// In tr, this message translates to:
+  /// **'Lütfen her iki seçeneği de girin'**
+  String get enterBothOptions;
+
+  /// No description provided for @flipCoin.
+  ///
+  /// In tr, this message translates to:
+  /// **'Parayı Çevir'**
+  String get flipCoin;
+
+  /// No description provided for @theWinnerIs.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kazanan:'**
+  String get theWinnerIs;
+
+  /// No description provided for @addOptionHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seçenek ekle...'**
+  String get addOptionHint;
+
+  /// No description provided for @spin.
+  ///
+  /// In tr, this message translates to:
+  /// **'ÇEVİR'**
+  String get spin;
+
+  /// No description provided for @spinAgain.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tekrar Çevir'**
+  String get spinAgain;
+
+  /// No description provided for @maxOptionsReached.
+  ///
+  /// In tr, this message translates to:
+  /// **'Maksimum 12 seçenek ekleyebilirsin'**
+  String get maxOptionsReached;
+
+  /// No description provided for @needAtLeastTwoOptions.
+  ///
+  /// In tr, this message translates to:
+  /// **'En az 2 seçenek gerekli'**
+  String get needAtLeastTwoOptions;
+
+  /// No description provided for @addOptionsToStart.
+  ///
+  /// In tr, this message translates to:
+  /// **'Başlamak için seçenek ekle'**
+  String get addOptionsToStart;
+
+  /// No description provided for @tapSpinToStart.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çarkı çevirmek için ortadaki butona dokun'**
+  String get tapSpinToStart;
 }
 
 class _AppLocalizationsDelegate

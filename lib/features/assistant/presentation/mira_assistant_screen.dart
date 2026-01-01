@@ -6,6 +6,7 @@ import '../data/mira_assistant_service.dart';
 import '../../habit/presentation/simple_habit_screen.dart';
 import '../../timer/timer_screen.dart';
 import '../../mood/presentation/mood_selection_screen.dart';
+import '../../games/presentation/games_screen.dart';
 import 'package:provider/provider.dart';
 import '../../habit/domain/habit_repository.dart';
 import '../../mood/data/mood_models.dart';
@@ -113,6 +114,14 @@ class _MiraAssistantScreenState extends State<MiraAssistantScreen> {
 
   Future<void> _sendMessage(String text) async {
     if (text.trim().isEmpty) return;
+
+    // Check if user wants to play games
+    if (text.toLowerCase().contains('oyun')) {
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => const GamesScreen()));
+      return;
+    }
 
     setState(() {
       _messages.add(_ChatMessage(text: text, isUser: true));

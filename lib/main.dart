@@ -381,8 +381,6 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
   final ValueNotifier<bool> _visionRoundCorners = ValueNotifier(true);
   final ValueNotifier<bool> _visionShowText = ValueNotifier(true);
   final ValueNotifier<bool> _visionShowProgress = ValueNotifier(false);
-  bool _isFinanceView =
-      true; // Toggle between Finance (true) and Vision (false) on combined tab
   late final StreamSubscription<int> _xpSub;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -400,48 +398,48 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
     if (command == 'habits') {
       _onNavTap(0);
     } else if (command == 'vision') {
-      setState(() => _isFinanceView = false);
       _onNavTap(1);
+    } else if (command == 'finance') {
+      _onNavTap(3);
     }
   }
 
   Widget _buildPage(int index) => switch (index) {
     0 => HabitScreen(key: _habitKey, variant: widget.currentVariant),
-    1 =>
-      _isFinanceView
-          ? FinanceScreen(key: _financeKey, variant: widget.currentVariant)
-          : VisionScreen(
-              variant: widget.currentVariant,
-              freeformNotifier: _visionFreeform,
-              roundCornersNotifier: _visionRoundCorners,
-              showTextNotifier: _visionShowText,
-              showProgressNotifier: _visionShowProgress,
-              boardBoundaryKey: _visionBoardKey,
-            ),
+    1 => VisionScreen(
+      variant: widget.currentVariant,
+      freeformNotifier: _visionFreeform,
+      roundCornersNotifier: _visionRoundCorners,
+      showTextNotifier: _visionShowText,
+      showProgressNotifier: _visionShowProgress,
+      boardBoundaryKey: _visionBoardKey,
+    ),
     2 => MiraAssistantScreen(
       variant: widget.currentVariant,
       onNavigationCommand: _handleAssistantNavigation,
     ),
-    3 => const ProfileScreen(),
+    3 => FinanceScreen(key: _financeKey, variant: widget.currentVariant),
+    4 => const ProfileScreen(),
     _ => const SizedBox.shrink(),
   };
 
   Widget _buildBody() => PageView.builder(
     controller: _pageController,
     onPageChanged: _onPageChanged,
-    // Disable swipe on Vision mode (index 1 when showing vision) to prevent accidental navigation
-    physics: (_currentIndex == 1 && !_isFinanceView)
+    // Disable swipe on Vision screen (index 1) to prevent accidental navigation
+    physics: (_currentIndex == 1)
         ? const NeverScrollableScrollPhysics()
         : const PageScrollPhysics(),
-    itemCount: 4,
+    itemCount: 5,
     itemBuilder: (context, index) => _buildPage(index),
   );
 
   String _titleFor(int i, AppLocalizations l10n) => switch (i) {
     0 => l10n.habits,
-    1 => _isFinanceView ? l10n.finance : l10n.vision,
+    1 => l10n.vision,
     2 => l10n.aiAssistantTitle,
-    3 => l10n.profile,
+    3 => l10n.finance,
+    4 => l10n.profile,
     _ => '',
   };
 
@@ -466,18 +464,6 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
                   ],
                 ),
               )
-            : _currentIndex == 1
-            ? GestureDetector(
-                onTap: () => setState(() => _isFinanceView = !_isFinanceView),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(_isFinanceView ? l10n.finance : l10n.vision),
-                    const SizedBox(width: 4),
-                    const Icon(Icons.swap_horiz, size: 20),
-                  ],
-                ),
-              )
             : Text(_titleFor(_currentIndex, l10n)),
         actions: [
           // Mood button for Habits screen
@@ -488,7 +474,8 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
               onPressed: () => _habitKey.currentState?.openMoodScreen(),
             ),
           // Vision actions (when showing Vision on combined tab)
-          if (_currentIndex == 1 && !_isFinanceView)
+          // Vision actions (index 1)
+          if (_currentIndex == 1)
             ValueListenableBuilder<bool>(
               valueListenable: _visionFreeform,
               builder: (context, isFreeform, _) => isFreeform
@@ -499,7 +486,7 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
                     )
                   : const SizedBox.shrink(),
             ),
-          if (_currentIndex == 1 && !_isFinanceView)
+          if (_currentIndex == 1)
             ValueListenableBuilder<bool>(
               valueListenable: _visionFreeform,
               builder: (context, isFreeform, _) => IconButton(
@@ -522,14 +509,14 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
                 );
               },
             ),
-          // Finance actions (when showing Finance on combined tab)
-          if (_currentIndex == 1 && _isFinanceView)
+          // Finance actions (index 3)
+          if (_currentIndex == 3)
             IconButton(
               tooltip: l10n.selectMonthTooltip,
               icon: const Icon(Icons.calendar_month_outlined),
               onPressed: () => _financeKey.currentState?.showMonthPicker(),
             ),
-          if (_currentIndex == 1 && _isFinanceView)
+          if (_currentIndex == 3)
             IconButton(
               tooltip: l10n.analysisTooltip,
               icon: const Icon(Icons.insights_outlined),
@@ -547,7 +534,7 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
               },
             ),
           // Profile Actions (Settings)
-          if (_currentIndex == 3)
+          if (_currentIndex == 4)
             IconButton(
               tooltip: l10n.settings,
               icon: const Icon(Icons.settings_outlined),
@@ -579,16 +566,19 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
             label: l10n.today,
           ),
           CottonDestination(
-            icon: _isFinanceView
-                ? Icons.water_drop_outlined
-                : Icons.terrain_outlined,
-            selectedIcon: _isFinanceView ? Icons.water_drop : Icons.terrain,
-            label: _isFinanceView ? l10n.finance : l10n.vision,
+            icon: Icons.terrain_outlined,
+            selectedIcon: Icons.terrain,
+            label: l10n.vision,
           ),
           CottonDestination(
             icon: Icons.auto_awesome_outlined,
             selectedIcon: Icons.auto_awesome,
             label: l10n.aiAssistantTitle,
+          ),
+          CottonDestination(
+            icon: Icons.water_drop_outlined,
+            selectedIcon: Icons.water_drop,
+            label: l10n.finance,
           ),
           CottonDestination(
             icon: Icons.person_outlined,

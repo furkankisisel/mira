@@ -131,7 +131,7 @@ class MiraAssistantService {
       'Bugün ne yapmalıyım?',
       'Haftalık rapor',
       'Beni motive et',
-      'Alışkanlık nasıl oluştururum?',
+      '🎮 Oyun oynayalım',
       'Günün önerisi',
     ];
   }
