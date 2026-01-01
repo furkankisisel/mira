@@ -163,6 +163,12 @@ class ThemeSelector extends StatelessWidget {
       ThemeVariant.ocean => Icons.water_drop,
       ThemeVariant.sunset => Icons.wb_twilight,
       ThemeVariant.forest => Icons.forest,
+      ThemeVariant.cream => Icons.cookie,
+      ThemeVariant.midnight => Icons.nightlight,
+      ThemeVariant.mauve => Icons.palette,
+      ThemeVariant.blush => Icons.favorite,
+      ThemeVariant.crimson => Icons.whatshot,
+      ThemeVariant.abyss => Icons.nights_stay,
     };
   }
 }

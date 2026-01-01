@@ -920,6 +920,24 @@ abstract class AppLocalizations {
   /// **'Vizyon Oluştur'**
   String get createVision;
 
+  /// No description provided for @createFirstVision.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlk Vizyonunuzu Oluşturun'**
+  String get createFirstVision;
+
+  /// No description provided for @visionEmptyDescription.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedeflerinizi görselleştirin ve hayallerinizi gerçeğe dönüştürmek için ilk vizyonunuzu ekleyin.'**
+  String get visionEmptyDescription;
+
+  /// No description provided for @tapFabToCreate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Başlamak için + butonuna basın'**
+  String get tapFabToCreate;
+
   /// No description provided for @createVisionTemplateTitle.
   ///
   /// In tr, this message translates to:
@@ -1832,6 +1850,18 @@ abstract class AppLocalizations {
   /// **'Bu ay için kayıt yok'**
   String get noRecordsThisMonth;
 
+  /// No description provided for @startTrackingFinances.
+  ///
+  /// In tr, this message translates to:
+  /// **'Finanslarınızı takip etmeye başlayın ve harcamalarınızı kontrol altına alın.'**
+  String get startTrackingFinances;
+
+  /// No description provided for @addFirstTransaction.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlk işlemi ekle'**
+  String get addFirstTransaction;
+
   /// No description provided for @notAddedYet.
   ///
   /// In tr, this message translates to:
@@ -2677,6 +2707,78 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Zengin ve organik'**
   String get themeForestDesc;
+
+  /// No description provided for @themeCream.
+  ///
+  /// In tr, this message translates to:
+  /// **'Krem'**
+  String get themeCream;
+
+  /// No description provided for @themeCreamDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sıcak ve yumuşak'**
+  String get themeCreamDesc;
+
+  /// No description provided for @themeMidnight.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gece Yarısı'**
+  String get themeMidnight;
+
+  /// No description provided for @themeMidnightDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Derin ve gizemli'**
+  String get themeMidnightDesc;
+
+  /// No description provided for @themeMauve.
+  ///
+  /// In tr, this message translates to:
+  /// **'Leylak'**
+  String get themeMauve;
+
+  /// No description provided for @themeMauveDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Zarif ve romantik'**
+  String get themeMauveDesc;
+
+  /// No description provided for @themeBlush.
+  ///
+  /// In tr, this message translates to:
+  /// **'Allık'**
+  String get themeBlush;
+
+  /// No description provided for @themeBlushDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tatlı ve feminen'**
+  String get themeBlushDesc;
+
+  /// No description provided for @themeCrimson.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bordo'**
+  String get themeCrimson;
+
+  /// No description provided for @themeCrimsonDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Cesur ve tutkulu'**
+  String get themeCrimsonDesc;
+
+  /// No description provided for @themeAbyss.
+  ///
+  /// In tr, this message translates to:
+  /// **'Derinlik'**
+  String get themeAbyss;
+
+  /// No description provided for @themeAbyssDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Karanlık ve sofistike'**
+  String get themeAbyssDesc;
 
   /// No description provided for @themeDetails.
   ///
@@ -4969,6 +5071,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'İndirildi: {content}'**
   String restoreSuccess(Object content);
+
+  /// No description provided for @restoreSuccessMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Verileriniz başarıyla geri yüklendi. Değişikliklerin tam olarak uygulanması için uygulamayı yeniden başlatmanızı öneririz.'**
+  String get restoreSuccessMessage;
 
   /// No description provided for @restoreError.
   ///

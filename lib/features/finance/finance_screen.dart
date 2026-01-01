@@ -1019,14 +1019,74 @@ class _LoadingSection extends StatelessWidget {
 
 class _EmptySection extends StatelessWidget {
   final String message;
-  const _EmptySection({required this.message});
+  final VoidCallback? onAdd;
+  final String? actionLabel;
+
+  const _EmptySection({required this.message, this.onAdd, this.actionLabel});
+
   @override
-  Widget build(BuildContext context) => Center(
-    child: Padding(
-      padding: const EdgeInsets.all(24),
-      child: Text(message, style: Theme.of(context).textTheme.bodyMedium),
-    ),
-  );
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Icon
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: scheme.primaryContainer.withOpacity(0.3),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.account_balance_wallet_outlined,
+                size: 40,
+                color: scheme.primary.withOpacity(0.7),
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Encouraging message
+            Text(
+              message,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: scheme.onSurface,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.startTrackingFinances,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: scheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            // Centered action button
+            if (onAdd != null)
+              FilledButton.icon(
+                onPressed: onAdd,
+                icon: const Icon(Icons.add),
+                label: Text(actionLabel ?? l10n.addFirstTransaction),
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 14,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 Future<bool> _confirmDelete(BuildContext context, FinanceTransaction tx) async {

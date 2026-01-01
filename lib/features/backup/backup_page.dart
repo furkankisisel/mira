@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mira/l10n/app_localizations.dart';
 import 'google_drive_backup_manager.dart';
+import 'backup_data_service.dart';
 
 class BackupPage extends StatefulWidget {
   const BackupPage({super.key});
@@ -11,9 +12,6 @@ class BackupPage extends StatefulWidget {
 }
 
 class _BackupPageState extends State<BackupPage> {
-  // Placeholder data for now, actual data export to be implemented later in repo
-  static const _placeholderData = '{"version":1, "data":"manual_backup"}';
-
   bool _busy = false;
   List<dynamic> _files = [];
   String? _statusMessage;
@@ -31,9 +29,12 @@ class _BackupPageState extends State<BackupPage> {
     });
 
     try {
-      // In the future, this will get actual JSON from repositories
+      // Collect real app data
+      final backupData = await BackupDataService.instance.collectBackupData();
+
+      // Upload to Google Drive
       final res = await GoogleDriveBackupManager.instance.backupToDrive(
-        _placeholderData,
+        backupData,
       );
 
       if (mounted) {
@@ -42,8 +43,6 @@ class _BackupPageState extends State<BackupPage> {
           _statusMessage = res == null
               ? AppLocalizations.of(context).backupFailed
               : AppLocalizations.of(context).backupSuccess('OK');
-          // Note: backupSuccess taking an ID might be too long for UI,
-          // but we'll stick to existing localization signature for now.
         });
         if (res != null) {
           _refreshList();
@@ -85,17 +84,32 @@ class _BackupPageState extends State<BackupPage> {
     });
 
     try {
+      // Download backup from Google Drive
       final content = await GoogleDriveBackupManager.instance.restoreFromDrive(
         fileId,
       );
 
+      if (content == null) {
+        if (mounted) {
+          setState(() {
+            _busy = false;
+            _statusMessage = AppLocalizations.of(context).restoreFailed;
+          });
+        }
+        return;
+      }
+
+      // Apply restored data to SharedPreferences and reload repositories
+      await BackupDataService.instance.restoreBackupData(content);
+
       if (mounted) {
         setState(() {
           _busy = false;
-          _statusMessage = content == null
-              ? AppLocalizations.of(context).restoreFailed
-              : AppLocalizations.of(context).restoreSuccess('OK');
+          _statusMessage = AppLocalizations.of(context).restoreSuccess('OK');
         });
+
+        // Show success dialog with restart recommendation
+        _showRestoreSuccessDialog();
       }
     } catch (e) {
       if (mounted) {
@@ -105,6 +119,31 @@ class _BackupPageState extends State<BackupPage> {
         });
       }
     }
+  }
+
+  void _showRestoreSuccessDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(
+              Icons.check_circle,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(width: 8),
+            Text(AppLocalizations.of(context).restoreSuccess('').split(':')[0]),
+          ],
+        ),
+        content: Text(AppLocalizations.of(context).restoreSuccessMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(AppLocalizations.of(context).ok),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

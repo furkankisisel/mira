@@ -21,6 +21,12 @@ class ThemeVariations {
     ThemeVariant.ocean,
     ThemeVariant.sunset,
     ThemeVariant.forest,
+    ThemeVariant.cream,
+    ThemeVariant.midnight,
+    ThemeVariant.mauve,
+    ThemeVariant.blush,
+    ThemeVariant.crimson,
+    ThemeVariant.abyss,
   ];
 
   /// Generate light theme for a specific variant
@@ -286,7 +292,13 @@ enum ThemeVariant {
   slate,
   ocean,
   sunset,
-  forest;
+  forest,
+  cream,
+  midnight,
+  mauve,
+  blush,
+  crimson,
+  abyss;
 
   String getDisplayName(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -300,6 +312,12 @@ enum ThemeVariant {
       ThemeVariant.ocean => l10n.themeOcean,
       ThemeVariant.sunset => l10n.themeSunset,
       ThemeVariant.forest => l10n.themeForest,
+      ThemeVariant.cream => l10n.themeCream,
+      ThemeVariant.midnight => l10n.themeMidnight,
+      ThemeVariant.mauve => l10n.themeMauve,
+      ThemeVariant.blush => l10n.themeBlush,
+      ThemeVariant.crimson => l10n.themeCrimson,
+      ThemeVariant.abyss => l10n.themeAbyss,
     };
   }
 
@@ -315,6 +333,12 @@ enum ThemeVariant {
       ThemeVariant.ocean => l10n.themeOceanDesc,
       ThemeVariant.sunset => l10n.themeSunsetDesc,
       ThemeVariant.forest => l10n.themeForestDesc,
+      ThemeVariant.cream => l10n.themeCreamDesc,
+      ThemeVariant.midnight => l10n.themeMidnightDesc,
+      ThemeVariant.mauve => l10n.themeMauveDesc,
+      ThemeVariant.blush => l10n.themeBlushDesc,
+      ThemeVariant.crimson => l10n.themeCrimsonDesc,
+      ThemeVariant.abyss => l10n.themeAbyssDesc,
     };
   }
 }
@@ -380,6 +404,49 @@ extension ThemeVariantConfig on ThemeVariant {
     ),
     ThemeVariant.forest => ThemeConfig(
       primary: AppColors.accentForest,
+      lightBackground: const Color(0xFFFAFAFA),
+      lightSurface: const Color(0xFFFFFFFF),
+      darkBackground: const Color(0xFF121212),
+      darkSurface: const Color(0xFF1E1E1E),
+    ),
+    // New themes based on user's hex colors - keeping standard backgrounds
+    ThemeVariant.cream => ThemeConfig(
+      primary: const Color(0xFFefe1ad), // #efe1ad - Warm cream/beige
+      lightBackground: const Color(0xFFFAFAFA),
+      lightSurface: const Color(0xFFFFFFFF),
+      darkBackground: const Color(0xFF121212),
+      darkSurface: const Color(0xFF1E1E1E),
+    ),
+    ThemeVariant.midnight => ThemeConfig(
+      primary: const Color(0xFF22243b), // #22243b - Dark navy
+      lightBackground: const Color(0xFFFAFAFA),
+      lightSurface: const Color(0xFFFFFFFF),
+      darkBackground: const Color(0xFF121212),
+      darkSurface: const Color(0xFF1E1E1E),
+    ),
+    ThemeVariant.mauve => ThemeConfig(
+      primary: const Color(0xFFaa93ad), // #aa93ad - Lavender mauve
+      lightBackground: const Color(0xFFFAFAFA),
+      lightSurface: const Color(0xFFFFFFFF),
+      darkBackground: const Color(0xFF121212),
+      darkSurface: const Color(0xFF1E1E1E),
+    ),
+    ThemeVariant.blush => ThemeConfig(
+      primary: const Color(0xFFeed0c8), // #eed0c8 - Soft peach/blush
+      lightBackground: const Color(0xFFFAFAFA),
+      lightSurface: const Color(0xFFFFFFFF),
+      darkBackground: const Color(0xFF121212),
+      darkSurface: const Color(0xFF1E1E1E),
+    ),
+    ThemeVariant.crimson => ThemeConfig(
+      primary: const Color(0xFFD7263D), // #D7263D - Bold crimson red
+      lightBackground: const Color(0xFFFAFAFA),
+      lightSurface: const Color(0xFFFFFFFF),
+      darkBackground: const Color(0xFF121212),
+      darkSurface: const Color(0xFF1E1E1E),
+    ),
+    ThemeVariant.abyss => ThemeConfig(
+      primary: const Color(0xFF02182B), // #02182B - Deep navy abyss
       lightBackground: const Color(0xFFFAFAFA),
       lightSurface: const Color(0xFFFFFFFF),
       darkBackground: const Color(0xFF121212),

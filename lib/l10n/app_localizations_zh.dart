@@ -418,6 +418,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get createVision => '创建愿景';
 
   @override
+  String get createFirstVision => 'İlk Vizyonunuzu Oluşturun';
+
+  @override
+  String get visionEmptyDescription =>
+      'Hedeflerinizi görselleştirin ve hayallerinizi gerçeğe dönüştürmek için ilk vizyonunuzu ekleyin.';
+
+  @override
+  String get tapFabToCreate => 'Başlamak için + butonuna basın';
+
+  @override
   String get createVisionTemplateTitle => '创建愿景模板';
 
   @override
@@ -896,6 +906,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noRecordsThisMonth => '本月无记录';
 
   @override
+  String get startTrackingFinances =>
+      'Finanslarınızı takip etmeye başlayın ve harcamalarınızı kontrol altına alın.';
+
+  @override
+  String get addFirstTransaction => 'İlk işlemi ekle';
+
+  @override
   String get notAddedYet => '尚未添加。';
 
   @override
@@ -1345,6 +1362,42 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get themeForestDesc => 'Rich & Organic';
+
+  @override
+  String get themeCream => 'Krem';
+
+  @override
+  String get themeCreamDesc => 'Sıcak ve yumuşak';
+
+  @override
+  String get themeMidnight => 'Gece Yarısı';
+
+  @override
+  String get themeMidnightDesc => 'Derin ve gizemli';
+
+  @override
+  String get themeMauve => 'Leylak';
+
+  @override
+  String get themeMauveDesc => 'Zarif ve romantik';
+
+  @override
+  String get themeBlush => 'Allık';
+
+  @override
+  String get themeBlushDesc => 'Tatlı ve feminen';
+
+  @override
+  String get themeCrimson => 'Bordo';
+
+  @override
+  String get themeCrimsonDesc => 'Cesur ve tutkulu';
+
+  @override
+  String get themeAbyss => 'Derinlik';
+
+  @override
+  String get themeAbyssDesc => 'Karanlık ve sofistike';
 
   @override
   String get themeDetails => '主题详情';
@@ -2586,6 +2639,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String restoreSuccess(Object content) {
     return '已下载: $content';
   }
+
+  @override
+  String get restoreSuccessMessage =>
+      'Verileriniz başarıyla geri yüklendi. Değişikliklerin tam olarak uygulanması için uygulamayı yeniden başlatmanızı öneririz.';
 
   @override
   String get restoreError => 'Restore Error';

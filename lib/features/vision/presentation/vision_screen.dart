@@ -1869,6 +1869,76 @@ class _Board extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
+    final scheme = theme.colorScheme;
+
+    // Empty state when no visions exist
+    if (visions.isEmpty) {
+      return Container(
+        color: theme.scaffoldBackgroundColor,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Icon
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: scheme.primaryContainer.withOpacity(0.3),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.auto_awesome_outlined,
+                    size: 48,
+                    color: scheme.primary.withOpacity(0.7),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Encouraging title
+                Text(
+                  l10n.createFirstVision,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: scheme.onSurface,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                // Encouraging subtitle
+                Text(
+                  l10n.visionEmptyDescription,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                // Arrow pointing to FAB
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.arrow_forward,
+                      color: scheme.primary.withOpacity(0.7),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n.tapFabToCreate,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: scheme.primary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     return Container(
       color: theme.scaffoldBackgroundColor,

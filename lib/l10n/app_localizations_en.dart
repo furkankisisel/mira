@@ -421,6 +421,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createVision => 'Create Vision';
 
   @override
+  String get createFirstVision => 'Create Your First Vision';
+
+  @override
+  String get visionEmptyDescription =>
+      'Visualize your goals and add your first vision to turn your dreams into reality.';
+
+  @override
+  String get tapFabToCreate => 'Tap the + button to start';
+
+  @override
   String get createVisionTemplateTitle => 'Create Vision Template';
 
   @override
@@ -902,6 +912,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noRecordsThisMonth => 'No records for this month';
 
   @override
+  String get startTrackingFinances =>
+      'Start tracking your finances and take control of your spending.';
+
+  @override
+  String get addFirstTransaction => 'Add first transaction';
+
+  @override
   String get notAddedYet => 'Not added yet.';
 
   @override
@@ -1352,6 +1369,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get themeForestDesc => 'Rich & Organic';
+
+  @override
+  String get themeCream => 'Cream';
+
+  @override
+  String get themeCreamDesc => 'Warm & Soft';
+
+  @override
+  String get themeMidnight => 'Midnight';
+
+  @override
+  String get themeMidnightDesc => 'Deep & Mysterious';
+
+  @override
+  String get themeMauve => 'Mauve';
+
+  @override
+  String get themeMauveDesc => 'Elegant & Romantic';
+
+  @override
+  String get themeBlush => 'Blush';
+
+  @override
+  String get themeBlushDesc => 'Sweet & Feminine';
+
+  @override
+  String get themeCrimson => 'Crimson';
+
+  @override
+  String get themeCrimsonDesc => 'Bold & Passionate';
+
+  @override
+  String get themeAbyss => 'Abyss';
+
+  @override
+  String get themeAbyssDesc => 'Dark & Sophisticated';
 
   @override
   String get themeDetails => 'Theme Details';
@@ -2611,6 +2664,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String restoreSuccess(Object content) {
     return 'Downloaded: $content';
   }
+
+  @override
+  String get restoreSuccessMessage =>
+      'Your data has been successfully restored. We recommend restarting the app for changes to take full effect.';
 
   @override
   String get restoreError => 'Restore Error';
