@@ -539,7 +539,7 @@
     "habit": "Habit",
     "habitAddError": "Error adding habits: {error}",
     "habitAddSuccess": "{count, plural, =0{No habits added} =1{1 habit added} other{{count} habits added}}",
-    "habitCreatedMessage": "Habit created successfully",
+    "habitCreatedMessage": "Habit created successfully: {title}",
     "habitDeletedMessage": "Habit deleted",
     "habitDescription": "Description",
     "habitDescriptionHint": "Add a short description...",

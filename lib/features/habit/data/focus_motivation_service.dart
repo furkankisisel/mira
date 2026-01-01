@@ -84,12 +84,13 @@ Sen Mira'sın, kullanıcının kişisel asistanı ve yol arkadaşısın. Aşağ�
 $prompt
 ''';
 
-      final response = await _aiService.sendSupportMessage([
+      final responseMap = await _aiService.sendSupportMessage([
         {'role': 'user', 'content': motivationRequest},
       ], languageCode: 'tr');
 
-      if (response.isNotEmpty) {
-        return response.trim();
+      final message = responseMap['message'] as String? ?? '';
+      if (message.isNotEmpty) {
+        return message.trim();
       }
     } catch (e) {
       // Fall back to local messages on error

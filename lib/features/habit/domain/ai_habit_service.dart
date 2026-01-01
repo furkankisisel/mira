@@ -58,7 +58,7 @@ abstract class AiHabitService {
 
   /// Sends a message to the AI Support Assistant.
   /// Returns a simple string response.
-  Future<String> sendSupportMessage(
+  Future<Map<String, dynamic>> sendSupportMessage(
     List<Map<String, String>> history, {
     String? languageCode,
   });

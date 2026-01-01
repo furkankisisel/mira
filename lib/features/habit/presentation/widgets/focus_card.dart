@@ -469,157 +469,169 @@ class _FocusCardState extends State<FocusCard>
             ),
           ],
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.outlineVariant.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(2.5),
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Değer Gir', // TODO: Localize
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-
-            if (isTimer) ...[
-              SizedBox(
-                height: 64,
-                child: FilledButton.icon(
-                  onPressed: () {
-                    Navigator.pop(ctx);
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const TimerScreen()),
-                    );
-                  },
-                  icon: const Icon(Icons.play_arrow_rounded, size: 32),
-                  label: const Text(
-                    "Süre Tut", // TODO: Localize
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.seed.withValues(alpha: 0.9),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    elevation: 0,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(2.5),
                   ),
                 ),
               ),
               const SizedBox(height: 24),
+              Text(
+                'Değer Gir', // TODO: Localize
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+
+              if (isTimer) ...[
+                SizedBox(
+                  height: 64,
+                  child: FilledButton.icon(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const TimerScreen()),
+                      );
+                    },
+                    icon: const Icon(Icons.play_arrow_rounded, size: 32),
+                    label: const Text(
+                      "Süre Tut", // TODO: Localize
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.seed.withValues(alpha: 0.9),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      elevation: 0,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Divider(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outlineVariant.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        "veya manuel gir", // TODO: Localize
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Divider(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outlineVariant.withValues(alpha: 0.3),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+              ],
+
+              TextField(
+                controller: controller,
+                keyboardType: TextInputType.number,
+                autofocus: !isTimer,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: InputDecoration(
+                  labelText: habit.unit ?? 'Değer',
+                  hintText: 'Hedef: ${habit.targetCount}',
+                  prefixIcon: const Icon(
+                    Icons.edit_note_rounded,
+                    color: AppColors.seed,
+                  ),
+                  filled: true,
+                  fillColor: AppColors.seed.withValues(alpha: 0.05),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.all(20),
+                ),
+                onSubmitted: (_) {
+                  final value = int.tryParse(controller.text.trim());
+                  if (value != null && value >= 0) {
+                    widget.onValueUpdate!(value);
+                    Navigator.pop(ctx);
+                  }
+                },
+              ),
+              const SizedBox(height: 32),
               Row(
                 children: [
                   Expanded(
-                    child: Divider(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.outlineVariant.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      "veya manuel gir", // TODO: Localize
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w500,
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Text(
+                        'İptal',
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
+                  const SizedBox(width: 16),
                   Expanded(
-                    child: Divider(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.outlineVariant.withValues(alpha: 0.3),
+                    child: FilledButton(
+                      onPressed: () {
+                        final value = int.tryParse(controller.text.trim());
+                        if (value != null && value >= 0) {
+                          widget.onValueUpdate!(value);
+                          Navigator.pop(ctx);
+                        }
+                      },
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Text(
+                        'Kaydet',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
             ],
-
-            TextField(
-              controller: controller,
-              keyboardType: TextInputType.number,
-              autofocus: !isTimer,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              decoration: InputDecoration(
-                labelText: habit.unit ?? 'Değer',
-                hintText: 'Hedef: ${habit.targetCount}',
-                prefixIcon: const Icon(
-                  Icons.edit_note_rounded,
-                  color: AppColors.seed,
-                ),
-                filled: true,
-                fillColor: AppColors.seed.withValues(alpha: 0.05),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.all(20),
-              ),
-            ),
-            const SizedBox(height: 32),
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: () => Navigator.pop(ctx),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: const Text(
-                      'İptal',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: FilledButton(
-                    onPressed: () {
-                      final value = int.tryParse(controller.text.trim());
-                      if (value != null && value >= 0) {
-                        widget.onValueUpdate!(value);
-                        Navigator.pop(ctx);
-                      }
-                    },
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: const Text(
-                      'Kaydet',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );

@@ -396,6 +396,15 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
 
   void _onPageChanged(int i) => setState(() => _currentIndex = i);
 
+  void _handleAssistantNavigation(String command) {
+    if (command == 'habits') {
+      _onNavTap(0);
+    } else if (command == 'vision') {
+      setState(() => _isFinanceView = false);
+      _onNavTap(1);
+    }
+  }
+
   Widget _buildPage(int index) => switch (index) {
     0 => HabitScreen(key: _habitKey, variant: widget.currentVariant),
     1 =>
@@ -409,7 +418,10 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
               showProgressNotifier: _visionShowProgress,
               boardBoundaryKey: _visionBoardKey,
             ),
-    2 => MiraAssistantScreen(variant: widget.currentVariant),
+    2 => MiraAssistantScreen(
+      variant: widget.currentVariant,
+      onNavigationCommand: _handleAssistantNavigation,
+    ),
     3 => const ProfileScreen(),
     _ => const SizedBox.shrink(),
   };

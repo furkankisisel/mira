@@ -21,13 +21,12 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
   late TabController _tabController;
   List<MoodEntry> _recentEntries = [];
   MoodStatistics? _statistics;
-  List<DailyMoodData> _trendData = [];
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _loadData();
   }
 
@@ -43,12 +42,9 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
     try {
       final entries = await _repository.getAllMoodEntries();
       final stats = await _repository.getMoodStatistics();
-      final trend = await _repository.getDailyMoodTrend();
-
       setState(() {
         _recentEntries = entries.take(20).toList();
         _statistics = stats;
-        _trendData = trend;
         _isLoading = false;
       });
     } catch (e) {
@@ -82,7 +78,6 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
             controller: _tabController,
             tabs: [
               Tab(text: l10n.overview),
-              Tab(text: l10n.trends),
               Tab(text: l10n.history),
             ],
           ),
@@ -94,7 +89,6 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                 children: [
                   // Use the themed ThemeData so widgets inside pick up the world accent when active
                   _buildOverviewTab(themed, l10n),
-                  _buildTrendsTab(themed, l10n),
                   _buildHistoryTab(themed, l10n),
                 ],
               ),
@@ -174,51 +168,6 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
           ),
           const SizedBox(height: 16),
           _buildTopCategoriesCard(theme, l10n),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTrendsTab(ThemeData theme, AppLocalizations l10n) {
-    if (_trendData.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.trending_up, size: 64, color: theme.colorScheme.outline),
-            const SizedBox(height: 16),
-            Text(l10n.noTrendData, style: theme.textTheme.titleMedium),
-          ],
-        ),
-      );
-    }
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.moodTrend,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            height: 250,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: theme.colorScheme.outline.withOpacity(0.2),
-              ),
-            ),
-            child: _buildTrendChart(theme),
-          ),
-          const SizedBox(height: 24),
-          _buildTrendInsights(theme, l10n),
         ],
       ),
     );
@@ -571,147 +520,6 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                 ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTrendChart(ThemeData theme) {
-    final l10n = AppLocalizations.of(context);
-    if (_trendData.isEmpty) return Center(child: Text(l10n.noTrendData));
-
-    final spots = _trendData.asMap().entries.map((entry) {
-      return FlSpot(entry.key.toDouble(), entry.value.averageMoodScore);
-    }).toList();
-
-    return LineChart(
-      LineChartData(
-        gridData: FlGridData(show: true),
-        titlesData: FlTitlesData(
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              interval: 1,
-              getTitlesWidget: (value, meta) {
-                return Text(
-                  value.toInt().toString(),
-                  style: theme.textTheme.bodySmall,
-                );
-              },
-            ),
-          ),
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              interval: _trendData.length > 10 ? _trendData.length / 5 : 1,
-              getTitlesWidget: (value, meta) {
-                final index = value.toInt();
-                if (index >= 0 && index < _trendData.length) {
-                  final date = _trendData[index].date;
-                  return Text(
-                    '${date.day}/${date.month}',
-                    style: theme.textTheme.bodySmall,
-                  );
-                }
-                return const Text('');
-              },
-            ),
-          ),
-          rightTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          topTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-        ),
-        borderData: FlBorderData(
-          show: true,
-          border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
-        ),
-        minX: 0,
-        maxX: (_trendData.length - 1).toDouble(),
-        minY: 1,
-        maxY: 5,
-        lineBarsData: [
-          LineChartBarData(
-            spots: spots,
-            isCurved: true,
-            color: theme.colorScheme.primary,
-            barWidth: 3,
-            dotData: const FlDotData(show: true),
-            belowBarData: BarAreaData(
-              show: true,
-              color: theme.colorScheme.primary.withOpacity(0.1),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTrendInsights(ThemeData theme, AppLocalizations l10n) {
-    if (_trendData.length < 2) return const SizedBox.shrink();
-
-    final recentAverage =
-        _trendData
-            .take(7)
-            .fold<double>(0, (sum, data) => sum + data.averageMoodScore) /
-        7;
-    final olderAverage =
-        _trendData
-            .skip(7)
-            .take(7)
-            .fold<double>(0, (sum, data) => sum + data.averageMoodScore) /
-        7;
-
-    final trend = recentAverage - olderAverage;
-    final isImproving = trend > 0.1;
-    final isWorsening = trend < -0.1;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.insights,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Icon(
-                isImproving
-                    ? Icons.trending_up
-                    : isWorsening
-                    ? Icons.trending_down
-                    : Icons.trending_flat,
-                color: isImproving
-                    ? Colors.green
-                    : isWorsening
-                    ? Colors.red
-                    : Colors.grey,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  isImproving
-                      ? (l10n.moodImproving)
-                      : isWorsening
-                      ? (l10n.moodDeclining)
-                      : (l10n.moodStable),
-                  style: theme.textTheme.bodyMedium,
-                ),
-              ),
-            ],
           ),
         ],
       ),

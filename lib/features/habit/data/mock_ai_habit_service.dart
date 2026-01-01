@@ -242,11 +242,14 @@ class MockAiHabitService implements AiHabitService {
   }
 
   @override
-  Future<String> sendSupportMessage(
+  Future<Map<String, dynamic>> sendSupportMessage(
     List<Map<String, String>> history, {
     String? languageCode,
   }) async {
     await Future.delayed(const Duration(seconds: 1));
-    return "This is a mock support response. The actual AI will guide you through Mira's features.";
+    return {
+      'message':
+          "This is a mock support response. The actual AI will guide you through Mira's features.",
+    };
   }
 }

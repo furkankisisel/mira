@@ -1714,7 +1714,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String habitCreatedMessage(Object title) {
-    return 'Habit created successfully';
+    return 'Habit created successfully: $title';
   }
 
   @override

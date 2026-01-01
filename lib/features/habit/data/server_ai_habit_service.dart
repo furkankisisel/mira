@@ -554,31 +554,43 @@ IMPORTANT RULES:
   }
 
   @override
-  Future<String> sendSupportMessage(
+  Future<Map<String, dynamic>> sendSupportMessage(
     List<Map<String, String>> history, {
     String? languageCode,
   }) async {
     final langInstruction = _getLanguageInstruction(languageCode);
     final systemPrompt =
         '''
-You are Mira’s in-app assistant.
+You are Mira’s intelligent in-app assistant.
+Your goal is to have a natural, helpful conversation with the user and guide them to the right features.
 
-Your role:
-- Help users understand how to use Mira’s features
-- Give step-by-step guidance
-- Suggest the most relevant feature
-- NEVER create habits or visions automatically
-- Always guide the user to do it themselves
+Mira Features & Route IDs:
+- "create_habit": Create a new habit
+- "habits": Go to Today/Habits view
+- "vision": Go to Vision Board
+- "timer": Go to Focus Timer
+- "mood": Go to Mood Log
+- "finance": Go to Finance Tracker
 
-Mira Features:
-- Vision: Long-term goals
-- Habits: Daily or weekly recurring actions
-- Tasks: One-time actions inside a Vision
-- Timer: Focus sessions
-- Mood: Daily emotional check-in
-- Finance: Simple income/expense tracking
+INSTRUCTIONS:
+1. Answer the user's question naturally and briefly.
+2. If the user asks to DO something (e.g. "set a timer", "help me focus", "add a habit", "show my vision"), valid JSON MUST be included.
+3. If the user just wants to chat, just return the message field in JSON.
 
-Language: $langInstruction
+JSON SCHEMA:
+{
+  "message": "Your natural language response here...",
+  "action": {
+    "label": "Button Label (e.g. Open Timer)",
+    "route_id": "route_id_from_list_above",
+    "icon": "icon_name" (e.g. timer, add, terrain, mood, eco)
+  },
+  "suggested_replies": ["Short Reply 1", "Short Reply 2"]
+}
+
+IMPORTANT:
+- Output MUST be valid JSON.
+- Language: $langInstruction
 ''';
 
     final messages = [
@@ -595,13 +607,20 @@ Language: $langInstruction
       body: jsonEncode({
         'model': model,
         'messages': messages,
+        'response_format': {'type': 'json_object'},
         'temperature': 0.7,
       }),
     );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(utf8.decode(response.bodyBytes));
-      return data['choices'][0]['message']['content'] as String;
+      final content = data['choices'][0]['message']['content'] as String;
+      try {
+        return jsonDecode(content) as Map<String, dynamic>;
+      } catch (e) {
+        // Fallback if valid JSON isn't returned
+        return {'message': content};
+      }
     } else {
       throw Exception(
         'Groq API Error: ${response.statusCode} - ${response.body}',

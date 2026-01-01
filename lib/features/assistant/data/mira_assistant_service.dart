@@ -145,39 +145,6 @@ class MiraAssistantService {
     final insight = await getUserInsight();
     final lowerMessage = userMessage.toLowerCase();
 
-    // Check for predefined patterns first
-    if (_matchesPattern(lowerMessage, [
-      'bugün',
-      'ne yapmalıyım',
-      'görevlerim',
-    ])) {
-      return _buildTodayReportResponse(insight);
-    }
-
-    if (_matchesPattern(lowerMessage, ['haftalık', 'rapor', 'özet'])) {
-      return _buildWeeklyReportResponse(insight);
-    }
-
-    if (_matchesPattern(lowerMessage, ['motive', 'teşvik', 'destek'])) {
-      return _buildMotivationResponse(insight);
-    }
-
-    if (_matchesPattern(lowerMessage, ['alışkanlık', 'nasıl', 'oluştur'])) {
-      return _buildHowToCreateHabitResponse();
-    }
-
-    if (_matchesPattern(lowerMessage, ['öneri', 'tavsiye', 'ipucu'])) {
-      return _buildFeatureSuggestionResponse();
-    }
-
-    if (_matchesPattern(lowerMessage, ['zamanlayıcı', 'timer', 'odak'])) {
-      return _buildTimerGuideResponse();
-    }
-
-    if (_matchesPattern(lowerMessage, ['ruh hali', 'mood', 'duygu'])) {
-      return _buildMoodGuideResponse();
-    }
-
     // Fall back to AI for free-form questions
     if (_aiService != null) {
       try {
@@ -188,14 +155,58 @@ class MiraAssistantService {
           {'role': 'user', 'content': userMessage},
         ];
 
-        final response = await _aiService!.sendSupportMessage(
+        final responseMap = await _aiService!.sendSupportMessage(
           fullHistory,
           languageCode: languageCode,
         );
 
+        // Parse message
+        final messageText = responseMap['message'] as String? ?? '';
+
+        // Parse action if present
+        List<QuickAction>? actions;
+        if (responseMap.containsKey('action')) {
+          final actionMap = responseMap['action'];
+          if (actionMap is Map && actionMap['route_id'] != null) {
+            IconData icon = Icons.star;
+            final iconName = (actionMap['icon'] as String? ?? '').toLowerCase();
+            if (iconName.contains('timer'))
+              icon = Icons.timer;
+            else if (iconName.contains('add'))
+              icon = Icons.add_circle_outline;
+            else if (iconName.contains('terrain') ||
+                iconName.contains('vision'))
+              icon = Icons.terrain;
+            else if (iconName.contains('mood'))
+              icon = Icons.mood;
+            else if (iconName.contains('eco') || iconName.contains('habit'))
+              icon = Icons.eco;
+            else if (iconName.contains('water') || iconName.contains('finance'))
+              icon = Icons.water_drop;
+
+            actions = [
+              QuickAction(
+                label: actionMap['label'] as String? ?? 'Go',
+                icon: icon,
+                routeId: actionMap['route_id'] as String,
+              ),
+            ];
+          }
+        }
+
+        // Parse quick replies
+        List<String>? quickReplies;
+        if (responseMap.containsKey('suggested_replies')) {
+          quickReplies = (responseMap['suggested_replies'] as List?)
+              ?.map((e) => e.toString())
+              .toList();
+        }
+
         return AssistantResponse(
-          message: _truncateMessage(response),
-          quickReplies: getDefaultQuickReplies().take(3).toList(),
+          message: _truncateMessage(messageText),
+          actions: actions,
+          quickReplies:
+              quickReplies ?? getDefaultQuickReplies().take(3).toList(),
         );
       } catch (e) {
         return _buildFallbackResponse();

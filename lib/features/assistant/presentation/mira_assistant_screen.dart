@@ -6,6 +6,11 @@ import '../data/mira_assistant_service.dart';
 import '../../habit/presentation/simple_habit_screen.dart';
 import '../../timer/timer_screen.dart';
 import '../../mood/presentation/mood_selection_screen.dart';
+import 'package:provider/provider.dart';
+import '../../habit/domain/habit_repository.dart';
+import '../../mood/data/mood_models.dart';
+import '../../habit/domain/habit_model.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Message bubble for chat display
 class _ChatMessage {
@@ -23,8 +28,14 @@ class _ChatMessage {
 }
 
 class MiraAssistantScreen extends StatefulWidget {
-  const MiraAssistantScreen({super.key, this.variant});
+  const MiraAssistantScreen({
+    super.key,
+    this.variant,
+    this.onNavigationCommand,
+  });
+
   final ThemeVariant? variant;
+  final Function(String command)? onNavigationCommand;
 
   @override
   State<MiraAssistantScreen> createState() => _MiraAssistantScreenState();
@@ -154,16 +165,30 @@ class _MiraAssistantScreenState extends State<MiraAssistantScreen> {
     });
   }
 
-  void _handleQuickAction(QuickAction action) {
+  Future<void> _handleQuickAction(QuickAction action) async {
     switch (action.routeId) {
       case 'create_habit':
-        Navigator.of(
+        final result = await Navigator.of(
           context,
         ).push(MaterialPageRoute(builder: (_) => const SimpleHabitScreen()));
+
+        if (result != null && result is Habit && mounted) {
+          await HabitRepository.instance.addHabit(result);
+          setState(() {
+            _messages.add(
+              _ChatMessage(
+                text: AppLocalizations.of(
+                  context,
+                ).habitCreatedMessage(result.title),
+                isUser: false,
+              ),
+            );
+          });
+          _scrollToBottom();
+        }
         break;
       case 'habits':
-        Navigator.of(context).pop();
-        // Navigate to habits tab - handled by parent
+        widget.onNavigationCommand?.call('habits');
         break;
       case 'timer':
         Navigator.of(context).push(
@@ -173,13 +198,17 @@ class _MiraAssistantScreenState extends State<MiraAssistantScreen> {
         );
         break;
       case 'mood':
-        Navigator.of(
-          context,
-        ).push(MaterialPageRoute(builder: (_) => const MoodSelectionScreen()));
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => ChangeNotifierProvider(
+              create: (_) => MoodFlowState(),
+              child: const MoodSelectionScreen(),
+            ),
+          ),
+        );
         break;
       case 'vision':
-        Navigator.of(context).pop();
-        // Navigate to vision tab - handled by parent
+        widget.onNavigationCommand?.call('vision');
         break;
     }
   }

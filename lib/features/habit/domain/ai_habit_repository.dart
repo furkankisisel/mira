@@ -99,7 +99,7 @@ class AiHabitRepository {
   }
 
   /// Sends a message to the AI Support Assistant.
-  Future<String> sendSupportMessage(
+  Future<Map<String, dynamic>> sendSupportMessage(
     List<Map<String, String>> history, {
     String? languageCode,
   }) async {

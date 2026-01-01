@@ -275,234 +275,239 @@ class _HabitCardState extends State<HabitCard>
             ),
           ],
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: cs.outlineVariant.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(2.5),
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              l10n.enterValueTitle,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: cs.onSurface,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-
-            if (isTimer) ...[
-              SizedBox(
-                height: 64,
-                child: FilledButton.icon(
-                  onPressed: () {
-                    Navigator.pop(ctx);
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const TimerScreen()),
-                    );
-                  },
-                  icon: const Icon(Icons.play_arrow_rounded, size: 32),
-                  label: Text(
-                    "Süre Tut", // TODO: Localize
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: widget.color.withValues(alpha: 0.9),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    elevation: 0,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: cs.outlineVariant.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(2.5),
                   ),
                 ),
               ),
               const SizedBox(height: 24),
+              Text(
+                l10n.enterValueTitle,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: cs.onSurface,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+
+              if (isTimer) ...[
+                SizedBox(
+                  height: 64,
+                  child: FilledButton.icon(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const TimerScreen()),
+                      );
+                    },
+                    icon: const Icon(Icons.play_arrow_rounded, size: 32),
+                    label: Text(
+                      "Süre Tut", // TODO: Localize
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: widget.color.withValues(alpha: 0.9),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      elevation: 0,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Divider(
+                        color: cs.outlineVariant.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        "veya manuel gir", // TODO: Localize
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: cs.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Divider(
+                        color: cs.outlineVariant.withValues(alpha: 0.3),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+              ],
+
+              TextField(
+                controller: c,
+                keyboardType: TextInputType.number,
+                autofocus: !isTimer,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: InputDecoration(
+                  labelText: widget.unit ?? l10n.valueLabel,
+                  hintText: 'Hedef: ${widget.targetCount}',
+                  prefixIcon: Icon(
+                    Icons.edit_note_rounded,
+                    color: widget.color,
+                  ),
+                  filled: true,
+                  fillColor: widget.color.withValues(alpha: 0.05),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.all(20),
+                ),
+                onSubmitted: (_) => _submitManual(c, ctx),
+              ),
+              const SizedBox(height: 12),
+              if (ruleHint() != null)
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: cs.onSurface.withValues(alpha: 0.03),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, size: 16, color: cs.primary),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          ruleHint()!,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: cs.onSurfaceVariant,
+                            height: 1.3,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              const SizedBox(height: 24),
+
+              // Progress Section
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Bugünkü İlerleme', // TODO: Localize
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ),
+                      Text(
+                        '${(progress * 100).round()}%',
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: widget.color,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: LinearProgressIndicator(
+                      minHeight: 10,
+                      value: progress <= 0 ? 0 : progress,
+                      backgroundColor: widget.color.withValues(alpha: 0.1),
+                      valueColor: AlwaysStoppedAnimation(widget.color),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  if (widget.habitType != HabitType.simple)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        '${widget.currentStreak} / ${widget.targetCount}${widget.unit != null ? ' ${widget.unit}' : ''}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: cs.onSurfaceVariant,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+
+              const SizedBox(height: 32),
+
               Row(
                 children: [
                   Expanded(
-                    child: Divider(
-                      color: cs.outlineVariant.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      "veya manuel gir", // TODO: Localize
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: cs.onSurfaceVariant,
-                        fontWeight: FontWeight.w500,
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: Text(
+                        l10n.cancel,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
+                  const SizedBox(width: 16),
                   Expanded(
-                    child: Divider(
-                      color: cs.outlineVariant.withValues(alpha: 0.3),
+                    child: FilledButton(
+                      onPressed: () => _submitManual(c, ctx),
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        backgroundColor: cs.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: Text(
+                        l10n.save,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
             ],
-
-            TextField(
-              controller: c,
-              keyboardType: TextInputType.number,
-              autofocus: !isTimer,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              decoration: InputDecoration(
-                labelText: widget.unit ?? l10n.valueLabel,
-                hintText: 'Hedef: ${widget.targetCount}',
-                prefixIcon: Icon(Icons.edit_note_rounded, color: widget.color),
-                filled: true,
-                fillColor: widget.color.withValues(alpha: 0.05),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.all(20),
-              ),
-              onSubmitted: (_) => _submitManual(c),
-            ),
-            const SizedBox(height: 12),
-            if (ruleHint() != null)
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: cs.onSurface.withValues(alpha: 0.03),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.info_outline, size: 16, color: cs.primary),
-                    const SizedBox(width: 8),
-                    Flexible(
-                      child: Text(
-                        ruleHint()!,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: cs.onSurfaceVariant,
-                          height: 1.3,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            const SizedBox(height: 24),
-
-            // Progress Section
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Bugünkü İlerleme', // TODO: Localize
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: cs.onSurfaceVariant,
-                      ),
-                    ),
-                    Text(
-                      '${(progress * 100).round()}%',
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: widget.color,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: LinearProgressIndicator(
-                    minHeight: 10,
-                    value: progress <= 0 ? 0 : progress,
-                    backgroundColor: widget.color.withValues(alpha: 0.1),
-                    valueColor: AlwaysStoppedAnimation(widget.color),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                if (widget.habitType != HabitType.simple)
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      '${widget.currentStreak} / ${widget.targetCount}${widget.unit != null ? ' ${widget.unit}' : ''}',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: cs.onSurfaceVariant,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-
-            const SizedBox(height: 32),
-
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: () => Navigator.pop(ctx),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: Text(
-                      l10n.cancel,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: FilledButton(
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      _submitManual(c);
-                    },
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      backgroundColor: cs.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: Text(
-                      l10n.save,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  void _submitManual(TextEditingController c) {
+  void _submitManual(TextEditingController c, BuildContext ctx) {
     final v = int.tryParse(c.text.trim());
     if (v != null && v >= 0) {
       widget.onValueUpdate?.call(v);
-      Navigator.pop(context);
+      Navigator.pop(ctx);
     }
   }
 
