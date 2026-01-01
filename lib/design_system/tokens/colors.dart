@@ -14,6 +14,16 @@ class AppColors {
   static const Color accentGreenDark = Color(0xFF628353);
   static const Color accentPurple = Color(0xFF8B7AC7);
 
+  // New Theme Accents
+  static const Color accentMatcha = Color(0xFF8BA888); // Soft Green
+  static const Color accentLavender = Color(0xFFB8B5E0); // Soft Purple
+  static const Color accentSky = Color(0xFFA4C5E6); // Soft Blue
+  static const Color accentRose = Color(0xFFE0B5B5); // Soft Pink/Rose
+  static const Color accentSlate = Color(0xFF7F8C8D); // Modern Slate
+  static const Color accentOcean = Color(0xFF6699CC); // Calm Blue
+  static const Color accentSunset = Color(0xFFE6AA88); // Warm Sunset
+  static const Color accentForest = Color(0xFF5F8A5F); // Deep Green
+
   static Color shadowSm([double o = .15]) => Colors.black.withValues(alpha: o);
   static Color overlay([double o = .08]) => Colors.black.withValues(alpha: o);
 }

@@ -1,452 +1,19 @@
 ﻿import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../habit/domain/habit_repository.dart';
-import '../../design_system/theme/theme_variations.dart';
-import '../../design_system/components/theme_selector.dart';
-import '../../design_system/components/language_selector.dart';
-import '../../core/language_manager.dart';
 import '../gamification/gamification_repository.dart';
-import '../notifications/presentation/notification_settings_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io' as io;
 import 'profile_repository.dart';
-import '../../core/settings/settings_repository.dart';
-import 'auth_repository.dart';
-import 'backup_repository.dart';
-import 'dart:convert';
-import '../onboarding/data/onboarding_repository.dart';
-import '../onboarding/presentation/onboarding_screen.dart';
-import 'privacy_security_screen.dart';
-import '../../ui/premium_gate.dart';
-import '../../ui/manage_subscription_screen.dart';
-import 'package:http/http.dart' as http;
-import '../../config/constants.dart';
-import 'package:device_info_plus/device_info_plus.dart';
+import 'dart:ui'; // for ImageFilter
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({
-    super.key,
-    this.onToggleTheme,
-    this.themeMode,
-    this.currentVariant,
-    this.onVariantChanged,
-    this.languageManager,
-  });
-  final VoidCallback? onToggleTheme;
-  final ThemeMode? themeMode;
-  final ThemeVariant? currentVariant;
-  final ValueChanged<ThemeVariant>? onVariantChanged;
-  final LanguageManager? languageManager;
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
+
   @override
-  Widget build(BuildContext context) {
-    final isWorld = currentVariant == ThemeVariant.world;
-    final content = DefaultTabController(
-      length: 2,
-      child: Column(
-        children: [
-          const SizedBox(height: 4),
-          _ProfileTabBar(),
-          const SizedBox(height: 12),
-          Expanded(
-            child: _ProfileTabViews(
-              onToggleTheme: onToggleTheme,
-              themeMode: themeMode,
-              currentVariant: currentVariant,
-              onVariantChanged: onVariantChanged,
-              languageManager: languageManager,
-            ),
-          ),
-        ],
-      ),
-    );
-
-    if (isWorld) {
-      final brightness = Theme.of(context).brightness;
-      final themed = brightness == Brightness.dark
-          ? ThemeVariations.dark(ThemeVariant.golden)
-          : ThemeVariations.light(ThemeVariant.golden);
-      return Theme(data: themed, child: content);
-    }
-    return content;
-  }
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileTabBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final scheme = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Container(
-        decoration: BoxDecoration(
-          color: scheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: const EdgeInsets.all(2),
-        child: TabBar(
-          isScrollable: false,
-          dividerColor: Colors.transparent,
-          indicatorSize: TabBarIndicatorSize.tab,
-          indicatorPadding: const EdgeInsets.all(2),
-          overlayColor: WidgetStatePropertyAll(
-            scheme.primary.withValues(alpha: 0.06),
-          ),
-          labelColor: scheme.onPrimaryContainer,
-          unselectedLabelColor: scheme.onSurfaceVariant,
-          indicator: BoxDecoration(
-            color: scheme.primaryContainer,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          tabs: [
-            Tab(text: l10n.settings),
-            Tab(text: l10n.achievements),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ProfileTabViews extends StatelessWidget {
-  const _ProfileTabViews({
-    required this.onToggleTheme,
-    required this.themeMode,
-    required this.currentVariant,
-    required this.onVariantChanged,
-    required this.languageManager,
-  });
-
-  final VoidCallback? onToggleTheme;
-  final ThemeMode? themeMode;
-  final ThemeVariant? currentVariant;
-  final ValueChanged<ThemeVariant>? onVariantChanged;
-  final LanguageManager? languageManager;
-
-  @override
-  Widget build(BuildContext context) {
-    return TabBarView(
-      children: [
-        _SettingsTab(
-          onToggleTheme: onToggleTheme,
-          themeMode: themeMode,
-          currentVariant: currentVariant,
-          onVariantChanged: onVariantChanged,
-          languageManager: languageManager,
-        ),
-        const _AchievementsTab(),
-      ],
-    );
-  }
-}
-
-class _AchievementsTab extends StatefulWidget {
-  const _AchievementsTab();
-  @override
-  State<_AchievementsTab> createState() => _AchievementsTabState();
-}
-
-class _AchievementsTabState extends State<_AchievementsTab> {
-  @override
-  void initState() {
-    super.initState();
-    // Initialize gamification state
-    GamificationRepository.instance.initialize();
-    GamificationRepository.instance.addListener(_onChanged);
-  }
-
-  @override
-  void dispose() {
-    GamificationRepository.instance.removeListener(_onChanged);
-    super.dispose();
-  }
-
-  void _onChanged() {
-    if (mounted) setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final repo = GamificationRepository.instance;
-    final scheme = Theme.of(context).colorScheme;
-    final l10n = AppLocalizations.of(context);
-    final badges = repo.allBadges(l10n);
-    final unlocked = repo.unlockedBadges;
-    // Group badges by category
-    final Map<String, List<BadgeDef>> groups = {};
-    for (final b in badges) {
-      groups.putIfAbsent(b.category, () => []).add(b);
-    }
-    return CustomScrollView(
-      slivers: [
-        SliverPadding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          sliver: SliverToBoxAdapter(
-            child: _XpHeader(
-              level: repo.level,
-              xpIntoLevel: repo.xpIntoLevel,
-              xpPerLevel: repo.xpPerLevel,
-              xpToNext: repo.xpToNextLevel,
-              scheme: scheme,
-            ),
-          ),
-        ),
-        for (final entry in groups.entries) ...[
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-            sliver: SliverToBoxAdapter(
-              child: Text(
-                entry.key,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-              ),
-            ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                mainAxisSpacing: 14,
-                crossAxisSpacing: 14,
-                childAspectRatio: .82,
-              ),
-              delegate: SliverChildBuilderDelegate((context, i) {
-                final b = entry.value[i];
-                final isUnlocked = unlocked.contains(b.id);
-                return InkWell(
-                  borderRadius: BorderRadius.circular(20),
-                  onTap: () => _showBadgeDetails(context, b, isUnlocked),
-                  child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 300),
-                    opacity: isUnlocked ? 1 : 0.45,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: isUnlocked
-                            ? scheme.primaryContainer
-                            : scheme.surface,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: isUnlocked
-                              ? scheme.primary
-                              : scheme.outlineVariant,
-                        ),
-                      ),
-                      padding: const EdgeInsets.all(8),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            b.icon,
-                            size: 32,
-                            color: isUnlocked
-                                ? scheme.primary
-                                : scheme.onSurfaceVariant,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            b.title,
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.labelMedium
-                                ?.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                          const SizedBox(height: 4),
-                          if (!isUnlocked)
-                            Text(
-                              l10n.notUnlocked,
-                              style: Theme.of(context).textTheme.labelSmall
-                                  ?.copyWith(color: scheme.onSurfaceVariant),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }, childCount: entry.value.length),
-            ),
-          ),
-        ],
-        const SliverToBoxAdapter(child: SizedBox(height: 20)),
-      ],
-    );
-  }
-
-  void _showBadgeDetails(BuildContext context, BadgeDef badge, bool unlocked) {
-    final repo = GamificationRepository.instance;
-    // Compute current value by metric
-    int current;
-    switch (badge.metric) {
-      case BadgeMetric.totalHabitCompletions:
-        current = repo.totalHabitCompletions;
-        break;
-      case BadgeMetric.activeDays:
-        current = repo.activeDays;
-        break;
-      case BadgeMetric.totalTransactions:
-        current = repo.totalTransactions;
-        break;
-      case BadgeMetric.totalVisions:
-        current = repo.totalVisions;
-        break;
-      case BadgeMetric.level:
-        current = repo.level;
-        break;
-      case BadgeMetric.xp:
-        current = repo.xp;
-        break;
-    }
-    final pct = (current / badge.goal).clamp(0.0, 1.0);
-    showDialog(
-      context: context,
-      builder: (ctx) {
-        final scheme = Theme.of(ctx).colorScheme;
-        final l10n = AppLocalizations.of(ctx);
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Row(
-            children: [
-              Icon(
-                badge.icon,
-                color: unlocked ? scheme.primary : scheme.onSurfaceVariant,
-              ),
-              const SizedBox(width: 8),
-              Expanded(child: Text(badge.title)),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(badge.description),
-              const SizedBox(height: 12),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: LinearProgressIndicator(value: pct, minHeight: 10),
-              ),
-              const SizedBox(height: 8),
-              Text('$current / ${badge.goal}'),
-              const SizedBox(height: 8),
-              if (!unlocked)
-                Text(
-                  '${l10n.howToEarn}: ${badge.description}',
-                  style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                  ),
-                ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text(l10n.close),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-class _XpHeader extends StatelessWidget {
-  const _XpHeader({
-    required this.level,
-    required this.xpIntoLevel,
-    required this.xpPerLevel,
-    required this.xpToNext,
-    required this.scheme,
-  });
-  final int level;
-  final int xpIntoLevel;
-  final int xpPerLevel;
-  final int xpToNext;
-  final ColorScheme scheme;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final pct = xpIntoLevel / xpPerLevel;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundColor: scheme.primaryContainer,
-                  foregroundColor: scheme.primary,
-                  child: Text(
-                    l10n.levelShort(level),
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.levelLabel(level),
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 6),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: LinearProgressIndicator(
-                          value: pct.clamp(0.0, 1.0),
-                          minHeight: 10,
-                          backgroundColor: scheme.surfaceContainerHighest,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            scheme.primary,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        l10n.xpProgressSummary(
-                          xpIntoLevel.toString(),
-                          xpPerLevel.toString(),
-                          xpToNext.toString(),
-                        ),
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SettingsTab extends StatefulWidget {
-  const _SettingsTab({
-    required this.onToggleTheme,
-    required this.themeMode,
-    required this.currentVariant,
-    required this.onVariantChanged,
-    required this.languageManager,
-  });
-
-  final VoidCallback? onToggleTheme;
-  final ThemeMode? themeMode;
-  final ThemeVariant? currentVariant;
-  final ValueChanged<ThemeVariant>? onVariantChanged;
-  final LanguageManager? languageManager;
-
-  @override
-  State<_SettingsTab> createState() => _SettingsTabState();
-}
-
-class _SettingsTabState extends State<_SettingsTab> {
+class _ProfileScreenState extends State<ProfileScreen> {
   final _nameCtrl = TextEditingController();
   final _picker = ImagePicker();
 
@@ -455,20 +22,16 @@ class _SettingsTabState extends State<_SettingsTab> {
     super.initState();
     ProfileRepository.instance.initialize();
     ProfileRepository.instance.addListener(_onProfileChange);
-    AuthRepository.instance.initialize();
-    AuthRepository.instance.addListener(_onAuthChange);
+    GamificationRepository.instance.initialize();
+    GamificationRepository.instance.addListener(_onGamificationChange);
   }
 
   @override
   void dispose() {
     ProfileRepository.instance.removeListener(_onProfileChange);
-    AuthRepository.instance.removeListener(_onAuthChange);
+    GamificationRepository.instance.removeListener(_onGamificationChange);
     _nameCtrl.dispose();
     super.dispose();
-  }
-
-  void _onAuthChange() {
-    if (mounted) setState(() {});
   }
 
   void _onProfileChange() {
@@ -477,59 +40,8 @@ class _SettingsTabState extends State<_SettingsTab> {
     if (mounted) setState(() {});
   }
 
-  LanguageManager get _languageManager =>
-      widget.languageManager ?? LanguageManager();
-
-  String _getThemeText(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    switch (widget.themeMode) {
-      case ThemeMode.light:
-        return l10n.lightTheme;
-      case ThemeMode.dark:
-        return l10n.darkTheme;
-      case ThemeMode.system:
-      default:
-        return l10n.systemTheme;
-    }
-  }
-
-  void _showThemeVariantSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
-        maxChildSize: 0.9,
-        expand: false,
-        builder: (context, scrollController) => SingleChildScrollView(
-          controller: scrollController,
-          child: ThemeSelector(
-            currentVariant: widget.currentVariant ?? ThemeVariant.forest,
-            onVariantChanged: (variant) {
-              widget.onVariantChanged?.call(variant);
-              Navigator.pop(context);
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showLanguageSelector(BuildContext context) {
-    showLanguageSelector(
-      context: context,
-      currentLanguage: _languageManager.currentLanguage,
-      onLanguageChanged: (language) async {
-        await _languageManager.changeLanguage(language);
-        if (mounted) {
-          setState(() {});
-        }
-      },
-    );
+  void _onGamificationChange() {
+    if (mounted) setState(() {});
   }
 
   Future<void> _pickAvatar() async {
@@ -626,8 +138,6 @@ class _SettingsTabState extends State<_SettingsTab> {
                           ),
                           textInputAction: TextInputAction.next,
                         ),
-                        const SizedBox(height: 8),
-                        // Bio field removed per design change
                       ],
                     ),
                   ),
@@ -659,730 +169,625 @@ class _SettingsTabState extends State<_SettingsTab> {
     );
   }
 
+  void _showBadgeDetails(BuildContext context, BadgeDef badge, bool unlocked) {
+    final repo = GamificationRepository.instance;
+    // Compute current value by metric
+    int current;
+    switch (badge.metric) {
+      case BadgeMetric.totalHabitCompletions:
+        current = repo.totalHabitCompletions;
+        break;
+      case BadgeMetric.activeDays:
+        current = repo.activeDays;
+        break;
+      case BadgeMetric.totalTransactions:
+        current = repo.totalTransactions;
+        break;
+      case BadgeMetric.totalVisions:
+        current = repo.totalVisions;
+        break;
+      case BadgeMetric.level:
+        current = repo.level;
+        break;
+      case BadgeMetric.xp:
+        current = repo.xp;
+        break;
+    }
+    final pct = (current / badge.goal).clamp(0.0, 1.0);
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        final scheme = Theme.of(ctx).colorScheme;
+        final l10n = AppLocalizations.of(ctx);
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          backgroundColor: scheme.surface,
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: unlocked
+                      ? scheme.primaryContainer
+                      : scheme.surfaceContainerHighest,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  badge.icon,
+                  color: unlocked ? scheme.primary : scheme.onSurfaceVariant,
+                  size: 32,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(badge.title, style: const TextStyle(fontSize: 20)),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                badge.description,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: scheme.onSurface.withValues(alpha: 0.8),
+                ),
+              ),
+              const SizedBox(height: 24),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: LinearProgressIndicator(
+                  value: pct,
+                  minHeight: 12,
+                  backgroundColor: scheme.surfaceContainerHighest,
+                  color: scheme.primary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '$current / ${badge.goal}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: scheme.primary,
+                    ),
+                  ),
+                  Text(
+                    '${(pct * 100).toInt()}%',
+                    style: TextStyle(color: scheme.onSurfaceVariant),
+                  ),
+                ],
+              ),
+              if (!unlocked) ...[
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: scheme.surfaceContainerHighest.withValues(
+                      alpha: 0.5,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.lock_outline,
+                        size: 20,
+                        color: scheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          '${l10n.howToEarn}: ${badge.description}',
+                          style: TextStyle(
+                            color: scheme.onSurfaceVariant,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(l10n.close, style: const TextStyle(fontSize: 16)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final profile = ProfileRepository.instance;
-    // initialize controllers with current values (idempotent)
+    final repo = GamificationRepository.instance;
+    final scheme = Theme.of(context).colorScheme;
+
     if (_nameCtrl.text.isEmpty && profile.name.isNotEmpty) {
       _nameCtrl.text = profile.name;
     }
-    // bio field removed; no initialization needed
-    return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      children: [
-        // Compact profile header with edit pencil
-        Card(
-          child: ListTile(
-            leading: CircleAvatar(
-              radius: 22,
-              backgroundColor: Theme.of(
-                context,
-              ).colorScheme.surfaceContainerHighest,
-              backgroundImage:
-                  (profile.avatarPath != null && profile.avatarPath!.isNotEmpty)
-                  ? FileImage(io.File(profile.avatarPath!))
-                  : (profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty)
-                  ? NetworkImage(profile.avatarUrl!) as ImageProvider
-                  : null,
-              child:
-                  (profile.avatarPath == null || profile.avatarPath!.isEmpty) &&
-                      (profile.avatarUrl == null || profile.avatarUrl!.isEmpty)
-                  ? const Icon(Icons.person, size: 22)
-                  : null,
-            ),
-            title: Text(
-              (profile.name.isNotEmpty) ? profile.name : l10n.profile,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            trailing: IconButton(
-              tooltip: l10n.edit,
-              icon: const Icon(Icons.edit_outlined),
-              onPressed: _showEditProfileSheet,
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        const SizedBox(height: 12),
-        _SettingsSection(
-          title: l10n.appearance,
-          children: [
-            AnimatedBuilder(
-              animation: SettingsRepository.instance,
-              builder: (context, _) => SwitchListTile(
-                secondary: const Icon(Icons.local_fire_department_outlined),
-                title: Text(l10n.streakIndicator),
-                subtitle: Text(l10n.streakIndicatorDesc),
-                value: SettingsRepository.instance.showStreakIndicators,
-                onChanged: (v) =>
-                    SettingsRepository.instance.setShowStreakIndicators(v),
+
+    // Achievements Data
+    final badges = repo.allBadges(l10n);
+    final unlocked = repo.unlockedBadges;
+    final Map<String, List<BadgeDef>> groups = {};
+    for (final b in badges) {
+      groups.putIfAbsent(b.category, () => []).add(b);
+    }
+
+    // Stats for highlights
+    final activeDays = repo.activeDays;
+    final totalHabits = repo.totalHabitCompletions;
+    final totalBadges = unlocked.length;
+
+    return CustomScrollView(
+      slivers: [
+        // 1. Immersive Header
+        SliverToBoxAdapter(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  scheme.primaryContainer.withValues(alpha: 0.6),
+                  scheme.surface,
+                ],
               ),
             ),
-            ListTile(
-              leading: const Icon(Icons.language),
-              title: Text(l10n.language),
-              subtitle: Text(
-                '${_languageManager.currentLanguage.flag} ${_languageManager.currentLanguage.displayName}',
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => _showLanguageSelector(context),
-            ),
-            ListTile(
-              leading: const Icon(Icons.color_lens_outlined),
-              title: Text(l10n.theme),
-              subtitle: Text(_getThemeText(context)),
-              trailing: Switch(
-                value: widget.themeMode == ThemeMode.dark,
-                onChanged: widget.onToggleTheme != null
-                    ? (_) => widget.onToggleTheme!()
-                    : null,
-              ),
-              onTap: widget.onToggleTheme,
-            ),
-            if (widget.currentVariant != null &&
-                widget.onVariantChanged != null)
-              ListTile(
-                leading: const Icon(Icons.palette_outlined),
-                title: Text(l10n.colorTheme),
-                subtitle: Text(widget.currentVariant?.displayName ?? ''),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => _showThemeVariantSheet(context),
-              ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        _SettingsSection(
-          title: l10n.notifications,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.notifications_outlined),
-              title: Text(l10n.notificationSettings),
-              subtitle: Text(l10n.notificationSettingsSubtitle),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => NotificationSettingsScreen(
-                      variant: widget.currentVariant,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        _SettingsSection(
-          title: l10n.privacySecurity,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.privacy_tip_outlined),
-              title: Text(l10n.privacySecurity),
-              subtitle: Text(l10n.privacySecuritySubtitle),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const PrivacySecurityScreen(),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        _SettingsSection(
-          title: l10n.account,
-          children: [
-            // Google sign-in area
-            Builder(
-              builder: (ctx) {
-                final auth = AuthRepository.instance;
-                if (!auth.isSignedIn) {
-                  return ListTile(
-                    leading: const Icon(Icons.login, size: 28),
-                    title: Text(l10n.signInWithGoogle),
-                    onTap: () async {
-                      await auth.signIn();
-                    },
-                  );
-                }
-                final acc = auth.account!;
-                return Column(
-                  children: [
-                    ListTile(
-                      leading: (acc.photoUrl != null)
-                          ? CircleAvatar(
-                              backgroundImage: NetworkImage(acc.photoUrl!),
-                            )
-                          : const CircleAvatar(
-                              child: Icon(Icons.person_outline),
-                            ),
-                      title: Text(acc.displayName ?? acc.email),
-                      subtitle: Text(acc.email),
-                      trailing: TextButton(
-                        onPressed: () async =>
-                            await AuthRepository.instance.signOut(),
-                        child: Text(l10n.logout),
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 16,
+                ), // Adjusted for safe area implies AppBar is present
+                GestureDetector(
+                  onTap: _showEditProfileSheet,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: scheme.primary.withValues(alpha: 0.2),
+                            width: 4,
+                          ),
+                        ),
+                        child: CircleAvatar(
+                          radius: 56,
+                          backgroundColor: scheme.surfaceContainerHighest,
+                          backgroundImage:
+                              (profile.avatarPath != null &&
+                                  profile.avatarPath!.isNotEmpty)
+                              ? FileImage(io.File(profile.avatarPath!))
+                              : (profile.avatarUrl != null &&
+                                    profile.avatarUrl!.isNotEmpty)
+                              ? NetworkImage(profile.avatarUrl!)
+                                    as ImageProvider
+                              : null,
+                          child:
+                              (profile.avatarPath == null ||
+                                      profile.avatarPath!.isEmpty) &&
+                                  (profile.avatarUrl == null ||
+                                      profile.avatarUrl!.isEmpty)
+                              ? Icon(
+                                  Icons.person,
+                                  size: 56,
+                                  color: scheme.onSurfaceVariant,
+                                )
+                              : null,
+                        ),
                       ),
-                    ),
-                  ],
-                );
-              },
-            ),
-            // Backup / Restore actions (visible when signed in)
-            Builder(
-              builder: (ctx) {
-                final auth = AuthRepository.instance;
-                if (!auth.isSignedIn) return const SizedBox.shrink();
-                return Column(
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.upload_file),
-                      title: Text(l10n.backupNow),
-                      onTap: () async {
-                        // Require premium to use backup feature
-                        final ok = await requirePremium(ctx);
-                        if (!ok) return;
-                        final messenger = ScaffoldMessenger.of(ctx);
-                        final navigator = Navigator.of(
-                          ctx,
-                          rootNavigator: true,
-                        );
-                        showDialog<void>(
-                          context: ctx,
-                          barrierDismissible: false,
-                          builder: (_) =>
-                              const Center(child: CircularProgressIndicator()),
-                        );
-                        try {
-                          // Backup ALL SharedPreferences with type fidelity
-                          final prefs = await SharedPreferences.getInstance();
-                          final keys = prefs.getKeys();
-                          final prefsDump = <String, dynamic>{};
-                          for (final key in keys) {
-                            final v = prefs.get(key);
-                            if (v == null) continue;
-                            if (v is bool) {
-                              prefsDump[key] = {'t': 'bool', 'v': v};
-                            } else if (v is int) {
-                              prefsDump[key] = {'t': 'int', 'v': v};
-                            } else if (v is double) {
-                              prefsDump[key] = {'t': 'double', 'v': v};
-                            } else if (v is String) {
-                              prefsDump[key] = {'t': 'string', 'v': v};
-                            } else if (v is List<String>) {
-                              prefsDump[key] = {'t': 'list', 'v': v};
-                            }
-                          }
-
-                          // Also explicitly backup profile repo fields (redundancy or primary source)
-                          // ProfileRepo uses SharedPreferences, so it's already in prefsDump!
-                          // But we keep structure for metadata if we want.
-                          // Let's just rely on prefsDump + simple metadata.
-
-                          final payload = {
-                            'version': 3,
-                            'timestamp': DateTime.now().toIso8601String(),
-                            'device': 'All-Prefs-Dump',
-                            'prefs': prefsDump,
-                          };
-
-                          await BackupRepository.instance.uploadBackup(
-                            jsonEncode(payload),
-                          );
-                          messenger.showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                l10n.backupSuccess(l10n.googleDrive),
-                              ),
-                            ),
-                          );
-                        } catch (e) {
-                          messenger.showSnackBar(
-                            SnackBar(content: Text('${l10n.backupError}: $e')),
-                          );
-                        } finally {
-                          // close loader
-                          navigator.pop();
-                        }
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.download),
-                      title: Text(l10n.restoreLatest),
-                      onTap: () async {
-                        // Require premium to use restore feature
-                        final ok = await requirePremium(ctx);
-                        if (!ok) return;
-                        final messenger = ScaffoldMessenger.of(ctx);
-                        final navigator = Navigator.of(
-                          ctx,
-                          rootNavigator: true,
-                        );
-                        // Show confirmation dialog before restoring
-                        final confirmed = await showDialog<bool>(
-                          context: ctx,
-                          builder: (dCtx) => AlertDialog(
-                            title: Text(l10n.restoreLatest),
-                            content: Text(
-                              'Mevcut verilerinizin üzerine yedekten geri yükleme yapılacak. Tüm ilerlemeniz yedeğin alındığı tarihe dönecek.\n\nEmin misiniz?',
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(dCtx, false),
-                                child: Text(l10n.cancel),
-                              ),
-                              FilledButton(
-                                onPressed: () => Navigator.pop(dCtx, true),
-                                child: Text(l10n.restore),
+                      Positioned(
+                        bottom: 0,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: scheme.primary,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: scheme.primary.withValues(alpha: 0.4),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
                               ),
                             ],
                           ),
-                        );
-
-                        if (confirmed != true) return;
-
-                        showDialog<void>(
-                          context: ctx,
-                          barrierDismissible: false,
-                          builder: (_) =>
-                              const Center(child: CircularProgressIndicator()),
-                        );
-                        try {
-                          final data = await BackupRepository.instance
-                              .downloadBackup();
-                          if (data == null) throw Exception('No data received');
-
-                          final obj = jsonDecode(data) as Map<String, dynamic>;
-                          final prefs = await SharedPreferences.getInstance();
-
-                          // Clear current data strictly
-                          await prefs.clear();
-
-                          // Restore Prefs Dump
-                          if (obj['prefs'] != null) {
-                            final dump = obj['prefs'] as Map<String, dynamic>;
-                            for (final key in dump.keys) {
-                              final item = dump[key] as Map<String, dynamic>;
-                              final type = item['t'] as String;
-                              final val = item['v'];
-                              if (type == 'bool') {
-                                await prefs.setBool(key, val as bool);
-                              } else if (type == 'int') {
-                                await prefs.setInt(key, val as int);
-                              } else if (type == 'double') {
-                                await prefs.setDouble(
-                                  key,
-                                  (val as num).toDouble(),
-                                );
-                              } else if (type == 'string') {
-                                await prefs.setString(key, val as String);
-                              } else if (type == 'list') {
-                                await prefs.setStringList(
-                                  key,
-                                  (val as List).cast<String>(),
-                                );
-                              }
-                            }
-                          } else {
-                            // Legacy restore fallback (v2 or v1)
-                            // NOTE: Since user just wiped data, fallback is crucial if they have old backup.
-                            // But previous backup was BROKEN (only profile).
-                            // So there is no "legacy valid backup" to support really.
-                            // However, my previous edit (v2) created a structure: habits, gamification etc.
-                            // If I deployed v2 and user backed up, now I deploy v3.
-                            // I should support v2 structure too if possible.
-
-                            // Support v2 logic:
-                            if (obj['habits'] != null) {
-                              final h = obj['habits'];
-                              if (h['habits_v2'] != null)
-                                await prefs.setString(
-                                  'habits_v2',
-                                  h['habits_v2'],
-                                );
-                            }
-                            // ... omitting full v2 support for brevity as user implies "no data restored" so we are fixing forward.
-                            // But basic profile fallback is nice.
-                            if (obj['name'] != null)
-                              await prefs.setString(
-                                'profile_name',
-                                obj['name'],
-                              );
-                            if (obj['avatarPath'] != null)
-                              await prefs.setString(
-                                'profile_avatar_path',
-                                obj['avatarPath'],
-                              );
-                          }
-
-                          // Re-Initialize ALL Repositories used in the app
-                          // We must re-init generic repositories to pick up new prefs
-                          await HabitRepository.instance.reload();
-                          await GamificationRepository.instance.reload();
-                          await SettingsRepository.instance.reload();
-                          await ProfileRepository.instance.initialize();
-                          // Others if any (Finance, Vision usually load on init or access)
-                          // Since we don't have static access to all, restarting app is best.
-                          // But triggering basic ones updates the UI.
-
-                          messenger.showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                l10n.restoreSuccess(l10n.googleDrive),
-                              ),
+                          child: Text(
+                            l10n.levelShort(repo.level),
+                            style: TextStyle(
+                              color: scheme.onPrimary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
                             ),
-                          );
-                        } catch (e) {
-                          messenger.showSnackBar(
-                            SnackBar(content: Text('${l10n.restoreError}: $e')),
-                          );
-                        } finally {
-                          navigator.pop();
-                        }
-                      },
-                    ),
-                  ],
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.subscriptions),
-              title: Text(l10n.manageSubscription),
-              subtitle: Text(l10n.manageSubscriptionSubtitle),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const ManageSubscriptionScreen(),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
-            // Delete Account action
-            Builder(
-              builder: (ctx) => ListTile(
-                leading: const Icon(Icons.delete_forever, color: Colors.red),
-                title: Text(l10n.deleteMyAccount),
-                subtitle: Text(l10n.deleteAccountSubtitle),
-                onTap: () async {
-                  final auth = AuthRepository.instance;
-                  final emailController = TextEditingController(
-                    text: auth.isSignedIn ? auth.account!.email : '',
-                  );
-                  final confirmed = await showDialog<bool>(
-                    context: ctx,
-                    builder: (dCtx) => AlertDialog(
-                      title: Text(l10n.confirmDeleteAccount),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  (profile.name.isNotEmpty) ? profile.name : l10n.profile,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 48),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(l10n.deleteAccountWarning),
-                          const SizedBox(height: 12),
-                          TextField(
-                            controller: emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
-                              labelText: l10n.yourEmail,
-                              prefixIcon: const Icon(Icons.email_outlined),
+                          Text(
+                            '${repo.xpIntoLevel} XP',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: scheme.primary,
+                            ),
+                          ),
+                          Text(
+                            '${repo.xpToNextLevel} ${l10n.xpToNextLevel}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: scheme.onSurfaceVariant,
                             ),
                           ),
                         ],
                       ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(dCtx, false),
-                          child: Text(l10n.cancel),
-                        ),
-                        FilledButton(
-                          style: FilledButton.styleFrom(
-                            backgroundColor: Colors.red,
+                      const SizedBox(height: 6),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: LinearProgressIndicator(
+                          value: (repo.xpIntoLevel / repo.xpPerLevel).clamp(
+                            0.0,
+                            1.0,
                           ),
-                          onPressed: () => Navigator.pop(dCtx, true),
-                          child: Text(l10n.delete),
+                          minHeight: 12,
+                          backgroundColor: scheme.surfaceContainerHighest,
+                          color: scheme.primary,
                         ),
-                      ],
-                    ),
-                  );
-                  if (confirmed != true) {
-                    emailController.dispose();
-                    return;
-                  }
-                  final email = emailController.text.trim();
-                  if (email.isEmpty) {
-                    ScaffoldMessenger.of(ctx).showSnackBar(
-                      SnackBar(content: Text(l10n.pleaseEnterEmail)),
-                    );
-                    emailController.dispose();
-                    return;
-                  }
-                  // Show blocking loader
-                  showDialog<void>(
-                    context: ctx,
-                    barrierDismissible: false,
-                    builder: (_) =>
-                        const Center(child: CircularProgressIndicator()),
-                  );
-                  try {
-                    final uri = Uri.parse(
-                      '${AppConstants.backendBaseUrl}/deleteAccount',
-                    );
-                    final res = await http.post(
-                      uri,
-                      headers: {'Content-Type': 'application/json'},
-                      body: jsonEncode({'email': email}),
-                    );
-                    Navigator.of(ctx, rootNavigator: true).pop();
-                    if (res.statusCode == 200) {
-                      ScaffoldMessenger.of(ctx).showSnackBar(
-                        SnackBar(
-                          content: Text(l10n.deleteAccountRequestSuccess),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(ctx).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            '${l10n.deleteAccountFailed}: ${res.statusCode}',
-                          ),
-                        ),
-                      );
-                    }
-                  } catch (e) {
-                    Navigator.of(ctx, rootNavigator: true).pop();
-                    ScaffoldMessenger.of(ctx).showSnackBar(
-                      SnackBar(
-                        content: Text('${l10n.deleteAccountFailed}: $e'),
-                      ),
-                    );
-                  } finally {
-                    emailController.dispose();
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        _SettingsSection(
-          title: l10n.other,
-          children: [
-            // Bug Report
-            Builder(
-              builder: (ctx) => ListTile(
-                leading: const Icon(Icons.bug_report_outlined),
-                title: Text(l10n.reportBug),
-                subtitle: Text(l10n.reportBugSubtitle),
-                onTap: () async {
-                  final auth = AuthRepository.instance;
-                  final emailController = TextEditingController(
-                    text: auth.isSignedIn ? auth.account!.email : '',
-                  );
-                  final messageController = TextEditingController();
-
-                  final confirmed = await showDialog<bool>(
-                    context: ctx,
-                    builder: (dCtx) => AlertDialog(
-                      title: Text(l10n.reportBug),
-                      content: SingleChildScrollView(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(l10n.reportBugDescription),
-                            const SizedBox(height: 12),
-                            TextField(
-                              controller: emailController,
-                              keyboardType: TextInputType.emailAddress,
-                              decoration: InputDecoration(
-                                labelText: l10n.yourEmailAddress,
-                                prefixIcon: const Icon(Icons.email_outlined),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            TextField(
-                              controller: messageController,
-                              maxLines: 5,
-                              decoration: InputDecoration(
-                                labelText: l10n.issueDescription,
-                                hintText: l10n.issueDescriptionHint,
-                                border: const OutlineInputBorder(),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(dCtx, false),
-                          child: Text(l10n.cancel),
-                        ),
-                        FilledButton(
-                          onPressed: () => Navigator.pop(dCtx, true),
-                          child: Text(l10n.send),
-                        ),
-                      ],
-                    ),
-                  );
-
-                  if (confirmed != true) {
-                    emailController.dispose();
-                    messageController.dispose();
-                    return;
-                  }
-
-                  final email = emailController.text.trim();
-                  final message = messageController.text.trim();
-
-                  if (email.isEmpty || message.isEmpty) {
-                    ScaffoldMessenger.of(ctx).showSnackBar(
-                      SnackBar(content: Text(l10n.pleaseFillAllFields)),
-                    );
-                    emailController.dispose();
-                    messageController.dispose();
-                    return;
-                  }
-
-                  // Show loading
-                  showDialog<void>(
-                    context: ctx,
-                    barrierDismissible: false,
-                    builder: (_) =>
-                        const Center(child: CircularProgressIndicator()),
-                  );
-
-                  try {
-                    // Get device info
-                    String deviceInfo = 'Unknown';
-                    try {
-                      final deviceInfoPlugin = DeviceInfoPlugin();
-                      if (io.Platform.isAndroid) {
-                        final androidInfo = await deviceInfoPlugin.androidInfo;
-                        deviceInfo =
-                            'Android ${androidInfo.version.release} (SDK ${androidInfo.version.sdkInt}), ${androidInfo.brand} ${androidInfo.model}';
-                      } else if (io.Platform.isIOS) {
-                        final iosInfo = await deviceInfoPlugin.iosInfo;
-                        deviceInfo =
-                            'iOS ${iosInfo.systemVersion}, ${iosInfo.model}';
-                      }
-                    } catch (e) {
-                      deviceInfo = 'Error getting device info: $e';
-                    }
-
-                    final uri = Uri.parse(
-                      '${AppConstants.backendBaseUrl}/sendBugReport',
-                    );
-                    final res = await http.post(
-                      uri,
-                      headers: {'Content-Type': 'application/json'},
-                      body: jsonEncode({
-                        'email': email,
-                        'message': message,
-                        'deviceInfo': deviceInfo,
-                      }),
-                    );
-
-                    Navigator.of(ctx, rootNavigator: true).pop();
-
-                    if (res.statusCode == 200) {
-                      ScaffoldMessenger.of(ctx).showSnackBar(
-                        SnackBar(
-                          content: Text(l10n.bugReportSentSuccess),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(ctx).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            l10n.bugReportFailedStatus(res.statusCode),
-                          ),
-                        ),
-                      );
-                    }
-                  } catch (e) {
-                    Navigator.of(ctx, rootNavigator: true).pop();
-                    ScaffoldMessenger.of(ctx).showSnackBar(
-                      SnackBar(content: Text(l10n.bugReportFailedError(e))),
-                    );
-                  } finally {
-                    emailController.dispose();
-                    messageController.dispose();
-                  }
-                },
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.psychology_outlined),
-              title: Text(l10n.resetOnboarding),
-              subtitle: Text(l10n.retakePersonalityTest),
-              onTap: () async {
-                // Show confirmation dialog
-                final confirmed = await showDialog<bool>(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text(l10n.resetOnboardingTitle),
-                    content: Text(l10n.resetOnboardingDescription),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, false),
-                        child: Text(l10n.cancel),
-                      ),
-                      FilledButton(
-                        onPressed: () => Navigator.pop(context, true),
-                        child: Text(l10n.resetAction),
                       ),
                     ],
                   ),
-                );
-
-                if (confirmed == true && context.mounted) {
-                  // Clear onboarding data
-                  await OnboardingRepository().clearOnboardingData();
-
-                  // Navigate to onboarding screen
-                  if (context.mounted) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const OnboardingScreen(),
-                      ),
-                    );
-                  }
-                }
-              },
+                ),
+                const SizedBox(height: 32),
+              ],
             ),
-          ],
+          ),
         ),
-        const SizedBox(height: 40),
+
+        // 2. Stats Highlights Row
+        SliverToBoxAdapter(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            decoration: BoxDecoration(
+              color: scheme.surface,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: scheme.outlineVariant.withValues(alpha: 0.4),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: _buildStatItem(
+                    context,
+                    activeDays.toString(),
+                    l10n.statsActiveDays,
+                    Icons.local_fire_department,
+                    Colors.orange,
+                  ),
+                ),
+                Container(width: 1, height: 40, color: scheme.outlineVariant),
+                Expanded(
+                  child: _buildStatItem(
+                    context,
+                    totalHabits.toString(),
+                    l10n.habits,
+                    Icons.check_circle,
+                    Colors.green,
+                  ),
+                ),
+                Container(width: 1, height: 40, color: scheme.outlineVariant),
+                Expanded(
+                  child: _buildStatItem(
+                    context,
+                    totalBadges.toString(),
+                    l10n.achievements,
+                    Icons.emoji_events,
+                    Colors.amber,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+        // 3. Badges Grid
+        for (final entry in groups.entries) ...[
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 12),
+            sliver: SliverToBoxAdapter(
+              child: Row(
+                children: [
+                  Container(
+                    width: 4,
+                    height: 18,
+                    decoration: BoxDecoration(
+                      color: scheme.primary,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    entry.key,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            sliver: SliverGrid(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                childAspectRatio: 0.75, // More compact badges
+              ),
+              delegate: SliverChildBuilderDelegate((context, i) {
+                final b = entry.value[i];
+                final isUnlocked = unlocked.contains(b.id);
+                return _buildBadgeCard(context, b, isUnlocked, scheme);
+              }, childCount: entry.value.length),
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+        ],
+        const SliverToBoxAdapter(child: SizedBox(height: 40)),
       ],
     );
   }
-}
 
-class _SettingsSection extends StatelessWidget {
-  final String title;
-  final List<Widget> children;
-  const _SettingsSection({required this.title, required this.children});
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildStatItem(
+    BuildContext context,
+    String value,
+    String label,
+    IconData icon,
+    Color color,
+  ) {
+    final scheme = Theme.of(context).colorScheme;
+    return Column(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
-              child: Text(title, style: theme.textTheme.labelLarge),
+            Icon(icon, size: 20, color: color),
+            const SizedBox(width: 6),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
+                letterSpacing: -0.5,
+              ),
             ),
-            ...children,
           ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: scheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBadgeCard(
+    BuildContext context,
+    BadgeDef badge,
+    bool isUnlocked,
+    ColorScheme scheme,
+  ) {
+    final repo = GamificationRepository.instance;
+
+    // Calculate progress for locked badges
+    int current = 0;
+    if (!isUnlocked) {
+      switch (badge.metric) {
+        case BadgeMetric.totalHabitCompletions:
+          current = repo.totalHabitCompletions;
+          break;
+        case BadgeMetric.activeDays:
+          current = repo.activeDays;
+          break;
+        case BadgeMetric.totalTransactions:
+          current = repo.totalTransactions;
+          break;
+        case BadgeMetric.totalVisions:
+          current = repo.totalVisions;
+          break;
+        case BadgeMetric.level:
+          current = repo.level;
+          break;
+        case BadgeMetric.xp:
+          current = repo.xp;
+          break;
+      }
+    }
+    final progress = (current / badge.goal).clamp(0.0, 1.0);
+
+    return GestureDetector(
+      onTap: () => _showBadgeDetails(context, badge, isUnlocked),
+      child: Container(
+        decoration: BoxDecoration(
+          // Glassmorphism background
+          gradient: isUnlocked
+              ? LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    scheme.primaryContainer.withValues(alpha: 0.8),
+                    scheme.primaryContainer.withValues(alpha: 0.4),
+                  ],
+                )
+              : LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    scheme.surfaceContainerHighest.withValues(alpha: 0.6),
+                    scheme.surfaceContainerHigh.withValues(alpha: 0.3),
+                  ],
+                ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isUnlocked
+                ? scheme.primary.withValues(alpha: 0.3)
+                : scheme.outlineVariant.withValues(alpha: 0.2),
+            width: 1,
+          ),
+          boxShadow: isUnlocked
+              ? [
+                  BoxShadow(
+                    color: scheme.primary.withValues(alpha: 0.2),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                    spreadRadius: 0,
+                  ),
+                ]
+              : null,
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Badge icon with gradient background
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      gradient: isUnlocked
+                          ? LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [scheme.primary, scheme.tertiary],
+                            )
+                          : null,
+                      color: isUnlocked ? null : scheme.surfaceContainerHighest,
+                      shape: BoxShape.circle,
+                      boxShadow: isUnlocked
+                          ? [
+                              BoxShadow(
+                                color: scheme.primary.withValues(alpha: 0.4),
+                                blurRadius: 8,
+                                spreadRadius: 0,
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Icon(
+                      badge.icon,
+                      size: 22,
+                      color: isUnlocked
+                          ? Colors.white
+                          : scheme.onSurfaceVariant.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  // Badge title
+                  Text(
+                    badge.title,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: isUnlocked
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                      color: isUnlocked
+                          ? scheme.onSurface
+                          : scheme.onSurfaceVariant.withValues(alpha: 0.7),
+                      height: 1.2,
+                    ),
+                  ),
+                  // Progress indicator for locked badges
+                  if (!isUnlocked) ...[
+                    const SizedBox(height: 6),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: progress,
+                          minHeight: 3,
+                          backgroundColor: scheme.outlineVariant.withValues(
+                            alpha: 0.3,
+                          ),
+                          color: scheme.primary.withValues(alpha: 0.6),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${(progress * 100).toInt()}%',
+                      style: TextStyle(
+                        fontSize: 9,
+                        color: scheme.onSurfaceVariant.withValues(alpha: 0.6),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

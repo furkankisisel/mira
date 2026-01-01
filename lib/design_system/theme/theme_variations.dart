@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../tokens/colors.dart';
 import '../tokens/typography.dart';
 import '../tokens/radii.dart';
+import 'package:mira/l10n/app_localizations.dart';
 
 /// Theme variations based on different accent colors from our design system
 class ThemeVariations {
   ThemeVariations._();
 
   /// Available theme variants
+  /// Available theme variants
   static const List<ThemeVariant> variants = [
-    ThemeVariant.world,
+    ThemeVariant.cotton,
+    ThemeVariant.matcha,
+    ThemeVariant.lavender,
+    ThemeVariant.sky,
+    ThemeVariant.rose,
+    ThemeVariant.slate,
     ThemeVariant.ocean,
-    ThemeVariant.golden,
-    ThemeVariant.earth,
+    ThemeVariant.sunset,
     ThemeVariant.forest,
-    ThemeVariant.purple,
   ];
 
   /// Generate light theme for a specific variant
@@ -49,44 +55,94 @@ class ThemeVariations {
       ),
       iconTheme: IconThemeData(color: config.primary),
       appBarTheme: AppBarTheme(
-        backgroundColor: config.lightBackground,
+        backgroundColor: config.lightSurface,
         foregroundColor: scheme.onSurface,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        shadowColor: Colors.black.withValues(alpha: 0.05),
+        toolbarHeight: 64, // Slightly taller to accommodate 26px font
+        centerTitle: false,
+        titleTextStyle: GoogleFonts.outfit(
+          color: scheme.onSurface,
+          fontSize: 26,
+          fontWeight: FontWeight.bold,
+        ),
+        iconTheme: IconThemeData(color: config.primary, size: 28),
+        actionsIconTheme: IconThemeData(color: config.primary, size: 28),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+        ),
       ),
-      navigationBarTheme: variant == ThemeVariant.world
-          ? NavigationBarThemeData(
-              backgroundColor: config.lightSurface,
-              surfaceTintColor: Colors.transparent,
-              indicatorColor: Colors.transparent, // Indicator'ı kaldır
-              iconTheme: WidgetStateProperty.all(
-                const IconThemeData(
-                  color: Colors.transparent,
-                ), // Icon renkleri custom widget'ta ayarlanacak
-              ),
-              labelTextStyle: WidgetStateProperty.all(
-                const TextStyle(
-                  color: Colors.transparent,
-                  fontSize: 12,
-                ), // Label renkleri custom widget'ta ayarlanacak
-              ),
-            )
-          : NavigationBarThemeData(
-              backgroundColor: config.lightSurface,
-              surfaceTintColor: Colors.transparent,
-              indicatorColor: config.primary.withValues(alpha: 0.12),
-              iconTheme: WidgetStateProperty.resolveWith((states) {
-                if (states.contains(WidgetState.selected)) {
-                  return IconThemeData(color: config.primary);
-                }
-                return IconThemeData(color: scheme.onSurfaceVariant);
-              }),
-              labelTextStyle: WidgetStateProperty.resolveWith((states) {
-                if (states.contains(WidgetState.selected)) {
-                  return TextStyle(color: config.primary, fontSize: 12);
-                }
-                return TextStyle(color: scheme.onSurfaceVariant, fontSize: 12);
-              }),
-            ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: config.lightSurface,
+        surfaceTintColor: Colors.transparent,
+        indicatorColor: config.primary.withValues(alpha: 0.12),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return IconThemeData(color: config.primary);
+          }
+          return IconThemeData(color: scheme.onSurfaceVariant);
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return TextStyle(color: config.primary, fontSize: 12);
+          }
+          return TextStyle(color: scheme.onSurfaceVariant, fontSize: 12);
+        }),
+      ),
+      // --- BUTTON THEMES (Cotton Style) ---
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          textStyle: GoogleFonts.outfit(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+          elevation: 0,
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          textStyle: GoogleFonts.outfit(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+          elevation: 2, // Soft lift
+          shadowColor: config.primary.withValues(alpha: 0.3),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          textStyle: GoogleFonts.outfit(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+          side: BorderSide(color: config.primary.withValues(alpha: 0.5)),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: GoogleFonts.outfit(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
     );
   }
 
@@ -128,104 +184,202 @@ class ThemeVariations {
       ),
       iconTheme: IconThemeData(color: config.primary),
       appBarTheme: AppBarTheme(
-        backgroundColor: config.darkBackground,
+        backgroundColor: config.darkSurface,
         foregroundColor: scheme.onSurface,
         elevation: 0,
+        scrolledUnderElevation: 0,
+        shadowColor: Colors.black.withValues(alpha: 0.2),
+        toolbarHeight: 64,
+        centerTitle: false,
+        titleTextStyle: GoogleFonts.outfit(
+          color: scheme.onSurface,
+          fontSize: 26,
+          fontWeight: FontWeight.bold,
+        ),
+        iconTheme: IconThemeData(color: config.primary, size: 28),
+        actionsIconTheme: IconThemeData(color: config.primary, size: 28),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+        ),
       ),
-      navigationBarTheme: variant == ThemeVariant.world
-          ? NavigationBarThemeData(
-              backgroundColor: config.darkSurface,
-              surfaceTintColor: Colors.transparent,
-              indicatorColor: Colors.transparent, // Indicator'ı kaldır
-              iconTheme: WidgetStateProperty.all(
-                const IconThemeData(
-                  color: Colors.transparent,
-                ), // Icon renkleri custom widget'ta ayarlanacak
-              ),
-              labelTextStyle: WidgetStateProperty.all(
-                const TextStyle(
-                  color: Colors.transparent,
-                  fontSize: 12,
-                ), // Label renkleri custom widget'ta ayarlanacak
-              ),
-            )
-          : NavigationBarThemeData(
-              backgroundColor: config.darkSurface,
-              surfaceTintColor: Colors.transparent,
-              indicatorColor: config.primary.withValues(alpha: 0.24),
-              iconTheme: WidgetStateProperty.resolveWith((states) {
-                if (states.contains(WidgetState.selected)) {
-                  return IconThemeData(color: config.primary);
-                }
-                return IconThemeData(color: scheme.onSurfaceVariant);
-              }),
-              labelTextStyle: WidgetStateProperty.resolveWith((states) {
-                if (states.contains(WidgetState.selected)) {
-                  return TextStyle(color: config.primary, fontSize: 12);
-                }
-                return TextStyle(color: scheme.onSurfaceVariant, fontSize: 12);
-              }),
-            ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: config.darkSurface,
+        surfaceTintColor: Colors.transparent,
+        indicatorColor: config.primary.withValues(alpha: 0.24),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return IconThemeData(color: config.primary);
+          }
+          return IconThemeData(color: scheme.onSurfaceVariant);
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return TextStyle(color: config.primary, fontSize: 12);
+          }
+          return TextStyle(color: scheme.onSurfaceVariant, fontSize: 12);
+        }),
+      ),
+      // --- BUTTON THEMES (Cotton Style) ---
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          textStyle: GoogleFonts.outfit(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+          elevation: 0,
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          textStyle: GoogleFonts.outfit(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+          elevation: 2,
+          shadowColor: Colors.black.withValues(alpha: 0.3),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          textStyle: GoogleFonts.outfit(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+          side: BorderSide(color: config.primary.withValues(alpha: 0.5)),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: GoogleFonts.outfit(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
     );
   }
 }
 
 /// Available theme variants
 enum ThemeVariant {
-  world('Dünya', 'Tüm renklerin harmonisi'),
-  ocean('Okyanus', 'Sakin mavi tema'),
-  golden('Altın', 'Sıcak altın tema'),
-  earth('Toprak', 'Toprak renkleri'),
-  forest('Orman', 'Doğal yeşil tema'),
-  purple('Mistik', 'Mistik mor tema');
+  cotton,
+  matcha,
+  lavender,
+  sky,
+  rose,
+  slate,
+  ocean,
+  sunset,
+  forest;
 
-  const ThemeVariant(this.displayName, this.description);
+  String getDisplayName(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return switch (this) {
+      ThemeVariant.cotton => l10n.themeCotton,
+      ThemeVariant.matcha => l10n.themeMatcha,
+      ThemeVariant.lavender => l10n.themeLavender,
+      ThemeVariant.sky => l10n.themeSky,
+      ThemeVariant.rose => l10n.themeRose,
+      ThemeVariant.slate => l10n.themeSlate,
+      ThemeVariant.ocean => l10n.themeOcean,
+      ThemeVariant.sunset => l10n.themeSunset,
+      ThemeVariant.forest => l10n.themeForest,
+    };
+  }
 
-  final String displayName;
-  final String description;
+  String getDescription(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return switch (this) {
+      ThemeVariant.cotton => l10n.themeCottonDesc,
+      ThemeVariant.matcha => l10n.themeMatchaDesc,
+      ThemeVariant.lavender => l10n.themeLavenderDesc,
+      ThemeVariant.sky => l10n.themeSkyDesc,
+      ThemeVariant.rose => l10n.themeRoseDesc,
+      ThemeVariant.slate => l10n.themeSlateDesc,
+      ThemeVariant.ocean => l10n.themeOceanDesc,
+      ThemeVariant.sunset => l10n.themeSunsetDesc,
+      ThemeVariant.forest => l10n.themeForestDesc,
+    };
+  }
 }
 
 /// Extension to get theme configuration for each variant
 extension ThemeVariantConfig on ThemeVariant {
   ThemeConfig get config => switch (this) {
-    ThemeVariant.world => ThemeConfig(
-      primary: AppColors.seed, // Ana renk olarak yeşil
-      lightBackground: const Color(0xFFFAFAFA), // Modern beyaz
-      lightSurface: const Color(0xFFFFFFFF), // Pure beyaz
-      darkBackground: const Color(0xFF121212), // Modern siyah
-      darkSurface: const Color(0xFF1E1E1E), // Hafif açık siyah
-      isMultiColor: true, // Çoklu renk sistemi aktif
+    ThemeVariant.cotton => ThemeConfig(
+      primary: AppColors.seed,
+      lightBackground: const Color(0xFFFAFAFA),
+      lightSurface: const Color(0xFFFFFFFF),
+      darkBackground: const Color(0xFF121212),
+      darkSurface: const Color(0xFF1E1E1E),
+    ),
+    ThemeVariant.matcha => ThemeConfig(
+      primary: AppColors.accentMatcha,
+      lightBackground: const Color(0xFFFAFAFA),
+      lightSurface: const Color(0xFFFFFFFF),
+      darkBackground: const Color(0xFF121212),
+      darkSurface: const Color(0xFF1E1E1E),
+    ),
+    ThemeVariant.lavender => ThemeConfig(
+      primary: AppColors.accentLavender,
+      lightBackground: const Color(0xFFFAFAFA),
+      lightSurface: const Color(0xFFFFFFFF),
+      darkBackground: const Color(0xFF121212),
+      darkSurface: const Color(0xFF1E1E1E),
+    ),
+    ThemeVariant.sky => ThemeConfig(
+      primary: AppColors.accentSky,
+      lightBackground: const Color(0xFFFAFAFA),
+      lightSurface: const Color(0xFFFFFFFF),
+      darkBackground: const Color(0xFF121212),
+      darkSurface: const Color(0xFF1E1E1E),
+    ),
+    ThemeVariant.rose => ThemeConfig(
+      primary: AppColors.accentRose,
+      lightBackground: const Color(0xFFFAFAFA),
+      lightSurface: const Color(0xFFFFFFFF),
+      darkBackground: const Color(0xFF121212),
+      darkSurface: const Color(0xFF1E1E1E),
+    ),
+    ThemeVariant.slate => ThemeConfig(
+      primary: AppColors.accentSlate,
+      lightBackground: const Color(0xFFFAFAFA),
+      lightSurface: const Color(0xFFFFFFFF),
+      darkBackground: const Color(0xFF121212),
+      darkSurface: const Color(0xFF1E1E1E),
     ),
     ThemeVariant.ocean => ThemeConfig(
-      primary: AppColors.accentBlue,
+      primary: AppColors.accentOcean,
       lightBackground: const Color(0xFFFAFAFA),
       lightSurface: const Color(0xFFFFFFFF),
       darkBackground: const Color(0xFF121212),
       darkSurface: const Color(0xFF1E1E1E),
     ),
-    ThemeVariant.golden => ThemeConfig(
-      primary: AppColors.accentGold,
-      lightBackground: const Color(0xFFFAFAFA),
-      lightSurface: const Color(0xFFFFFFFF),
-      darkBackground: const Color(0xFF121212),
-      darkSurface: const Color(0xFF1E1E1E),
-    ),
-    ThemeVariant.earth => ThemeConfig(
-      primary: AppColors.accentClay,
+    ThemeVariant.sunset => ThemeConfig(
+      primary: AppColors.accentSunset,
       lightBackground: const Color(0xFFFAFAFA),
       lightSurface: const Color(0xFFFFFFFF),
       darkBackground: const Color(0xFF121212),
       darkSurface: const Color(0xFF1E1E1E),
     ),
     ThemeVariant.forest => ThemeConfig(
-      primary: AppColors.accentGreenDark,
-      lightBackground: const Color(0xFFFAFAFA),
-      lightSurface: const Color(0xFFFFFFFF),
-      darkBackground: const Color(0xFF121212),
-      darkSurface: const Color(0xFF1E1E1E),
-    ),
-    ThemeVariant.purple => ThemeConfig(
-      primary: AppColors.accentPurple,
+      primary: AppColors.accentForest,
       lightBackground: const Color(0xFFFAFAFA),
       lightSurface: const Color(0xFFFFFFFF),
       darkBackground: const Color(0xFF121212),
@@ -242,7 +396,6 @@ class ThemeConfig {
     required this.lightSurface,
     required this.darkBackground,
     required this.darkSurface,
-    this.isMultiColor = false,
   });
 
   final Color primary;
@@ -250,14 +403,4 @@ class ThemeConfig {
   final Color lightSurface;
   final Color darkBackground;
   final Color darkSurface;
-  final bool isMultiColor;
-
-  /// Get accent colors for multi-color themes
-  List<Color> get accentColors => [
-    AppColors.accentBlue,
-    AppColors.accentGold,
-    AppColors.accentClay,
-    AppColors.accentGreenDark,
-    AppColors.accentPurple,
-  ];
 }

@@ -95,7 +95,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     final currencyFmt = NumberFormat.simpleCurrency(locale: localeName);
     final currencySymbol = currencyFmt.currencySymbol;
     final dateLabel = DateFormat.yMMMd(localeName).format(_selectedDate);
-    final isWorld = widget.variant == ThemeVariant.world;
+    final isWorld = false;
 
     // Theme-based background color
     final theme = Theme.of(context);
@@ -354,13 +354,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         ],
       ),
     );
-    if (isWorld) {
-      final brightness = Theme.of(context).brightness;
-      final themed = brightness == Brightness.dark
-          ? ThemeVariations.dark(ThemeVariant.ocean)
-          : ThemeVariations.light(ThemeVariant.ocean);
-      return Theme(data: themed, child: scaffold);
-    }
+
     return scaffold;
   }
 

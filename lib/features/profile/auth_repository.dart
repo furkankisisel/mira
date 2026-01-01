@@ -2,11 +2,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'profile_repository.dart';
 
 class AuthRepository extends ChangeNotifier {
   AuthRepository._();
   static final AuthRepository instance = AuthRepository._();
+
+  static const _prefGuestKey = 'auth_is_guest';
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: <String>[
@@ -17,6 +20,7 @@ class AuthRepository extends ChangeNotifier {
   );
 
   GoogleSignInAccount? _account;
+  bool _isGuest = false;
   String? _lastError;
   FirebaseAuth? get _firebaseAuth {
     try {
@@ -30,10 +34,15 @@ class AuthRepository extends ChangeNotifier {
   GoogleSignInAccount? get account => _account;
   String? get lastError => _lastError;
 
-  bool get isSignedIn => _account != null;
+  bool get isSignedIn => _account != null || _isGuest;
 
   Future<void> initialize() async {
     try {
+      // Restore guest state
+      final prefs = await SharedPreferences.getInstance();
+      _isGuest = prefs.getBool(_prefGuestKey) ?? false;
+
+      // Try silent Google Sign-In
       _account = await _googleSignIn.signInSilently();
       notifyListeners();
     } catch (_) {
@@ -87,6 +96,13 @@ class AuthRepository extends ChangeNotifier {
     try {
       _account = await _googleSignIn.signIn();
       if (_account == null) return null;
+
+      // Ensure guest mode is off if we sign in with Google
+      if (_isGuest) {
+        _isGuest = false;
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove(_prefGuestKey);
+      }
 
       // Exchange Google tokens for Firebase credential
       final googleAuth = await _account!.authentication;
@@ -152,8 +168,45 @@ class AuthRepository extends ChangeNotifier {
     }
   }
 
+  Future<void> signInAnonymously() async {
+    try {
+      _isGuest = true;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_prefGuestKey, true);
+
+      // Also sign in to Firebase anonymously for backend features if needed
+      final fbAuth = _firebaseAuth;
+      if (fbAuth != null) {
+        try {
+          await fbAuth.signInAnonymously();
+        } catch (_) {
+          // Ignore firebase errors for guest mode if strictly local
+        }
+      }
+
+      // Set default profile
+      try {
+        final repo = ProfileRepository.instance;
+        await repo.setName('Misafir');
+        await repo.setAvatarUrl(null);
+      } catch (_) {}
+
+      notifyListeners();
+    } catch (e) {
+      _lastError = e.toString();
+      notifyListeners();
+    }
+  }
+
   Future<void> signOut() async {
     try {
+      // Clear guest state
+      if (_isGuest) {
+        _isGuest = false;
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove(_prefGuestKey);
+      }
+
       // Sign out from Firebase and revoke Google session
       final fbAuth = _firebaseAuth;
       if (fbAuth != null) {

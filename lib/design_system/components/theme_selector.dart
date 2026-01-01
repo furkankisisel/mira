@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../design_system/theme/theme_variations.dart';
+import 'package:mira/l10n/app_localizations.dart';
 import 'theme_preview.dart';
 
 /// Theme selector widget for choosing theme variants
@@ -51,7 +52,7 @@ class ThemeSelector extends StatelessWidget {
                         const SizedBox(height: 6),
                         Flexible(
                           child: Text(
-                            variant.displayName,
+                            variant.getDisplayName(context),
                             style: theme.textTheme.bodySmall?.copyWith(
                               fontWeight: isSelected
                                   ? FontWeight.w600
@@ -78,7 +79,7 @@ class ThemeSelector extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            'Tema Detayları',
+            AppLocalizations.of(context)!.themeDetails,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w600,
               color: scheme.onSurfaceVariant,
@@ -128,13 +129,13 @@ class ThemeSelector extends StatelessWidget {
                 ),
               ),
               title: Text(
-                variant.displayName,
+                variant.getDisplayName(context),
                 style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
               subtitle: Text(
-                variant.description,
+                variant.getDescription(context),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: scheme.onSurfaceVariant,
                 ),
@@ -153,12 +154,15 @@ class ThemeSelector extends StatelessWidget {
 
   IconData _getIconForVariant(ThemeVariant variant) {
     return switch (variant) {
-      ThemeVariant.world => Icons.public,
-      ThemeVariant.ocean => Icons.waves,
-      ThemeVariant.golden => Icons.wb_sunny,
-      ThemeVariant.earth => Icons.landscape,
+      ThemeVariant.cotton => Icons.spa,
+      ThemeVariant.matcha => Icons.eco,
+      ThemeVariant.lavender => Icons.local_florist,
+      ThemeVariant.sky => Icons.cloud_queue,
+      ThemeVariant.rose => Icons.filter_vintage,
+      ThemeVariant.slate => Icons.layers,
+      ThemeVariant.ocean => Icons.water_drop,
+      ThemeVariant.sunset => Icons.wb_twilight,
       ThemeVariant.forest => Icons.forest,
-      ThemeVariant.purple => Icons.auto_awesome,
     };
   }
 }

@@ -105,9 +105,13 @@ class _MoodSubEmotionScreenState extends State<MoodSubEmotionScreen>
                     itemCount: subEmotions.length,
                     itemBuilder: (context, index) {
                       final subEmotion = subEmotions[index];
+                      final isSelected = moodState.selectedSubEmotions.contains(
+                        subEmotion,
+                      );
                       return _SubEmotionCard(
                         subEmotion: subEmotion,
                         moodLevel: moodState.selectedMood!,
+                        isSelected: isSelected,
                         onTap: () => _onSubEmotionSelected(subEmotion),
                         animationDelay: Duration(milliseconds: 100 * index),
                       );
@@ -119,13 +123,22 @@ class _MoodSubEmotionScreenState extends State<MoodSubEmotionScreen>
           ),
         ),
       ),
+      floatingActionButton: moodState.selectedSubEmotions.isNotEmpty
+          ? FloatingActionButton.extended(
+              onPressed: _onContinue,
+              label: Text(l10n.continueText),
+              icon: const Icon(Icons.arrow_forward),
+            )
+          : null,
     );
   }
 
   void _onSubEmotionSelected(SubEmotion subEmotion) {
-    final moodState = context.read<MoodFlowState>();
-    moodState.setSubEmotion(subEmotion);
+    context.read<MoodFlowState>().toggleSubEmotion(subEmotion);
+  }
 
+  void _onContinue() {
+    final moodState = context.read<MoodFlowState>();
     Navigator.of(context).push(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
@@ -157,12 +170,14 @@ class _MoodSubEmotionScreenState extends State<MoodSubEmotionScreen>
 class _SubEmotionCard extends StatefulWidget {
   final SubEmotion subEmotion;
   final MoodLevel moodLevel;
+  final bool isSelected;
   final VoidCallback onTap;
   final Duration animationDelay;
 
   const _SubEmotionCard({
     required this.subEmotion,
     required this.moodLevel,
+    required this.isSelected,
     required this.onTap,
     required this.animationDelay,
   });
@@ -263,13 +278,17 @@ class _SubEmotionCardState extends State<_SubEmotionCard>
                           Icon(
                             _getSubEmotionIcon(widget.subEmotion),
                             size: 32,
-                            color: Colors.white,
+                            color: widget.isSelected
+                                ? Colors.white
+                                : theme.colorScheme.onSurface,
                           ),
                           const SizedBox(height: 12),
                           Text(
                             _getSubEmotionTitle(widget.subEmotion, l10n),
                             style: theme.textTheme.titleMedium?.copyWith(
-                              color: Colors.white,
+                              color: widget.isSelected
+                                  ? Colors.white
+                                  : theme.colorScheme.onSurface,
                               fontWeight: FontWeight.w600,
                             ),
                             textAlign: TextAlign.center,
@@ -367,6 +386,36 @@ class _SubEmotionCardState extends State<_SubEmotionCard>
         return Icons.favorite;
       case SubEmotion.loving:
         return Icons.volunteer_activism;
+      case SubEmotion.overwhelmed:
+        return Icons.waves;
+      case SubEmotion.lonely:
+        return Icons.person_off;
+      case SubEmotion.regretful:
+        return Icons.undo;
+      case SubEmotion.insecure:
+        return Icons.lock_open;
+      case SubEmotion.guilty:
+        return Icons.gavel;
+      case SubEmotion.bored:
+        return Icons.hourglass_empty;
+      case SubEmotion.numb:
+        return Icons.ac_unit;
+      case SubEmotion.confused:
+        return Icons.psychology_alt;
+      case SubEmotion.distracted:
+        return Icons.notifications_off;
+      case SubEmotion.proud:
+        return Icons.verified;
+      case SubEmotion.confident:
+        return Icons.shield;
+      case SubEmotion.hopeful:
+        return Icons.wb_sunny;
+      case SubEmotion.euphoric:
+        return Icons.rocket_launch;
+      case SubEmotion.blessed:
+        return Icons.auto_awesome;
+      case SubEmotion.unstoppable:
+        return Icons.bolt;
     }
   }
 
@@ -433,6 +482,36 @@ class _SubEmotionCardState extends State<_SubEmotionCard>
         return l10n.subEmotionGrateful;
       case SubEmotion.loving:
         return l10n.subEmotionLoving;
+      case SubEmotion.overwhelmed:
+        return l10n.subEmotionOverwhelmed;
+      case SubEmotion.lonely:
+        return l10n.subEmotionLonely;
+      case SubEmotion.regretful:
+        return l10n.subEmotionRegretful;
+      case SubEmotion.insecure:
+        return l10n.subEmotionInsecure;
+      case SubEmotion.guilty:
+        return l10n.subEmotionGuilty;
+      case SubEmotion.bored:
+        return l10n.subEmotionBored;
+      case SubEmotion.numb:
+        return l10n.subEmotionNumb;
+      case SubEmotion.confused:
+        return l10n.subEmotionConfused;
+      case SubEmotion.distracted:
+        return l10n.subEmotionDistracted;
+      case SubEmotion.proud:
+        return l10n.subEmotionProud;
+      case SubEmotion.confident:
+        return l10n.subEmotionConfident;
+      case SubEmotion.hopeful:
+        return l10n.subEmotionHopeful;
+      case SubEmotion.euphoric:
+        return l10n.subEmotionEuphoric;
+      case SubEmotion.blessed:
+        return l10n.subEmotionBlessed;
+      case SubEmotion.unstoppable:
+        return l10n.subEmotionUnstoppable;
     }
   }
 }

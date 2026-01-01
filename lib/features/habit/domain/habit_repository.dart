@@ -200,6 +200,11 @@ class HabitRepository extends ChangeNotifier {
   }
 
   Future<void> addHabit(Habit habit) async {
+    // Auto-set as focus if this is the first habit
+    if (_habits.isEmpty) {
+      habit.isFocus = true;
+      habit.focusSetAt = DateTime.now();
+    }
     _habits.add(habit);
     await _persistAndNotify();
   }
@@ -257,13 +262,33 @@ class HabitRepository extends ChangeNotifier {
   }
 
   Future<void> removeHabit(String id) async {
-    final habit = findById(id);
-    if (habit != null) {
-      // Cancel reminder before removing
-      await NotificationService.instance.cancelHabitReminder(habit);
+    print('[HabitRepository] removeHabit called for id: $id');
+    try {
+      final habit = findById(id);
+      if (habit != null) {
+        // Cancel reminder before removing
+        print(
+          '[HabitRepository] Cancelling notification for ${habit.title} (${habit.id})',
+        );
+        try {
+          await NotificationService.instance.cancelHabitReminder(habit);
+          print('[HabitRepository] Notification cancelled');
+        } catch (e) {
+          print('[HabitRepository] Error cancelling notification: $e');
+        }
+      } else {
+        print('[HabitRepository] Habit not found for id: $id');
+      }
+      print('[HabitRepository] Removing from _habits list');
+      _habits.removeWhere((h) => h.id == id);
+      print('[HabitRepository] Persisting changes...');
+      await _persistAndNotify();
+      print('[HabitRepository] removeHabit completed successfully');
+    } catch (e, stack) {
+      print('[HabitRepository] CRITICAL ERROR in removeHabit: $e');
+      print(stack);
+      rethrow;
     }
-    _habits.removeWhere((h) => h.id == id);
-    await _persistAndNotify();
   }
 
   Future<void> insertHabit(int index, Habit habit) async {
@@ -538,10 +563,57 @@ class HabitRepository extends ChangeNotifier {
     _persistAndNotify();
   }
 
-  void _ensureToday() {
+  Future<void> setAsFocus(String habitId) async {
     final now = DateTime.now();
     for (final h in _habits) {
+      if (h.id == habitId) {
+        h.isFocus = true;
+        h.focusSetAt = now;
+      } else {
+        h.isFocus = false;
+        // Keep focusMessage/setAt or clear them?
+        // Clearing them keeps it clean.
+        h.focusMessage = null;
+        h.focusSetAt = null;
+      }
+    }
+    await _persistAndNotify();
+  }
+
+  Future<void> clearFocus() async {
+    for (final h in _habits) {
+      h.isFocus = false;
+      h.focusMessage = null;
+      h.focusSetAt = null;
+    }
+    await _persistAndNotify();
+  }
+
+  Future<void> updateFocusMessage(String habitId, String message) async {
+    final habit = findById(habitId);
+    if (habit != null) {
+      habit.focusMessage = message;
+      // Also potentially update focusSetAt if not set?
+      // Usually focus is already set.
+      await _persistAndNotify();
+    }
+  }
+
+  void _ensureToday() {
+    final now = DateTime.now();
+    final today = _dateStr(now);
+    for (final h in _habits) {
       h.applyDailyReset(now);
+
+      // Auto-reset focus if it's from a different day
+      if (h.isFocus && h.focusSetAt != null) {
+        final setDate = _dateStr(h.focusSetAt!);
+        if (setDate != today) {
+          h.isFocus = false;
+          h.focusMessage = null;
+          h.focusSetAt = null;
+        }
+      }
     }
   }
 

@@ -50,7 +50,7 @@ class _MoodReasonScreenState extends State<MoodReasonScreen>
     final theme = Theme.of(context);
     final moodState = context.watch<MoodFlowState>();
 
-    if (moodState.selectedSubEmotion == null) {
+    if (moodState.selectedSubEmotions.isEmpty) {
       if (!_didSchedulePop) {
         _didSchedulePop = true;
         WidgetsBinding.instance.addPostFrameCallback((_) {

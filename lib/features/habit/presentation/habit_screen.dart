@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
-import 'widgets/fab_menu.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import '../../mood/data/detailed_mood_repository.dart';
+import '../../mood/data/mood_models.dart';
+import '../../mood/presentation/mood_selection_screen.dart';
+import '../../../design_system/theme/theme_variations.dart';
+import '../../../design_system/tokens/colors.dart';
 import 'widgets/daily_task_dialog.dart';
 import 'widgets/list_creation_dialog.dart';
 import 'widgets/habit_card.dart';
+import 'widgets/focus_card.dart';
 import 'simple_habit_screen.dart';
 
 import 'advanced_habit_screen.dart';
@@ -16,8 +23,11 @@ import '../domain/list_repository.dart';
 import '../domain/list_model.dart';
 import '../domain/daily_task_repository.dart';
 import '../domain/daily_task_model.dart';
+
+import '../data/focus_motivation_service.dart';
 import '../../vision/data/vision_repository.dart';
 import '../../vision/data/vision_model.dart';
+import '../../../core/config/api_config.dart';
 // removed unused imports
 
 /// Represents a grouped item for the habit/task list view
@@ -39,22 +49,59 @@ class _HabitItem extends _GroupedItem {
   _HabitItem(this.habit);
 }
 
+enum Mood { terrible, bad, ok, good, great }
+
+IconData _iconFor(Mood m) => switch (m) {
+  Mood.terrible => Icons.sentiment_very_dissatisfied,
+  Mood.bad => Icons.sentiment_dissatisfied,
+  Mood.ok => Icons.sentiment_neutral,
+  Mood.good => Icons.sentiment_satisfied,
+  Mood.great => Icons.sentiment_very_satisfied,
+};
+
+Color _colorFor(Mood m) => switch (m) {
+  Mood.terrible => Colors.redAccent,
+  Mood.bad => Colors.deepOrange,
+  Mood.ok => AppColors.accentSand,
+  Mood.good => AppColors.accentBlue,
+  Mood.great => AppColors.accentGold,
+};
+
 class HabitScreen extends StatefulWidget {
-  const HabitScreen({super.key});
+  const HabitScreen({super.key, this.variant = ThemeVariant.cotton});
+  final ThemeVariant variant;
   @override
   State<HabitScreen> createState() => HabitScreenState();
 }
 
-class HabitScreenState extends State<HabitScreen> {
+class HabitScreenState extends State<HabitScreen>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  final _moodRepo = DetailedMoodRepository();
+  Mood? _currentMood;
+
   DateTime _selected = DateTime(
     DateTime.now().year,
     DateTime.now().month,
     DateTime.now().day,
   );
-  bool _isFabExpanded = false;
+  bool _isHeaderExpanded = false;
   final ScrollController _dateScrollController = ScrollController();
   // Bugünden 20 gün önce ve 20 gün sonrasını göster (toplam 41 gün)
   static const int _dateRangeDays = 20;
+
+  Future<void> _initMood() async {
+    try {
+      final latest = await _moodRepo.getLatestMoodEntry();
+      if (latest != null) {
+        if (mounted)
+          setState(() => _currentMood = _toDashboardMood(latest.mood));
+      }
+    } catch (_) {}
+  }
+
   DateTime get _today =>
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   List<DateTime> get _dateRange => List.generate(
@@ -66,6 +113,11 @@ class HabitScreenState extends State<HabitScreen> {
   final ListRepository _listRepo = ListRepository.instance;
   final DailyTaskRepository _taskRepo = DailyTaskRepository.instance;
 
+  // Focus state
+  String? _focusAiMessage;
+  bool _isLoadingFocusAi = false;
+  FocusMotivationService? _focusMotivationService;
+
   // Filter state
   Set<HabitType> _selectedTypes = {
     HabitType.simple,
@@ -76,10 +128,13 @@ class HabitScreenState extends State<HabitScreen> {
   };
   CompletionFilter _completionFilter = CompletionFilter.all;
   String? _selectedListId; // null = all lists
+  bool _isOtherItemsExpanded =
+      false; // Collapse non-focus items when focus is active
 
   @override
   void initState() {
     super.initState();
+    _initMood();
     // Repository'yi başlat ve hazır olunca ekranı yenile
     _repo.initialize().then((_) {
       if (mounted) setState(() {});
@@ -94,6 +149,12 @@ class HabitScreenState extends State<HabitScreen> {
     });
     _taskRepo.addListener(_onRepoChange);
 
+    // Initialize AI service
+    final apiKey = ApiConfig.groqApiKey;
+    if (apiKey.isNotEmpty) {
+      _focusMotivationService = FocusMotivationService(apiKey: apiKey);
+    }
+
     // Scroll date row to make today's item visible on first show
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => _scrollDateRowToSelected(),
@@ -103,6 +164,269 @@ class HabitScreenState extends State<HabitScreen> {
   void _onRepoChange() {
     if (!mounted) return;
     setState(() {});
+    _loadFocusAiMessage();
+  }
+
+  (Habit?, DailyTask?) _findFocusedItem() {
+    try {
+      final habit = _repo.habits.firstWhere((h) => h.isFocus);
+      return (habit, null);
+    } catch (_) {}
+    try {
+      final task = _taskRepo.allTasks.firstWhere((t) => t.isFocus);
+      return (null, task);
+    } catch (_) {}
+    return (null, null);
+  }
+
+  Future<void> _loadFocusAiMessage({bool forceRefresh = false}) async {
+    final (habit, task) = _findFocusedItem();
+    if (habit == null && task == null) {
+      if (mounted) {
+        setState(() {
+          _focusAiMessage = null;
+          _isLoadingFocusAi = false;
+        });
+      }
+      return;
+    }
+
+    // Use cached message if available (unless forceRefresh is true)
+    final existingMessage = habit?.focusMessage ?? task?.focusMessage;
+    if (existingMessage != null && !forceRefresh) {
+      if (mounted) {
+        setState(() {
+          _focusAiMessage = existingMessage;
+          _isLoadingFocusAi = false;
+        });
+      }
+      return;
+    }
+
+    // Generate new AI message
+    if (_focusMotivationService == null) {
+      setState(() {
+        _focusAiMessage = _getLocalMotivationMessage(
+          habit?.title ?? task?.title ?? '',
+        );
+        _isLoadingFocusAi = false;
+      });
+      return;
+    }
+
+    setState(() => _isLoadingFocusAi = true);
+
+    try {
+      String title = '';
+      String? description;
+      int currentProgress = 0;
+      int targetCount = 1;
+      String? unit;
+      bool isCompleted = false;
+      int streak = 0;
+      String? category;
+      String? startDate;
+      String? frequency;
+      int missedDays = 0;
+      String? habitTypeStr;
+
+      if (habit != null) {
+        title = habit.title;
+        description = habit.description;
+        // Context logic
+        if (habit.habitType == HabitType.simple ||
+            habit.habitType == HabitType.checkbox) {
+          streak = habit.currentStreak;
+          currentProgress = habit.isCompleted ? 1 : 0;
+        } else {
+          currentProgress = habit.currentStreak;
+          streak = 0;
+        }
+        targetCount = habit.targetCount;
+        unit = habit.unit;
+        isCompleted = habit.isCompleted;
+        category = habit.categoryName;
+        startDate = habit.startDate;
+        frequency = habit.frequency;
+
+        // Calculate missed days
+        missedDays = _consecutiveMissedDaysBefore(habit, DateTime.now());
+
+        // Get habit type string
+        habitTypeStr = switch (habit.habitType) {
+          HabitType.timer => 'timer (zamanlayıcı)',
+          HabitType.numerical => 'numerical (sayısal)',
+          HabitType.subtasks => 'subtasks (alt görevler)',
+          HabitType.simple || HabitType.checkbox => 'simple (basit)',
+        };
+      } else if (task != null) {
+        title = task.title;
+        description = task.description;
+        isCompleted = task.isDone;
+        startDate = task.dateKey;
+        habitTypeStr = 'daily_task (günlük görev)';
+      }
+
+      if (title.isEmpty) {
+        setState(() => _isLoadingFocusAi = false);
+        return;
+      }
+
+      final message = await _focusMotivationService!.generateMotivation(
+        focusTitle: title,
+        focusDescription: description,
+        type: habit != null ? 'habit' : 'task',
+        currentProgress: currentProgress,
+        targetCount: targetCount,
+        unit: unit,
+        isCompleted: isCompleted,
+        streak: streak,
+        category: category,
+        startDate: startDate,
+        frequency: frequency,
+        missedDays: missedDays,
+        habitType: habitTypeStr,
+      );
+
+      if (habit != null) {
+        await _repo.updateFocusMessage(habit.id, message);
+      } else if (task != null) {
+        await _taskRepo.updateFocusMessage(task.id, message);
+      }
+
+      if (mounted) {
+        setState(() {
+          _focusAiMessage = message;
+          _isLoadingFocusAi = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _focusAiMessage = _getLocalMotivationMessage(
+            habit?.title ?? task?.title ?? '',
+          );
+          _isLoadingFocusAi = false;
+        });
+      }
+    }
+  }
+
+  String _getLocalMotivationMessage(String title) {
+    final messages = [
+      'Bugün $title için harika bir gün! 🌟',
+      'Küçük adımlarla başla, büyük hedeflere ulaş 💪',
+      'Her yolculuk tek bir adımla başlar!',
+      '$title seni bekliyor 🚀',
+    ];
+    return messages[DateTime.now().second % messages.length];
+  }
+
+  Future<void> _setAsFocus(String id, {bool isHabit = true}) async {
+    if (isHabit) {
+      await _repo.setAsFocus(id);
+      await _taskRepo.clearFocus();
+    } else {
+      await _taskRepo.setAsFocus(id);
+      await _repo.clearFocus();
+    }
+    _loadFocusAiMessage();
+  }
+
+  Future<void> _clearFocus() async {
+    await _repo.clearFocus();
+    await _taskRepo.clearFocus();
+    setState(() {
+      _focusAiMessage = null;
+    });
+  }
+
+  // _ensureAutoFocus removed. Logic is simplified: if no focus, no card.
+
+  bool _isHabitScheduledForDate(Habit habit, DateTime date) {
+    // Logic similar to _isHabitCompletedOnDate but checking schedule
+    final String startDateStr = habit.startDate;
+    final DateTime startDate = DateTime(
+      int.parse(startDateStr.substring(0, 4)),
+      int.parse(startDateStr.substring(5, 7)),
+      int.parse(startDateStr.substring(8, 10)),
+    );
+    if (date.isBefore(startDate)) return false;
+
+    final dayKey = _dayKeyFromDate(date);
+    if (habit.scheduledDates != null && habit.scheduledDates!.isNotEmpty) {
+      return habit.scheduledDates!.contains(dayKey);
+    }
+    return true; // Simple habits usually everyday if no schedule?
+    // Actually Habit model default is everyday if frequencies logic is handled elsewhere.
+    // Assuming if scheduledDates is null/empty it means daily or simple.
+  }
+
+  /// Builds the FocusCard widget if a focus is set for today
+  Widget? _buildFocusCardIfNeeded() {
+    final (focusHabit, focusTask) = _findFocusedItem();
+    if (focusHabit == null && focusTask == null) return null;
+
+    // Only show focus for today
+    if (!_isSameDay(_selected, DateTime.now())) return null;
+
+    // Temporary FocusItem wrapper for UI compatibility if FocusCard still expects it
+    // But we should update FocusCard to accept habit/task directly?
+    // The previous code passed `focusItem: focus` which was FocusItem.
+    // It also passed habit/dailyTask.
+    // We should simplify FocusCard to not need FocusItem logic if possible.
+    // Or mock it?
+    // I will check FocusCard signature.
+    // Assuming for now I can pass null for focusItem if I update FocusCard,
+    // or I'll create a fake one if I can't touch FocusCard yet.
+    // But I plan to refactor FocusCard too.
+    // For now, let's assume FocusCard will be updated to optional focusItem or handled.
+
+    return FocusCard(
+      // focusItem: focus, // Deprecated/Removed
+      habit: focusHabit,
+      dailyTask: focusTask,
+      aiMessage: _focusAiMessage,
+      isLoadingAi: _isLoadingFocusAi,
+      subtasks: focusHabit?.habitType == HabitType.subtasks
+          ? focusHabit?.subtasks
+          : null,
+      onSubtaskToggle: focusHabit?.habitType == HabitType.subtasks
+          ? (subtaskId, completed) {
+              _repo.toggleSubtask(focusHabit!.id, subtaskId, completed);
+            }
+          : null,
+      onComplete: () {
+        if (focusHabit != null) {
+          // Toggle habit completion
+          if (focusHabit.habitType == HabitType.simple ||
+              focusHabit.habitType == HabitType.checkbox) {
+            _repo.toggleSimple(focusHabit.id);
+          }
+        } else if (focusTask != null) {
+          // Toggle task completion
+          setState(() {
+            focusTask.isDone = !focusTask.isDone;
+            // Set completion date to currently selected day (which is today)
+            if (focusTask.isDone) {
+              final now = DateTime.now();
+              focusTask.completionDateKey =
+                  '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+            } else {
+              focusTask.completionDateKey = null;
+            }
+          });
+          _taskRepo.updateTask(focusTask);
+        }
+      },
+      onRemoveFocus: _clearFocus,
+      onRefreshAi: () => _loadFocusAiMessage(forceRefresh: true),
+      onValueUpdate: focusHabit != null
+          ? (value) {
+              _repo.setManualProgress(focusHabit.id, value);
+            }
+          : null,
+    );
   }
 
   @override
@@ -112,6 +436,10 @@ class HabitScreenState extends State<HabitScreen> {
     _taskRepo.removeListener(_onRepoChange);
     _dateScrollController.dispose();
     super.dispose();
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
   String _weekdayLabel(BuildContext context, int w) {
@@ -136,18 +464,50 @@ class HabitScreenState extends State<HabitScreen> {
     }
   }
 
-  void showCalendar() => _pickDate();
+  void showCalendar() {
+    setState(() {
+      _isHeaderExpanded = !_isHeaderExpanded;
+    });
+    // When expanding, scroll to center today
+    if (_isHeaderExpanded) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToToday();
+      });
+    }
+  }
+
+  void _scrollToToday() {
+    if (!_dateScrollController.hasClients) return;
+    // Find today's index in _dateRange
+    final todayIndex = _dateRange.indexWhere((d) => _isSameDay(d, _today));
+    if (todayIndex < 0) return;
+    // Each item width 42 + horizontal padding (right: 6) = 48
+    const double itemWidth = 48.0;
+    final double base =
+        16.0 + todayIndex * itemWidth; // 16 is list start padding
+    // Center the item
+    final double viewportWidth =
+        _dateScrollController.position.viewportDimension;
+    final double offset = base - (viewportWidth / 2) + (itemWidth / 2);
+    _dateScrollController.animateTo(
+      offset.clamp(0.0, _dateScrollController.position.maxScrollExtent),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOutCubic,
+    );
+  }
 
   void _scrollDateRowToSelected({bool animate = false}) {
     if (!_dateScrollController.hasClients) return;
     // Find the index of selected date in _dateRange
     final int index = _dateRange.indexWhere((d) => _isSameDay(d, _selected));
     if (index < 0) return; // Selected date is not in range
-    // Each item ~ width 40 + horizontal padding 4 = 44, plus list left padding 4
-    final double base = 4 + index * 44.0;
-    // Try to place selected near the center of the viewport
+    // Each item width 42 + horizontal padding (right: 6) = 48
+    final double itemWidth = 48.0;
+    final double base = 16.0 + index * itemWidth; // 16 is list start padding
+
+    // Try to place selected in the center of the viewport
     final viewport = _dateScrollController.position.viewportDimension;
-    final target = (base - viewport / 2 + 22).clamp(
+    final target = (base - (viewport / 2) + (42 / 2)).clamp(
       0.0,
       _dateScrollController.position.maxScrollExtent,
     );
@@ -256,6 +616,10 @@ class HabitScreenState extends State<HabitScreen> {
         String? localListId = _selectedListId;
         return StatefulBuilder(
           builder: (context, setModalState) {
+            final theme = Theme.of(context);
+            final colorScheme = theme.colorScheme;
+            final l10n = AppLocalizations.of(context);
+
             void toggleType(HabitType t) {
               setModalState(() {
                 if (localTypes.contains(t)) {
@@ -266,160 +630,356 @@ class HabitScreenState extends State<HabitScreen> {
               });
             }
 
-            Widget typeChip(HabitType t, String label, IconData icon) =>
-                FilterChip(
-                  label: Text(label),
-                  avatar: Icon(icon, size: 18),
-                  selected: localTypes.contains(t),
-                  onSelected: (_) => toggleType(t),
-                );
+            Widget buildTypeChip(HabitType t, String label, IconData icon) {
+              final isSelected = localTypes.contains(t);
+              return GestureDetector(
+                onTap: () => toggleType(t),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: isSelected
+                        ? LinearGradient(
+                            colors: [
+                              colorScheme.primary,
+                              colorScheme.primary.withValues(alpha: 0.8),
+                            ],
+                          )
+                        : null,
+                    color: isSelected
+                        ? null
+                        : colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isSelected
+                          ? Colors.transparent
+                          : colorScheme.outlineVariant.withValues(alpha: 0.3),
+                    ),
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: colorScheme.primary.withValues(alpha: 0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        icon,
+                        size: 16,
+                        color: isSelected
+                            ? colorScheme.onPrimary
+                            : colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: isSelected
+                              ? colorScheme.onPrimary
+                              : colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            Widget buildStatusOption(
+              CompletionFilter value,
+              String label,
+              IconData icon,
+            ) {
+              final isSelected = localCompletion == value;
+              return GestureDetector(
+                onTap: () => setModalState(() => localCompletion = value),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? colorScheme.primaryContainer
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isSelected
+                          ? colorScheme.primary.withValues(alpha: 0.5)
+                          : colorScheme.outlineVariant.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        icon,
+                        size: 20,
+                        color: isSelected
+                            ? colorScheme.primary
+                            : colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          label,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.w500,
+                            color: isSelected
+                                ? colorScheme.onPrimaryContainer
+                                : colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                      if (isSelected)
+                        Icon(
+                          Icons.check_circle,
+                          size: 20,
+                          color: colorScheme.primary,
+                        ),
+                    ],
+                  ),
+                ),
+              );
+            }
 
             final content = Padding(
               padding: EdgeInsets.fromLTRB(
-                16,
+                20,
                 8,
-                16,
-                16 + MediaQuery.of(context).viewInsets.bottom,
+                20,
+                20 + MediaQuery.of(context).viewInsets.bottom,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Header
                   Row(
                     children: [
-                      Expanded(
-                        child: Text(
-                          AppLocalizations.of(context).filterTitle,
-                          style: Theme.of(context).textTheme.titleMedium,
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(
+                          Icons.filter_list_rounded,
+                          size: 20,
+                          color: colorScheme.primary,
                         ),
                       ),
-                      TextButton.icon(
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          l10n.filterTitle,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      TextButton(
                         onPressed: () async {
-                          // close sheet to avoid stacking, then open manager
                           Navigator.of(context).pop();
                           await _openManageListsSheet();
                         },
-                        icon: const Icon(Icons.list_alt_outlined),
-                        label: Text(AppLocalizations.of(context).manageLists),
+                        child: Text(l10n.manageLists),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 20),
+
+                  // Type section
                   Text(
-                    AppLocalizations.of(context).typeLabel,
-                    style: Theme.of(context).textTheme.labelLarge,
+                    l10n.typeLabel,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
                     children: [
-                      typeChip(
+                      buildTypeChip(
                         HabitType.simple,
-                        AppLocalizations.of(context).simpleTypeShort,
-                        Icons.check_circle,
+                        l10n.simpleTypeShort,
+                        Icons.check_circle_outline,
                       ),
-                      typeChip(
+                      buildTypeChip(
                         HabitType.numerical,
-                        AppLocalizations.of(context).numericalType,
-                        Icons.onetwothree,
+                        l10n.numericalType,
+                        Icons.tag,
                       ),
-                      typeChip(
+                      buildTypeChip(
                         HabitType.timer,
-                        AppLocalizations.of(context).timerType,
-                        Icons.timer,
+                        l10n.timerType,
+                        Icons.timer_outlined,
                       ),
-                      typeChip(
+                      buildTypeChip(
                         HabitType.checkbox,
-                        AppLocalizations.of(context).checkboxType,
-                        Icons.check_box,
+                        l10n.checkboxType,
+                        Icons.check_box_outlined,
                       ),
-                      typeChip(
+                      buildTypeChip(
                         HabitType.subtasks,
-                        AppLocalizations.of(context).subtasksType,
-                        Icons.checklist,
+                        l10n.subtasksType,
+                        Icons.checklist_rounded,
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+
+                  const SizedBox(height: 20),
+
+                  // List section
                   Text(
-                    AppLocalizations.of(context).listLabel,
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<String?>(
-                    initialValue: localListId,
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
+                    l10n.listLabel,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onSurfaceVariant,
                     ),
-                    items: [
-                      DropdownMenuItem<String?>(
-                        value: null,
-                        child: Text(AppLocalizations.of(context).allLabel),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.5,
                       ),
-                      ..._listRepo.lists.map(
-                        (l) => DropdownMenuItem<String?>(
-                          value: l.id,
-                          child: Text(l.title),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: colorScheme.outlineVariant.withValues(
+                          alpha: 0.3,
                         ),
                       ),
-                    ],
-                    onChanged: (v) => setModalState(() => localListId = v),
+                    ),
+                    child: DropdownButtonFormField<String?>(
+                      value: localListId,
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                      ),
+                      items: [
+                        DropdownMenuItem<String?>(
+                          value: null,
+                          child: Text(l10n.allLabel),
+                        ),
+                        ..._listRepo.lists.map(
+                          (l) => DropdownMenuItem<String?>(
+                            value: l.id,
+                            child: Text(l.title),
+                          ),
+                        ),
+                      ],
+                      onChanged: (v) => setModalState(() => localListId = v),
+                    ),
                   ),
-                  const SizedBox(height: 16),
+
+                  const SizedBox(height: 20),
+
+                  // Status section
                   Text(
-                    AppLocalizations.of(context).statusLabel,
-                    style: Theme.of(context).textTheme.labelLarge,
+                    l10n.statusLabel,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  RadioGroup<CompletionFilter>(
-                    groupValue: localCompletion,
-                    onChanged: (v) {
-                      if (v != null) setModalState(() => localCompletion = v);
-                    },
+                  const SizedBox(height: 10),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.3,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: Column(
                       children: [
-                        RadioListTile<CompletionFilter>(
-                          contentPadding: EdgeInsets.zero,
-                          value: CompletionFilter.all,
-                          title: Text(AppLocalizations.of(context).allLabel),
+                        buildStatusOption(
+                          CompletionFilter.all,
+                          l10n.allLabel,
+                          Icons.list_alt_rounded,
                         ),
-                        RadioListTile<CompletionFilter>(
-                          contentPadding: EdgeInsets.zero,
-                          value: CompletionFilter.completed,
-                          title: Text(
-                            AppLocalizations.of(context).completedSelectedDay,
+                        Divider(
+                          height: 1,
+                          color: colorScheme.outlineVariant.withValues(
+                            alpha: 0.2,
                           ),
                         ),
-                        RadioListTile<CompletionFilter>(
-                          contentPadding: EdgeInsets.zero,
-                          value: CompletionFilter.incomplete,
-                          title: Text(
-                            AppLocalizations.of(context).incompleteSelectedDay,
+                        buildStatusOption(
+                          CompletionFilter.completed,
+                          l10n.completedSelectedDay,
+                          Icons.check_circle_outline,
+                        ),
+                        Divider(
+                          height: 1,
+                          color: colorScheme.outlineVariant.withValues(
+                            alpha: 0.2,
                           ),
+                        ),
+                        buildStatusOption(
+                          CompletionFilter.incomplete,
+                          l10n.incompleteSelectedDay,
+                          Icons.radio_button_unchecked,
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 8),
+
+                  const SizedBox(height: 24),
+
+                  // Action buttons
                   Row(
                     children: [
-                      TextButton(
-                        onPressed: () =>
-                            Navigator.of(context).pop({'reset': true}),
-                        child: Text(AppLocalizations.of(context).clear),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () =>
+                              Navigator.of(context).pop({'reset': true}),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Text(l10n.clear),
+                        ),
                       ),
-                      const Spacer(),
-                      FilledButton(
-                        onPressed: localTypes.isEmpty
-                            ? null
-                            : () => Navigator.of(context).pop({
-                                'types': localTypes,
-                                'completion': localCompletion,
-                                'listId': localListId,
-                              }),
-                        child: Text(AppLocalizations.of(context).apply),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        flex: 2,
+                        child: FilledButton(
+                          onPressed: localTypes.isEmpty
+                              ? null
+                              : () => Navigator.of(context).pop({
+                                  'types': localTypes,
+                                  'completion': localCompletion,
+                                  'listId': localListId,
+                                }),
+                          style: FilledButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Text(l10n.apply),
+                        ),
                       ),
                     ],
                   ),
@@ -863,6 +1423,15 @@ class HabitScreenState extends State<HabitScreen> {
     final items = <_GroupedItem>[];
     final l10n = AppLocalizations.of(context);
 
+    // Filter out the focused item from the list (it's shown in FocusCard)
+    final (focusHabit, focusTask) = _findFocusedItem();
+    final filteredHabits = focusHabit != null
+        ? habits.where((h) => h.id != focusHabit.id).toList()
+        : habits;
+    final filteredTasks = focusTask != null
+        ? tasks.where((t) => t.id != focusTask.id).toList()
+        : tasks;
+
     // Get all lists and create a map for quick lookup
     final listsMap = <String, AppList>{};
     for (final l in _listRepo.lists) {
@@ -871,10 +1440,10 @@ class HabitScreenState extends State<HabitScreen> {
 
     // Collect all unique listIds from habits and tasks
     final listIds = <String?>{};
-    for (final h in habits) {
+    for (final h in filteredHabits) {
       listIds.add(h.listId);
     }
-    for (final t in tasks) {
+    for (final t in filteredTasks) {
       listIds.add(t.listId);
     }
 
@@ -891,8 +1460,10 @@ class HabitScreenState extends State<HabitScreen> {
 
     // Build grouped items
     for (final listId in sortedListIds) {
-      final listHabits = habits.where((h) => h.listId == listId).toList();
-      final listTasks = tasks.where((t) => t.listId == listId).toList();
+      final listHabits = filteredHabits
+          .where((h) => h.listId == listId)
+          .toList();
+      final listTasks = filteredTasks.where((t) => t.listId == listId).toList();
 
       if (listHabits.isEmpty && listTasks.isEmpty) continue;
 
@@ -953,19 +1524,44 @@ class HabitScreenState extends State<HabitScreen> {
   }
 
   Widget _buildTaskCardWidget(DailyTask task) {
+    final now = DateTime.now();
+    final todayDate = DateTime(now.year, now.month, now.day);
+    final selectedDate = DateTime(
+      _selected.year,
+      _selected.month,
+      _selected.day,
+    );
+    final String dayKey =
+        '${_selected.year}-${_selected.month.toString().padLeft(2, '0')}-${_selected.day.toString().padLeft(2, '0')}';
+    final isToday = _isSameDay(selectedDate, todayDate);
+
+    // Determine if this card should be muted (focus is active and this is not the focused item)
+    final (focusHabit, focusTask) = _findFocusedItem();
     return _TaskCard(
       title: task.title,
       description: task.description,
       isDone: task.isDone,
+      isMuted: false,
       listName:
           null, // Don't show list name in grouped view since it's under the header
       onToggleDone: (value) {
         setState(() {
           task.isDone = value;
+          // Set completion date to currently selected day when marked as done
+          if (value) {
+            task.completionDateKey = dayKey;
+          } else {
+            task.completionDateKey = null;
+          }
         });
         _taskRepo.updateTask(task);
       },
       onAssignToList: () => _assignTaskToListDialog(task),
+      onSetAsFocus: isToday
+          ? () {
+              _setAsFocus(task.id, isHabit: false);
+            }
+          : null,
       onEdit: () async {
         final res = await showDialog<Map<String, dynamic>>(
           context: context,
@@ -1055,9 +1651,13 @@ class HabitScreenState extends State<HabitScreen> {
       }
     }
 
+    // Non-focus items are now fully opaque
+    const isMuted = false;
+
     return HabitCard(
       title: habit.title,
       description: _buildHabitSubtitle(habit),
+      isMuted: isMuted,
       icon: habit.icon,
       emoji: habit.emoji,
       categoryName: habit.categoryName,
@@ -1111,6 +1711,11 @@ class HabitScreenState extends State<HabitScreen> {
           }
         }
       },
+      onSetAsFocus: isToday
+          ? () {
+              _setAsFocus(habit.id);
+            }
+          : null,
       onAnalyze: () {
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -1511,9 +2116,6 @@ class HabitScreenState extends State<HabitScreen> {
     }
   }
 
-  bool _isSameDay(DateTime a, DateTime b) =>
-      a.year == b.year && a.month == b.month && a.day == b.day;
-
   void _showDailyTaskDialog() async {
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
@@ -1694,103 +2296,324 @@ class HabitScreenState extends State<HabitScreen> {
     }
   }
 
+  /// Builds the toggle button to expand/collapse non-focus items
+  Widget _buildOtherItemsToggle(int itemCount) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Center(
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              setState(() {
+                _isOtherItemsExpanded = !_isOtherItemsExpanded;
+              });
+            },
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.4,
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(
+                _isOtherItemsExpanded
+                    ? Icons.keyboard_arrow_up_rounded
+                    : Icons.keyboard_arrow_down_rounded,
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                size: 24,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Builds a centered add button that opens the add dialog
+  Widget _buildInlineActionCard() {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Center(
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: _showAddDialog,
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.4,
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(
+                Icons.add_rounded,
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                size: 24,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Shows the add dialog with options for habit, task, and list
+  void _showAddDialog() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: colorScheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Habit option
+              _buildDialogOption(
+                icon: Icons.repeat,
+                label: l10n.habit,
+                color: colorScheme.primary,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _showHabitTypeDialog();
+                },
+              ),
+              const SizedBox(height: 12),
+              // Task option
+              _buildDialogOption(
+                icon: Icons.task_alt,
+                label: l10n.dailyTask,
+                color: colorScheme.secondary,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _showDailyTaskDialog();
+                },
+              ),
+              const SizedBox(height: 12),
+              // List option
+              _buildDialogOption(
+                icon: Icons.list_alt,
+                label: l10n.createList,
+                color: colorScheme.tertiary,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _showListCreationDialog();
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Shows the habit type selection dialog (simple vs advanced)
+  void _showHabitTypeDialog() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: colorScheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Simple habit option
+              _buildDialogOption(
+                icon: Icons.check_circle_outline,
+                label: 'Basit Alışkanlık',
+                color: colorScheme.primary,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _createSimpleHabit();
+                },
+              ),
+              const SizedBox(height: 12),
+              // Advanced habit option
+              _buildDialogOption(
+                icon: Icons.auto_graph,
+                label: 'Gelişmiş Alışkanlık',
+                color: colorScheme.secondary,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _createAdvancedHabit();
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Builds a dialog option row
+  Widget _buildDialogOption({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: color, size: 22),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  label,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                size: 20,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context, AppLocalizations l10n) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.auto_awesome,
+              size: 64,
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              l10n.emptyHabitTitle,
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.emptyHabitSubtitle,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            FilledButton.icon(
+              onPressed: _createSimpleHabit,
+              icon: const Icon(Icons.add),
+              label: Text(l10n.createFirstHabit),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Scaffold(
       body: Stack(
         children: [
           // Main content
           Column(
             children: [
-              // Date selector row flush to top
-              const SizedBox(height: 0),
-              SizedBox(
-                height: 48, // reduced from 62
-                child: ListView.builder(
-                  controller: _dateScrollController,
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  itemCount: _dateRange.length,
-                  itemBuilder: (context, i) {
-                    final day = _dateRange[i];
-                    final bool selected = _isSameDay(day, _selected);
-                    final bool today = _isSameDay(day, DateTime.now());
-                    final scheme = Theme.of(context).colorScheme;
-                    // Borderless, solid surfaces with subtle tinting
-                    final Color baseBg = scheme.surfaceContainerHighest;
-                    final Color unselectedBg = (!selected && today)
-                        ? Color.alphaBlend(
-                            scheme.primary.withValues(alpha: 0.08),
-                            baseBg,
-                          )
-                        : baseBg;
-                    final Color selectedBg = scheme.primaryContainer;
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: () {
-                          setState(() => _selected = day);
-                          // keep selection in view
-                          _scrollDateRowToSelected(animate: true);
-                        },
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 160),
-                          width: 40, // reduced from 46
-                          decoration: BoxDecoration(
-                            color: selected ? selectedBg : unselectedBg,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 2,
-                          ), // further reduced vertical padding
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                _weekdayLabel(context, day.weekday),
-                                style: Theme.of(context).textTheme.labelSmall
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 10, // slightly smaller
-                                      color: selected
-                                          ? scheme.onPrimaryContainer
-                                          : today
-                                          ? scheme.primary
-                                          : scheme.onSurfaceVariant,
-                                    ),
-                              ),
-                              const SizedBox(height: 2), // reduced from 4
-                              Text(
-                                '${day.day}',
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 12, // smaller number
-                                      color: selected
-                                          ? scheme.onPrimaryContainer
-                                          : scheme.onSurface,
-                                    ),
-                              ),
-                              if (today && !selected)
-                                Container(
-                                  margin: const EdgeInsets.only(top: 2),
-                                  width: 4,
-                                  height: 4,
-                                  decoration: BoxDecoration(
-                                    color: scheme.primary,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
+              // Expandable Date Row (shown directly under AppBar)
+              AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                child: SizedBox(
+                  height: _isHeaderExpanded ? null : 0,
+                  child: _isHeaderExpanded
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 8, bottom: 12),
+                          child: _buildDateRow(context),
+                        )
+                      : const SizedBox.shrink(),
                 ),
               ),
               const SizedBox(height: 0),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16.0, top: 4.0),
+                  child: TextButton(
+                    onPressed: showFilterSheet,
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text(
+                      AppLocalizations.of(context).filterTitle,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
               Expanded(
                 child: Builder(
                   builder: (context) {
@@ -1798,35 +2621,9 @@ class HabitScreenState extends State<HabitScreen> {
                     final habits = _filteredHabits();
                     if (tasks.isEmpty && habits.isEmpty) {
                       // Show a unified empty state when nothing matches
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.filter_list_off,
-                              size: 56,
-                              color: Theme.of(context).colorScheme.outline,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              AppLocalizations.of(context).noItemsMatchFilters,
-                              style: Theme.of(context).textTheme.bodyLarge
-                                  ?.copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.outline,
-                                  ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 8),
-                            TextButton(
-                              onPressed: _resetFilters,
-                              child: Text(
-                                AppLocalizations.of(context).clearFilters,
-                              ),
-                            ),
-                          ],
-                        ),
+                      return _buildEmptyState(
+                        context,
+                        AppLocalizations.of(context),
                       );
                     }
                     // Reserve space at the bottom so the last card is not obscured by the FAB.
@@ -1841,11 +2638,58 @@ class HabitScreenState extends State<HabitScreen> {
                     // If no list is selected, show grouped view by list
                     if (_selectedListId == null) {
                       final groupedItems = _buildGroupedItems(habits, tasks);
+
+                      // Build focus card if focus is active for today
+                      final focusWidget = _buildFocusCardIfNeeded();
+                      final isFocusActive = focusWidget != null;
+
+                      // When focus is active, show toggle button + conditionally show items
+                      // When no focus, show all items normally
+                      final shouldShowOtherItems =
+                          !isFocusActive || _isOtherItemsExpanded;
+                      final itemsToShow = shouldShowOtherItems
+                          ? groupedItems
+                          : <_GroupedItem>[];
+
+                      // Calculate item count: focus + toggle button (if focus active) + items + action card (when expanded)
+                      final int focusItemCount = isFocusActive ? 1 : 0;
+                      final int toggleButtonCount = isFocusActive ? 1 : 0;
+                      final int actionCardCount = shouldShowOtherItems ? 1 : 0;
+                      final int totalCount =
+                          focusItemCount +
+                          toggleButtonCount +
+                          itemsToShow.length +
+                          actionCardCount;
+
                       return ListView.builder(
                         padding: EdgeInsets.only(bottom: bottomReserve),
-                        itemCount: groupedItems.length,
+                        itemCount: totalCount,
                         itemBuilder: (context, index) {
-                          final item = groupedItems[index];
+                          // 1. Show focus card first
+                          if (isFocusActive && index == 0) {
+                            return focusWidget;
+                          }
+
+                          // 2. Show toggle button after focus card
+                          if (isFocusActive && index == 1) {
+                            return _buildOtherItemsToggle(groupedItems.length);
+                          }
+
+                          // 3. Show items if expanded or if no focus
+                          final adjustedIndex =
+                              index - focusItemCount - toggleButtonCount;
+
+                          // 4. Show inline action card at the end (when items are shown)
+                          if (shouldShowOtherItems &&
+                              adjustedIndex == itemsToShow.length) {
+                            return _buildInlineActionCard();
+                          }
+
+                          if (adjustedIndex < 0 ||
+                              adjustedIndex >= itemsToShow.length) {
+                            return const SizedBox.shrink();
+                          }
+                          final item = itemsToShow[adjustedIndex];
                           return switch (item) {
                             _ListHeader() => _buildListHeaderWidget(item),
                             _TaskItem() => _buildTaskCardWidget(item.task),
@@ -1856,6 +2700,7 @@ class HabitScreenState extends State<HabitScreen> {
                     }
 
                     // Otherwise show flat list (existing behavior when a list is selected)
+
                     return ListView.builder(
                       padding: EdgeInsets.only(bottom: bottomReserve),
                       itemCount:
@@ -1878,11 +2723,13 @@ class HabitScreenState extends State<HabitScreen> {
                           cursor += 1;
                           if (index < cursor + tasks.length) {
                             final task = tasks[index - cursor];
+                            final isMuted = false;
                             // Swipe-to-dismiss removed: present task card directly.
                             return _TaskCard(
                               title: task.title,
                               description: task.description,
                               isDone: task.isDone,
+                              isMuted: isMuted,
                               listName: task.listId == null
                                   ? null
                                   : _listRepo.lists
@@ -1901,6 +2748,9 @@ class HabitScreenState extends State<HabitScreen> {
                               },
                               onAssignToList: () =>
                                   _assignTaskToListDialog(task),
+                              onSetAsFocus: () {
+                                _setAsFocus(task.id, isHabit: false);
+                              },
                               onEdit: () async {
                                 // Prefill edit dialog using same DailyTaskDialog
                                 final res =
@@ -2013,10 +2863,12 @@ class HabitScreenState extends State<HabitScreen> {
                                   selectedDate,
                                   cap: 7,
                                 );
+                            final isMuted = false;
                             // Swipe-to-dismiss removed: present HabitCard directly.
                             return HabitCard(
                               title: habit.title,
                               description: _buildHabitSubtitle(habit),
+                              isMuted: isMuted,
                               icon: habit.icon,
                               emoji: habit.emoji,
                               categoryName: habit.categoryName,
@@ -2070,6 +2922,11 @@ class HabitScreenState extends State<HabitScreen> {
                                   v,
                                 );
                               },
+                              onSetAsFocus: isToday
+                                  ? () {
+                                      _setAsFocus(habit.id);
+                                    }
+                                  : null,
                               onValueUpdate: (newValue) {
                                 if (isFuture || isBeforeStart) return;
                                 if (habit.habitType == HabitType.numerical ||
@@ -2449,23 +3306,227 @@ class HabitScreenState extends State<HabitScreen> {
             ],
           ),
           // Repository dinleyicisi setState ile çalıştığı için ek gizli AnimatedBuilder'a gerek yok
-
-          // Dark overlay when FAB is expanded
-          if (_isFabExpanded)
-            Positioned.fill(
-              child: GestureDetector(
-                onTap: () => setState(() => _isFabExpanded = false),
-                child: Container(color: Colors.black.withOpacity(0.6)),
-              ),
-            ),
         ],
       ),
-      floatingActionButton: FabMenu(
-        isExpanded: _isFabExpanded,
-        onToggle: (expanded) => setState(() => _isFabExpanded = expanded),
-        onDailyTaskPressed: _showDailyTaskDialog,
-        onHabitPressed: _navigateToCreateHabit,
-        onListPressed: _showListCreationDialog,
+    );
+  }
+
+  Mood _toDashboardMood(MoodLevel v) {
+    switch (v) {
+      case MoodLevel.terrible:
+        return Mood.terrible;
+      case MoodLevel.bad:
+        return Mood.bad;
+      case MoodLevel.neutral:
+        return Mood.ok;
+      case MoodLevel.good:
+        return Mood.good;
+      case MoodLevel.excellent:
+        return Mood.great;
+    }
+  }
+
+  // Exposed for AppBar action in main.dart
+  void openMoodScreen() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ChangeNotifierProvider(
+          create: (_) => MoodFlowState(),
+          child: MoodSelectionScreen(variant: widget.variant),
+        ),
+      ),
+    );
+    // Refresh mood after return
+    _initMood();
+  }
+
+  Widget _buildCustomHeader(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    final isToday = _isSameDay(_selected, DateTime.now());
+
+    // Format date: "15 Oct"
+    final locale = Localizations.localeOf(context).toString();
+    final dateDisplay = isToday
+        ? l10n.today
+        : DateFormat.MMMd(locale).format(_selected);
+
+    return Container(
+      padding: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + 8,
+        bottom: 12, // slightly more padding
+        left: 20,
+        right: 12,
+      ),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Dynamic Title
+          InkWell(
+            onTap: () {
+              setState(() {
+                _isHeaderExpanded = !_isHeaderExpanded;
+              });
+              if (_isHeaderExpanded) {
+                // scroll to ensure selected is visible when opening
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _scrollDateRowToSelected(animate: true);
+                });
+              }
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    dateDisplay,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 26,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  AnimatedRotation(
+                    turns: _isHeaderExpanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 300),
+                    child: Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: theme.colorScheme.onSurfaceVariant,
+                      size: 28,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const Spacer(),
+          // Action Buttons
+
+          // Mood Selector
+          IconButton(
+            onPressed: openMoodScreen,
+            icon: _currentMood != null
+                ? Icon(
+                    _iconFor(_currentMood!),
+                    color: _colorFor(_currentMood!),
+                    size: 28,
+                  )
+                : Icon(
+                    Icons.sentiment_neutral,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+            tooltip: "Mood",
+          ),
+
+          IconButton(
+            tooltip: l10n.filterTooltip,
+            icon: const Icon(Icons.filter_list),
+            onPressed: () => showFilterSheet(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDateRow(BuildContext context) {
+    return SizedBox(
+      height: 56,
+      child: ListView.builder(
+        controller: _dateScrollController,
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: _dateRange.length + 1, // +1 for Calendar button
+        itemBuilder: (context, i) {
+          // Last item is Calendar button
+          if (i == _dateRange.length) {
+            return Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: Center(
+                child: IconButton.filledTonal(
+                  icon: const Icon(Icons.calendar_month_outlined),
+                  onPressed: _pickDate,
+                ),
+              ),
+            );
+          }
+
+          final day = _dateRange[i];
+          final bool selected = _isSameDay(day, _selected);
+          final bool today = _isSameDay(day, DateTime.now());
+          final scheme = Theme.of(context).colorScheme;
+
+          final Color baseBg = scheme.surfaceContainerHighest;
+          final Color unselectedBg = (!selected && today)
+              ? Color.alphaBlend(scheme.primary.withValues(alpha: 0.08), baseBg)
+              : baseBg;
+          final Color selectedBg = scheme.primaryContainer;
+
+          return Padding(
+            padding: const EdgeInsets.only(right: 6),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () {
+                setState(() => _selected = day);
+                _scrollDateRowToSelected(animate: true);
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: 42,
+                decoration: BoxDecoration(
+                  color: selected ? selectedBg : unselectedBg,
+                  borderRadius: BorderRadius.circular(12),
+                  border: selected
+                      ? Border.all(
+                          color: scheme.primary.withValues(alpha: 0.2),
+                          width: 1.5,
+                        )
+                      : null,
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _weekdayLabel(context, day.weekday),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 11,
+                        color: selected
+                            ? scheme.onPrimaryContainer
+                            : today
+                            ? scheme.primary
+                            : scheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${day.day}',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        height: 1.1,
+                        color: selected
+                            ? scheme.onPrimaryContainer
+                            : scheme.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -2482,7 +3543,9 @@ class _TaskCard extends StatelessWidget {
     required this.onToggleDone,
     this.onEdit,
     this.onAssignToList,
+    this.onSetAsFocus,
     this.onDelete,
+    this.isMuted = false,
   });
 
   final String title;
@@ -2492,157 +3555,189 @@ class _TaskCard extends StatelessWidget {
   final ValueChanged<bool> onToggleDone;
   final VoidCallback? onEdit;
   final VoidCallback? onAssignToList;
+  final VoidCallback? onSetAsFocus;
   final VoidCallback? onDelete;
+  final bool isMuted;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return Container(
-      margin: const EdgeInsets.fromLTRB(12, 4, 12, 4),
-      child: Material(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => onToggleDone(!isDone),
-          onLongPress: () async {
-            // show modal menu with Edit / Assign / Delete
-            if (onEdit == null && onAssignToList == null && onDelete == null) {
-              return;
-            }
-            final l10n = AppLocalizations.of(context);
-            final selected = await showModalBottomSheet<String?>(
-              context: context,
-              backgroundColor: Colors.transparent,
-              builder: (ctx) {
-                return SafeArea(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(ctx).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (onEdit != null)
-                          ListTile(
-                            leading: const Icon(Icons.edit_outlined),
-                            title: Text(l10n.edit),
-                            onTap: () => Navigator.pop(ctx, 'edit'),
-                          ),
-                        if (onAssignToList != null)
-                          ListTile(
-                            leading: const Icon(Icons.playlist_add_outlined),
-                            title: Text(l10n.addToList),
-                            onTap: () => Navigator.pop(ctx, 'assign'),
-                          ),
-                        if (onDelete != null)
-                          ListTile(
-                            leading: Icon(
-                              Icons.delete_outline,
-                              color: Colors.red[600],
-                            ),
-                            title: Text(
-                              l10n.delete,
-                              style: TextStyle(color: Colors.red[600]),
-                            ),
-                            onTap: () => Navigator.pop(ctx, 'delete'),
-                          ),
-                        const SizedBox(height: 6),
-                      ],
-                    ),
-                  ),
+
+    // Muted styling when another item is focused
+    final double mutedOpacity = isMuted ? 0.45 : 1.0;
+    final double mutedScale = isMuted ? 0.92 : 1.0;
+
+    return Opacity(
+      opacity: mutedOpacity,
+      child: Transform.scale(
+        scale: mutedScale,
+        child: Container(
+          margin: const EdgeInsets.fromLTRB(12, 4, 12, 4),
+          child: Material(
+            color: isMuted ? Colors.transparent : scheme.surface,
+            borderRadius: BorderRadius.circular(16),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () => onToggleDone(!isDone),
+              onLongPress: () async {
+                // show modal menu with Edit / Assign / Delete
+                if (onEdit == null &&
+                    onAssignToList == null &&
+                    onDelete == null) {
+                  return;
+                }
+                final l10n = AppLocalizations.of(context);
+                final selected = await showModalBottomSheet<String?>(
+                  context: context,
+                  backgroundColor: Colors.transparent,
+                  builder: (ctx) {
+                    return SafeArea(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(ctx).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (onEdit != null)
+                              ListTile(
+                                leading: const Icon(Icons.edit_outlined),
+                                title: Text(l10n.edit),
+                                onTap: () => Navigator.pop(ctx, 'edit'),
+                              ),
+                            if (onAssignToList != null)
+                              ListTile(
+                                leading: const Icon(
+                                  Icons.playlist_add_outlined,
+                                ),
+                                title: Text(l10n.addToList),
+                                onTap: () => Navigator.pop(ctx, 'assign'),
+                              ),
+                            if (onSetAsFocus != null)
+                              ListTile(
+                                leading: Icon(
+                                  Icons.center_focus_strong_rounded,
+                                  color: Theme.of(ctx).colorScheme.primary,
+                                ),
+                                title: const Text('Bugünün Odağı Yap'),
+                                subtitle: const Text('Bu görevi önceliklendir'),
+                                onTap: () => Navigator.pop(ctx, 'focus'),
+                              ),
+                            if (onDelete != null)
+                              ListTile(
+                                leading: Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.red[600],
+                                ),
+                                title: Text(
+                                  l10n.delete,
+                                  style: TextStyle(color: Colors.red[600]),
+                                ),
+                                onTap: () => Navigator.pop(ctx, 'delete'),
+                              ),
+                            const SizedBox(height: 6),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 );
+                if (selected == 'edit') onEdit?.call();
+                if (selected == 'assign') onAssignToList?.call();
+                if (selected == 'focus') onSetAsFocus?.call();
+                if (selected == 'delete') onDelete?.call();
               },
-            );
-            if (selected == 'edit') onEdit?.call();
-            if (selected == 'assign') onAssignToList?.call();
-            if (selected == 'delete') onDelete?.call();
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Symmetric checkbox area
-                SizedBox(
-                  width: 44,
-                  height: 44,
-                  child: Center(
-                    child: Checkbox(
-                      value: isDone,
-                      onChanged: (v) => onToggleDone(v ?? false),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Symmetric checkbox area
+                    SizedBox(
+                      width: 44,
+                      height: 44,
+                      child: Center(
+                        child: Checkbox(
+                          value: isDone,
+                          onChanged: (v) => onToggleDone(v ?? false),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                // Title + description centered vertically
-                Expanded(
-                  child: SizedBox(
-                    height: 44,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(
-                                decoration: isDone
-                                    ? TextDecoration.lineThrough
-                                    : null,
-                                // When there is no description, use a slightly
-                                // tighter height so the title sits vertically
-                                // centered next to the checkbox.
-                                height: description.isEmpty ? 1.02 : null,
-                              ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (description.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Text(
-                              description,
-                              style: Theme.of(context).textTheme.bodySmall
+                    const SizedBox(width: 12),
+                    // Title + description centered vertically
+                    Expanded(
+                      child: SizedBox(
+                        height: 44,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              title,
+                              style: Theme.of(context).textTheme.titleMedium
                                   ?.copyWith(
-                                    color: scheme.onSurfaceVariant,
                                     decoration: isDone
                                         ? TextDecoration.lineThrough
                                         : null,
+                                    // When there is no description, use a slightly
+                                    // tighter height so the title sits vertically
+                                    // centered next to the checkbox.
+                                    height: description.isEmpty ? 1.02 : null,
                                   ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                // Optional list pill
-                if (listName != null && listName!.isNotEmpty)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: scheme.secondaryContainer,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Text(
-                      listName!,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: scheme.onSecondaryContainer,
-                        fontWeight: FontWeight.w600,
+                            if (description.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text(
+                                  description,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: scheme.onSurfaceVariant,
+                                        decoration: isDone
+                                            ? TextDecoration.lineThrough
+                                            : null,
+                                      ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-              ],
+                    const SizedBox(width: 12),
+                    // Optional list pill
+                    if (listName != null && listName!.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: scheme.secondaryContainer,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          listName!,
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                color: scheme.onSecondaryContainer,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
@@ -2716,6 +3811,73 @@ class _HabitTypeOption extends StatelessWidget {
                 ),
               ),
               Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Action item widget for inline FAB menu
+class _InlineActionItem extends StatelessWidget {
+  const _InlineActionItem({
+    required this.icon,
+    required this.label,
+    required this.subtitle,
+    required this.color,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final String subtitle;
+  final Color color;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: color, size: 22),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

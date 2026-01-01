@@ -27,11 +27,18 @@ class DailyTaskRepository extends ChangeNotifier {
       final requested = DateTime.parse(dateKey);
       return _tasks.where((t) {
         try {
+          // If task is completed, it ONLY appears on its completion day (or original day if no completionDateKey)
+          if (t.isDone) {
+            return (t.completionDateKey ?? t.dateKey) == dateKey;
+          }
+
+          // If task is incomplete:
           final d = DateTime.parse(t.dateKey);
-          // exact match always included
+          // Show on original day
           if (t.dateKey == dateKey) return true;
-          // include if task is from earlier date and not completed
-          if (d.isBefore(requested) && !t.isDone) return true;
+          // Carry over to future days until completed
+          if (d.isBefore(requested)) return true;
+
           return false;
         } catch (_) {
           return t.dateKey == dateKey;
@@ -62,6 +69,7 @@ class DailyTaskRepository extends ChangeNotifier {
         _tasks.clear();
       }
     }
+    _ensureFocusReset();
     _initialized = true;
     notifyListeners();
   }
@@ -118,5 +126,54 @@ class DailyTaskRepository extends ChangeNotifier {
   Future<void> _persistAndNotify() async {
     await _persist();
     notifyListeners();
+  }
+
+  Future<void> setAsFocus(String taskId) async {
+    final now = DateTime.now();
+    for (final t in _tasks) {
+      if (t.id == taskId) {
+        t.isFocus = true;
+        t.focusSetAt = now;
+      } else {
+        t.isFocus = false;
+        t.focusMessage = null;
+        t.focusSetAt = null;
+      }
+    }
+    await _persistAndNotify();
+  }
+
+  Future<void> clearFocus() async {
+    for (final t in _tasks) {
+      t.isFocus = false;
+      t.focusMessage = null;
+      t.focusSetAt = null;
+    }
+    await _persistAndNotify();
+  }
+
+  Future<void> updateFocusMessage(String taskId, String message) async {
+    final idx = _tasks.indexWhere((t) => t.id == taskId);
+    if (idx != -1) {
+      _tasks[idx].focusMessage = message;
+      await _persistAndNotify();
+    }
+  }
+
+  void _ensureFocusReset() {
+    final now = DateTime.now();
+    final todayStr =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+
+    for (final t in _tasks) {
+      if (t.isFocus && t.focusSetAt != null) {
+        final setDate = t.focusSetAt!.toIso8601String().split('T').first;
+        if (setDate != todayStr) {
+          t.isFocus = false;
+          t.focusMessage = null;
+          t.focusSetAt = null;
+        }
+      }
+    }
   }
 }

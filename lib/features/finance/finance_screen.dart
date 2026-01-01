@@ -60,7 +60,6 @@ class FinanceScreenState extends State<FinanceScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isWorld = widget.variant == ThemeVariant.world;
     // Build UI under a Builder so Theme override applies inside
     final ui = Builder(
       builder: (innerCtx) {
@@ -335,13 +334,6 @@ class FinanceScreenState extends State<FinanceScreen>
       },
     );
 
-    if (isWorld) {
-      final brightness = Theme.of(context).brightness;
-      final themed = brightness == Brightness.dark
-          ? ThemeVariations.dark(ThemeVariant.ocean)
-          : ThemeVariations.light(ThemeVariant.ocean);
-      return Theme(data: themed, child: ui);
-    }
     return ui;
   }
 
@@ -382,7 +374,7 @@ class FinanceScreenState extends State<FinanceScreen>
       ),
       builder: (ctx) {
         final scheme = Theme.of(ctx).colorScheme;
-        final bool isWorld = widget.variant == ThemeVariant.world;
+        final bool isWorld = false;
         return StatefulBuilder(
           builder: (context, setSheetState) {
             return SafeArea(
@@ -438,18 +430,12 @@ class FinanceScreenState extends State<FinanceScreen>
                             style: ButtonStyle(
                               backgroundColor: WidgetStatePropertyAll(
                                 selected
-                                    ? (isWorld
-                                          ? AppColors.accentBlue.withValues(
-                                              alpha: 0.18,
-                                            )
-                                          : scheme.primaryContainer)
+                                    ? scheme.primaryContainer
                                     : scheme.surfaceContainerHighest,
                               ),
                               foregroundColor: WidgetStatePropertyAll(
                                 selected
-                                    ? (isWorld
-                                          ? AppColors.accentBlue
-                                          : scheme.onPrimaryContainer)
+                                    ? scheme.onPrimaryContainer
                                     : scheme.onSurfaceVariant,
                               ),
                             ),

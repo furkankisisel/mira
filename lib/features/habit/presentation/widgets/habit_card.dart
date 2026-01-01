@@ -4,6 +4,7 @@ import '../../domain/habit_types.dart';
 import '../../domain/subtask_model.dart';
 import '../../../../core/settings/settings_repository.dart' as app_settings;
 import '../../../../l10n/app_localizations.dart';
+import '../../../timer/timer_screen.dart';
 
 class HabitCard extends StatefulWidget {
   final String title;
@@ -27,8 +28,13 @@ class HabitCard extends StatefulWidget {
   final VoidCallback? onAnalyze;
   final bool readOnly;
   final VoidCallback? onAssignToList;
+  final VoidCallback?
+  onSetAsFocus; // Callback to set this habit as focus for today
   final int requiredBreakTaps;
   final bool iceEnabled;
+
+  /// When true, card appears muted/dimmed (used when another item is focused)
+  final bool isMuted;
 
   // Per-habit control: whether to show the streak indicator for this habit.
   final bool showStreakIndicator;
@@ -64,8 +70,10 @@ class HabitCard extends StatefulWidget {
     this.onAnalyze,
     this.readOnly = false,
     this.onAssignToList,
+    this.onSetAsFocus,
     this.requiredBreakTaps = 0,
     this.iceEnabled = false,
+    this.isMuted = false,
     this.categoryName,
     this.margin,
     this.showStreakIndicator = true,
@@ -102,6 +110,36 @@ class _HabitCardState extends State<HabitCard>
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  Widget _buildStatusIcon(bool isCompleted) {
+    // Timer: Clock icon
+    if (widget.habitType == HabitType.timer) {
+      return Icon(
+        Icons.timer,
+        key: const ValueKey('timer-icon'),
+        color: isCompleted ? Colors.white : widget.color,
+        size: 16,
+      );
+    }
+    // Numerical: Hash/Tag icon
+    if (widget.habitType == HabitType.numerical) {
+      return Icon(
+        Icons.tag,
+        key: const ValueKey('numerical-icon'),
+        color: isCompleted ? Colors.white : widget.color,
+        size: 16,
+      );
+    }
+    // Simple/Checkbox: Checkmark (only when done)
+    return isCompleted
+        ? const Icon(
+            Icons.check,
+            key: ValueKey('checked'),
+            color: Colors.white,
+            size: 16,
+          )
+        : const SizedBox(key: ValueKey('unchecked'));
   }
 
   EdgeInsets _defaultMargin(BuildContext context) {
@@ -178,6 +216,7 @@ class _HabitCardState extends State<HabitCard>
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
     final l10n = AppLocalizations.of(context);
+    final bool isTimer = widget.habitType == HabitType.timer;
     final double progress = widget.targetCount > 0
         ? (widget.currentStreak / widget.targetCount).clamp(0.0, 1.0)
         : 0.0;
@@ -214,83 +253,247 @@ class _HabitCardState extends State<HabitCard>
       return null;
     }
 
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.enterValueTitle),
-        content: Column(
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: EdgeInsets.only(
+          left: 24,
+          right: 24,
+          bottom: MediaQuery.of(ctx).viewInsets.bottom + 32,
+          top: 12,
+        ),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 20,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
-              controller: c,
-              keyboardType: TextInputType.number,
-              autofocus: true,
-              decoration: InputDecoration(
-                labelText: widget.unit ?? l10n.valueLabel,
-                border: const OutlineInputBorder(),
+            Center(
+              child: Container(
+                width: 40,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: cs.outlineVariant.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(2.5),
+                ),
               ),
-              onSubmitted: (_) => _submitManual(c),
             ),
-            const SizedBox(height: 8),
-            if (ruleHint() != null)
+            const SizedBox(height: 24),
+            Text(
+              l10n.enterValueTitle,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: cs.onSurface,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+
+            if (isTimer) ...[
+              SizedBox(
+                height: 64,
+                child: FilledButton.icon(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const TimerScreen()),
+                    );
+                  },
+                  icon: const Icon(Icons.play_arrow_rounded, size: 32),
+                  label: Text(
+                    "Süre Tut", // TODO: Localize
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: widget.color.withValues(alpha: 0.9),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    elevation: 0,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
               Row(
                 children: [
-                  const Icon(Icons.info_outline, size: 14),
-                  const SizedBox(width: 6),
-                  Flexible(
+                  Expanded(
+                    child: Divider(
+                      color: cs.outlineVariant.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
-                      ruleHint()!,
-                      style: theme.textTheme.labelSmall?.copyWith(
+                      "veya manuel gir", // TODO: Localize
+                      style: theme.textTheme.bodySmall?.copyWith(
                         color: cs.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
                       ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Divider(
+                      color: cs.outlineVariant.withValues(alpha: 0.3),
                     ),
                   ),
                 ],
               ),
-            const SizedBox(height: 12),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                minHeight: 6,
-                value: progress <= 0 ? 0 : progress,
-                backgroundColor: cs.outline.withValues(alpha: 0.15),
-                valueColor: AlwaysStoppedAnimation(widget.color),
+              const SizedBox(height: 24),
+            ],
+
+            TextField(
+              controller: c,
+              keyboardType: TextInputType.number,
+              autofocus: !isTimer,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              decoration: InputDecoration(
+                labelText: widget.unit ?? l10n.valueLabel,
+                hintText: 'Hedef: ${widget.targetCount}',
+                prefixIcon: Icon(Icons.edit_note_rounded, color: widget.color),
+                filled: true,
+                fillColor: widget.color.withValues(alpha: 0.05),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.all(20),
               ),
+              onSubmitted: (_) => _submitManual(c),
             ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            const SizedBox(height: 12),
+            if (ruleHint() != null)
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: cs.onSurface.withValues(alpha: 0.03),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline, size: 16, color: cs.primary),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        ruleHint()!,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: cs.onSurfaceVariant,
+                          height: 1.3,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 24),
+
+            // Progress Section
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  '${(progress * 100).round()}%',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: widget.color,
-                    fontWeight: FontWeight.w600,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Bugünkü İlerleme', // TODO: Localize
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
+                    Text(
+                      '${(progress * 100).round()}%',
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: widget.color,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: LinearProgressIndicator(
+                    minHeight: 10,
+                    value: progress <= 0 ? 0 : progress,
+                    backgroundColor: widget.color.withValues(alpha: 0.1),
+                    valueColor: AlwaysStoppedAnimation(widget.color),
                   ),
                 ),
+                const SizedBox(height: 8),
                 if (widget.habitType != HabitType.simple)
-                  Text(
-                    '${widget.currentStreak} / ${widget.targetCount}${widget.unit != null ? ' ${widget.unit}' : ''}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: cs.onSurfaceVariant,
-                      fontSize: 11,
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      '${widget.currentStreak} / ${widget.targetCount}${widget.unit != null ? ' ${widget.unit}' : ''}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
               ],
             ),
+
+            const SizedBox(height: 32),
+
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: Text(
+                      l10n.cancel,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      _submitManual(c);
+                    },
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: cs.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: Text(
+                      l10n.save,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => _submitManual(c),
-            child: Text(l10n.save),
-          ),
-        ],
       ),
     );
   }
@@ -403,14 +606,19 @@ class _HabitCardState extends State<HabitCard>
                       widget.onAssignToList?.call();
                     },
                   ),
-                if (widget.habitType != HabitType.simple &&
-                    widget.onValueUpdate != null)
+
+                // Set as Focus option
+                if (widget.onSetAsFocus != null)
                   ListTile(
-                    leading: const Icon(Icons.edit_attributes_outlined),
-                    title: Text(l10n.enterValueTitle),
+                    leading: Icon(
+                      Icons.center_focus_strong_rounded,
+                      color: widget.color,
+                    ),
+                    title: const Text('Bugünün Odağı Yap'),
+                    subtitle: const Text('Bu alışkanlığı önceliklendir'),
                     onTap: () {
                       Navigator.pop(ctx);
-                      _showManualValueDialog();
+                      widget.onSetAsFocus?.call();
                     },
                   ),
                 ListTile(
@@ -481,329 +689,337 @@ class _HabitCardState extends State<HabitCard>
     // Resolve margin (allow override)
     final resolvedMargin = widget.margin ?? _defaultMargin(context);
 
+    // Muted styling when another item is focused
+    final double mutedOpacity = widget.isMuted ? 0.45 : 1.0;
+    final double mutedScale = widget.isMuted ? 0.92 : 1.0;
+
     return Opacity(
-      opacity: widget.readOnly ? 0.55 : 1.0,
+      opacity: widget.readOnly ? 0.55 : mutedOpacity,
       // KEEP margin OUTSIDE the scale transform so spacing is stable during press/swipe
-      child: Padding(
-        padding: resolvedMargin,
-        child: GestureDetector(
-          onTapDown: _handleTapDown,
-          onTapUp: _handleTapUp,
-          onTapCancel: _handleTapCancel,
-          onLongPress: _showMenu,
-          // translucent so parent horizontal drags (PageView/Dismissible) work nicer
-          behavior: HitTestBehavior.translucent,
-          child: ScaleTransition(
-            scale: _scale,
-            child: Stack(
-              children: [
-                // Base card (no external margin here anymore)
-                Container(
-                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
-                  decoration: BoxDecoration(
-                    color: done
-                        ? completedBg
-                        : Color.alphaBlend(
-                            widget.color.withValues(alpha: 0.06),
-                            cs.surfaceContainerHighest,
-                          ),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: done
-                        ? [
-                            BoxShadow(
-                              color: widget.color.withValues(alpha: 0.28),
-                              blurRadius: 18,
-                              offset: const Offset(0, 8),
-                            ),
-                          ]
-                        : null,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 44,
-                            height: 44,
-                            child: Center(
-                              child:
-                                  (widget.emoji != null &&
-                                      widget.emoji!.isNotEmpty)
-                                  ? Text(
-                                      widget.emoji!,
-                                      style: const TextStyle(fontSize: 24),
-                                    )
-                                  : Icon(
-                                      widget.icon,
-                                      color: done ? onCompleted : widget.color,
-                                      size: 24,
-                                    ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: SizedBox(
+      child: Transform.scale(
+        scale: mutedScale,
+        child: Padding(
+          padding: resolvedMargin,
+          child: GestureDetector(
+            onTapDown: _handleTapDown,
+            onTapUp: _handleTapUp,
+            onTapCancel: _handleTapCancel,
+            onLongPress: _showMenu,
+            // translucent so parent horizontal drags (PageView/Dismissible) work nicer
+            behavior: HitTestBehavior.translucent,
+            child: ScaleTransition(
+              scale: _scale,
+              child: Stack(
+                children: [
+                  // Base card (no external margin here anymore)
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
+                    decoration: BoxDecoration(
+                      color: widget.isMuted
+                          ? Colors.transparent
+                          : (done
+                                ? completedBg
+                                : Color.alphaBlend(
+                                    widget.color.withValues(alpha: 0.06),
+                                    cs.surfaceContainerHighest,
+                                  )),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: (done && !widget.isMuted)
+                          ? [
+                              BoxShadow(
+                                color: widget.color.withValues(alpha: 0.28),
+                                blurRadius: 18,
+                                offset: const Offset(0, 8),
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 44,
                               height: 44,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    widget.title,
-                                    style: theme.textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: done ? onCompleted : cs.onSurface,
-                                      // Tighter line-height when there's no description so
-                                      // the single-line title visually centers with
-                                      // the emoji/check area.
-                                      height: widget.description.isEmpty
-                                          ? 1.02
-                                          : null,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  if (widget.description.isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 2),
-                                      child: Text(
-                                        widget.description,
-                                        style: theme.textTheme.bodySmall
-                                            ?.copyWith(
-                                              color: done
-                                                  ? onCompleted
-                                                  : cs.onSurfaceVariant,
-                                            ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          if (need > 0 && !done && remaining > 0)
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.35),
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.ac_unit,
-                                    size: 14,
-                                    color: Colors.white,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    remainingCapped ? '+7' : '$remaining',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          else if (app_settings
-                                  .SettingsRepository
-                                  .instance
-                                  .showStreakIndicators &&
-                              widget.showStreakIndicator &&
-                              (widget.streakCount > 0 ||
-                                  (widget.habitType == HabitType.simple &&
-                                      widget.streakCount == 0 &&
-                                      widget.currentStreak > 0)))
-                            Container(
-                              key: const ValueKey('streak-flame-emoji'),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.35),
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Text(
-                                    '🔥',
-                                    style: TextStyle(fontSize: 14),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '${widget.streakCount > 0 ? widget.streakCount : (widget.habitType == HabitType.simple ? widget.currentStreak : widget.streakCount)}',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          else
-                            AnimatedContainer(
-                              duration: const Duration(milliseconds: 220),
-                              curve: Curves.easeOutCubic,
-                              width: 28,
-                              height: 28,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: done
-                                    ? widget.color
-                                    : Color.alphaBlend(
-                                        widget.color.withValues(alpha: 0.10),
-                                        cs.surfaceContainerHighest,
-                                      ),
-                                boxShadow: done
-                                    ? [
-                                        BoxShadow(
-                                          color: widget.color.withValues(
-                                            alpha: 0.35,
-                                          ),
-                                          blurRadius: 12,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ]
-                                    : null,
-                              ),
-                              child: AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 180),
-                                switchInCurve: Curves.easeOut,
-                                switchOutCurve: Curves.easeIn,
-                                child: widget.isCompleted
-                                    ? Icon(
-                                        Icons.check,
-                                        key: const ValueKey('checked'),
-                                        color: Colors.white,
-                                        size: 16,
+                              child: Center(
+                                child:
+                                    (widget.emoji != null &&
+                                        widget.emoji!.isNotEmpty)
+                                    ? Text(
+                                        widget.emoji!,
+                                        style: const TextStyle(fontSize: 24),
                                       )
-                                    : const SizedBox(
-                                        key: ValueKey('unchecked'),
+                                    : Icon(
+                                        widget.icon,
+                                        color: done
+                                            ? onCompleted
+                                            : widget.color,
+                                        size: 24,
                                       ),
                               ),
                             ),
-                        ],
-                      ),
-                      // Subtasks listesi (sadece subtasks habit type için)
-                      if (widget.habitType == HabitType.subtasks &&
-                          widget.subtasks != null &&
-                          widget.subtasks!.isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxHeight: 150),
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: widget.subtasks!.length,
-                            itemBuilder: (context, index) {
-                              final subtask = widget.subtasks![index];
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 4),
-                                child: Row(
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: SizedBox(
+                                height: 44,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    SizedBox(
-                                      width: 24,
-                                      height: 24,
-                                      child: Checkbox(
-                                        value: subtask.isCompleted,
-                                        onChanged: widget.readOnly
-                                            ? null
-                                            : (val) {
-                                                if (widget.onSubtaskToggle !=
-                                                    null) {
-                                                  widget.onSubtaskToggle!(
-                                                    subtask.id,
-                                                    val ?? false,
-                                                  );
-                                                }
-                                              },
-                                        activeColor: done
-                                            ? onCompleted.withValues(alpha: 0.8)
-                                            : widget.color,
-                                        checkColor: Colors.white,
-                                        materialTapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                        visualDensity: VisualDensity.compact,
+                                    Text(
+                                      widget.title,
+                                      style: theme.textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: done
+                                            ? onCompleted
+                                            : cs.onSurface,
+                                        // Tighter line-height when there's no description so
+                                        // the single-line title visually centers with
+                                        // the emoji/check area.
+                                        height: widget.description.isEmpty
+                                            ? 1.02
+                                            : null,
                                       ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        subtask.title,
-                                        style: theme.textTheme.bodyMedium
-                                            ?.copyWith(
-                                              color: done
-                                                  ? onCompleted.withValues(
-                                                      alpha: 0.9,
-                                                    )
-                                                  : cs.onSurface.withValues(
-                                                      alpha: 0.8,
-                                                    ),
-                                              decoration: subtask.isCompleted
-                                                  ? TextDecoration.lineThrough
-                                                  : null,
-                                            ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                    if (widget.description.isNotEmpty)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 2),
+                                        child: Text(
+                                          widget.description,
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                color: done
+                                                    ? onCompleted
+                                                    : cs.onSurfaceVariant,
+                                              ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            if (need > 0 && !done && remaining > 0)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.35),
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.ac_unit,
+                                      size: 14,
+                                      color: Colors.white,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      remainingCapped ? '+7' : '$remaining',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 12,
                                       ),
                                     ),
                                   ],
                                 ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                if (need > 0 && !done)
-                  Positioned.fill(
-                    child: IgnorePointer(
-                      child: AnimatedOpacity(
-                        duration: const Duration(milliseconds: 180),
-                        opacity: frostStrength * 0.9,
-                        curve: Curves.easeOut,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
+                              )
+                            else if (app_settings
+                                    .SettingsRepository
+                                    .instance
+                                    .showStreakIndicators &&
+                                widget.showStreakIndicator &&
+                                (widget.streakCount > 0 ||
+                                    (widget.habitType == HabitType.simple &&
+                                        widget.streakCount == 0 &&
+                                        widget.currentStreak > 0)))
                               Container(
+                                key: const ValueKey('streak-flame-emoji'),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      Colors.blueGrey.shade100.withOpacity(0.6),
-                                      Colors.lightBlue.shade100.withOpacity(
-                                        0.5,
+                                  color: Colors.black.withOpacity(0.35),
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text(
+                                      '🔥',
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${widget.streakCount > 0 ? widget.streakCount : (widget.habitType == HabitType.simple ? widget.currentStreak : widget.streakCount)}',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            else
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 220),
+                                curve: Curves.easeOutCubic,
+                                width: 28,
+                                height: 28,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: done
+                                      ? widget.color
+                                      : Color.alphaBlend(
+                                          widget.color.withValues(alpha: 0.10),
+                                          cs.surfaceContainerHighest,
+                                        ),
+                                  boxShadow: done
+                                      ? [
+                                          BoxShadow(
+                                            color: widget.color.withValues(
+                                              alpha: 0.35,
+                                            ),
+                                            blurRadius: 12,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ]
+                                      : null,
+                                ),
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 180),
+                                  switchInCurve: Curves.easeOut,
+                                  switchOutCurve: Curves.easeIn,
+                                  child: _buildStatusIcon(done),
+                                ),
+                              ),
+                          ],
+                        ),
+                        // Subtasks listesi (sadece subtasks habit type için)
+                        if (widget.habitType == HabitType.subtasks &&
+                            widget.subtasks != null &&
+                            widget.subtasks!.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxHeight: 150),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: widget.subtasks!.length,
+                              itemBuilder: (context, index) {
+                                final subtask = widget.subtasks![index];
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 4),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: Checkbox(
+                                          value: subtask.isCompleted,
+                                          onChanged: widget.readOnly
+                                              ? null
+                                              : (val) {
+                                                  if (widget.onSubtaskToggle !=
+                                                      null) {
+                                                    widget.onSubtaskToggle!(
+                                                      subtask.id,
+                                                      val ?? false,
+                                                    );
+                                                  }
+                                                },
+                                          activeColor: done
+                                              ? onCompleted.withValues(
+                                                  alpha: 0.8,
+                                                )
+                                              : widget.color,
+                                          checkColor: Colors.white,
+                                          materialTapTargetSize:
+                                              MaterialTapTargetSize.shrinkWrap,
+                                          visualDensity: VisualDensity.compact,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          subtask.title,
+                                          style: theme.textTheme.bodyMedium
+                                              ?.copyWith(
+                                                color: done
+                                                    ? onCompleted.withValues(
+                                                        alpha: 0.9,
+                                                      )
+                                                    : cs.onSurface.withValues(
+                                                        alpha: 0.8,
+                                                      ),
+                                                decoration: subtask.isCompleted
+                                                    ? TextDecoration.lineThrough
+                                                    : null,
+                                              ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
                                     ],
                                   ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  if (need > 0 && !done)
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: AnimatedOpacity(
+                          duration: const Duration(milliseconds: 180),
+                          opacity: frostStrength * 0.9,
+                          curve: Curves.easeOut,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Colors.blueGrey.shade100.withOpacity(
+                                          0.6,
+                                        ),
+                                        Colors.lightBlue.shade100.withOpacity(
+                                          0.5,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              CustomPaint(painter: _FrostPainter()),
-                            ],
+                                CustomPaint(painter: _FrostPainter()),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

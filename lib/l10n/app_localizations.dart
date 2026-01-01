@@ -260,6 +260,84 @@ abstract class AppLocalizations {
   /// **'Mira'**
   String get appTitle;
 
+  /// No description provided for @signInToSaveData.
+  ///
+  /// In tr, this message translates to:
+  /// **'Verileri kaydetmek için giriş yap'**
+  String get signInToSaveData;
+
+  /// No description provided for @guestAccount.
+  ///
+  /// In tr, this message translates to:
+  /// **'Misafir Hesabı'**
+  String get guestAccount;
+
+  /// No description provided for @backupRestore.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedekleme & Geri Yükleme'**
+  String get backupRestore;
+
+  /// No description provided for @subscription.
+  ///
+  /// In tr, this message translates to:
+  /// **'Abonelik'**
+  String get subscription;
+
+  /// No description provided for @manageSubscription.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aboneliği Yönet'**
+  String get manageSubscription;
+
+  /// No description provided for @backupNow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hemen yedekle'**
+  String get backupNow;
+
+  /// No description provided for @lastBackup.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son Yedekleme: {date}'**
+  String lastBackup(String date);
+
+  /// No description provided for @noBackups.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedek bulunamadı'**
+  String get noBackups;
+
+  /// No description provided for @creatingBackup.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yedek oluşturuluyor...'**
+  String get creatingBackup;
+
+  /// No description provided for @emptyHabitTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yolculuğuna Başla'**
+  String get emptyHabitTitle;
+
+  /// No description provided for @emptyHabitSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlerlemeni takip etmek için ilk alışkanlığını oluştur.'**
+  String get emptyHabitSubtitle;
+
+  /// No description provided for @createFirstHabit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alışkanlık Oluştur'**
+  String get createFirstHabit;
+
+  /// No description provided for @enterValueTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Değer Gir'**
+  String get enterValueTitle;
+
   /// No description provided for @appearance.
   ///
   /// In tr, this message translates to:
@@ -793,6 +871,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Geri Sayımı Yapılandır'**
   String get countdownConfigureTitle;
+
+  /// No description provided for @continueText.
+  ///
+  /// In tr, this message translates to:
+  /// **'Devam Et'**
+  String get continueText;
 
   /// No description provided for @create.
   ///
@@ -2486,6 +2570,114 @@ abstract class AppLocalizations {
   /// **'Tema'**
   String get theme;
 
+  /// No description provided for @themeCotton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Cotton'**
+  String get themeCotton;
+
+  /// No description provided for @themeCottonDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Nötr ve sıcak'**
+  String get themeCottonDesc;
+
+  /// No description provided for @themeMatcha.
+  ///
+  /// In tr, this message translates to:
+  /// **'Matcha'**
+  String get themeMatcha;
+
+  /// No description provided for @themeMatchaDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Taze yeşil'**
+  String get themeMatchaDesc;
+
+  /// No description provided for @themeLavender.
+  ///
+  /// In tr, this message translates to:
+  /// **'Lavender'**
+  String get themeLavender;
+
+  /// No description provided for @themeLavenderDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakin mor'**
+  String get themeLavenderDesc;
+
+  /// No description provided for @themeSky.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sky'**
+  String get themeSky;
+
+  /// No description provided for @themeSkyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ferah mavi'**
+  String get themeSkyDesc;
+
+  /// No description provided for @themeRose.
+  ///
+  /// In tr, this message translates to:
+  /// **'Rose'**
+  String get themeRose;
+
+  /// No description provided for @themeRoseDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sıcak gül'**
+  String get themeRoseDesc;
+
+  /// No description provided for @themeSlate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Slate'**
+  String get themeSlate;
+
+  /// No description provided for @themeSlateDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Modern gri'**
+  String get themeSlateDesc;
+
+  /// No description provided for @themeOcean.
+  ///
+  /// In tr, this message translates to:
+  /// **'Okyanus'**
+  String get themeOcean;
+
+  /// No description provided for @themeOceanDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Derin ve serin'**
+  String get themeOceanDesc;
+
+  /// No description provided for @themeSunset.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gün Batımı'**
+  String get themeSunset;
+
+  /// No description provided for @themeSunsetDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sıcak ve altın'**
+  String get themeSunsetDesc;
+
+  /// No description provided for @themeForest.
+  ///
+  /// In tr, this message translates to:
+  /// **'Orman'**
+  String get themeForest;
+
+  /// No description provided for @themeForestDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Zengin ve organik'**
+  String get themeForestDesc;
+
   /// No description provided for @themeDetails.
   ///
   /// In tr, this message translates to:
@@ -3163,12 +3355,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'\"{title}\" alışkanlığı silinsin mi?'**
   String deleteHabitConfirm(Object title);
-
-  /// No description provided for @enterValueTitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Değer gir'**
-  String get enterValueTitle;
 
   /// No description provided for @valueLabel.
   ///
@@ -4760,12 +4946,6 @@ abstract class AppLocalizations {
   /// **'Google ile giriş yap'**
   String get signInWithGoogle;
 
-  /// No description provided for @backupNow.
-  ///
-  /// In tr, this message translates to:
-  /// **'Hemen yedekle'**
-  String get backupNow;
-
   /// No description provided for @restoreLatest.
   ///
   /// In tr, this message translates to:
@@ -4795,12 +4975,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Geri yükleme hatası'**
   String get restoreError;
-
-  /// No description provided for @manageSubscription.
-  ///
-  /// In tr, this message translates to:
-  /// **'Aboneliği yönet'**
-  String get manageSubscription;
 
   /// No description provided for @manageSubscriptionSubtitle.
   ///
@@ -5923,6 +6097,120 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Yapay Zeka Karakterim'**
   String get aiQuickProfile;
+
+  /// No description provided for @signOut.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çıkış Yap'**
+  String get signOut;
+
+  /// No description provided for @signOutConfirmation.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çıkış yapmak istediğinize emin misiniz?'**
+  String get signOutConfirmation;
+
+  /// No description provided for @xpToNextLevel.
+  ///
+  /// In tr, this message translates to:
+  /// **'sonraki seviyeye'**
+  String get xpToNextLevel;
+
+  /// No description provided for @statsActiveDays.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aktif Gün'**
+  String get statsActiveDays;
+
+  /// No description provided for @subEmotionOverwhelmed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bunalmış'**
+  String get subEmotionOverwhelmed;
+
+  /// No description provided for @subEmotionLonely.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yalnız'**
+  String get subEmotionLonely;
+
+  /// No description provided for @subEmotionRegretful.
+  ///
+  /// In tr, this message translates to:
+  /// **'Pişman'**
+  String get subEmotionRegretful;
+
+  /// No description provided for @subEmotionInsecure.
+  ///
+  /// In tr, this message translates to:
+  /// **'Güvensiz'**
+  String get subEmotionInsecure;
+
+  /// No description provided for @subEmotionGuilty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Suçlu'**
+  String get subEmotionGuilty;
+
+  /// No description provided for @subEmotionBored.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sıkılmış'**
+  String get subEmotionBored;
+
+  /// No description provided for @subEmotionNumb.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hissiz'**
+  String get subEmotionNumb;
+
+  /// No description provided for @subEmotionConfused.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kafası Karışık'**
+  String get subEmotionConfused;
+
+  /// No description provided for @subEmotionDistracted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dikkati Dağınık'**
+  String get subEmotionDistracted;
+
+  /// No description provided for @subEmotionProud.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gururlu'**
+  String get subEmotionProud;
+
+  /// No description provided for @subEmotionConfident.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kendinden Emin'**
+  String get subEmotionConfident;
+
+  /// No description provided for @subEmotionHopeful.
+  ///
+  /// In tr, this message translates to:
+  /// **'Umutlu'**
+  String get subEmotionHopeful;
+
+  /// No description provided for @subEmotionEuphoric.
+  ///
+  /// In tr, this message translates to:
+  /// **'Coşkulu'**
+  String get subEmotionEuphoric;
+
+  /// No description provided for @subEmotionBlessed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şanslı'**
+  String get subEmotionBlessed;
+
+  /// No description provided for @subEmotionUnstoppable.
+  ///
+  /// In tr, this message translates to:
+  /// **'Durdurulamaz'**
+  String get subEmotionUnstoppable;
 }
 
 class _AppLocalizationsDelegate

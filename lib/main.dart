@@ -11,13 +11,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'design_system/theme/app_theme.dart';
 import 'design_system/theme/theme_variations.dart';
 import 'design_system/tokens/colors.dart';
+import 'design_system/components/cotton_bottom_bar.dart';
 import 'core/language_manager.dart';
-import 'features/dashboard/dashboard_screen.dart';
+
 import 'features/habit/presentation/habit_screen.dart';
+import 'features/timer/timer_screen.dart';
 import 'features/finance/finance_screen.dart';
 import 'features/finance/finance_analysis_screen.dart';
 import 'features/vision/presentation/vision_screen.dart';
 import 'features/profile/profile_screen.dart';
+import 'features/assistant/presentation/mira_assistant_screen.dart';
+
+import 'features/profile/settings_screen.dart';
 // Removed Decision Egg feature
 import 'features/gamification/gamification_repository.dart';
 import 'features/notifications/data/notification_settings_repository.dart';
@@ -376,6 +381,8 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
   final ValueNotifier<bool> _visionRoundCorners = ValueNotifier(true);
   final ValueNotifier<bool> _visionShowText = ValueNotifier(true);
   final ValueNotifier<bool> _visionShowProgress = ValueNotifier(false);
+  bool _isFinanceView =
+      true; // Toggle between Finance (true) and Vision (false) on combined tab
   late final StreamSubscription<int> _xpSub;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -390,44 +397,39 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
   void _onPageChanged(int i) => setState(() => _currentIndex = i);
 
   Widget _buildPage(int index) => switch (index) {
-    0 => DashboardScreen(variant: widget.currentVariant),
-    1 => HabitScreen(key: _habitKey),
-    2 => FinanceScreen(key: _financeKey, variant: widget.currentVariant),
-    3 => VisionScreen(
-      variant: widget.currentVariant,
-      freeformNotifier: _visionFreeform,
-      roundCornersNotifier: _visionRoundCorners,
-      showTextNotifier: _visionShowText,
-      showProgressNotifier: _visionShowProgress,
-      boardBoundaryKey: _visionBoardKey,
-    ),
-    4 => ProfileScreen(
-      onToggleTheme: widget.onToggleTheme,
-      themeMode: widget.themeMode,
-      currentVariant: widget.currentVariant,
-      onVariantChanged: widget.onVariantChanged,
-      languageManager: widget.languageManager,
-    ),
+    0 => HabitScreen(key: _habitKey, variant: widget.currentVariant),
+    1 =>
+      _isFinanceView
+          ? FinanceScreen(key: _financeKey, variant: widget.currentVariant)
+          : VisionScreen(
+              variant: widget.currentVariant,
+              freeformNotifier: _visionFreeform,
+              roundCornersNotifier: _visionRoundCorners,
+              showTextNotifier: _visionShowText,
+              showProgressNotifier: _visionShowProgress,
+              boardBoundaryKey: _visionBoardKey,
+            ),
+    2 => MiraAssistantScreen(variant: widget.currentVariant),
+    3 => const ProfileScreen(),
     _ => const SizedBox.shrink(),
   };
 
   Widget _buildBody() => PageView.builder(
     controller: _pageController,
     onPageChanged: _onPageChanged,
-    // Disable swipe on Vision screen (index 3) to prevent accidental navigation
-    physics: _currentIndex == 3
+    // Disable swipe on Vision mode (index 1 when showing vision) to prevent accidental navigation
+    physics: (_currentIndex == 1 && !_isFinanceView)
         ? const NeverScrollableScrollPhysics()
         : const PageScrollPhysics(),
-    itemCount: 5,
+    itemCount: 4,
     itemBuilder: (context, index) => _buildPage(index),
   );
 
   String _titleFor(int i, AppLocalizations l10n) => switch (i) {
-    0 => l10n.dashboard,
-    1 => l10n.habits,
-    2 => l10n.finance,
-    3 => l10n.vision,
-    4 => l10n.profile,
+    0 => l10n.habits,
+    1 => _isFinanceView ? l10n.finance : l10n.vision,
+    2 => l10n.aiAssistantTitle,
+    3 => l10n.profile,
     _ => '',
   };
 
@@ -439,14 +441,42 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
       key: _scaffoldKey,
       appBar: AppBar(
         centerTitle: false,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        // Use scaffoldBackgroundColor to guarantee exact match with page background
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        surfaceTintColor: Colors.transparent,
-        title: Text(_titleFor(_currentIndex, l10n)),
+        // Remove overrides to let ThemeVariations apply Cotton style (surface color + shadow)
+        title: _currentIndex == 0
+            ? GestureDetector(
+                onTap: () => _habitKey.currentState?.showCalendar(),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(l10n.today),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.keyboard_arrow_down, size: 20),
+                  ],
+                ),
+              )
+            : _currentIndex == 1
+            ? GestureDetector(
+                onTap: () => setState(() => _isFinanceView = !_isFinanceView),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(_isFinanceView ? l10n.finance : l10n.vision),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.swap_horiz, size: 20),
+                  ],
+                ),
+              )
+            : Text(_titleFor(_currentIndex, l10n)),
         actions: [
-          if (_currentIndex == 3)
+          // Mood button for Habits screen
+          if (_currentIndex == 0)
+            IconButton(
+              tooltip: l10n.mood,
+              icon: const Icon(Icons.mood_outlined),
+              onPressed: () => _habitKey.currentState?.openMoodScreen(),
+            ),
+          // Vision actions (when showing Vision on combined tab)
+          if (_currentIndex == 1 && !_isFinanceView)
             ValueListenableBuilder<bool>(
               valueListenable: _visionFreeform,
               builder: (context, isFreeform, _) => isFreeform
@@ -457,7 +487,7 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
                     )
                   : const SizedBox.shrink(),
             ),
-          if (_currentIndex == 3)
+          if (_currentIndex == 1 && !_isFinanceView)
             ValueListenableBuilder<bool>(
               valueListenable: _visionFreeform,
               builder: (context, isFreeform, _) => IconButton(
@@ -468,25 +498,26 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
                 onPressed: () => _visionFreeform.value = !isFreeform,
               ),
             ),
-          if (_currentIndex == 1)
+          if (_currentIndex == 0)
             IconButton(
-              tooltip: l10n.filterTooltip,
-              icon: const Icon(Icons.filter_list),
-              onPressed: () => _habitKey.currentState?.showFilterSheet(),
+              tooltip: l10n.timerType,
+              icon: const Icon(Icons.timer_outlined),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => TimerScreen(variant: widget.currentVariant),
+                  ),
+                );
+              },
             ),
-          if (_currentIndex == 1)
-            IconButton(
-              tooltip: l10n.selectDate,
-              icon: const Icon(Icons.calendar_month_outlined),
-              onPressed: () => _habitKey.currentState?.showCalendar(),
-            ),
-          if (_currentIndex == 2)
+          // Finance actions (when showing Finance on combined tab)
+          if (_currentIndex == 1 && _isFinanceView)
             IconButton(
               tooltip: l10n.selectMonthTooltip,
               icon: const Icon(Icons.calendar_month_outlined),
               onPressed: () => _financeKey.currentState?.showMonthPicker(),
             ),
-          if (_currentIndex == 2)
+          if (_currentIndex == 1 && _isFinanceView)
             IconButton(
               tooltip: l10n.analysisTooltip,
               icon: const Icon(Icons.insights_outlined),
@@ -503,43 +534,57 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
                 );
               },
             ),
-          // Premium navigation removed — subscriptions cleaned from project.
+          // Profile Actions (Settings)
+          if (_currentIndex == 3)
+            IconButton(
+              tooltip: l10n.settings,
+              icon: const Icon(Icons.settings_outlined),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => SettingsScreen(
+                      onToggleTheme: widget.onToggleTheme,
+                      themeMode: widget.themeMode,
+                      currentVariant: widget.currentVariant,
+                      onVariantChanged: widget.onVariantChanged,
+                      languageManager: widget.languageManager,
+                    ),
+                  ),
+                );
+              },
+            ),
         ],
       ),
       body: _buildBody(),
-      bottomNavigationBar: widget.currentVariant == ThemeVariant.world
-          ? _buildWorldNavigationBar(context, l10n)
-          : NavigationBar(
-              selectedIndex: _currentIndex,
-              onDestinationSelected: _onNavTap,
-              destinations: [
-                NavigationDestination(
-                  icon: const Icon(Icons.public_outlined),
-                  selectedIcon: const Icon(Icons.public),
-                  label: l10n.dashboard,
-                ),
-                NavigationDestination(
-                  icon: const Icon(Icons.eco_outlined),
-                  selectedIcon: const Icon(Icons.eco),
-                  label: l10n.habits,
-                ),
-                NavigationDestination(
-                  icon: const Icon(Icons.water_drop_outlined),
-                  selectedIcon: const Icon(Icons.water_drop),
-                  label: l10n.finance,
-                ),
-                NavigationDestination(
-                  icon: const Icon(Icons.terrain_outlined),
-                  selectedIcon: const Icon(Icons.terrain),
-                  label: l10n.vision,
-                ),
-                NavigationDestination(
-                  icon: const Icon(Icons.light_mode_outlined),
-                  selectedIcon: const Icon(Icons.light_mode),
-                  label: l10n.profile,
-                ),
-              ],
-            ),
+      bottomNavigationBar: CottonBottomBar(
+        selectedIndex: _currentIndex,
+        onDestinationSelected: _onNavTap,
+        variant: widget.currentVariant,
+        destinations: [
+          CottonDestination(
+            icon: Icons.wb_sunny_outlined,
+            selectedIcon: Icons.wb_sunny,
+            label: l10n.today,
+          ),
+          CottonDestination(
+            icon: _isFinanceView
+                ? Icons.water_drop_outlined
+                : Icons.terrain_outlined,
+            selectedIcon: _isFinanceView ? Icons.water_drop : Icons.terrain,
+            label: _isFinanceView ? l10n.finance : l10n.vision,
+          ),
+          CottonDestination(
+            icon: Icons.auto_awesome_outlined,
+            selectedIcon: Icons.auto_awesome,
+            label: l10n.aiAssistantTitle,
+          ),
+          CottonDestination(
+            icon: Icons.person_outlined,
+            selectedIcon: Icons.person,
+            label: l10n.profile,
+          ),
+        ],
+      ),
     );
   }
 
@@ -661,74 +706,6 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
   }
 
   // Creation actions for text/image stickers are owned by Vision screen's FAB now.
-
-  Widget _buildWorldNavigationBar(BuildContext context, AppLocalizations l10n) {
-    final theme = Theme.of(context);
-
-    // Colors per tab (5 tabs now)
-    final tabColors = [
-      _getGradientColor(context), // Dashboard
-      AppColors.accentGreenDark, // Habit
-      AppColors.accentBlue, // Finance
-      AppColors.accentClay, // Vision
-      AppColors.accentGold, // Profile
-    ];
-
-    final selectedColor = tabColors[_currentIndex];
-    final labels = [
-      l10n.dashboard,
-      l10n.habits,
-      l10n.finance,
-      l10n.vision,
-      l10n.profile,
-    ];
-
-    return Theme(
-      data: theme.copyWith(
-        navigationBarTheme: theme.navigationBarTheme.copyWith(
-          labelTextStyle: WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.selected)) {
-              return TextStyle(
-                color: selectedColor,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              );
-            }
-            return TextStyle(
-              color: theme.colorScheme.onSurfaceVariant,
-              fontSize: 12,
-            );
-          }),
-        ),
-      ),
-      child: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: _onNavTap,
-        destinations: List.generate(5, (index) {
-          final isSelected = _currentIndex == index;
-          final color = tabColors[index];
-          final iconColor = isSelected
-              ? color
-              : theme.colorScheme.onSurfaceVariant;
-
-          return NavigationDestination(
-            icon: Icon(_getIconFor(index, false), color: iconColor),
-            selectedIcon: Icon(_getIconFor(index, true), color: iconColor),
-            label: labels[index],
-          );
-        }),
-      ),
-    );
-  }
-
-  IconData _getIconFor(int index, bool selected) => switch (index) {
-    0 => selected ? Icons.public : Icons.public_outlined,
-    1 => selected ? Icons.eco : Icons.eco_outlined,
-    2 => selected ? Icons.water_drop : Icons.water_drop_outlined,
-    3 => selected ? Icons.terrain : Icons.terrain_outlined,
-    4 => selected ? Icons.light_mode : Icons.light_mode_outlined,
-    _ => Icons.help_outline,
-  };
 
   Color _getGradientColor(BuildContext context) {
     // Panel için mor renk

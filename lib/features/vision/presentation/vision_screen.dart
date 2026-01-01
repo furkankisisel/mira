@@ -132,11 +132,7 @@ class _VisionScreenState extends State<VisionScreen> {
     final theme = Theme.of(context);
     // If global theme is 'world', override locally to 'earth' so Vision and its popups share earth look.
     final bool isDark = theme.brightness == Brightness.dark;
-    final ThemeData localTheme = widget.variant == ThemeVariant.world
-        ? (isDark
-              ? ThemeVariations.dark(ThemeVariant.earth)
-              : ThemeVariations.light(ThemeVariant.earth))
-        : theme;
+    final ThemeData localTheme = Theme.of(context);
     final accent = localTheme.colorScheme.primary;
 
     return Theme(
@@ -149,7 +145,7 @@ class _VisionScreenState extends State<VisionScreen> {
       ),
       child: Scaffold(
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: _showCreateActions,
+          onPressed: _handleFabPress,
           icon: const Icon(Icons.add),
           label: Text(AppLocalizations.of(context).createVision),
         ),
@@ -284,6 +280,13 @@ class _VisionScreenState extends State<VisionScreen> {
     if (created != null) {
       // Already added in create screen; stream updates will refresh UI.
     }
+  }
+
+  void _handleFabPress() {
+    requirePremium(context).then((ok) {
+      if (!ok) return;
+      _openCreate();
+    });
   }
 
   void _showCreateActions() {

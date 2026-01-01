@@ -3,6 +3,7 @@ import '../../vision/data/vision_repository.dart';
 import '../../vision/data/vision_model.dart';
 import 'dart:io' as io;
 import '../../../l10n/app_localizations.dart';
+import '../../../../design_system/tokens/radii.dart';
 
 class DashboardVisionCard extends StatefulWidget {
   const DashboardVisionCard({super.key});
@@ -42,7 +43,20 @@ class _DashboardVisionCardState extends State<DashboardVisionCard> {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: fill,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(AppRadii.card),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
+                spreadRadius: 2,
+              ),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,7 +110,7 @@ class _VisionThumb extends StatelessWidget {
     final bgColor = Color(vision.colorValue);
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(AppRadii.chip),
       child: Container(
         width: 140,
         height: 110,

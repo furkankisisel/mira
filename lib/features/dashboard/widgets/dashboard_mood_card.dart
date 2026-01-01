@@ -6,6 +6,7 @@ import '../../mood/data/mood_models.dart';
 import '../../mood/presentation/mood_selection_screen.dart';
 import '../../mood/presentation/mood_analytics_screen.dart';
 import '../../../design_system/theme/theme_variations.dart';
+import 'package:mira/design_system/tokens/radii.dart';
 
 enum Mood { terrible, bad, ok, good, great }
 
@@ -101,9 +102,9 @@ class _DashboardMoodCardState extends State<DashboardMoodCard> {
   Widget build(BuildContext context) {
     final base = Theme.of(context);
     final scheme = base.colorScheme;
-    final bool isWorld = widget.variant == ThemeVariant.world;
+    final bool isWorld = false;
     // Use the same accent logic as finance chart card
-    final Color accent = isWorld ? AppColors.accentPurple : scheme.primary;
+    final Color accent = scheme.primary;
     final fill = Color.alphaBlend(
       accent.withValues(alpha: 0.12),
       scheme.surfaceContainerHighest,
@@ -116,99 +117,122 @@ class _DashboardMoodCardState extends State<DashboardMoodCard> {
       data: localTheme,
       child: Material(
         color: fill,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        child: Column(
-          // Use the available vertical space and center the icon inside it to avoid overflow
-          children: [
-            Expanded(
-              child: Builder(
-                builder: (ctx) {
-                  final swipeBg = Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    alignment: Alignment.center,
-                    child: IconButton(
-                      icon: const Icon(Icons.insights_outlined),
-                      color: localTheme.colorScheme.onSurfaceVariant,
-                      onPressed: _openAnalytics,
-                    ),
-                  );
-                  return Dismissible(
-                    key: const ValueKey('dashboard_mood_dismissible'),
-                    // Allow horizontal swipes in both directions
-                    direction: DismissDirection.horizontal,
-                    // Use the same background for both sides so the Dismissible assertion is satisfied
-                    background: swipeBg,
-                    secondaryBackground: swipeBg,
-                    // Prevent actual dismiss — we only want the swipe-to-reveal affordance
-                    confirmDismiss: (_) async {
-                      // If the user swipes fully, treat it as opening analytics
-                      _openAnalytics();
-                      return false;
-                    },
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        InkWell(
-                          customBorder: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(16),
-                              topRight: Radius.circular(16),
-                            ),
-                          ),
-                          onTap: _openMoodScreen,
-                          child: Center(
-                            child: Padding(
-                              // Use symmetric vertical padding to keep the icon centered visually
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              child: Icon(
-                                _selected != null
-                                    ? _iconFor(_selected!)
-                                    : Icons.sentiment_neutral,
-                                color: _selected != null
-                                    ? _colorFor(_selected!)
-                                    : accent, // idle state uses same accent as finance widget icon
-                                size: 56,
-                              ),
-                            ),
-                          ),
-                        ),
-                        // Edge chevrons hint overlay (no text)
-                        IgnorePointer(
-                          child: Opacity(
-                            opacity: 0.18,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Icon(
-                                    Icons.chevron_left,
-                                    size: 28,
-                                    color: accent,
-                                  ),
-                                  Icon(
-                                    Icons.chevron_right,
-                                    size: 28,
-                                    color: accent,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadii.card),
+        ),
+        elevation: 0, // Disable default elevation to use custom shadows
+        shadowColor: Colors.transparent, // Disable default shadow
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadii.card),
+            color: fill,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
+                spreadRadius: 2,
               ),
-            ),
-          ],
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            // Use the available vertical space and center the icon inside it to avoid overflow
+            children: [
+              Expanded(
+                child: Builder(
+                  builder: (ctx) {
+                    final swipeBg = Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      alignment: Alignment.center,
+                      child: IconButton(
+                        icon: const Icon(Icons.insights_outlined),
+                        color: localTheme.colorScheme.onSurfaceVariant,
+                        onPressed: _openAnalytics,
+                      ),
+                    );
+                    return Dismissible(
+                      key: const ValueKey('dashboard_mood_dismissible'),
+                      // Allow horizontal swipes in both directions
+                      direction: DismissDirection.horizontal,
+                      // Use the same background for both sides so the Dismissible assertion is satisfied
+                      background: swipeBg,
+                      secondaryBackground: swipeBg,
+                      // Prevent actual dismiss — we only want the swipe-to-reveal affordance
+                      confirmDismiss: (_) async {
+                        // If the user swipes fully, treat it as opening analytics
+                        _openAnalytics();
+                        return false;
+                      },
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          InkWell(
+                            customBorder: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(16),
+                                topRight: Radius.circular(16),
+                              ),
+                            ),
+                            onTap: _openMoodScreen,
+                            child: Center(
+                              child: Padding(
+                                // Use symmetric vertical padding to keep the icon centered visually
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                                child: Icon(
+                                  _selected != null
+                                      ? _iconFor(_selected!)
+                                      : Icons.sentiment_neutral,
+                                  color: _selected != null
+                                      ? _colorFor(_selected!)
+                                      : accent, // idle state uses same accent as finance widget icon
+                                  size: 56,
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Edge chevrons hint overlay (no text)
+                          IgnorePointer(
+                            child: Opacity(
+                              opacity: 0.18,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Icon(
+                                      Icons.chevron_left,
+                                      size: 28,
+                                      color: accent,
+                                    ),
+                                    Icon(
+                                      Icons.chevron_right,
+                                      size: 28,
+                                      color: accent,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -4,9 +4,10 @@ import 'package:mira/l10n/app_localizations.dart';
 import '../../../../features/habit/data/server_ai_habit_service.dart';
 import '../../../../features/habit/domain/ai_habit_repository.dart';
 import '../presentation/ai_support_screen.dart';
+import 'package:mira/design_system/tokens/radii.dart';
 import '../../../../design_system/theme/theme_variations.dart';
 
-import 'package:mira/design_system/theme/app_theme.dart';
+import 'package:mira/core/config/api_config.dart';
 
 class DashboardTipCard extends StatelessWidget {
   final VoidCallback onTap;
@@ -21,20 +22,9 @@ class DashboardTipCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Check if we are in World theme
-    final isWorld = variant == ThemeVariant.world;
+    final isWorld = false;
 
-    // Build the content widget
     Widget content = _DashboardTipCardContent(onTap: onTap, variant: variant);
-
-    // If World theme, override with Purple (Mystic) theme to ensure exact match
-    if (isWorld) {
-      final brightness = Theme.of(context).brightness;
-      final purpleTheme = brightness == Brightness.dark
-          ? AppTheme.dark(ThemeVariant.purple)
-          : AppTheme.light(ThemeVariant.purple);
-
-      return Theme(data: purpleTheme, child: content);
-    }
 
     return content;
   }
@@ -88,9 +78,7 @@ class _DashboardTipCardContentState extends State<_DashboardTipCardContent> {
 
     return GestureDetector(
       onTap: () {
-        final service = ServerAiHabitService(
-          apiKey: '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',
-        );
+        final service = ServerAiHabitService(apiKey: ApiConfig.groqApiKey);
         final repository = AiHabitRepository(service);
 
         Navigator.of(context).push(
@@ -108,26 +96,20 @@ class _DashboardTipCardContentState extends State<_DashboardTipCardContent> {
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          // Use alphaBlend with neonColor to ensure harmony with the specific theme's background
-          color: Color.alphaBlend(
-            neonColor.withValues(alpha: 0.05),
-            colorScheme.surfaceContainer,
-          ),
-          border: Border.all(
-            color: neonColor.withValues(alpha: 0.5),
-            width: 1.5,
-          ),
+          borderRadius: BorderRadius.circular(AppRadii.card),
+          color: colorScheme.surfaceContainer,
           boxShadow: [
-            BoxShadow(
-              color: neonColor.withValues(alpha: 0.25),
-              blurRadius: 12,
-              spreadRadius: 1,
-              offset: const Offset(0, 0),
-            ),
+            // Layer 1: Ambient deep shadow for "lift"
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10,
+              blurRadius: 24,
+              offset: const Offset(0, 12),
+              spreadRadius: 2,
+            ),
+            // Layer 2: Closer shadow for definition
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 8,
               offset: const Offset(0, 4),
             ),
           ],
@@ -138,16 +120,14 @@ class _DashboardTipCardContentState extends State<_DashboardTipCardContent> {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: neonColor.withValues(alpha: 0.1),
+                color: neonColor.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: neonColor.withValues(alpha: 0.3),
-                  width: 1,
-                ),
+                // Subtle inner light for the icon container
                 boxShadow: [
                   BoxShadow(
-                    color: neonColor.withValues(alpha: 0.2),
-                    blurRadius: 8,
+                    color: neonColor.withValues(alpha: 0.12),
+                    blurRadius: 12,
+                    spreadRadius: -2,
                   ),
                 ],
               ),
@@ -164,13 +144,7 @@ class _DashboardTipCardContentState extends State<_DashboardTipCardContent> {
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: neonColor,
                       fontWeight: FontWeight.bold,
-                      fontSize: 10,
-                      shadows: [
-                        Shadow(
-                          color: neonColor.withValues(alpha: 0.4),
-                          blurRadius: 4,
-                        ),
-                      ],
+                      fontSize: 11, // Increased slightly for readability
                     ),
                   ),
                   const SizedBox(height: 2),

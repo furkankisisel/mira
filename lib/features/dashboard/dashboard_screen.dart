@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../design_system/theme/theme_variations.dart';
 import '../../design_system/tokens/colors.dart';
+import '../../design_system/tokens/radii.dart';
 import '../timer/widgets/dashboard_timer_card.dart';
 import 'widgets/dashboard_mood_card.dart';
 import 'widgets/dashboard_finance_chart_card.dart';
@@ -15,76 +16,103 @@ import 'widgets/dashboard_tip_card.dart';
 import 'presentation/ai_support_screen.dart';
 import '../habit/domain/ai_habit_repository.dart';
 import '../habit/data/server_ai_habit_service.dart';
+import '../../core/config/api_config.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key, required this.variant});
   final ThemeVariant variant;
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for KeepAlive
     final l10n = AppLocalizations.of(context);
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _DashboardHeader(variant: variant),
-          const SizedBox(height: 16),
-          // Tip of the day - opens AI Support
-          DashboardTipCard(
-            variant: variant,
-            onTap: () {
-              // Instantiate AI service and repository
-              final service = ServerAiHabitService(
-                apiKey:
-                    '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', // Hardcoded for now
-              );
-              final repository = AiHabitRepository(service);
+    return RepaintBoundary(
+      child: SingleChildScrollView(
+        padding: EdgeInsets.zero,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _DashboardHeader(variant: widget.variant),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+              child: Column(
+                children: [
+                  // Tip of the day - opens AI Support
+                  DashboardTipCard(
+                    variant: widget.variant,
+                    onTap: () {
+                      // Instantiate AI service and repository
+                      final service = ServerAiHabitService(
+                        apiKey: ApiConfig.groqApiKey,
+                      );
+                      final repository = AiHabitRepository(service);
 
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) =>
-                      AiSupportScreen(repository: repository, variant: variant),
-                ),
-              );
-            },
-          ),
-          const SizedBox(height: 16),
-          // Top row: Mood card and Fortune Egg card side-by-side
-          // Top row: give both cards the same vertical size so they line up visually
-          SizedBox(
-            // Reduced height so the dashboard row is more compact; eggs will be larger inside
-            height: 96,
-            child: Row(
-              children: [
-                Expanded(child: DashboardMoodCard(variant: variant)),
-                const SizedBox(width: 12),
-                // Make fortune eggs card share available width equally with mood card
-                Expanded(child: DashboardFortuneEggsCard(variant: variant)),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          DashboardFinanceChartCard(variant: variant),
-          const SizedBox(height: 16),
-          DashboardTimerCard(variant: variant),
-          const SizedBox(height: 16),
-          _DashboardHabitCarousel(),
-          const SizedBox(height: 16),
-          if (variant == ThemeVariant.world)
-            Theme(
-              data: Theme.of(context).copyWith(
-                colorScheme: Theme.of(context).colorScheme.copyWith(
-                  primary: AppColors.accentPurple,
-                  secondary: AppColors.accentPurple,
-                ),
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => AiSupportScreen(
+                            repository: repository,
+                            variant: widget.variant,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  // Top row: Mood card and Fortune Egg card side-by-side
+                  // Top row: give both cards the same vertical size so they line up visually
+                  SizedBox(
+                    // Reduced height so the dashboard row is more compact; eggs will be larger inside
+                    height: 96,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: DashboardMoodCard(variant: widget.variant),
+                        ),
+                        const SizedBox(width: 12),
+                        // Make fortune eggs card share available width equally with mood card
+                        Expanded(
+                          child: DashboardFortuneEggsCard(
+                            variant: widget.variant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  DashboardFinanceChartCard(variant: widget.variant),
+                  const SizedBox(height: 16),
+                  DashboardTimerCard(variant: widget.variant),
+                  const SizedBox(height: 16),
+                  _DashboardHabitCarousel(),
+                  const SizedBox(height: 16),
+                  if (widget.variant == ThemeVariant.world)
+                    Theme(
+                      data: Theme.of(context).copyWith(
+                        colorScheme: Theme.of(context).colorScheme.copyWith(
+                          primary: AppColors.accentPurple,
+                          secondary: AppColors.accentPurple,
+                        ),
+                      ),
+                      child: const DashboardVisionCard(),
+                    )
+                  else
+                    const DashboardVisionCard(),
+                  const SizedBox(height: 16),
+                  // ... ileride başka panel kartları eklenecek
+                ],
               ),
-              child: const DashboardVisionCard(),
-            )
-          else
-            const DashboardVisionCard(),
-          const SizedBox(height: 16),
-          // ... ileride başka panel kartları eklenecek
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -145,23 +173,35 @@ class _DashboardHeaderState extends State<_DashboardHeader> {
     );
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + 8,
+        bottom: 12,
+        left: 20,
+        right: 20,
+      ),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        color: headerFill,
+        color: theme.colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(24)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: 56,
-            height: 56,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: cs.primaryContainer,
             ),
             child: const Center(
-              child: Text('🌟', style: TextStyle(fontSize: 28)),
+              child: Text('🌟', style: TextStyle(fontSize: 24)),
             ),
           ),
           const SizedBox(width: 12),
@@ -171,8 +211,9 @@ class _DashboardHeaderState extends State<_DashboardHeader> {
               children: [
                 Text(
                   '$greeting!',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 26,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -309,7 +350,7 @@ class _HabitMiniCardState extends State<_HabitMiniCard> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: InkWell(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -331,7 +372,7 @@ class _HabitMiniCardState extends State<_HabitMiniCard> {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
             color: fill,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(AppRadii.card),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

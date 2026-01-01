@@ -140,8 +140,9 @@ class DetailedMoodRepository {
 
     for (final entry in entries) {
       moodCounts[entry.mood] = (moodCounts[entry.mood] ?? 0) + 1;
-      subEmotionCounts[entry.subEmotion] =
-          (subEmotionCounts[entry.subEmotion] ?? 0) + 1;
+      for (final subEmotion in entry.subEmotions) {
+        subEmotionCounts[subEmotion] = (subEmotionCounts[subEmotion] ?? 0) + 1;
+      }
       reasonCounts[entry.reason] = (reasonCounts[entry.reason] ?? 0) + 1;
     }
 

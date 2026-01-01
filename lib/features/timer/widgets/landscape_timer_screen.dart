@@ -55,7 +55,7 @@ class _LandscapeTimerScreenState extends State<LandscapeTimerScreen>
   Color _outline(BuildContext context) => _useOledTheme
       ? Colors.white24
       : Theme.of(context).colorScheme.outlineVariant;
-  bool get _isWorld => widget.variant == ThemeVariant.world;
+  bool get _isWorld => false;
   Color _accent(BuildContext context) =>
       _isWorld ? AppColors.accentPurple : Theme.of(context).colorScheme.primary;
   Color _primaryFill(BuildContext context) {
@@ -350,13 +350,30 @@ class _LandscapeTimerScreenState extends State<LandscapeTimerScreen>
     fontWeight: FontWeight.w600,
   );
 
-  Widget _bigTime(String value, {String? subtitle}) {
+  Widget _bigTime(Duration duration, {String? subtitle}) {
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes % 60;
+    final seconds = duration.inSeconds % 60;
+
+    // Format time similar to portrait mode
+    final timeText = hours > 0
+        ? '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}'
+        : '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        FittedBox(child: Text(value, style: _megaDigits(context))),
+        Text(
+          timeText,
+          style: _megaDigits(context).copyWith(
+            // Ensure it's large but scalable
+            fontSize: 160,
+            fontWeight: FontWeight.w300,
+            letterSpacing: 4,
+          ),
+        ),
         if (subtitle != null) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(subtitle, style: _subDigits(context)),
         ],
       ],
@@ -387,7 +404,10 @@ class _LandscapeTimerScreenState extends State<LandscapeTimerScreen>
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _bigTime(controller.formatDuration(controller.elapsed)),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: _bigTime(controller.elapsed),
+              ),
               const SizedBox(height: 24),
               _controls(
                 actions: [
@@ -436,47 +456,26 @@ class _LandscapeTimerScreenState extends State<LandscapeTimerScreen>
     final rem = controller.countdownRemaining;
     final total = controller.countdownTotal;
     final hasDuration = controller.hasCountdown;
-    final progress = hasDuration && total.inSeconds > 0
-        ? 1 - (rem.inSeconds / total.inSeconds)
-        : 0.0;
+    // Removed unused progress calculation
+
     final isRunning =
         controller.isRunning && controller.activeMode == TimerMode.countdown;
     return Container(
       color: _bg(context),
       padding: const EdgeInsets.all(16),
       child: Center(
-        child: SingleChildScrollView(
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Time and optional subtitle
               _bigTime(
-                controller.formatDuration(rem),
+                rem,
                 subtitle: hasDuration
                     ? '${l10n.totalDuration}: ${controller.formatDuration(total)}'
                     : l10n.timerSetDurationFirst,
-              ),
-              const SizedBox(height: 16),
-              // Linear progress below time
-              FractionallySizedBox(
-                widthFactor: 0.6,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: TweenAnimationBuilder<double>(
-                    duration: const Duration(milliseconds: 400),
-                    tween: Tween(
-                      begin: 0,
-                      end: hasDuration ? progress.clamp(0.0, 1.0) : 0,
-                    ),
-                    builder: (context, value, _) => LinearProgressIndicator(
-                      value: value,
-                      minHeight: 10,
-                      color: _primaryColor(context),
-                      backgroundColor: _trackColor(context),
-                    ),
-                  ),
-                ),
               ),
               const SizedBox(height: 24),
               _controls(
@@ -557,7 +556,7 @@ class _LandscapeTimerScreenState extends State<LandscapeTimerScreen>
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: _bigTime(
-                  controller.formattedTime,
+                  controller.pomodoroRemaining,
                   subtitle: l10n.timerPomodoroCompletedWork(
                     controller.pomodoroCompletedWorkSessions,
                   ),

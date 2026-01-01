@@ -311,13 +311,6 @@ class _NotificationSettingsScreenState
 
     // If world variant is requested, mirror ProfileScreen's behavior and
     // apply the golden/world variation theme for a consistent look.
-    if (widget.variant == ThemeVariant.world) {
-      final brightness = Theme.of(context).brightness;
-      final themed = brightness == Brightness.dark
-          ? ThemeVariations.dark(ThemeVariant.golden)
-          : ThemeVariations.light(ThemeVariant.golden);
-      return Theme(data: themed, child: content);
-    }
 
     return content;
   }

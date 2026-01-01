@@ -550,9 +550,7 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
         }
         break;
     }
-    _updateNotification();
-
-    // Her 5 saniyede bir state'i kaydet (I/O optimizasyonu)
+    // _updateNotification(); // REMOVED: Managed by state changes (Start/Pause) using Native Chronometer
     _tickCounter++;
     if (_tickCounter >= 5) {
       _tickCounter = 0;
@@ -600,12 +598,49 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
         _pomodoroWorkPhase ? 'Pomodoro - Çalışma' : 'Pomodoro - Mola',
     };
 
-    final String time = formattedTime;
+    // If waiting/paused, just show static time
+    if (!isRunning) {
+      NotificationService.instance.showTimerNotification(
+        title: modeLabel,
+        body: formattedTime, // Static time
+        isRunning: false,
+        usesChronometer: false,
+      );
+      return;
+    }
+
+    // Calculating 'when' for Chronometer
+    int? when;
+    bool usesChronometer = true;
+    bool chronometerCountDown = false;
+
+    final now = DateTime.now().millisecondsSinceEpoch;
+
+    if (_activeMode == TimerMode.stopwatch) {
+      // Stopwatch: counts UP from start.
+      // when = now - elapsed
+      when = now - _elapsed.inMilliseconds;
+      chronometerCountDown = false;
+    } else if (_activeMode == TimerMode.countdown) {
+      // Countdown: counts DOWN to end.
+      // when = now + remaining
+      when = now + _countdownRemaining.inMilliseconds;
+      chronometerCountDown = true;
+    } else if (_activeMode == TimerMode.pomodoro) {
+      // Pomodoro: counts DOWN to end.
+      when = now + _pomodoroRemaining.inMilliseconds;
+      chronometerCountDown = true;
+    }
 
     NotificationService.instance.showTimerNotification(
       title: modeLabel,
-      body: time,
-      isRunning: isRunning,
+      body: _activeMode == TimerMode.stopwatch
+          ? 'Zaman geçiyor...'
+          : 'Kalan süre',
+      isRunning: true,
+      when: when,
+      usesChronometer: usesChronometer,
+      chronometerCountDown: chronometerCountDown,
     );
   }
 

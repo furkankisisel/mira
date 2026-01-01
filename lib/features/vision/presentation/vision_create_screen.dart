@@ -59,79 +59,65 @@ class _VisionCreateScreenState extends State<VisionCreateScreen>
     final isEdit = widget.initialVision != null;
     final theme = Theme.of(context);
     final bool isDark = theme.brightness == Brightness.dark;
-    final ThemeData localTheme = widget.variant == ThemeVariant.world
-        ? (isDark
-              ? ThemeVariations.dark(ThemeVariant.earth)
-              : ThemeVariations.light(ThemeVariant.earth))
-        : theme;
-    final accent = localTheme.colorScheme.primary;
-    return Theme(
-      data: localTheme.copyWith(
-        colorScheme: localTheme.colorScheme.copyWith(
-          primary: accent,
-          secondary: accent,
-          tertiary: accent,
+    final ThemeData localTheme = Theme.of(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          isEdit
+              ? AppLocalizations.of(context).visionEditTitle
+              : AppLocalizations.of(context).visionCreateTitle,
         ),
-      ),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            isEdit
-                ? AppLocalizations.of(context).visionEditTitle
-                : AppLocalizations.of(context).visionCreateTitle,
-          ),
-          bottom: isEdit
-              ? null
-              : TabBar(
-                  controller: _tabController,
-                  tabs: [
-                    Tab(text: AppLocalizations.of(context).templatesTabReady),
-                    Tab(text: AppLocalizations.of(context).templatesTabManual),
-                  ],
-                ),
-          actions: [],
-        ),
-        body: isEdit
-            ? _ManualTab(
-                key: _manualKey,
-                initial: widget.initialVision,
-                variant: widget.variant,
-              )
-            : TabBarView(
+        bottom: isEdit
+            ? null
+            : TabBar(
                 controller: _tabController,
-                children: [
-                  _TemplatesTab(
-                    isEdit: false,
-                    onApplyToManual: (t) async {
-                      // Load full template by id and apply everything (header + habits)
-                      final lang = Localizations.localeOf(context).languageCode;
-                      final all = await VisionTemplateRepository.instance
-                          .loadBundled(lang: lang);
-                      final tpl = all.firstWhere(
-                        (e) => e.id == t.id,
-                        orElse: () => VisionTemplate(
-                          id: t.id,
-                          title: t.title,
-                          description: t.description,
-                          emoji: t.emoji,
-                          colorValue: t.color.toARGB32(),
-                          autoSeed: false,
-                          habits: const [],
-                          endDate: null,
-                        ),
-                      );
-                      _manualKey.currentState?.applyFullTemplate(tpl);
-                      _tabController.animateTo(1);
-                    },
-                  ),
-                  _ManualTab(
-                    key: _manualKey,
-                    initial: widget.initialVision,
-                    variant: widget.variant,
-                  ),
+                tabs: [
+                  Tab(text: AppLocalizations.of(context).templatesTabReady),
+                  Tab(text: AppLocalizations.of(context).templatesTabManual),
                 ],
               ),
+        actions: [],
       ),
+      body: isEdit
+          ? _ManualTab(
+              key: _manualKey,
+              initial: widget.initialVision,
+              variant: widget.variant,
+            )
+          : TabBarView(
+              controller: _tabController,
+              children: [
+                _TemplatesTab(
+                  isEdit: false,
+                  onApplyToManual: (t) async {
+                    // Load full template by id and apply everything (header + habits)
+                    final lang = Localizations.localeOf(context).languageCode;
+                    final all = await VisionTemplateRepository.instance
+                        .loadBundled(lang: lang);
+                    final tpl = all.firstWhere(
+                      (e) => e.id == t.id,
+                      orElse: () => VisionTemplate(
+                        id: t.id,
+                        title: t.title,
+                        description: t.description,
+                        emoji: t.emoji,
+                        colorValue: t.color.toARGB32(),
+                        autoSeed: false,
+                        habits: const [],
+                        endDate: null,
+                      ),
+                    );
+                    _manualKey.currentState?.applyFullTemplate(tpl);
+                    _tabController.animateTo(1);
+                  },
+                ),
+                _ManualTab(
+                  key: _manualKey,
+                  initial: widget.initialVision,
+                  variant: widget.variant,
+                ),
+              ],
+            ),
     );
   }
 }
@@ -1178,12 +1164,9 @@ class _ManualTabState extends State<_ManualTab> {
                 // Use the same local theme as VisionCreateScreen for the wizard
                 final baseTheme = Theme.of(context);
                 final bool isDark = baseTheme.brightness == Brightness.dark;
+
                 final ThemeData localTheme =
-                    (widget.variant == ThemeVariant.world)
-                    ? (isDark
-                          ? ThemeVariations.dark(ThemeVariant.earth)
-                          : ThemeVariations.light(ThemeVariant.earth))
-                    : baseTheme;
+                    baseTheme; // Simplified based on the instruction's intent
                 final map = await Navigator.of(context)
                     .push<Map<String, dynamic>>(
                       MaterialPageRoute(
@@ -1963,11 +1946,8 @@ class _ManualTabState extends State<_ManualTab> {
     // Use the same local theme as VisionCreateScreen for the screen
     final baseTheme = Theme.of(context);
     final bool isDark = baseTheme.brightness == Brightness.dark;
-    final ThemeData localTheme = (widget.variant == ThemeVariant.world)
-        ? (isDark
-              ? ThemeVariations.dark(ThemeVariant.earth)
-              : ThemeVariations.light(ThemeVariant.earth))
-        : baseTheme;
+    final ThemeData localTheme =
+        baseTheme; // Simplified based on the instruction's intent
     final map = await Navigator.of(context).push<Map<String, dynamic>>(
       MaterialPageRoute(
         builder: (_) => Theme(
@@ -1997,11 +1977,8 @@ class _ManualTabState extends State<_ManualTab> {
     // Use the same local theme as VisionCreateScreen for the screen
     final baseTheme = Theme.of(context);
     final bool isDark = baseTheme.brightness == Brightness.dark;
-    final ThemeData localTheme = (widget.variant == ThemeVariant.world)
-        ? (isDark
-              ? ThemeVariations.dark(ThemeVariant.earth)
-              : ThemeVariations.light(ThemeVariant.earth))
-        : baseTheme;
+    final ThemeData localTheme =
+        baseTheme; // Simplified based on the instruction's intent
     final map = await Navigator.of(context).push<Map<String, dynamic>>(
       MaterialPageRoute(
         builder: (_) => Theme(

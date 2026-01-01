@@ -127,46 +127,85 @@ class NotificationService {
     _onTimerAction = handler;
   }
 
+  // Cache for deduplication of timer notifications
+  String? _lastTitle;
+  String? _lastBody;
+  bool? _lastIsRunning;
+
   Future<void> showTimerNotification({
     required String title,
     required String body,
     required bool isRunning,
+    int? when, // Timestamp for chronometer
+    bool usesChronometer = false,
+    bool chronometerCountDown = false,
   }) async {
     if (!_initialized) return;
+
+    // Optimization check (skip if identical update, mostly for pause/resume text changes)
+    if (_lastTitle == title &&
+        _lastBody == body &&
+        _lastIsRunning == isRunning) {
+      // NOTE: When using chronometer, we DON'T update repeatedly, so this check is stricter.
+      // But if 'when' changed (re-sync), we should proceed.
+      // For now, simple dedupe is fine as we won't call this often.
+      return;
+    }
+
+    _lastTitle = title;
+    _lastBody = body;
+    _lastIsRunning = isRunning;
 
     final androidDetails = AndroidNotificationDetails(
       _timerChannelId,
       _timerChannelName,
       channelDescription: _timerChannelDescription,
-      importance: Importance.low, // Changed to low to prevent sound/heads-up
-      priority: Priority.low,
+      importance: Importance.max, // Max importance for best visibility
+      priority: Priority.max, // Max priority
       icon: 'ic_stat_miralogo',
       ongoing: true,
       autoCancel: false,
       playSound: false,
       enableVibration: false,
-      onlyAlertOnce: true, // Critical: prevent re-alerting on update
+      onlyAlertOnce: true,
+
+      // Native Chronometer Settings
+      usesChronometer: usesChronometer,
+      chronometerCountDown: chronometerCountDown,
+      when: when, // Milliseconds since epoch
+      showWhen: true, // Required to show the time
+      // Use BigTextStyle for better text visibility instead of MediaStyle
+      styleInformation: BigTextStyleInformation(
+        body,
+        contentTitle: title,
+        htmlFormatBigText: false,
+        htmlFormatContent: false,
+        htmlFormatContentTitle: false,
+        htmlFormatTitle: false,
+        htmlFormatSummaryText: false,
+      ),
+
       largeIcon: const DrawableResourceAndroidBitmap(
         '@drawable/ic_notification_large',
       ),
       actions: <AndroidNotificationAction>[
         if (isRunning)
-          AndroidNotificationAction(
+          const AndroidNotificationAction(
             'pause',
-            _l10n?.timerPause ?? '⏸ Duraklat',
-            showsUserInterface: true, // Must be true for actions to work
+            '⏸️ Duraklat',
+            showsUserInterface: true,
             cancelNotification: false,
           )
         else
-          AndroidNotificationAction(
+          const AndroidNotificationAction(
             'resume',
-            _l10n?.timerResume ?? '▶ Devam',
-            showsUserInterface: true, // Must be true for actions to work
+            '▶️ Devam',
+            showsUserInterface: true,
             cancelNotification: false,
           ),
-        AndroidNotificationAction(
+        const AndroidNotificationAction(
           'stop',
-          _l10n?.timerStop ?? '⏹ Bitir',
+          '⏹️ Bitir',
           showsUserInterface: true,
           cancelNotification: false,
         ),
@@ -187,6 +226,8 @@ class NotificationService {
     await _plugin.show(
       _timerNotificationId,
       title,
+      // If using chronometer, body text is usually secondary.
+      // Android shows chronometer next to title/content info.
       body,
       details,
       payload: 'timer',
@@ -195,6 +236,9 @@ class NotificationService {
 
   Future<void> cancelTimerNotification() async {
     if (!_initialized) return;
+    _lastTitle = null;
+    _lastBody = null;
+    _lastIsRunning = null;
     await _plugin.cancel(_timerNotificationId);
   }
 

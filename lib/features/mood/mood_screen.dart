@@ -67,14 +67,8 @@ class _MoodScreenState extends State<MoodScreen>
   @override
   Widget build(BuildContext context) {
     final base = Theme.of(context);
-    final bool usePurple = widget.variant == ThemeVariant.world;
-    final themed = usePurple
-        ? base.copyWith(
-            colorScheme: base.colorScheme.copyWith(
-              primary: AppColors.accentPurple,
-            ),
-          )
-        : base;
+    // Removed isWorld check
+    final themed = base;
     return Theme(
       data: themed,
       child: Scaffold(

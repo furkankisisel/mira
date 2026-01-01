@@ -89,6 +89,27 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: _loading
+                      ? null
+                      : () {
+                          AuthRepository.instance.signInAnonymously();
+                        },
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: Text(
+                    "Misafir Olarak Devam Et", // TODO: Localize
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
               const SizedBox(height: 12),
             ],
           ),

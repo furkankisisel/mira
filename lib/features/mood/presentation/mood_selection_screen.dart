@@ -3,9 +3,12 @@ import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../data/mood_models.dart';
 import 'mood_sub_emotion_screen.dart';
+import '../../../design_system/theme/theme_variations.dart';
+import 'mood_analytics_screen.dart';
 
 class MoodSelectionScreen extends StatefulWidget {
-  const MoodSelectionScreen({super.key});
+  const MoodSelectionScreen({super.key, this.variant = ThemeVariant.cotton});
+  final ThemeVariant variant;
 
   @override
   State<MoodSelectionScreen> createState() => _MoodSelectionScreenState();
@@ -49,7 +52,25 @@ class _MoodSelectionScreenState extends State<MoodSelectionScreen>
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.moodSelection), centerTitle: true),
+      appBar: AppBar(
+        title: Text(l10n.moodSelection),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () {
+              // Navigate to mood analysis screen
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => MoodAnalyticsScreen(variant: widget.variant),
+                ),
+              );
+            },
+            icon: const Icon(Icons.insights_rounded),
+            tooltip: l10n.analysis,
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: FadeTransition(
         opacity: _fadeAnimation,
         child: SlideTransition(
@@ -188,6 +209,9 @@ class _MoodOptionState extends State<_MoodOption>
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
 
+    final color = _getMoodColor(widget.mood, theme);
+    final isSelected = false; // We could pass selection state if needed
+
     return FadeTransition(
       opacity: _fadeAnimation,
       child: SlideTransition(
@@ -197,36 +221,38 @@ class _MoodOptionState extends State<_MoodOption>
           onExit: (_) => setState(() => _isHovered = false),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            transform: Matrix4.identity()..scale(_isHovered ? 1.02 : 1.0),
+            transform: Matrix4.identity()..scale(_isHovered ? 1.01 : 1.0),
             child: Material(
-              elevation: _isHovered ? 8 : 2,
-              borderRadius: BorderRadius.circular(16),
+              elevation: _isHovered ? 4 : 0,
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(20),
               child: InkWell(
                 onTap: widget.onTap,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
                 child: Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    gradient: LinearGradient(
-                      colors: _getMoodGradient(widget.mood, theme),
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+                    borderRadius: BorderRadius.circular(20),
+                    color: theme.colorScheme.surfaceContainerHighest
+                        .withOpacity(0.4),
+                    border: Border.all(
+                      color: color.withOpacity(0.2),
+                      width: 1.5,
                     ),
                   ),
                   child: Row(
                     children: [
                       Container(
-                        width: 56,
-                        height: 56,
+                        width: 52,
+                        height: 52,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(28),
+                          color: color.withOpacity(0.15),
+                          shape: BoxShape.circle,
                         ),
                         child: Icon(
                           _getMoodIcon(widget.mood),
-                          size: 28,
-                          color: Colors.white,
+                          size: 26,
+                          color: color,
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -236,25 +262,27 @@ class _MoodOptionState extends State<_MoodOption>
                           children: [
                             Text(
                               _getMoodTitle(widget.mood, l10n),
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                color: theme.colorScheme.onSurface,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 2),
                             Text(
                               _getMoodDescription(widget.mood, l10n),
                               style: theme.textTheme.bodyMedium?.copyWith(
-                                color: Colors.white.withOpacity(0.9),
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
                         ),
                       ),
                       Icon(
-                        Icons.arrow_forward_ios,
-                        color: Colors.white.withOpacity(0.8),
-                        size: 20,
+                        Icons.arrow_forward_ios_rounded,
+                        color: theme.colorScheme.onSurfaceVariant.withOpacity(
+                          0.5,
+                        ),
+                        size: 18,
                       ),
                     ],
                   ),
@@ -267,18 +295,18 @@ class _MoodOptionState extends State<_MoodOption>
     );
   }
 
-  List<Color> _getMoodGradient(MoodLevel mood, ThemeData theme) {
+  Color _getMoodColor(MoodLevel mood, ThemeData theme) {
     switch (mood) {
       case MoodLevel.terrible:
-        return [Colors.red.shade600, Colors.red.shade800];
+        return Colors.red.shade400;
       case MoodLevel.bad:
-        return [Colors.orange.shade600, Colors.red.shade600];
+        return Colors.orange.shade400;
       case MoodLevel.neutral:
-        return [Colors.blue.shade400, Colors.blue.shade600];
+        return Colors.grey.shade500;
       case MoodLevel.good:
-        return [Colors.green.shade500, Colors.green.shade700];
+        return Colors.blue.shade400;
       case MoodLevel.excellent:
-        return [Colors.purple.shade500, Colors.purple.shade700];
+        return Colors.purple.shade400;
     }
   }
 

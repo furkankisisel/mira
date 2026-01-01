@@ -4,13 +4,13 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
-import '../../../design_system/tokens/colors.dart';
 
 import '../../finance/data/transaction_model.dart';
 import '../../finance/data/transaction_repository.dart';
 import '../../finance/finance_analysis_screen.dart';
 import '../../../ui/premium_gate.dart';
 import '../../../design_system/theme/theme_variations.dart';
+import 'package:mira/design_system/tokens/radii.dart';
 
 class DashboardFinanceChartCard extends StatefulWidget {
   const DashboardFinanceChartCard({super.key, required this.variant});
@@ -49,11 +49,10 @@ class _DashboardFinanceChartCardState extends State<DashboardFinanceChartCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final bool isWorld = widget.variant == ThemeVariant.world;
-    final Color worldPurple = AppColors.accentPurple;
     final l10n = AppLocalizations.of(context);
+    final Color accent = scheme.primary;
     final fill = Color.alphaBlend(
-      (isWorld ? worldPurple : scheme.primary).withValues(alpha: 0.12),
+      accent.withValues(alpha: 0.12),
       scheme.surfaceContainerHighest,
     );
     final days = _last7Days();
@@ -61,7 +60,7 @@ class _DashboardFinanceChartCardState extends State<DashboardFinanceChartCard> {
         ? List<double>.filled(7, 0)
         : _netTotalsForDays(days);
     final hasAny = totals.any((v) => v != 0);
-    final cardRadius = BorderRadius.circular(18);
+    final cardRadius = BorderRadius.circular(AppRadii.card);
 
     final card = InkWell(
       borderRadius: cardRadius,
@@ -86,16 +85,29 @@ class _DashboardFinanceChartCardState extends State<DashboardFinanceChartCard> {
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(color: fill, borderRadius: cardRadius),
+          decoration: BoxDecoration(
+            color: fill,
+            borderRadius: cardRadius,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
+                spreadRadius: 2,
+              ),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  Icon(
-                    Icons.payments_outlined,
-                    color: isWorld ? worldPurple : scheme.primary,
-                  ),
+                  Icon(Icons.payments_outlined, color: accent),
                   const SizedBox(width: 8),
                   Text(
                     l10n.financeLast7Days,
@@ -121,7 +133,7 @@ class _DashboardFinanceChartCardState extends State<DashboardFinanceChartCard> {
                         child: _LineChart7(
                           days: days,
                           totals: totals,
-                          color: isWorld ? worldPurple : scheme.primary,
+                          color: accent,
                         ),
                       )
                     : Center(

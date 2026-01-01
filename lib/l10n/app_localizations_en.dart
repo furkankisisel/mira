@@ -83,6 +83,48 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Mira';
 
   @override
+  String get signInToSaveData => 'Sign in to save data';
+
+  @override
+  String get guestAccount => 'Guest Account';
+
+  @override
+  String get backupRestore => 'Backup & Restore';
+
+  @override
+  String get subscription => 'Subscription';
+
+  @override
+  String get manageSubscription => 'Manage Subscription';
+
+  @override
+  String get backupNow => 'Backup Now';
+
+  @override
+  String lastBackup(String date) {
+    return 'Son Yedekleme: $date';
+  }
+
+  @override
+  String get noBackups => 'Yedek bulunamadı';
+
+  @override
+  String get creatingBackup => 'Yedek oluşturuluyor...';
+
+  @override
+  String get emptyHabitTitle => 'Start Your Journey';
+
+  @override
+  String get emptyHabitSubtitle =>
+      'Create your first habit to begin tracking your progress.';
+
+  @override
+  String get createFirstHabit => 'Create Habit';
+
+  @override
+  String get enterValueTitle => 'Enter value';
+
+  @override
   String get appearance => 'Appearance';
 
   @override
@@ -353,6 +395,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get countdownConfigureTitle => 'Configure Countdown';
+
+  @override
+  String get continueText => 'Continue';
 
   @override
   String get create => 'Create';
@@ -1255,6 +1300,60 @@ class AppLocalizationsEn extends AppLocalizations {
   String get theme => 'Theme';
 
   @override
+  String get themeCotton => 'Cotton';
+
+  @override
+  String get themeCottonDesc => 'Warm & Neutral';
+
+  @override
+  String get themeMatcha => 'Matcha';
+
+  @override
+  String get themeMatchaDesc => 'Fresh & Natural';
+
+  @override
+  String get themeLavender => 'Lavender';
+
+  @override
+  String get themeLavenderDesc => 'Calm & Dreamy';
+
+  @override
+  String get themeSky => 'Sky';
+
+  @override
+  String get themeSkyDesc => 'Airy & Light';
+
+  @override
+  String get themeRose => 'Rose';
+
+  @override
+  String get themeRoseDesc => 'Soft & Warm';
+
+  @override
+  String get themeSlate => 'Slate';
+
+  @override
+  String get themeSlateDesc => 'Modern & Cool';
+
+  @override
+  String get themeOcean => 'Ocean';
+
+  @override
+  String get themeOceanDesc => 'Deep & Serene';
+
+  @override
+  String get themeSunset => 'Sunset';
+
+  @override
+  String get themeSunsetDesc => 'Warm & Golden';
+
+  @override
+  String get themeForest => 'Forest';
+
+  @override
+  String get themeForestDesc => 'Rich & Organic';
+
+  @override
   String get themeDetails => 'Theme Details';
 
   @override
@@ -1622,9 +1721,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String deleteHabitConfirm(Object title) {
     return 'Delete habit \"$title\"?';
   }
-
-  @override
-  String get enterValueTitle => 'Enter value';
 
   @override
   String get valueLabel => 'Value';
@@ -2501,9 +2597,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signInWithGoogle => 'Sign in with Google';
 
   @override
-  String get backupNow => 'Backup Now';
-
-  @override
   String get restoreLatest => 'Restore Latest';
 
   @override
@@ -2521,9 +2614,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get restoreError => 'Restore Error';
-
-  @override
-  String get manageSubscription => 'Manage Subscription';
 
   @override
   String get manageSubscriptionSubtitle =>
@@ -3114,4 +3204,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aiQuickProfile => 'My AI Character';
+
+  @override
+  String get signOut => 'Sign Out';
+
+  @override
+  String get signOutConfirmation => 'Are you sure you want to sign out?';
+
+  @override
+  String get xpToNextLevel => 'to next level';
+
+  @override
+  String get statsActiveDays => 'Active Days';
+
+  @override
+  String get subEmotionOverwhelmed => 'Overwhelmed';
+
+  @override
+  String get subEmotionLonely => 'Lonely';
+
+  @override
+  String get subEmotionRegretful => 'Regretful';
+
+  @override
+  String get subEmotionInsecure => 'Insecure';
+
+  @override
+  String get subEmotionGuilty => 'Guilty';
+
+  @override
+  String get subEmotionBored => 'Bored';
+
+  @override
+  String get subEmotionNumb => 'Numb';
+
+  @override
+  String get subEmotionConfused => 'Confused';
+
+  @override
+  String get subEmotionDistracted => 'Distracted';
+
+  @override
+  String get subEmotionProud => 'Proud';
+
+  @override
+  String get subEmotionConfident => 'Confident';
+
+  @override
+  String get subEmotionHopeful => 'Hopeful';
+
+  @override
+  String get subEmotionEuphoric => 'Euphoric';
+
+  @override
+  String get subEmotionBlessed => 'Blessed';
+
+  @override
+  String get subEmotionUnstoppable => 'Unstoppable';
 }

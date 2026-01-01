@@ -5,6 +5,7 @@ import '../domain/onboarding_result.dart';
 import '../data/onboarding_repository.dart';
 import '../../habit/data/server_ai_habit_service.dart';
 import 'ai_character_result_screen.dart';
+import '../../../core/config/api_config.dart';
 
 /// Onboarding flow with welcome, quiz, and result screens
 class OnboardingScreen extends StatefulWidget {
@@ -113,9 +114,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
       // Call AI Service
       // Ideally use a DI container or proper config for API key
-      final service = ServerAiHabitService(
-        apiKey: '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',
-      );
+      final service = ServerAiHabitService(apiKey: ApiConfig.groqApiKey);
 
       final aiPdf = await service.analyzePersonality(buffer.toString());
 

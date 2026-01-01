@@ -102,7 +102,7 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isWorld = widget.variant == ThemeVariant.world;
+    final isWorld = false;
     final locale = Localizations.localeOf(context).toString();
     final titleStr = _mode == PeriodMode.month
         ? DateFormat.yMMMM(locale).format(_selectedPeriod)
@@ -245,13 +245,6 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
             ),
     );
 
-    if (isWorld) {
-      final brightness = Theme.of(context).brightness;
-      final themed = brightness == Brightness.dark
-          ? ThemeVariations.dark(ThemeVariant.ocean)
-          : ThemeVariations.light(ThemeVariant.ocean);
-      return Theme(data: themed, child: content);
-    }
     return content;
   }
 
@@ -1439,9 +1432,7 @@ Future<int?> showCustomYearPicker({
                                 : Theme.of(ctx).colorScheme.surface,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: selected
-                                  ? Theme.of(ctx).colorScheme.primary
-                                  : Theme.of(ctx).dividerColor,
+                              color: Theme.of(ctx).colorScheme.primary,
                             ),
                           ),
                           child: Text(

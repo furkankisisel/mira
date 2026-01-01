@@ -4,7 +4,6 @@ import 'dart:math' as math;
 import '../../l10n/app_localizations.dart';
 import '../../core/timer/timer_controller.dart';
 import '../../design_system/theme/theme_variations.dart';
-import '../../design_system/tokens/colors.dart';
 import '../../services/premium_manager.dart';
 import '../../ui/premium_gate.dart';
 import '../habit/domain/habit_repository.dart';
@@ -59,7 +58,9 @@ class _TimerScreenState extends State<TimerScreen>
     super.dispose();
   }
 
-  void _onChange() => setState(() {});
+  void _onChange() {
+    if (mounted) setState(() {});
+  }
 
   // Normalize and apply countdown duration
   void _applyCountdown() {
@@ -78,8 +79,8 @@ class _TimerScreenState extends State<TimerScreen>
 
   Color _getAccentColor(BuildContext context) {
     final theme = Theme.of(context);
-    final bool isWorld = widget.variant == ThemeVariant.world;
-    return isWorld ? AppColors.accentPurple : theme.colorScheme.primary;
+    final bool isWorld = false;
+    return theme.colorScheme.primary;
   }
 
   @override
@@ -276,7 +277,7 @@ class _TimerScreenState extends State<TimerScreen>
 
   Widget _buildCircularTimer({
     required BuildContext context,
-    required String timeText,
+    required Duration duration,
     required double progress,
     required bool isRunning,
     String? subtitle,
@@ -286,117 +287,43 @@ class _TimerScreenState extends State<TimerScreen>
     final theme = Theme.of(context);
     final accent = progressColor ?? _getAccentColor(context);
     final isDark = theme.brightness == Brightness.dark;
+    final colorScheme = theme.colorScheme;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final size = math.min(constraints.maxWidth * 0.7, 280.0);
+    // Format time as HH:MM:SS or MM:SS
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes % 60;
+    final seconds = duration.inSeconds % 60;
+    final timeText = hours > 0
+        ? '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}'
+        : '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
 
-        return AnimatedBuilder(
-          animation: _pulseController,
-          builder: (context, child) {
-            final scale = isRunning
-                ? 1.0 + (_pulseController.value * 0.02)
-                : 1.0;
-
-            return Transform.scale(
-              scale: scale,
-              child: SizedBox(
-                width: size,
-                height: size,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Progress arc
-                    SizedBox(
-                      width: size - 16,
-                      height: size - 16,
-                      child: AnimatedBuilder(
-                        animation: _progressController,
-                        builder: (context, _) {
-                          return CustomPaint(
-                            painter: _CircularProgressPainter(
-                              progress: progress,
-                              strokeWidth: 8,
-                              progressColor: accent,
-                              backgroundColor: isDark
-                                  ? Colors.white.withValues(alpha: 0.1)
-                                  : Colors.grey[200]!,
-                              isAnimating: isRunning,
-                              animationValue: _progressController.value,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    // Time display
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (subtitle != null) ...[
-                          Text(
-                            subtitle,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: accent,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 1.5,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                        ],
-                        Text(
-                          timeText,
-                          style: TextStyle(
-                            fontSize: size * 0.12,
-                            fontWeight: FontWeight.w300,
-                            fontFamily: 'monospace',
-                            letterSpacing: 2,
-                            color: isDark ? Colors.white : Colors.black87,
-                          ),
-                        ),
-                        if (isRunning)
-                          Container(
-                            margin: const EdgeInsets.only(top: 8),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: accent.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: BoxDecoration(
-                                    color: accent,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  l10n.runningLabel,
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: accent,
-                                    letterSpacing: 1,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Subtitle label
+        if (subtitle != null) ...[
+          Text(
+            subtitle,
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: accent,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+        // Simple large time display
+        Text(
+          timeText,
+          style: TextStyle(
+            fontSize: 64,
+            fontWeight: FontWeight.w300,
+            fontFeatures: const [FontFeature.tabularFigures()],
+            letterSpacing: 2,
+            color: isDark ? Colors.white : Colors.black87,
+          ),
+        ),
+      ],
     );
   }
 
@@ -493,36 +420,37 @@ class _TimerScreenState extends State<TimerScreen>
 
     return Column(
       children: [
-        // Main play/pause button
-        GestureDetector(
-          onTap: onPlayPause,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: isRunning
-                    ? [Colors.orange, Colors.deepOrange]
-                    : [accent, accent.withValues(alpha: 0.8)],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: (isRunning ? Colors.orange : accent).withValues(
-                    alpha: 0.4,
-                  ),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
+        // Main play/pause button with strictly circular ripple
+        Material(
+          color: Colors.transparent,
+          shape: const CircleBorder(),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () {
+              _feedback();
+              onPlayPause();
+            },
+            customBorder: const CircleBorder(),
+            child: Ink(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isRunning
+                      ? [Colors.orange, Colors.deepOrange]
+                      : [accent, accent.withValues(alpha: 0.8)],
                 ),
-              ],
-            ),
-            child: Icon(
-              isRunning ? Icons.pause_rounded : Icons.play_arrow_rounded,
-              size: 36,
-              color: Colors.white,
+                // Removed strong shadow to fix "square glow" complaint
+                // and keeping it cleaner
+              ),
+              child: Icon(
+                isRunning ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                size: 36,
+                color: Colors.white,
+              ),
             ),
           ),
         ),
@@ -843,7 +771,7 @@ class _TimerScreenState extends State<TimerScreen>
           child: Center(
             child: _buildCircularTimer(
               context: context,
-              timeText: controller.formatDuration(elapsed),
+              duration: elapsed,
               progress: progress,
               isRunning: isRunning,
               subtitle: l10n.stopwatchLabel,
@@ -890,7 +818,7 @@ class _TimerScreenState extends State<TimerScreen>
             child: hasDuration
                 ? _buildCircularTimer(
                     context: context,
-                    timeText: controller.formatDuration(rem),
+                    duration: rem,
                     progress: progress,
                     isRunning: isRunning,
                     subtitle: l10n.countdownLabel,
@@ -1074,7 +1002,7 @@ class _TimerScreenState extends State<TimerScreen>
           child: Center(
             child: _buildCircularTimer(
               context: context,
-              timeText: controller.formatDuration(remaining),
+              duration: remaining,
               progress: progress,
               isRunning: isRunning,
               subtitle: isWorkPhase ? l10n.focusLabel : l10n.breakLabel,

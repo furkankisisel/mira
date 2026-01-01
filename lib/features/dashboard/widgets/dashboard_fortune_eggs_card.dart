@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../design_system/tokens/colors.dart';
+
 import '../../fortune_eggs/widgets/fortune_egg.dart' as fe;
 import '../../fortune_eggs/data/answers.dart';
 import 'dart:math';
 
 import '../../../design_system/theme/theme_variations.dart';
+import 'package:mira/design_system/tokens/radii.dart';
 
 class DashboardFortuneEggsCard extends StatefulWidget {
   const DashboardFortuneEggsCard({super.key, required this.variant});
@@ -106,17 +107,30 @@ class _DashboardFortuneEggsCardState extends State<DashboardFortuneEggsCard> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final bool isWorld = widget.variant == ThemeVariant.world;
-    final Color accent = isWorld ? AppColors.accentPurple : cs.secondary;
+    final bool isWorld = false;
+    final Color accent = cs.secondary;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppRadii.card),
         color: Color.alphaBlend(
           accent.withValues(alpha: 0.12),
           cs.surfaceContainerHighest,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 24,
+            offset: const Offset(0, 12),
+            spreadRadius: 2,
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       // Make the pager expand horizontally and size the egg relative to available width
       child: LayoutBuilder(

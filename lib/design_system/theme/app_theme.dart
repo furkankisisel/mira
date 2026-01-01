@@ -5,7 +5,7 @@ class AppTheme {
   AppTheme._();
 
   /// Default theme variant
-  static const ThemeVariant defaultVariant = ThemeVariant.world;
+  static const ThemeVariant defaultVariant = ThemeVariant.cotton;
 
   /// Get light theme for default variant
   static ThemeData light([ThemeVariant? variant]) {

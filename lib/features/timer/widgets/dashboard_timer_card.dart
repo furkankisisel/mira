@@ -4,6 +4,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../core/timer/timer_controller.dart';
 import '../../../design_system/theme/theme_variations.dart';
 import '../../../../design_system/tokens/colors.dart';
+import '../../../../design_system/tokens/radii.dart';
 import '../timer_screen.dart';
 
 class DashboardTimerCard extends StatefulWidget {
@@ -22,7 +23,7 @@ class _DashboardTimerCardState extends State<DashboardTimerCard> {
   @override
   void initState() {
     super.initState();
-    controller.addListener(_onChange);
+    // controller.addListener(_onChange); // Removed for performance
   }
 
   @override
@@ -31,7 +32,9 @@ class _DashboardTimerCardState extends State<DashboardTimerCard> {
     super.dispose();
   }
 
-  void _onChange() => setState(() {});
+  void _onChange() {
+    if (mounted) setState(() {});
+  }
 
   void _openFull(BuildContext context) {
     Navigator.of(context).push(
@@ -62,42 +65,58 @@ class _DashboardTimerCardState extends State<DashboardTimerCard> {
     final scheme = theme.colorScheme;
     final isRunning = controller.isRunning;
     // Dünya temasında mor accent kullan
-    final bool isWorld = widget.variant == ThemeVariant.world;
-    final Color accent = isWorld ? AppColors.accentPurple : scheme.primary;
+    final bool isWorld = false;
+    final Color accent = scheme.primary;
     final fill = Color.alphaBlend(
       accent.withValues(alpha: 0.12),
       scheme.surfaceContainerHighest,
     );
 
     return InkWell(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppRadii.card),
       onTap: !_expanded ? () => _openFull(context) : null,
       child: SizedBox(
         width: double.infinity,
         child: Ink(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(AppRadii.card),
             color: fill,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
+                spreadRadius: 2,
+              ),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: AnimatedSize(
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeOut,
-            child: _expanded
-                ? _ExpandedControls(
-                    theme: theme,
-                    accent: accent,
-                    selected: _selected ?? controller.activeMode,
-                    isRunning: isRunning,
-                    onCollapse: _collapse,
-                    onOpenFull: () => _openFull(context),
-                  )
-                : _ModeChooser(
-                    title: l10n.timerType,
-                    accent: accent,
-                    theme: theme,
-                    onSelect: _selectMode,
-                  ),
+            child: AnimatedBuilder(
+              animation: controller,
+              builder: (context, _) => _expanded
+                  ? _ExpandedControls(
+                      theme: theme,
+                      accent: accent,
+                      selected: _selected ?? controller.activeMode,
+                      isRunning: isRunning,
+                      onCollapse: _collapse,
+                      onOpenFull: () => _openFull(context),
+                    )
+                  : _ModeChooser(
+                      title: l10n.timerType,
+                      accent: accent,
+                      theme: theme,
+                      onSelect: _selectMode,
+                    ),
+            ),
           ),
         ),
       ),

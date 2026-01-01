@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mira/l10n/app_localizations.dart';
 import 'google_drive_backup_manager.dart';
 
@@ -10,136 +11,385 @@ class BackupPage extends StatefulWidget {
 }
 
 class _BackupPageState extends State<BackupPage> {
-  final TextEditingController _dataCtrl = TextEditingController(
-    text: '{"example":"data"}',
-  );
-  String? _status;
+  // Placeholder data for now, actual data export to be implemented later in repo
+  static const _placeholderData = '{"version":1, "data":"manual_backup"}';
+
   bool _busy = false;
   List<dynamic> _files = [];
+  String? _statusMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshList();
+  }
 
   Future<void> _backup() async {
     setState(() {
       _busy = true;
-      _status = null;
+      _statusMessage = null;
     });
-    final res = await GoogleDriveBackupManager.instance.backupToDrive(
-      _dataCtrl.text,
-    );
-    setState(() {
-      _busy = false;
-      _status = res == null
-          ? AppLocalizations.of(context).backupFailed
-          : AppLocalizations.of(context).backupSuccess(res);
-    });
+
+    try {
+      // In the future, this will get actual JSON from repositories
+      final res = await GoogleDriveBackupManager.instance.backupToDrive(
+        _placeholderData,
+      );
+
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _statusMessage = res == null
+              ? AppLocalizations.of(context).backupFailed
+              : AppLocalizations.of(context).backupSuccess('OK');
+          // Note: backupSuccess taking an ID might be too long for UI,
+          // but we'll stick to existing localization signature for now.
+        });
+        if (res != null) {
+          _refreshList();
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _statusMessage = '${AppLocalizations.of(context).backupFailed}: $e';
+        });
+      }
+    }
   }
 
   Future<void> _refreshList() async {
-    setState(() {
-      _busy = true;
-    });
-    final files = await GoogleDriveBackupManager.instance.listBackups();
-    setState(() {
-      _busy = false;
-      _files = files;
-    });
+    if (!mounted) return;
+    setState(() => _busy = true);
+
+    try {
+      final files = await GoogleDriveBackupManager.instance.listBackups();
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _files = files;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _busy = false);
+      }
+    }
   }
 
   Future<void> _restore(String fileId) async {
     setState(() {
       _busy = true;
-      _status = null;
+      _statusMessage = null;
     });
-    final content = await GoogleDriveBackupManager.instance.restoreFromDrive(
-      fileId,
-    );
-    setState(() {
-      _busy = false;
-      _status = content == null
-          ? AppLocalizations.of(context).restoreFailed
-          : AppLocalizations.of(context).restoreSuccess(
-              content.substring(0, content.length > 100 ? 100 : content.length),
-            );
-    });
+
+    try {
+      final content = await GoogleDriveBackupManager.instance.restoreFromDrive(
+        fileId,
+      );
+
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _statusMessage = content == null
+              ? AppLocalizations.of(context).restoreFailed
+              : AppLocalizations.of(context).restoreSuccess('OK');
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _statusMessage = '${AppLocalizations.of(context).restoreFailed}: $e';
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context).backupTitle)),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                AppLocalizations.of(context).jsonDataExample,
-                style: theme.textTheme.labelLarge,
+      appBar: AppBar(
+        title: Text(l10n.backupRestore),
+        centerTitle: true,
+        elevation: 0,
+      ),
+      body: Column(
+        children: [
+          // Header / Status Area
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: const BorderRadius.vertical(
+                bottom: Radius.circular(24),
               ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _dataCtrl,
-                minLines: 3,
-                maxLines: 6,
-                decoration: const InputDecoration(border: OutlineInputBorder()),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: FilledButton.icon(
-                      onPressed: _busy ? null : _backup,
-                      icon: const Icon(Icons.cloud_upload),
-                      label: Text(AppLocalizations.of(context).backupToDrive),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                _BackupActionCard(
+                  onBackup: _busy ? null : _backup,
+                  isBusy: _busy,
+                ),
+                if (_statusMessage != null) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: _busy ? null : _refreshList,
-                      icon: const Icon(Icons.refresh),
-                      label: Text(AppLocalizations.of(context).refreshList),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.secondaryContainer.withOpacity(
+                        0.5,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      _statusMessage!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: theme.colorScheme.onSecondaryContainer,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 ],
-              ),
-              const SizedBox(height: 8),
-              if (_status != null)
-                Text(
-                  _status!,
-                  style: TextStyle(color: theme.colorScheme.primary),
-                ),
-              const Divider(height: 24),
-              Expanded(
-                child: _files.isEmpty
-                    ? Center(
-                        child: Text(
-                          AppLocalizations.of(context).noBackupsFound,
-                        ),
-                      )
-                    : ListView.builder(
-                        itemCount: _files.length,
-                        itemBuilder: (_, i) {
-                          final f = _files[i];
-                          final name =
-                              f.name ??
-                              AppLocalizations.of(context).unnamedBackup;
-                          final id = f.id ?? '';
-                          return ListTile(
-                            title: Text(name),
-                            subtitle: Text(id),
-                            trailing: TextButton(
-                              onPressed: _busy ? null : () => _restore(id),
-                              child: Text(AppLocalizations.of(context).restore),
-                            ),
-                          );
-                        },
-                      ),
-              ),
-            ],
+              ],
+            ),
           ),
+
+          const SizedBox(height: 16),
+
+          // List Header
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  l10n.lastBackup('').split(':')[0], // "Last Backups" roughly
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  onPressed: _busy ? null : _refreshList,
+                  icon: const Icon(Icons.refresh),
+                  tooltip: l10n.refreshList,
+                ),
+              ],
+            ),
+          ),
+
+          // Backup List
+          Expanded(
+            child: _busy && _files.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : _files.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.history_toggle_off,
+                          size: 64,
+                          color: theme.colorScheme.outline.withOpacity(0.5),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          l10n.noBackups,
+                          style: TextStyle(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : ListView.separated(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    itemCount: _files.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 8),
+                    itemBuilder: (context, index) {
+                      dynamic file = _files[index];
+                      // Google Drive API returns DateTime or formatted string depending on library
+                      // But here 'file' is likely a googleapis.drive.v3.File
+                      // We access fields safely.
+
+                      String name = 'Unknown';
+                      String? modifiedTime;
+                      String id = '';
+
+                      try {
+                        name = file.name ?? 'Unnamed';
+                        id = file.id ?? '';
+                        if (file.modifiedTime != null) {
+                          // It's a DateTime
+                          modifiedTime = DateFormat.yMMMd().add_jm().format(
+                            file.modifiedTime!.toLocal(),
+                          );
+                        }
+                      } catch (_) {
+                        // Fallback if dynamic structure is different
+                      }
+
+                      return Card(
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(
+                            color: theme.colorScheme.outlineVariant.withOpacity(
+                              0.5,
+                            ),
+                          ),
+                        ),
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: theme.colorScheme.primaryContainer,
+                            child: Icon(
+                              Icons.cloud_done,
+                              color: theme.colorScheme.primary,
+                              size: 20,
+                            ),
+                          ),
+                          title: Text(
+                            modifiedTime ?? name,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          subtitle: Text(
+                            'Google Drive • $name',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          trailing: TextButton(
+                            onPressed: _busy ? null : () => _restore(id),
+                            child: Text(l10n.restore),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BackupActionCard extends StatelessWidget {
+  final VoidCallback? onBackup;
+  final bool isBusy;
+
+  const _BackupActionCard({required this.onBackup, required this.isBusy});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          colors: [theme.colorScheme.primary, theme.colorScheme.tertiary],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: isBusy
+                ? const SizedBox(
+                    width: 32,
+                    height: 32,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      valueColor: AlwaysStoppedAnimation(Colors.white),
+                    ),
+                  )
+                : const Icon(
+                    Icons.cloud_upload_rounded,
+                    size: 32,
+                    color: Colors.white,
+                  ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            l10n.backupNow,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            l10n.backupToDrive, // "Backup to Drive" or similar
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.8),
+              fontSize: 13,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          Material(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30),
+            child: InkWell(
+              onTap: onBackup,
+              borderRadius: BorderRadius.circular(30),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                child: Text(
+                  l10n.createFirstHabit.contains('Create')
+                      ? 'Start Backup'
+                      : l10n.backupNow, // Fallback logic, ideally strict key
+                  style: TextStyle(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

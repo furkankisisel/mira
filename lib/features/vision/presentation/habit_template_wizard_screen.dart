@@ -147,11 +147,7 @@ class _HabitTemplateWizardScreenState extends State<HabitTemplateWizardScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final ThemeData? forcedTheme = widget.variant == ThemeVariant.world
-        ? (isDark
-              ? ThemeVariations.dark(ThemeVariant.earth)
-              : ThemeVariations.light(ThemeVariant.earth))
-        : null;
+    final ThemeData? forcedTheme = null;
     final body = Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).createHabitTemplateTitle),

@@ -40,6 +40,24 @@ enum SubEmotion {
   peaceful, // huzurlu
   grateful, // minnettar
   loving, // aşk dolu
+  // New Terrible/Bad
+  overwhelmed, // bunalmış
+  lonely, // yalnız
+  regretful, // pişman
+  insecure, // güvensiz
+  guilty, // suçlu
+  // New Neutral
+  bored, // sıkılmış
+  numb, // hissiz
+  confused, // kafası karışık
+  distracted, // dikkati dağınık
+  // New Good/Excellent
+  proud, // gururlu
+  confident, // kendinden emin
+  hopeful, // umutlu
+  euphoric, // coşkulu
+  blessed, // şanslı/kutsanmış
+  unstoppable, // durdurulamaz
 }
 
 enum ReasonCategory {
@@ -58,7 +76,7 @@ class MoodEntry {
   final String id;
   final DateTime timestamp;
   final MoodLevel mood;
-  final SubEmotion subEmotion;
+  final List<SubEmotion> subEmotions;
   final ReasonCategory reason;
   final String journalText;
 
@@ -66,7 +84,7 @@ class MoodEntry {
     required this.id,
     required this.timestamp,
     required this.mood,
-    required this.subEmotion,
+    required this.subEmotions,
     required this.reason,
     required this.journalText,
   });
@@ -75,7 +93,7 @@ class MoodEntry {
     'id': id,
     'timestamp': timestamp.toIso8601String(),
     'mood': mood.index,
-    'subEmotion': subEmotion.index,
+    'subEmotions': subEmotions.map((e) => e.index).toList(),
     'reason': reason.index,
     'journalText': journalText,
   };
@@ -84,7 +102,13 @@ class MoodEntry {
     id: json['id'],
     timestamp: DateTime.parse(json['timestamp']),
     mood: MoodLevel.values[json['mood']],
-    subEmotion: SubEmotion.values[json['subEmotion']],
+    subEmotions:
+        (json['subEmotions'] as List?)
+            ?.map((e) => SubEmotion.values[e])
+            .toList() ??
+        (json['subEmotion'] != null
+            ? [SubEmotion.values[json['subEmotion']]]
+            : []),
     reason: ReasonCategory.values[json['reason']],
     journalText: json['journalText'],
   );
@@ -92,21 +116,25 @@ class MoodEntry {
 
 class MoodFlowState extends ChangeNotifier {
   MoodLevel? selectedMood;
-  SubEmotion? selectedSubEmotion;
+  Set<SubEmotion> selectedSubEmotions = {};
   ReasonCategory? selectedReason;
   String journalText = '';
 
   void setMood(MoodLevel mood) {
     selectedMood = mood;
-    selectedSubEmotion = null; // Reset subsequent selections
+    selectedSubEmotions = {}; // Reset subsequent selections
     selectedReason = null;
     journalText = '';
     notifyListeners();
   }
 
-  void setSubEmotion(SubEmotion subEmotion) {
-    selectedSubEmotion = subEmotion;
-    selectedReason = null; // Reset subsequent selections
+  void toggleSubEmotion(SubEmotion subEmotion) {
+    if (selectedSubEmotions.contains(subEmotion)) {
+      selectedSubEmotions.remove(subEmotion);
+    } else {
+      selectedSubEmotions.add(subEmotion);
+    }
+    selectedReason = null; // Reset subsequent
     journalText = '';
     notifyListeners();
   }
@@ -123,14 +151,14 @@ class MoodFlowState extends ChangeNotifier {
 
   void reset() {
     selectedMood = null;
-    selectedSubEmotion = null;
+    selectedSubEmotions = {};
     selectedReason = null;
     journalText = '';
     notifyListeners();
   }
 
   bool get canProceedToSubEmotion => selectedMood != null;
-  bool get canProceedToReason => selectedSubEmotion != null;
+  bool get canProceedToReason => selectedSubEmotions.isNotEmpty;
   bool get canProceedToJournal => selectedReason != null;
   bool get canSave => journalText.trim().isNotEmpty;
 
@@ -143,6 +171,8 @@ class MoodFlowState extends ChangeNotifier {
           SubEmotion.hopeless,
           SubEmotion.hurt,
           SubEmotion.drained,
+          SubEmotion.overwhelmed,
+          SubEmotion.lonely,
         ];
       case MoodLevel.bad:
         return [
@@ -151,6 +181,9 @@ class MoodFlowState extends ChangeNotifier {
           SubEmotion.anxious,
           SubEmotion.stressed,
           SubEmotion.demoralized,
+          SubEmotion.regretful,
+          SubEmotion.insecure,
+          SubEmotion.guilty,
         ];
       case MoodLevel.neutral:
         return [
@@ -159,6 +192,10 @@ class MoodFlowState extends ChangeNotifier {
           SubEmotion.ordinary,
           SubEmotion.calm,
           SubEmotion.empty,
+          SubEmotion.bored,
+          SubEmotion.numb,
+          SubEmotion.confused,
+          SubEmotion.distracted,
         ];
       case MoodLevel.good:
         return [
@@ -168,6 +205,9 @@ class MoodFlowState extends ChangeNotifier {
           SubEmotion.enthusiastic,
           SubEmotion.determined,
           SubEmotion.motivated,
+          SubEmotion.proud,
+          SubEmotion.confident,
+          SubEmotion.hopeful,
         ];
       case MoodLevel.excellent:
         return [
@@ -176,6 +216,9 @@ class MoodFlowState extends ChangeNotifier {
           SubEmotion.peaceful,
           SubEmotion.grateful,
           SubEmotion.loving,
+          SubEmotion.euphoric,
+          SubEmotion.blessed,
+          SubEmotion.unstoppable,
         ];
     }
   }

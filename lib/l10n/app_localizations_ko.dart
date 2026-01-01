@@ -82,6 +82,48 @@ class AppLocalizationsKo extends AppLocalizations {
   String get appTitle => 'Mira';
 
   @override
+  String get signInToSaveData => 'Verileri kaydetmek için giriş yap';
+
+  @override
+  String get guestAccount => 'Misafir Hesabı';
+
+  @override
+  String get backupRestore => 'Yedekleme & Geri Yükleme';
+
+  @override
+  String get subscription => 'Abonelik';
+
+  @override
+  String get manageSubscription => '구독 관리';
+
+  @override
+  String get backupNow => 'Backup Now';
+
+  @override
+  String lastBackup(String date) {
+    return 'Son Yedekleme: $date';
+  }
+
+  @override
+  String get noBackups => 'Yedek bulunamadı';
+
+  @override
+  String get creatingBackup => 'Yedek oluşturuluyor...';
+
+  @override
+  String get emptyHabitTitle => 'Yolculuğuna Başla';
+
+  @override
+  String get emptyHabitSubtitle =>
+      'İlerlemeni takip etmek için ilk alışkanlığını oluştur.';
+
+  @override
+  String get createFirstHabit => 'Alışkanlık Oluştur';
+
+  @override
+  String get enterValueTitle => '값 입력';
+
+  @override
   String get appearance => '외관';
 
   @override
@@ -350,6 +392,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get countdownConfigureTitle => '카운트다운 구성';
+
+  @override
+  String get continueText => 'Devam Et';
 
   @override
   String get create => '생성';
@@ -1249,6 +1294,60 @@ class AppLocalizationsKo extends AppLocalizations {
   String get theme => '테마';
 
   @override
+  String get themeCotton => 'Cotton';
+
+  @override
+  String get themeCottonDesc => 'Warm & Neutral';
+
+  @override
+  String get themeMatcha => 'Matcha';
+
+  @override
+  String get themeMatchaDesc => 'Fresh & Natural';
+
+  @override
+  String get themeLavender => 'Lavender';
+
+  @override
+  String get themeLavenderDesc => 'Calm & Dreamy';
+
+  @override
+  String get themeSky => 'Sky';
+
+  @override
+  String get themeSkyDesc => 'Airy & Light';
+
+  @override
+  String get themeRose => 'Rose';
+
+  @override
+  String get themeRoseDesc => 'Soft & Warm';
+
+  @override
+  String get themeSlate => 'Slate';
+
+  @override
+  String get themeSlateDesc => 'Modern & Cool';
+
+  @override
+  String get themeOcean => 'Ocean';
+
+  @override
+  String get themeOceanDesc => 'Deep & Serene';
+
+  @override
+  String get themeSunset => 'Sunset';
+
+  @override
+  String get themeSunsetDesc => 'Warm & Golden';
+
+  @override
+  String get themeForest => 'Forest';
+
+  @override
+  String get themeForestDesc => 'Rich & Organic';
+
+  @override
   String get themeDetails => '테마 세부사항';
 
   @override
@@ -1611,9 +1710,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String deleteHabitConfirm(Object title) {
     return '습관 \'$title\'을(를) 삭제하시겠습니까?';
   }
-
-  @override
-  String get enterValueTitle => '값 입력';
 
   @override
   String get valueLabel => '값';
@@ -2480,9 +2576,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get signInWithGoogle => 'Sign in with Google';
 
   @override
-  String get backupNow => 'Backup Now';
-
-  @override
   String get restoreLatest => 'Restore Latest';
 
   @override
@@ -2500,9 +2593,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get restoreError => 'Restore Error';
-
-  @override
-  String get manageSubscription => '구독 관리';
 
   @override
   String get manageSubscriptionSubtitle =>
@@ -3093,4 +3183,61 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get aiQuickProfile => 'Yapay Zeka Karakterim';
+
+  @override
+  String get signOut => 'Çıkış Yap';
+
+  @override
+  String get signOutConfirmation => 'Çıkış yapmak istediğinize emin misiniz?';
+
+  @override
+  String get xpToNextLevel => 'sonraki seviyeye';
+
+  @override
+  String get statsActiveDays => 'Aktif Gün';
+
+  @override
+  String get subEmotionOverwhelmed => 'Bunalmış';
+
+  @override
+  String get subEmotionLonely => 'Yalnız';
+
+  @override
+  String get subEmotionRegretful => 'Pişman';
+
+  @override
+  String get subEmotionInsecure => 'Güvensiz';
+
+  @override
+  String get subEmotionGuilty => 'Suçlu';
+
+  @override
+  String get subEmotionBored => 'Sıkılmış';
+
+  @override
+  String get subEmotionNumb => 'Hissiz';
+
+  @override
+  String get subEmotionConfused => 'Kafası Karışık';
+
+  @override
+  String get subEmotionDistracted => 'Dikkati Dağınık';
+
+  @override
+  String get subEmotionProud => '자랑스러운';
+
+  @override
+  String get subEmotionConfident => 'Kendinden Emin';
+
+  @override
+  String get subEmotionHopeful => 'Umutlu';
+
+  @override
+  String get subEmotionEuphoric => 'Coşkulu';
+
+  @override
+  String get subEmotionBlessed => 'Şanslı';
+
+  @override
+  String get subEmotionUnstoppable => 'Durdurulamaz';
 }

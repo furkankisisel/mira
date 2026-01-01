@@ -274,10 +274,10 @@ class _MoodJournalScreenState extends State<MoodJournalScreen>
                 height: 40,
                 color: Colors.white.withOpacity(0.3),
               ),
-              _buildSummaryItem(
-                icon: _getSubEmotionIcon(moodState.selectedSubEmotion!),
-                label: _getSubEmotionTitle(moodState.selectedSubEmotion!, l10n),
+              _buildSubEmotionsSummaryItem(
+                subEmotions: moodState.selectedSubEmotions.toList(),
                 theme: theme,
+                l10n: l10n,
               ),
               Container(
                 width: 1,
@@ -321,6 +321,47 @@ class _MoodJournalScreenState extends State<MoodJournalScreen>
     );
   }
 
+  Widget _buildSubEmotionsSummaryItem({
+    required List<SubEmotion> subEmotions,
+    required ThemeData theme,
+    required AppLocalizations l10n,
+  }) {
+    if (subEmotions.isEmpty) return const SizedBox.shrink();
+
+    // If only one, show as normal
+    if (subEmotions.length == 1) {
+      return _buildSummaryItem(
+        icon: _getSubEmotionIcon(subEmotions.first),
+        label: _getSubEmotionTitle(subEmotions.first, l10n),
+        theme: theme,
+      );
+    }
+
+    // If multiple, show first icon and count
+    return Expanded(
+      child: Column(
+        children: [
+          Icon(
+            _getSubEmotionIcon(subEmotions.first),
+            color: Colors.white,
+            size: 24,
+          ),
+          const SizedBox(height: 6),
+          Text(
+            "${_getSubEmotionTitle(subEmotions.first, l10n)} +${subEmotions.length - 1}",
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _saveMoodEntry() async {
     if (_isSaving) return;
 
@@ -337,7 +378,7 @@ class _MoodJournalScreenState extends State<MoodJournalScreen>
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         timestamp: DateTime.now(),
         mood: moodState.selectedMood!,
-        subEmotion: moodState.selectedSubEmotion!,
+        subEmotions: moodState.selectedSubEmotions.toList(),
         reason: moodState.selectedReason!,
         journalText: moodState.journalText,
       );
@@ -480,11 +521,40 @@ class _MoodJournalScreenState extends State<MoodJournalScreen>
         return Icons.favorite;
       case SubEmotion.loving:
         return Icons.volunteer_activism;
+      case SubEmotion.overwhelmed:
+        return Icons.waves;
+      case SubEmotion.lonely:
+        return Icons.person_off;
+      case SubEmotion.regretful:
+        return Icons.undo;
+      case SubEmotion.insecure:
+        return Icons.lock_open;
+      case SubEmotion.guilty:
+        return Icons.gavel;
+      case SubEmotion.bored:
+        return Icons.hourglass_empty;
+      case SubEmotion.numb:
+        return Icons.ac_unit;
+      case SubEmotion.confused:
+        return Icons.psychology_alt;
+      case SubEmotion.distracted:
+        return Icons.notifications_off;
+      case SubEmotion.proud:
+        return Icons.verified;
+      case SubEmotion.confident:
+        return Icons.shield;
+      case SubEmotion.hopeful:
+        return Icons.wb_sunny;
+      case SubEmotion.euphoric:
+        return Icons.rocket_launch;
+      case SubEmotion.blessed:
+        return Icons.auto_awesome;
+      case SubEmotion.unstoppable:
+        return Icons.bolt;
     }
   }
 
   String _getSubEmotionTitle(SubEmotion subEmotion, AppLocalizations l10n) {
-    // We'll need to add these localization keys
     switch (subEmotion) {
       case SubEmotion.exhausted:
         return l10n.subEmotionExhausted;
@@ -538,6 +608,36 @@ class _MoodJournalScreenState extends State<MoodJournalScreen>
         return l10n.subEmotionGrateful;
       case SubEmotion.loving:
         return l10n.subEmotionLoving;
+      case SubEmotion.overwhelmed:
+        return l10n.subEmotionOverwhelmed;
+      case SubEmotion.lonely:
+        return l10n.subEmotionLonely;
+      case SubEmotion.regretful:
+        return l10n.subEmotionRegretful;
+      case SubEmotion.insecure:
+        return l10n.subEmotionInsecure;
+      case SubEmotion.guilty:
+        return l10n.subEmotionGuilty;
+      case SubEmotion.bored:
+        return l10n.subEmotionBored;
+      case SubEmotion.numb:
+        return l10n.subEmotionNumb;
+      case SubEmotion.confused:
+        return l10n.subEmotionConfused;
+      case SubEmotion.distracted:
+        return l10n.subEmotionDistracted;
+      case SubEmotion.proud:
+        return l10n.subEmotionProud;
+      case SubEmotion.confident:
+        return l10n.subEmotionConfident;
+      case SubEmotion.hopeful:
+        return l10n.subEmotionHopeful;
+      case SubEmotion.euphoric:
+        return l10n.subEmotionEuphoric;
+      case SubEmotion.blessed:
+        return l10n.subEmotionBlessed;
+      case SubEmotion.unstoppable:
+        return l10n.subEmotionUnstoppable;
     }
   }
 
