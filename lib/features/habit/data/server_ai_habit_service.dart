@@ -18,10 +18,8 @@ class ServerAiHabitService implements AiHabitService {
   });
 
   String _getLanguageInstruction(String? code) {
-    if (code == null)
-      return "Detect user language (Turkish/English) and reply in that language.";
-    final langName = code.toLowerCase() == 'tr' ? 'Turkish' : 'English';
-    return "IMPORTANT: You MUST reply in $langName. Language Code: $code";
+    if (code == null) return "Detect user language and reply in that language.";
+    return "IMPORTANT: You MUST reply in the language specified by code '$code' (e.g. 'tr'->Turkish, 'en'->English, 'de'->German, 'es'->Spanish). Do not switch languages unless requested.";
   }
 
   @override

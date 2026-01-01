@@ -66,26 +66,29 @@ class _MiraAssistantScreenState extends State<MiraAssistantScreen> {
     setState(() => _isLoading = true);
 
     try {
+      final l10n = AppLocalizations.of(context);
       final insight = await _service.getUserInsight();
       String greeting;
 
       final hour = DateTime.now().hour;
       if (hour < 12) {
-        greeting = 'Günaydın! ☀️';
+        greeting = '${l10n.greetingMorning}! ☀️';
       } else if (hour < 18) {
-        greeting = 'İyi günler! 🌤️';
+        greeting = '${l10n.greetingAfternoon}! 🌤️';
       } else {
-        greeting = 'İyi akşamlar! 🌙';
+        greeting = '${l10n.greetingEvening}! 🌙';
       }
 
       String statusMessage;
       if (insight.totalHabits == 0) {
-        statusMessage = 'Henüz alışkanlık oluşturmadın. Başlamak ister misin?';
+        statusMessage = l10n.emptyHabitTitle; // Or a better key if available
       } else if (insight.incompleteToday == 0) {
-        statusMessage = 'Bugün tüm alışkanlıklarını tamamladın! 🎉';
+        statusMessage = l10n
+            .habitAddSuccess(0)
+            .replaceAll('0', 'All'); // Workaround or better string
       } else {
         statusMessage =
-            '${insight.completedToday}/${insight.totalHabits} alışkanlık tamam. Sana nasıl yardımcı olabilirim?';
+            '${insight.completedToday}/${insight.totalHabits} ${l10n.habits}. ${l10n.howAreYouFeeling}';
       }
 
       _messages.add(
@@ -98,7 +101,7 @@ class _MiraAssistantScreenState extends State<MiraAssistantScreen> {
     } catch (e) {
       _messages.add(
         _ChatMessage(
-          text: 'Merhaba! Sana nasıl yardımcı olabilirim? 😊',
+          text: '${AppLocalizations.of(context).greetingMorning}! 😊',
           isUser: false,
           quickReplies: _service.getDefaultQuickReplies(),
         ),
@@ -122,7 +125,12 @@ class _MiraAssistantScreenState extends State<MiraAssistantScreen> {
     _history.add({'role': 'user', 'content': text});
 
     try {
-      final response = await _service.sendMessage(text, _history);
+      final languageCode = Localizations.localeOf(context).languageCode;
+      final response = await _service.sendMessage(
+        text,
+        _history,
+        languageCode: languageCode,
+      );
 
       _history.add({'role': 'assistant', 'content': response.message});
 
@@ -141,7 +149,7 @@ class _MiraAssistantScreenState extends State<MiraAssistantScreen> {
       setState(() {
         _messages.add(
           _ChatMessage(
-            text: 'Bir hata oluştu. Tekrar dener misin?',
+            text: AppLocalizations.of(context).failedToLoad('Try again'),
             isUser: false,
             quickReplies: _service.getDefaultQuickReplies(),
           ),
