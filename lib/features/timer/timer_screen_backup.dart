@@ -62,7 +62,7 @@ class _TimerScreenState extends State<TimerScreen>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final bool isWorld = widget.variant == ThemeVariant.world;
+    final bool isWorld = widget.variant == ThemeVariant.forest;
     final Color accent = isWorld
         ? AppColors
               .accentPurple // World variant now uses mystic purple
@@ -219,7 +219,7 @@ class _TimerScreenState extends State<TimerScreen>
         controller.isRunning && controller.activeMode == TimerMode.countdown;
     // Re-derive accent (was only in build root) to avoid undefined reference
     final theme = Theme.of(context);
-    final bool isWorld = widget.variant == ThemeVariant.world;
+    final bool isWorld = widget.variant == ThemeVariant.forest;
     final Color accent = isWorld
         ? AppColors.accentPurple
         : theme.colorScheme.primary;
@@ -406,7 +406,7 @@ class _TimerScreenState extends State<TimerScreen>
     final sessions = controller.sessions;
     // Derive accent locally (mirrors build & countdown logic) so we can avoid hardcoded green
     final theme = Theme.of(context);
-    final bool isWorld = widget.variant == ThemeVariant.world;
+    final bool isWorld = widget.variant == ThemeVariant.forest;
     final Color accent = isWorld
         ? AppColors.accentPurple
         : theme.colorScheme.primary;
@@ -450,7 +450,7 @@ class _TimerScreenState extends State<TimerScreen>
           onLongPress: () {
             // Confirm deletion
             final theme = Theme.of(context);
-            final bool isWorld = widget.variant == ThemeVariant.world;
+            final bool isWorld = widget.variant == ThemeVariant.forest;
             final Color accentLocal = isWorld
                 ? AppColors.accentPurple
                 : theme.colorScheme.primary;
@@ -525,7 +525,7 @@ class _TimerScreenState extends State<TimerScreen>
       context: context,
       builder: (ctx) {
         final theme = Theme.of(context);
-        final bool isWorld = widget.variant == ThemeVariant.world;
+        final bool isWorld = widget.variant == ThemeVariant.forest;
         final Color accentLocal = isWorld
             ? AppColors.accentPurple
             : theme.colorScheme.primary;
@@ -610,7 +610,7 @@ class _TimerScreenState extends State<TimerScreen>
       context: context,
       builder: (ctx) {
         final theme = Theme.of(context);
-        final bool isWorld = widget.variant == ThemeVariant.world;
+        final bool isWorld = widget.variant == ThemeVariant.forest;
         final Color accentLocal = isWorld
             ? AppColors.accentPurple
             : theme.colorScheme.primary;
@@ -674,7 +674,7 @@ class _TimerScreenState extends State<TimerScreen>
       context: context,
       builder: (ctx) {
         final theme = Theme.of(context);
-        final bool isWorld = widget.variant == ThemeVariant.world;
+        final bool isWorld = widget.variant == ThemeVariant.forest;
         final Color accentLocal = isWorld
             ? AppColors.accentPurple
             : theme.colorScheme.primary;
@@ -763,7 +763,7 @@ class _TimerScreenState extends State<TimerScreen>
       context: context,
       builder: (ctx) {
         final theme = Theme.of(context);
-        final bool isWorld = widget.variant == ThemeVariant.world;
+        final bool isWorld = widget.variant == ThemeVariant.forest;
         final Color accentLocal = isWorld
             ? AppColors.accentPurple
             : theme.colorScheme.primary;

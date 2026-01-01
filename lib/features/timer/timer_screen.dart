@@ -9,6 +9,9 @@ import '../../ui/premium_gate.dart';
 import '../habit/domain/habit_repository.dart';
 import '../habit/domain/habit_types.dart';
 import 'widgets/landscape_timer_screen.dart';
+import 'widgets/tomato_timer_display.dart';
+import 'widgets/football_stopwatch_display.dart';
+import 'widgets/hourglass_timer_display.dart';
 
 class TimerScreen extends StatefulWidget {
   const TimerScreen({super.key, this.variant});
@@ -34,7 +37,29 @@ class _TimerScreenState extends State<TimerScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    // Sync initial tab with active mode
+    int initialIndex = 0;
+    switch (controller.activeMode) {
+      case TimerMode.stopwatch:
+        initialIndex = 0;
+        break;
+      case TimerMode.countdown:
+        initialIndex = 1;
+        break;
+      case TimerMode.pomodoro:
+        initialIndex = 2;
+        break;
+    }
+
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      initialIndex: initialIndex,
+    );
+
+    // Listen for tab changes (swipes)
+    _tabController.addListener(_handleTabSelection);
+
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -46,9 +71,23 @@ class _TimerScreenState extends State<TimerScreen>
     controller.addListener(_onChange);
   }
 
+  void _handleTabSelection() {
+    if (_tabController.indexIsChanging) return; // Wait for animation
+    // Only update if index actually changed to avoid redundant calls
+    final index = _tabController.index;
+    TimerMode newMode = TimerMode.stopwatch;
+    if (index == 1) newMode = TimerMode.countdown;
+    if (index == 2) newMode = TimerMode.pomodoro;
+
+    if (controller.activeMode != newMode) {
+      controller.setMode(newMode);
+    }
+  }
+
   @override
   void dispose() {
     controller.removeListener(_onChange);
+    _tabController.removeListener(_handleTabSelection);
     _tabController.dispose();
     _pulseController.dispose();
     _progressController.dispose();
@@ -418,9 +457,41 @@ class _TimerScreenState extends State<TimerScreen>
     final l10n = AppLocalizations.of(context);
     final accent = _getAccentColor(context);
 
-    return Column(
+    // For Stopwatch mode (no settings/skip), we want symmetry: Reset (Left) - Play - Finish (Right)
+    final isStopwatch = onSkip == null && onSettings == null;
+    final showFinishOnRight = isStopwatch;
+
+    final rowContent = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Main play/pause button with strictly circular ripple
+        // Left side actions (Finish, Reset)
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Show Finish on left ONLY if not moved to right
+            if (!showFinishOnRight && onFinish != null)
+              _buildMiniIconAction(
+                icon: Icons.flag_rounded,
+                tooltip: l10n.finish,
+                onPressed: onFinish,
+                color: accent,
+              ),
+            if (!showFinishOnRight && onFinish != null && onReset != null)
+              const SizedBox(height: 16),
+
+            if (onReset != null)
+              _buildMiniIconAction(
+                icon: Icons.refresh_rounded,
+                tooltip: l10n.reset,
+                onPressed: onReset,
+              ),
+          ],
+        ),
+
+        const SizedBox(width: 24),
+
+        // Main play/pause button
         Material(
           color: Colors.transparent,
           shape: const CircleBorder(),
@@ -443,8 +514,6 @@ class _TimerScreenState extends State<TimerScreen>
                       ? [Colors.orange, Colors.deepOrange]
                       : [accent, accent.withValues(alpha: 0.8)],
                 ),
-                // Removed strong shadow to fix "square glow" complaint
-                // and keeping it cleaner
               ),
               child: Icon(
                 isRunning ? Icons.pause_rounded : Icons.play_arrow_rounded,
@@ -454,47 +523,57 @@ class _TimerScreenState extends State<TimerScreen>
             ),
           ),
         ),
-        const SizedBox(height: 20),
-        // Secondary buttons
-        Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          alignment: WrapAlignment.center,
+
+        const SizedBox(width: 24),
+
+        // Right side actions (Skip, Settings)
+        Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            if (onFinish != null)
-              _buildActionButton(
+            // Show Finish on right if requested (Stopwatch mode)
+            if (showFinishOnRight && onFinish != null) ...[
+              _buildMiniIconAction(
                 icon: Icons.flag_rounded,
-                label: l10n.finish,
+                tooltip: l10n.finish,
                 onPressed: onFinish,
-                isPrimary: true,
+                color: accent,
               ),
-            if (onReset != null)
-              _buildActionButton(
-                icon: Icons.refresh_rounded,
-                label: l10n.reset,
-                onPressed: onReset,
-              ),
-            if (onSkip != null)
-              _buildActionButton(
+              if (onSkip != null || onSettings != null)
+                const SizedBox(height: 16),
+            ],
+
+            if (onSkip != null) ...[
+              _buildMiniIconAction(
                 icon: Icons.skip_next_rounded,
-                label: l10n.timerPomodoroSkipPhase,
+                tooltip: l10n.timerPomodoroSkipPhase,
                 onPressed: onSkip,
               ),
+              const SizedBox(height: 16),
+            ],
             if (onSettings != null)
-              _buildActionButton(
+              _buildMiniIconAction(
                 icon: Icons.tune_rounded,
-                label: l10n.settings,
+                tooltip: l10n.settings,
                 onPressed: onSettings,
               ),
           ],
         ),
-        // Pending duration indicator
-        if (controller.hasPending) ...[
+      ],
+    );
+
+    // If there's pending content, we need to wrap everything in a Column
+    if (controller.hasPending) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          rowContent,
           const SizedBox(height: 20),
           _buildPendingCard(context),
         ],
-      ],
-    );
+      );
+    }
+
+    return rowContent;
   }
 
   Widget _buildPendingCard(BuildContext context) {
@@ -766,15 +845,13 @@ class _TimerScreenState extends State<TimerScreen>
 
     return Column(
       children: [
+        // Timer Display
         Expanded(
-          flex: 3,
+          flex: 5,
           child: Center(
-            child: _buildCircularTimer(
-              context: context,
-              duration: elapsed,
-              progress: progress,
+            child: FootballStopwatchDisplay(
+              elapsed: elapsed,
               isRunning: isRunning,
-              subtitle: l10n.stopwatchLabel,
             ),
           ),
         ),
@@ -813,16 +890,13 @@ class _TimerScreenState extends State<TimerScreen>
     return Column(
       children: [
         Expanded(
-          flex: 3,
+          flex: 5,
           child: Center(
             child: hasDuration
-                ? _buildCircularTimer(
-                    context: context,
-                    duration: rem,
-                    progress: progress,
+                ? HourglassTimerDisplay(
+                    remaining: rem,
+                    totalDuration: total,
                     isRunning: isRunning,
-                    subtitle: l10n.countdownLabel,
-                    progressColor: rem.inSeconds <= 10 ? Colors.red : null,
                   )
                 : _buildSetDurationPrompt(context),
           ),
@@ -1000,13 +1074,9 @@ class _TimerScreenState extends State<TimerScreen>
         Expanded(
           flex: 3,
           child: Center(
-            child: _buildCircularTimer(
-              context: context,
-              duration: remaining,
-              progress: progress,
-              isRunning: isRunning,
-              subtitle: isWorkPhase ? l10n.focusLabel : l10n.breakLabel,
-              progressColor: phaseColor,
+            child: TomatoTimerDisplay(
+              remaining: remaining,
+              totalDuration: total,
             ),
           ),
         ),
