@@ -11,6 +11,8 @@ import 'auth_repository.dart';
 import '../onboarding/presentation/onboarding_screen.dart';
 import '../../features/backup/backup_page.dart';
 import '../../ui/manage_subscription_screen.dart';
+import 'package:provider/provider.dart';
+import '../../providers/premium_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({
@@ -126,6 +128,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
 
     if (confirm == true && context.mounted) {
+      context.read<PremiumProvider>().reset();
       await AuthRepository.instance.signOut();
       if (context.mounted) {
         Navigator.of(context).pushAndRemoveUntil(

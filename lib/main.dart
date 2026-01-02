@@ -31,6 +31,7 @@ import 'features/habit/domain/habit_repository.dart';
 // Removed unused imports related to text/image sticker creation relocated to Vision FAB
 import 'core/settings/settings_repository.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'core/presentation/splash_screen.dart';
 import 'features/onboarding/data/onboarding_repository.dart';
@@ -42,6 +43,8 @@ import 'features/auth/test_choice_screen.dart';
 import 'services/premium_manager.dart';
 import 'services/iap_service.dart';
 import 'features/backup/auto_backup_service.dart';
+import 'package:provider/provider.dart';
+import 'providers/premium_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,7 +59,12 @@ void main() async {
       debugPrint('Firebase.initializeApp skipped in this context');
     }
   }
-  runApp(const MiraApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => PremiumProvider()..loadPremiumStatus(),
+      child: const MiraApp(),
+    ),
+  );
 }
 
 class MiraApp extends StatefulWidget {
@@ -138,6 +146,7 @@ class _MiraAppState extends State<MiraApp> {
 
   /// Initialize subscription/premium system.
   /// Loads premium status from storage and sets up purchase listeners.
+  /// Also syncs Firebase Custom Claims (from admin-granted premium).
   Future<void> _initializeSubscriptionSystem() async {
     try {
       debugPrint('🔄 Initializing subscription system...');
@@ -145,10 +154,55 @@ class _MiraAppState extends State<MiraApp> {
       await PremiumManager.instance.init();
       // Initialize IAP service (sets up Google Play billing)
       await IAPService.instance.init();
+
+      // Sync Firebase Custom Claims with PremiumManager
+      // This checks if admin granted premium via setCustomUserClaims
+      await _syncFirebasePremiumClaims();
+
       debugPrint('✅ Subscription system initialized');
     } catch (e) {
       debugPrint('❌ Error initializing subscription system: $e');
       // Continue app launch even if subscription init fails
+    }
+  }
+
+  /// Sync Firebase Custom Claims with local PremiumManager.
+  /// If user has premium: true in their Firebase token, enable locally.
+  /// If user does NOT have premium claim, clear local premium status.
+  Future<void> _syncFirebasePremiumClaims() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        debugPrint('[Premium] No user signed in, clearing local premium');
+        // No user = no premium entitlement from Firebase
+        if (PremiumManager.instance.isPremium) {
+          await PremiumManager.instance.setPremium(false);
+        }
+        return;
+      }
+
+      // Force refresh to get latest custom claims
+      final tokenResult = await user.getIdTokenResult(true);
+      final claims = tokenResult.claims;
+      final firebasePremium = claims?['premium'] == true;
+
+      debugPrint(
+        '[Premium] Firebase claims check: premium=$firebasePremium, local=${PremiumManager.instance.isPremium}',
+      );
+
+      if (firebasePremium && !PremiumManager.instance.isPremium) {
+        // Firebase says premium but local doesn't know - sync it
+        debugPrint('[Premium] Syncing Firebase premium=true to local storage');
+        await PremiumManager.instance.setPremium(true);
+      } else if (!firebasePremium && PremiumManager.instance.isPremium) {
+        // Firebase says NOT premium but local thinks it is - clear it
+        debugPrint(
+          '[Premium] Firebase says NOT premium, clearing local premium',
+        );
+        await PremiumManager.instance.setPremium(false);
+      }
+    } catch (e) {
+      debugPrint('[Premium] Error syncing Firebase claims: $e');
     }
   }
 

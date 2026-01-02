@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'profile_repository.dart';
+import '../../services/premium_manager.dart';
 
 class AuthRepository extends ChangeNotifier {
   AuthRepository._();
@@ -213,6 +214,14 @@ class AuthRepository extends ChangeNotifier {
         await fbAuth.signOut();
       }
       await _googleSignIn.disconnect();
+
+      // Clear premium status on logout
+      try {
+        if (PremiumManager.instance.isPremium) {
+          await PremiumManager.instance.setPremium(false);
+          debugPrint('[Auth] Cleared premium status on logout');
+        }
+      } catch (_) {}
     } catch (_) {}
     _account = null;
     _lastError = null;

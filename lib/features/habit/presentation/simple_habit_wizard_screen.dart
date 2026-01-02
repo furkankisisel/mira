@@ -38,11 +38,9 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
 
   // Total pages (dinamik olarak hesaplanacak)
   int get _totalPages {
-    // Sıklığa göre gün seçimi sayfası gösterilecek mi?
-    if (_selectedFrequency == 'daily') {
-      return 8; // Gün seçimi sayfası yok
-    }
-    return 9; // Gün seçimi sayfası var
+    // PageView'da her zaman 9 sayfa var (0-8)
+    // Gün seçimi sayfası atlanıyor olsa bile sayfa indeksleri değişmiyor
+    return 9;
   }
 
   // Renk paleti
@@ -140,40 +138,86 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
     );
   }
 
-  Future<void> _saveHabit() async {
-    final today = DateTime.now();
-    final dateStr =
-        '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+  void _saveHabit() {
+    debugPrint('DEBUG: _saveHabit started');
+    try {
+      // 1. Context and L10n check
+      if (!mounted) {
+        debugPrint('DEBUG: Context not mounted on start');
+        return;
+      }
 
-    final habit = Habit(
-      id: 'habit_${DateTime.now().millisecondsSinceEpoch}',
-      title: _nameController.text.trim(),
-      description: _descriptionController.text.trim(),
-      icon: Icons.check_circle,
-      emoji: _selectedEmoji,
-      color: _selectedColor,
-      habitType: HabitType.simple,
-      targetCount: 1,
-      unit: '',
-      currentStreak: 0,
-      isCompleted: false,
-      progressDate: dateStr,
-      frequencyType: _selectedFrequency,
-      frequency: _getFrequencyText(),
-      selectedWeekdays: _selectedFrequency == 'weekly'
-          ? _weeklyDays.toList()
-          : null,
-      selectedMonthDays: _selectedFrequency == 'monthly'
-          ? _monthDays.toList()
-          : null,
-      periodicDays: _selectedFrequency == 'periodic' ? _periodicDays : null,
-      startDate:
-          '${_startDate.year}-${_startDate.month.toString().padLeft(2, '0')}-${_startDate.day.toString().padLeft(2, '0')}',
-      reminderEnabled: _reminderEnabled,
-      reminderTime: _reminderEnabled ? _reminderTime : null,
-    );
+      // 2. Date calculation
+      final today = DateTime.now();
+      final dateStr =
+          '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+      debugPrint('DEBUG: dateStr: $dateStr');
 
-    Navigator.pop(context, habit);
+      // 3. Frequency text
+      String freqText;
+      try {
+        freqText = _getFrequencyText();
+        debugPrint('DEBUG: freqText: $freqText');
+      } catch (e) {
+        debugPrint('DEBUG: Error getting frequency text: $e');
+        freqText = 'Daily'; // Fallback
+      }
+
+      // 4. Start Date string
+      final startDateStr =
+          '${_startDate.year}-${_startDate.month.toString().padLeft(2, '0')}-${_startDate.day.toString().padLeft(2, '0')}';
+      debugPrint('DEBUG: startDateStr: $startDateStr');
+
+      // 5. Create Habit Object
+      debugPrint('DEBUG: Creating Habit object...');
+      final habit = Habit(
+        id: 'habit_${DateTime.now().millisecondsSinceEpoch}',
+        title: _nameController.text.trim(),
+        description: _descriptionController.text.trim(),
+        icon: Icons.check_circle,
+        emoji: _selectedEmoji,
+        color: _selectedColor,
+        habitType: HabitType.simple,
+        targetCount: 1,
+        unit: '',
+        currentStreak: 0,
+        isCompleted: false,
+        progressDate: dateStr,
+        frequencyType: _selectedFrequency,
+        frequency: freqText,
+        selectedWeekdays: _selectedFrequency == 'weekly'
+            ? _weeklyDays.toList()
+            : null,
+        selectedMonthDays: _selectedFrequency == 'monthly'
+            ? _monthDays.toList()
+            : null,
+        periodicDays: _selectedFrequency == 'periodic' ? _periodicDays : null,
+        startDate: startDateStr,
+        reminderEnabled: _reminderEnabled,
+        reminderTime: _reminderEnabled ? _reminderTime : null,
+      );
+      debugPrint('DEBUG: Habit object created: ${habit.title}');
+
+      // 6. Navigation
+      if (mounted) {
+        debugPrint('DEBUG: calling Navigator.pop');
+        Navigator.of(context).pop(habit);
+      } else {
+        debugPrint('DEBUG: Not mounted at end of save');
+      }
+    } catch (e, stack) {
+      debugPrint('DEBUG: CRITICAL ERROR in _saveHabit: $e');
+      debugPrint(stack.toString());
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Hata: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    }
   }
 
   String _getFrequencyText() {
@@ -951,7 +995,10 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
         ],
       ),
       bottomWidget: WizardNavigationButtons(
-        onNext: _saveHabit,
+        onNext: () {
+          debugPrint('DEBUG: Preview Page Next Button Clicked');
+          _saveHabit();
+        },
         nextLabel: l10n.createHabit,
         isLastStep: true,
         accentColor: _selectedColor,
