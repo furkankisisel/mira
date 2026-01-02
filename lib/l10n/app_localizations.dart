@@ -290,6 +290,18 @@ abstract class AppLocalizations {
   /// **'Aboneliği Yönet'**
   String get manageSubscription;
 
+  /// No description provided for @autoBackupTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Otomatik Yedekleme'**
+  String get autoBackupTitle;
+
+  /// No description provided for @autoBackupSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Verilerinizi her 24 saatte bir otomatik olarak Google Drive\'a yedekleyin.'**
+  String get autoBackupSubtitle;
+
   /// No description provided for @backupNow.
   ///
   /// In tr, this message translates to:
@@ -2767,6 +2779,18 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Cesur ve tutkulu'**
   String get themeCrimsonDesc;
+
+  /// No description provided for @themeVintageRed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vintage Kırmızı'**
+  String get themeVintageRed;
+
+  /// No description provided for @themeVintageRedDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Klasik ve zamansız kırmızı'**
+  String get themeVintageRedDesc;
 
   /// No description provided for @themeAbyss.
   ///
@@ -5663,7 +5687,7 @@ abstract class AppLocalizations {
   /// No description provided for @optional.
   ///
   /// In tr, this message translates to:
-  /// **'opsiyonel'**
+  /// **'isteğe bağlı'**
   String get optional;
 
   /// No description provided for @newHabit.
@@ -5675,13 +5699,13 @@ abstract class AppLocalizations {
   /// No description provided for @typeEmoji.
   ///
   /// In tr, this message translates to:
-  /// **'Klavyeden bir emoji yazın'**
+  /// **'Bir emoji girin'**
   String get typeEmoji;
 
   /// No description provided for @habitNameHint.
   ///
   /// In tr, this message translates to:
-  /// **'Örn: Su içmek, Kitap okumak...'**
+  /// **'Örn: Kitap oku, Su iç...'**
   String get habitNameHint;
 
   /// No description provided for @weekDaysShort.
@@ -5747,7 +5771,7 @@ abstract class AppLocalizations {
   /// No description provided for @createHabit.
   ///
   /// In tr, this message translates to:
-  /// **'Alışkanlık Oluştur'**
+  /// **'Alışkanlığı Oluştur'**
   String get createHabit;
 
   /// No description provided for @pickTime.
@@ -6469,6 +6493,546 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Çarkı çevirmek için ortadaki butona dokun'**
   String get tapSpinToStart;
+
+  /// No description provided for @simpleHabitWizardTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni bir alışkanlık kazanmaya hazır mısın?'**
+  String get simpleHabitWizardTitle;
+
+  /// No description provided for @simpleHabitWizardDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seni adım adım yönlendireceğim. Birlikte harika bir alışkanlık oluşturalım!'**
+  String get simpleHabitWizardDesc;
+
+  /// No description provided for @letsStart.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hadi Başlayalım'**
+  String get letsStart;
+
+  /// No description provided for @simpleHabitNameTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alışkanlığına bir isim ver'**
+  String get simpleHabitNameTitle;
+
+  /// No description provided for @simpleHabitNameSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Neyi alışkanlık haline getirmek istiyorsun?'**
+  String get simpleHabitNameSubtitle;
+
+  /// No description provided for @descriptionHintOptional.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açıklama ekle (isteğe bağlı)'**
+  String get descriptionHintOptional;
+
+  /// No description provided for @simpleHabitEmojiTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Onu temsil edecek bir emoji seç'**
+  String get simpleHabitEmojiTitle;
+
+  /// No description provided for @simpleHabitEmojiSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alışkanlığını daha eğlenceli hale getir!'**
+  String get simpleHabitEmojiSubtitle;
+
+  /// No description provided for @simpleHabitColorTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir renk seç'**
+  String get simpleHabitColorTitle;
+
+  /// No description provided for @simpleHabitColorSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alışkanlığının kişiliğini yansıtsın'**
+  String get simpleHabitColorSubtitle;
+
+  /// No description provided for @simpleHabitFrequencyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ne sıklıkla yapmak istiyorsun?'**
+  String get simpleHabitFrequencyTitle;
+
+  /// No description provided for @simpleHabitFrequencySubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedeflerini belirle'**
+  String get simpleHabitFrequencySubtitle;
+
+  /// No description provided for @dailyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Her gün yapılacak'**
+  String get dailyDesc;
+
+  /// No description provided for @weeklyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Haftanın belirli günlerinde'**
+  String get weeklyDesc;
+
+  /// No description provided for @monthlyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ayın belirli günlerinde'**
+  String get monthlyDesc;
+
+  /// No description provided for @periodicDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Belirli gün aralıklarıyla'**
+  String get periodicDesc;
+
+  /// No description provided for @simpleHabitWeekdaysTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hangi günlerde?'**
+  String get simpleHabitWeekdaysTitle;
+
+  /// No description provided for @simpleHabitWeekdaysSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aktif olacağı günleri seç'**
+  String get simpleHabitWeekdaysSubtitle;
+
+  /// No description provided for @simpleHabitMonthDaysTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ayın hangi günlerinde?'**
+  String get simpleHabitMonthDaysTitle;
+
+  /// No description provided for @simpleHabitMonthDaysSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aktif olacağı günleri seç'**
+  String get simpleHabitMonthDaysSubtitle;
+
+  /// No description provided for @simpleHabitPeriodicTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaç günde bir?'**
+  String get simpleHabitPeriodicTitle;
+
+  /// No description provided for @simpleHabitPeriodicSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tekrar aralığını belirle'**
+  String get simpleHabitPeriodicSubtitle;
+
+  /// No description provided for @days.
+  ///
+  /// In tr, this message translates to:
+  /// **'gün'**
+  String get days;
+
+  /// No description provided for @simpleHabitStartDateTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ne zaman başlayacaksın?'**
+  String get simpleHabitStartDateTitle;
+
+  /// No description provided for @simpleHabitStartDateSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yolculuğun için bir başlangıç noktası seç'**
+  String get simpleHabitStartDateSubtitle;
+
+  /// No description provided for @nextWeek.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gelecek Hafta'**
+  String get nextWeek;
+
+  /// No description provided for @pickFromCalendar.
+  ///
+  /// In tr, this message translates to:
+  /// **'Takvimden Seç'**
+  String get pickFromCalendar;
+
+  /// No description provided for @simpleHabitReminderTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sana hatırlatayım mı?'**
+  String get simpleHabitReminderTitle;
+
+  /// No description provided for @simpleHabitReminderSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük hatırlatıcıyla alışkanlığını kaçırma'**
+  String get simpleHabitReminderSubtitle;
+
+  /// No description provided for @reminderEnabled.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hatırlatıcı Açık'**
+  String get reminderEnabled;
+
+  /// No description provided for @reminderDisabled.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hatırlatıcı Kapalı'**
+  String get reminderDisabled;
+
+  /// No description provided for @simpleHabitPreviewTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Harika! İşte alışkanlığın'**
+  String get simpleHabitPreviewTitle;
+
+  /// No description provided for @simpleHabitPreviewSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Her şey doğru görünüyor mu?'**
+  String get simpleHabitPreviewSubtitle;
+
+  /// No description provided for @startsOn.
+  ///
+  /// In tr, this message translates to:
+  /// **'Başlangıç'**
+  String get startsOn;
+
+  /// No description provided for @mondayShort.
+  ///
+  /// In tr, this message translates to:
+  /// **'Pzt'**
+  String get mondayShort;
+
+  /// No description provided for @tuesdayShort.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sal'**
+  String get tuesdayShort;
+
+  /// No description provided for @wednesdayShort.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çar'**
+  String get wednesdayShort;
+
+  /// No description provided for @thursdayShort.
+  ///
+  /// In tr, this message translates to:
+  /// **'Per'**
+  String get thursdayShort;
+
+  /// No description provided for @fridayShort.
+  ///
+  /// In tr, this message translates to:
+  /// **'Cum'**
+  String get fridayShort;
+
+  /// No description provided for @saturdayShort.
+  ///
+  /// In tr, this message translates to:
+  /// **'Cmt'**
+  String get saturdayShort;
+
+  /// No description provided for @sundayShort.
+  ///
+  /// In tr, this message translates to:
+  /// **'Paz'**
+  String get sundayShort;
+
+  /// No description provided for @visionBoard.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vizyon Panosu'**
+  String get visionBoard;
+
+  /// No description provided for @visionBoardDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedeflerinizi organize etmek ve yolculuğunuzu takip etmek için bir vizyon oluşturun'**
+  String get visionBoardDesc;
+
+  /// No description provided for @nameYourVision.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vizyonunuza İsim Verin'**
+  String get nameYourVision;
+
+  /// No description provided for @nameYourVisionDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vizyonunuza anlamlı bir isim verin'**
+  String get nameYourVisionDesc;
+
+  /// No description provided for @myBigGoal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Büyük Hedefim'**
+  String get myBigGoal;
+
+  /// No description provided for @choosePhoto.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fotoğraf Seç'**
+  String get choosePhoto;
+
+  /// No description provided for @choosePhotoDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Size ilham veren bir fotoğraf seçin'**
+  String get choosePhotoDesc;
+
+  /// No description provided for @photo.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fotoğraf'**
+  String get photo;
+
+  /// No description provided for @emojiAndColor.
+  ///
+  /// In tr, this message translates to:
+  /// **'Emoji & Renk'**
+  String get emojiAndColor;
+
+  /// No description provided for @tapToPickImage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Resim seçmek için dokunun'**
+  String get tapToPickImage;
+
+  /// No description provided for @createVisionWithAI.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yapay Zeka ile Vizyon Oluştur'**
+  String get createVisionWithAI;
+
+  /// No description provided for @tellMeYourDream.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hayalini anlat. Vizyon Panosu oluşturmana yardım edeyim.'**
+  String get tellMeYourDream;
+
+  /// No description provided for @setVisionTimeline.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vizyonunuz için zaman çizelgesini belirleyin'**
+  String get setVisionTimeline;
+
+  /// No description provided for @hardMode.
+  ///
+  /// In tr, this message translates to:
+  /// **'Zor Mod'**
+  String get hardMode;
+
+  /// No description provided for @multipleSubItemsDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çoklu alt öğeler'**
+  String get multipleSubItemsDesc;
+
+  /// No description provided for @motivationDayStart.
+  ///
+  /// In tr, this message translates to:
+  /// **'{title} için harika bir gün! 🌟'**
+  String motivationDayStart(Object title);
+
+  /// No description provided for @motivationSmallSteps.
+  ///
+  /// In tr, this message translates to:
+  /// **'Büyük hedeflere ulaşmak için küçük adımlarla başla 💪'**
+  String get motivationSmallSteps;
+
+  /// No description provided for @motivationJourneyStart.
+  ///
+  /// In tr, this message translates to:
+  /// **'Her yolculuk tek bir adımla başlar!'**
+  String get motivationJourneyStart;
+
+  /// No description provided for @motivationWaiting.
+  ///
+  /// In tr, this message translates to:
+  /// **'{title} seni bekliyor 🚀'**
+  String motivationWaiting(Object title);
+
+  /// No description provided for @quickSuggestions.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hızlı Öneriler'**
+  String get quickSuggestions;
+
+  /// No description provided for @trackSpending.
+  ///
+  /// In tr, this message translates to:
+  /// **'Harcamalarını takip et'**
+  String get trackSpending;
+
+  /// No description provided for @trackEarnings.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gelirlerini takip et'**
+  String get trackEarnings;
+
+  /// No description provided for @writeMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir mesaj yaz...'**
+  String get writeMessage;
+
+  /// No description provided for @softPeach.
+  ///
+  /// In tr, this message translates to:
+  /// **'(Şeftali) Soft Peach'**
+  String get softPeach;
+
+  /// No description provided for @softPeachDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sıcak şeftali ve krem tonları'**
+  String get softPeachDesc;
+
+  /// No description provided for @lavenderDreams.
+  ///
+  /// In tr, this message translates to:
+  /// **'Lavanta Rüyaları'**
+  String get lavenderDreams;
+
+  /// No description provided for @lavenderDreamsDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Zarif lavanta ve mor tonları'**
+  String get lavenderDreamsDesc;
+
+  /// No description provided for @mintFresh.
+  ///
+  /// In tr, this message translates to:
+  /// **'Taze Nane'**
+  String get mintFresh;
+
+  /// No description provided for @mintFreshDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Taze nane ve turkuaz tonları'**
+  String get mintFreshDesc;
+
+  /// No description provided for @cottonCandy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Pamuk Şeker'**
+  String get cottonCandy;
+
+  /// No description provided for @cottonCandyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Pamuk şeker - pembe ve mavi'**
+  String get cottonCandyDesc;
+
+  /// No description provided for @focusedZen.
+  ///
+  /// In tr, this message translates to:
+  /// **'Odaklanmış Zen'**
+  String get focusedZen;
+
+  /// No description provided for @focusedZenDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Minimalist, tek odak noktası'**
+  String get focusedZenDesc;
+
+  /// No description provided for @guidedJourney.
+  ///
+  /// In tr, this message translates to:
+  /// **'Rehberli Yolculuk'**
+  String get guidedJourney;
+
+  /// No description provided for @guidedJourneyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adım adım rehberli akış'**
+  String get guidedJourneyDesc;
+
+  /// No description provided for @softCloud.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yumuşak Bulut'**
+  String get softCloud;
+
+  /// No description provided for @softCloudDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bulut gibi, rüya gibi yumuşak'**
+  String get softCloudDesc;
+
+  /// No description provided for @warmJournal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sıcak Günlük'**
+  String get warmJournal;
+
+  /// No description provided for @warmJournalDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sıcak günlük ve duygu takibi'**
+  String get warmJournalDesc;
+
+  /// No description provided for @cozyJournal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Rahat Günlük'**
+  String get cozyJournal;
+
+  /// No description provided for @cozyJournalDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kahverengi tonlar ve zaman çizelgesi'**
+  String get cozyJournalDesc;
+
+  /// No description provided for @goodMorning.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günaydın! ☀️'**
+  String get goodMorning;
+
+  /// No description provided for @greatDayAhead.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün harika bir gün, başarabilirsin!'**
+  String get greatDayAhead;
+
+  /// No description provided for @todaysHabits.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugünün Alışkanlıkları'**
+  String get todaysHabits;
+
+  /// No description provided for @drinkWater.
+  ///
+  /// In tr, this message translates to:
+  /// **'Su İç'**
+  String get drinkWater;
+
+  /// No description provided for @meditation.
+  ///
+  /// In tr, this message translates to:
+  /// **'Meditasyon'**
+  String get meditation;
+
+  /// No description provided for @readBook.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kitap Oku'**
+  String get readBook;
+
+  /// No description provided for @howDoYouFeel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün nasıl hissediyorsun?'**
+  String get howDoYouFeel;
+
+  /// No description provided for @keepItUp.
+  ///
+  /// In tr, this message translates to:
+  /// **'Harika! Aynen devam! 💪'**
+  String get keepItUp;
 }
 
 class _AppLocalizationsDelegate

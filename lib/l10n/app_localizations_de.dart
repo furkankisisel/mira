@@ -101,6 +101,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get manageSubscription => 'Abonnement verwalten';
 
   @override
+  String get autoBackupTitle => 'Otomatik Yedekleme';
+
+  @override
+  String get autoBackupSubtitle =>
+      'Verilerinizi her 24 saatte bir otomatik olarak Google Drive\'a yedekleyin.';
+
+  @override
   String get backupNow => 'Backup Now';
 
   @override
@@ -1411,6 +1418,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get themeCrimsonDesc => 'Cesur ve tutkulu';
+
+  @override
+  String get themeVintageRed => 'Vintage Kırmızı';
+
+  @override
+  String get themeVintageRedDesc => 'Klasik ve zamansız kırmızı';
 
   @override
   String get themeAbyss => 'Derinlik';
@@ -3418,4 +3431,288 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get tapSpinToStart => 'Çarkı çevirmek için ortadaki butona dokun';
+
+  @override
+  String get simpleHabitWizardTitle =>
+      'Yeni bir alışkanlık kazanmaya hazır mısın?';
+
+  @override
+  String get simpleHabitWizardDesc =>
+      'Seni adım adım yönlendireceğim. Birlikte harika bir alışkanlık oluşturalım!';
+
+  @override
+  String get letsStart => 'Hadi Başlayalım';
+
+  @override
+  String get simpleHabitNameTitle => 'Alışkanlığına bir isim ver';
+
+  @override
+  String get simpleHabitNameSubtitle =>
+      'Neyi alışkanlık haline getirmek istiyorsun?';
+
+  @override
+  String get descriptionHintOptional => 'Açıklama ekle (isteğe bağlı)';
+
+  @override
+  String get simpleHabitEmojiTitle => 'Onu temsil edecek bir emoji seç';
+
+  @override
+  String get simpleHabitEmojiSubtitle =>
+      'Alışkanlığını daha eğlenceli hale getir!';
+
+  @override
+  String get simpleHabitColorTitle => 'Bir renk seç';
+
+  @override
+  String get simpleHabitColorSubtitle => 'Alışkanlığının kişiliğini yansıtsın';
+
+  @override
+  String get simpleHabitFrequencyTitle => 'Ne sıklıkla yapmak istiyorsun?';
+
+  @override
+  String get simpleHabitFrequencySubtitle => 'Hedeflerini belirle';
+
+  @override
+  String get dailyDesc => 'Her gün yapılacak';
+
+  @override
+  String get weeklyDesc => 'Haftanın belirli günlerinde';
+
+  @override
+  String get monthlyDesc => 'Ayın belirli günlerinde';
+
+  @override
+  String get periodicDesc => 'Belirli gün aralıklarıyla';
+
+  @override
+  String get simpleHabitWeekdaysTitle => 'Hangi günlerde?';
+
+  @override
+  String get simpleHabitWeekdaysSubtitle => 'Aktif olacağı günleri seç';
+
+  @override
+  String get simpleHabitMonthDaysTitle => 'Ayın hangi günlerinde?';
+
+  @override
+  String get simpleHabitMonthDaysSubtitle => 'Aktif olacağı günleri seç';
+
+  @override
+  String get simpleHabitPeriodicTitle => 'Kaç günde bir?';
+
+  @override
+  String get simpleHabitPeriodicSubtitle => 'Tekrar aralığını belirle';
+
+  @override
+  String get days => 'gün';
+
+  @override
+  String get simpleHabitStartDateTitle => 'Ne zaman başlayacaksın?';
+
+  @override
+  String get simpleHabitStartDateSubtitle =>
+      'Yolculuğun için bir başlangıç noktası seç';
+
+  @override
+  String get nextWeek => 'Gelecek Hafta';
+
+  @override
+  String get pickFromCalendar => 'Takvimden Seç';
+
+  @override
+  String get simpleHabitReminderTitle => 'Sana hatırlatayım mı?';
+
+  @override
+  String get simpleHabitReminderSubtitle =>
+      'Günlük hatırlatıcıyla alışkanlığını kaçırma';
+
+  @override
+  String get reminderEnabled => 'Hatırlatıcı Açık';
+
+  @override
+  String get reminderDisabled => 'Hatırlatıcı Kapalı';
+
+  @override
+  String get simpleHabitPreviewTitle => 'Harika! İşte alışkanlığın';
+
+  @override
+  String get simpleHabitPreviewSubtitle => 'Her şey doğru görünüyor mu?';
+
+  @override
+  String get startsOn => 'Başlangıç';
+
+  @override
+  String get mondayShort => 'Pzt';
+
+  @override
+  String get tuesdayShort => 'Sal';
+
+  @override
+  String get wednesdayShort => 'Çar';
+
+  @override
+  String get thursdayShort => 'Per';
+
+  @override
+  String get fridayShort => 'Cum';
+
+  @override
+  String get saturdayShort => 'Cmt';
+
+  @override
+  String get sundayShort => 'Paz';
+
+  @override
+  String get visionBoard => 'Vizyon Panosu';
+
+  @override
+  String get visionBoardDesc =>
+      'Hedeflerinizi organize etmek ve yolculuğunuzu takip etmek için bir vizyon oluşturun';
+
+  @override
+  String get nameYourVision => 'Vizyonunuza İsim Verin';
+
+  @override
+  String get nameYourVisionDesc => 'Vizyonunuza anlamlı bir isim verin';
+
+  @override
+  String get myBigGoal => 'Büyük Hedefim';
+
+  @override
+  String get choosePhoto => 'Fotoğraf Seç';
+
+  @override
+  String get choosePhotoDesc => 'Size ilham veren bir fotoğraf seçin';
+
+  @override
+  String get photo => 'Fotoğraf';
+
+  @override
+  String get emojiAndColor => 'Emoji & Renk';
+
+  @override
+  String get tapToPickImage => 'Resim seçmek için dokunun';
+
+  @override
+  String get createVisionWithAI => 'Yapay Zeka ile Vizyon Oluştur';
+
+  @override
+  String get tellMeYourDream =>
+      'Hayalini anlat. Vizyon Panosu oluşturmana yardım edeyim.';
+
+  @override
+  String get setVisionTimeline =>
+      'Vizyonunuz için zaman çizelgesini belirleyin';
+
+  @override
+  String get hardMode => 'Zor Mod';
+
+  @override
+  String get multipleSubItemsDesc => 'Çoklu alt öğeler';
+
+  @override
+  String motivationDayStart(Object title) {
+    return '$title için harika bir gün! 🌟';
+  }
+
+  @override
+  String get motivationSmallSteps =>
+      'Büyük hedeflere ulaşmak için küçük adımlarla başla 💪';
+
+  @override
+  String get motivationJourneyStart => 'Her yolculuk tek bir adımla başlar!';
+
+  @override
+  String motivationWaiting(Object title) {
+    return '$title seni bekliyor 🚀';
+  }
+
+  @override
+  String get quickSuggestions => 'Hızlı Öneriler';
+
+  @override
+  String get trackSpending => 'Harcamalarını takip et';
+
+  @override
+  String get trackEarnings => 'Gelirlerini takip et';
+
+  @override
+  String get writeMessage => 'Bir mesaj yaz...';
+
+  @override
+  String get softPeach => '(Şeftali) Soft Peach';
+
+  @override
+  String get softPeachDesc => 'Sıcak şeftali ve krem tonları';
+
+  @override
+  String get lavenderDreams => 'Lavanta Rüyaları';
+
+  @override
+  String get lavenderDreamsDesc => 'Zarif lavanta ve mor tonları';
+
+  @override
+  String get mintFresh => 'Taze Nane';
+
+  @override
+  String get mintFreshDesc => 'Taze nane ve turkuaz tonları';
+
+  @override
+  String get cottonCandy => 'Pamuk Şeker';
+
+  @override
+  String get cottonCandyDesc => 'Pamuk şeker - pembe ve mavi';
+
+  @override
+  String get focusedZen => 'Odaklanmış Zen';
+
+  @override
+  String get focusedZenDesc => 'Minimalist, tek odak noktası';
+
+  @override
+  String get guidedJourney => 'Rehberli Yolculuk';
+
+  @override
+  String get guidedJourneyDesc => 'Adım adım rehberli akış';
+
+  @override
+  String get softCloud => 'Yumuşak Bulut';
+
+  @override
+  String get softCloudDesc => 'Bulut gibi, rüya gibi yumuşak';
+
+  @override
+  String get warmJournal => 'Sıcak Günlük';
+
+  @override
+  String get warmJournalDesc => 'Sıcak günlük ve duygu takibi';
+
+  @override
+  String get cozyJournal => 'Rahat Günlük';
+
+  @override
+  String get cozyJournalDesc => 'Kahverengi tonlar ve zaman çizelgesi';
+
+  @override
+  String get goodMorning => 'Günaydın! ☀️';
+
+  @override
+  String get greatDayAhead => 'Bugün harika bir gün, başarabilirsin!';
+
+  @override
+  String get todaysHabits => 'Bugünün Alışkanlıkları';
+
+  @override
+  String get drinkWater => 'Su İç';
+
+  @override
+  String get meditation => 'Meditasyon';
+
+  @override
+  String get readBook => 'Kitap Oku';
+
+  @override
+  String get howDoYouFeel => 'Bugün nasıl hissediyorsun?';
+
+  @override
+  String get keepItUp => 'Harika! Aynen devam! 💪';
 }

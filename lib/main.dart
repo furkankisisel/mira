@@ -41,6 +41,7 @@ import 'features/auth/test_choice_screen.dart';
 // In-app purchase and premium management
 import 'services/premium_manager.dart';
 import 'services/iap_service.dart';
+import 'features/backup/auto_backup_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -85,6 +86,10 @@ class _MiraAppState extends State<MiraApp> {
     // Privacy service (consent toggles)
     // ignore: discarded_futures
     PrivacyService.instance.initialize();
+
+    // Auto Backup initialization
+    // ignore: discarded_futures
+    AutoBackupService.instance.initialize();
   }
 
   static const _prefThemeMode = 'pref_theme_mode_v1';

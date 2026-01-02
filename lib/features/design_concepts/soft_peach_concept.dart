@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mira/l10n/app_localizations.dart';
 
 /// Konsept 1: Soft Peach & Cream
 /// Sıcak, şeftali tonlarında yumuşak ve davetkar bir tema
@@ -37,7 +38,7 @@ class SoftPeachConceptScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Karşılama kartı
-                      _buildGreetingCard(),
+                      _buildGreetingCard(context),
                       const SizedBox(height: 20),
 
                       // Günlük özet
@@ -45,11 +46,13 @@ class SoftPeachConceptScreen extends StatelessWidget {
                       const SizedBox(height: 20),
 
                       // Alışkanlık kartları
-                      _buildSectionTitle('Bugünkü Alışkanlıklar'),
+                      _buildSectionTitle(
+                        AppLocalizations.of(context).todaysHabits,
+                      ),
                       const SizedBox(height: 12),
                       _buildHabitCard(
                         emoji: '💧',
-                        title: 'Su İç',
+                        title: AppLocalizations.of(context).drinkWater,
                         subtitle: '6/8 bardak',
                         progress: 0.75,
                         color: const Color(0xFF88C5E0),
@@ -57,7 +60,7 @@ class SoftPeachConceptScreen extends StatelessWidget {
                       const SizedBox(height: 12),
                       _buildHabitCard(
                         emoji: '🧘',
-                        title: 'Meditasyon',
+                        title: AppLocalizations.of(context).meditation,
                         subtitle: '10 dakika',
                         progress: 1.0,
                         color: _peachAccent,
@@ -65,7 +68,7 @@ class SoftPeachConceptScreen extends StatelessWidget {
                       const SizedBox(height: 12),
                       _buildHabitCard(
                         emoji: '📚',
-                        title: 'Kitap Oku',
+                        title: AppLocalizations.of(context).readBook,
                         subtitle: '15/30 sayfa',
                         progress: 0.5,
                         color: _softOrange,
@@ -91,7 +94,7 @@ class SoftPeachConceptScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildGreetingCard() {
+  Widget _buildGreetingCard(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -125,7 +128,7 @@ class SoftPeachConceptScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Günaydın! ☀️',
+                  AppLocalizations.of(context).goodMorning,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -134,7 +137,7 @@ class SoftPeachConceptScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Bugün harika bir gün, başaracaksın!',
+                  AppLocalizations.of(context).greatDayAhead,
                   style: TextStyle(
                     fontSize: 14,
                     color: _warmBrown.withValues(alpha: 0.7),

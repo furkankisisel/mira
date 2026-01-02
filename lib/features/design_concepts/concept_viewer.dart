@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mira/l10n/app_localizations.dart';
 import 'soft_peach_concept.dart';
 import 'lavender_dreams_concept.dart';
 import 'mint_fresh_concept.dart';
@@ -20,70 +21,74 @@ class DesignConceptViewer extends StatefulWidget {
 class _DesignConceptViewerState extends State<DesignConceptViewer> {
   int _currentIndex = 0;
 
-  final List<_ConceptInfo> _concepts = [
-    _ConceptInfo(
-      name: 'Soft Peach',
-      description: 'Sıcak şeftali & krem tonları',
-      emoji: '🍑',
-      builder: () => const SoftPeachConceptScreen(),
-    ),
-    _ConceptInfo(
-      name: 'Lavender Dreams',
-      description: 'Zarif lavanta & mor tonları',
-      emoji: '💜',
-      builder: () => const LavenderDreamsConceptScreen(),
-    ),
-    _ConceptInfo(
-      name: 'Mint Fresh',
-      description: 'Taze nane & turkuaz tonları',
-      emoji: '🌿',
-      builder: () => const MintFreshConceptScreen(),
-    ),
-    _ConceptInfo(
-      name: 'Cotton Candy',
-      description: 'Pamuk şeker - pembe & mavi',
-      emoji: '🍭',
-      builder: () => const CottonCandyConceptScreen(),
-    ),
-    _ConceptInfo(
-      name: 'Focused Zen',
-      description: 'Minimalist, tek odak noktası',
-      emoji: '🎯',
-      builder: () => const FocusedZenConceptScreen(),
-    ),
-    _ConceptInfo(
-      name: 'Guided Journey',
-      description: 'Adım adım yönlendirmeli akış',
-      emoji: '🗺️',
-      builder: () => const GuidedJourneyConceptScreen(),
-    ),
-    _ConceptInfo(
-      name: 'Soft Cloud',
-      description: 'Bulutsu, rüya gibi yumuşak',
-      emoji: '☁️',
-      builder: () => const SoftCloudConceptScreen(),
-    ),
-    _ConceptInfo(
-      name: 'Warm Journal',
-      description: 'Sıcak günlük & duygu takibi',
-      emoji: '📔',
-      builder: () => const WarmJournalConceptScreen(),
-    ),
-    _ConceptInfo(
-      name: 'Cozy Journal',
-      description: 'Kahverengi tonlar & timeline',
-      emoji: '📖',
-      builder: () => const CozyJournalConceptScreen(),
-    ),
-  ];
+  List<_ConceptInfo> _getConcepts(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return [
+      _ConceptInfo(
+        name: l10n.softPeach,
+        description: l10n.softPeachDesc,
+        emoji: '🍑',
+        builder: () => const SoftPeachConceptScreen(),
+      ),
+      _ConceptInfo(
+        name: l10n.lavenderDreams,
+        description: l10n.lavenderDreamsDesc,
+        emoji: '💜',
+        builder: () => const LavenderDreamsConceptScreen(),
+      ),
+      _ConceptInfo(
+        name: l10n.mintFresh,
+        description: l10n.mintFreshDesc,
+        emoji: '🌿',
+        builder: () => const MintFreshConceptScreen(),
+      ),
+      _ConceptInfo(
+        name: l10n.cottonCandy,
+        description: l10n.cottonCandyDesc,
+        emoji: '🍭',
+        builder: () => const CottonCandyConceptScreen(),
+      ),
+      _ConceptInfo(
+        name: l10n.focusedZen,
+        description: l10n.focusedZenDesc,
+        emoji: '🎯',
+        builder: () => const FocusedZenConceptScreen(),
+      ),
+      _ConceptInfo(
+        name: l10n.guidedJourney,
+        description: l10n.guidedJourneyDesc,
+        emoji: '🗺️',
+        builder: () => const GuidedJourneyConceptScreen(),
+      ),
+      _ConceptInfo(
+        name: l10n.softCloud,
+        description: l10n.softCloudDesc,
+        emoji: '☁️',
+        builder: () => const SoftCloudConceptScreen(),
+      ),
+      _ConceptInfo(
+        name: l10n.warmJournal,
+        description: l10n.warmJournalDesc,
+        emoji: '📔',
+        builder: () => const WarmJournalConceptScreen(),
+      ),
+      _ConceptInfo(
+        name: l10n.cozyJournal,
+        description: l10n.cozyJournalDesc,
+        emoji: '📖',
+        builder: () => const CozyJournalConceptScreen(),
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
+    final concepts = _getConcepts(context);
     return Scaffold(
       body: Stack(
         children: [
           // Mevcut konsept ekranı
-          _concepts[_currentIndex].builder(),
+          concepts[_currentIndex].builder(),
 
           // Üstte konsept seçici
           Positioned(
@@ -112,7 +117,7 @@ class _DesignConceptViewerState extends State<DesignConceptViewer> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '🎨 Tasarım Konseptleri',
+                      '🎨 Tasarım Konseptleri', // TODO: Localize header if needed, but assuming mostly dev tool
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -124,8 +129,8 @@ class _DesignConceptViewerState extends State<DesignConceptViewer> {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(_concepts.length, (index) {
-                          final concept = _concepts[index];
+                        children: List.generate(concepts.length, (index) {
+                          final concept = concepts[index];
                           final isSelected = index == _currentIndex;
                           return GestureDetector(
                             onTap: () => setState(() => _currentIndex = index),
@@ -165,7 +170,7 @@ class _DesignConceptViewerState extends State<DesignConceptViewer> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      _concepts[_currentIndex].description,
+                      concepts[_currentIndex].description,
                       style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
                   ],

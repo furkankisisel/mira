@@ -11,6 +11,8 @@ import 'widgets/list_creation_dialog.dart';
 import 'widgets/habit_card.dart';
 import 'widgets/focus_card.dart';
 import 'simple_habit_screen.dart';
+import 'simple_habit_wizard_screen.dart';
+import 'advanced_habit_wizard_screen.dart';
 
 import 'advanced_habit_screen.dart';
 import 'habit_analysis_screen.dart';
@@ -28,6 +30,7 @@ import '../data/focus_motivation_service.dart';
 import '../../vision/data/vision_repository.dart';
 import '../../vision/data/vision_model.dart';
 import '../../../core/config/api_config.dart';
+import '../../../ui/premium_gate.dart';
 // removed unused imports
 
 /// Represents a grouped item for the habit/task list view
@@ -313,11 +316,12 @@ class HabitScreenState extends State<HabitScreen>
   }
 
   String _getLocalMotivationMessage(String title) {
+    final l10n = AppLocalizations.of(context);
     final messages = [
-      'Bugün $title için harika bir gün! 🌟',
-      'Küçük adımlarla başla, büyük hedeflere ulaş 💪',
-      'Her yolculuk tek bir adımla başlar!',
-      '$title seni bekliyor 🚀',
+      l10n.motivationDayStart(title),
+      l10n.motivationSmallSteps,
+      l10n.motivationJourneyStart,
+      l10n.motivationWaiting(title),
     ];
     return messages[DateTime.now().second % messages.length];
   }
@@ -2235,7 +2239,7 @@ class HabitScreenState extends State<HabitScreen>
 
   void _createSimpleHabit() async {
     final habit = await Navigator.of(context).push<Habit>(
-      MaterialPageRoute(builder: (context) => const SimpleHabitScreen()),
+      MaterialPageRoute(builder: (context) => const SimpleHabitWizardScreen()),
     );
 
     if (habit != null && mounted) {
@@ -2254,8 +2258,13 @@ class HabitScreenState extends State<HabitScreen>
   }
 
   void _createAdvancedHabit() async {
+    final ok = await requirePremium(context);
+    if (!ok) return;
+
     final habit = await Navigator.of(context).push<Habit>(
-      MaterialPageRoute(builder: (context) => const AdvancedHabitScreen()),
+      MaterialPageRoute(
+        builder: (context) => const AdvancedHabitWizardScreen(),
+      ),
     );
 
     if (habit != null && mounted) {

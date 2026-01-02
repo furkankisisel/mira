@@ -9,7 +9,9 @@ import 'data/finance_category_repository.dart';
 import 'data/finance_category.dart';
 
 import 'data/budget_repository.dart';
-import 'add_transaction_screen.dart';
+
+import 'finance_wizard_screen.dart';
+import '../../ui/premium_gate.dart';
 
 class FinanceScreen extends StatefulWidget {
   const FinanceScreen({super.key, this.variant});
@@ -214,6 +216,7 @@ class FinanceScreenState extends State<FinanceScreen>
                       month: _currentMonth,
                       budget: _plannedMonthlySpend,
                       spent: expenseTotal,
+                      onTap: _editBudget,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -234,18 +237,16 @@ class FinanceScreenState extends State<FinanceScreen>
                                   orElse: () => tx,
                                 );
                                 final res = await Navigator.of(context)
-                                    .push<bool>(
+                                    .push<FinanceTransaction>(
                                       MaterialPageRoute(
-                                        builder: (_) => AddTransactionScreen(
-                                          type: base.type,
+                                        builder: (_) => FinanceWizardScreen(
                                           repo: _repo,
                                           catRepo: _catRepo,
-                                          variant: widget.variant,
                                           existing: base,
                                         ),
                                       ),
                                     );
-                                if (res == true && mounted) setState(() {});
+                                if (res != null && mounted) setState(() {});
                               },
                               onDelete: (tx) async {
                                 final ok = await _confirmDelete(context, tx);
@@ -268,18 +269,16 @@ class FinanceScreenState extends State<FinanceScreen>
                                   orElse: () => tx,
                                 );
                                 final res = await Navigator.of(context)
-                                    .push<bool>(
+                                    .push<FinanceTransaction>(
                                       MaterialPageRoute(
-                                        builder: (_) => AddTransactionScreen(
-                                          type: base.type,
+                                        builder: (_) => FinanceWizardScreen(
                                           repo: _repo,
                                           catRepo: _catRepo,
-                                          variant: widget.variant,
                                           existing: base,
                                         ),
                                       ),
                                     );
-                                if (res == true && mounted) setState(() {});
+                                if (res != null && mounted) setState(() {});
                               },
                               onDelete: (tx) async {
                                 final ok = await _confirmDelete(context, tx);
@@ -302,18 +301,16 @@ class FinanceScreenState extends State<FinanceScreen>
                                   orElse: () => tx,
                                 );
                                 final res = await Navigator.of(context)
-                                    .push<bool>(
+                                    .push<FinanceTransaction>(
                                       MaterialPageRoute(
-                                        builder: (_) => AddTransactionScreen(
-                                          type: base.type,
+                                        builder: (_) => FinanceWizardScreen(
                                           repo: _repo,
                                           catRepo: _catRepo,
-                                          variant: widget.variant,
                                           existing: base,
                                         ),
                                       ),
                                     );
-                                if (res == true && mounted) setState(() {});
+                                if (res != null && mounted) setState(() {});
                               },
                               onDelete: (tx) async {
                                 final ok = await _confirmDelete(context, tx);
@@ -338,18 +335,67 @@ class FinanceScreenState extends State<FinanceScreen>
   }
 
   Future<void> _openAddPageDefault() async {
-    final result = await Navigator.of(context).push<bool>(
+    final result = await Navigator.of(context).push<FinanceTransaction>(
       MaterialPageRoute(
-        builder: (_) => AddTransactionScreen(
-          type: TransactionType
-              .expense, // default; kullanıcı sayfada değiştirebilir
+        builder: (_) => FinanceWizardScreen(
           repo: _repo,
           catRepo: _catRepo,
-          variant: widget.variant,
+          initialType: TransactionType.expense,
         ),
       ),
     );
-    if (result == true && mounted) setState(() {});
+    if (result != null && mounted) setState(() {});
+  }
+
+  Future<void> _editBudget() async {
+    if (!await requirePremium(context)) return;
+
+    if (!mounted) return;
+
+    final l10n = AppLocalizations.of(context);
+    final controller = TextEditingController(
+      text: _plannedMonthlySpend?.toStringAsFixed(0) ?? '',
+    );
+
+    final result = await showDialog<double>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.spendingAdvisorTitle),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          autofocus: true,
+          decoration: InputDecoration(
+            labelText: l10n.expenseLabel,
+            prefixText: NumberFormat.simpleCurrency(
+              locale: Localizations.localeOf(context).toString(),
+            ).currencySymbol,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () {
+              final val = double.tryParse(controller.text);
+              Navigator.pop(context, val);
+            },
+            child: Text(
+              l10n.add,
+            ), // Using existing 'add' key if 'save' implies a new transaction, or just 'add' as generic positive action
+          ),
+        ],
+      ),
+    );
+
+    if (result != null) {
+      await _budgetRepo.setBudgetForMonth(_currentMonth, result);
+      setState(() {
+        _plannedMonthlySpend = result;
+      });
+    }
   }
 
   // Exposed control for global AppBar action
@@ -822,10 +868,12 @@ class _SpendingAdvisorCard extends StatelessWidget {
     required this.month,
     required this.budget,
     required this.spent,
+    this.onTap,
   });
   final DateTime month;
   final double? budget;
   final double spent;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -876,40 +924,52 @@ class _SpendingAdvisorCard extends StatelessWidget {
       }
     }
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: iconColor.withOpacity(0.3)),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: iconColor, size: 28),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.spendingAdvisorTitle,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: iconColor,
-                    fontWeight: FontWeight.bold,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: iconColor.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: iconColor, size: 28),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.spendingAdvisorTitle,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: iconColor,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  message,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 4),
+                  Text(
+                    message,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+            if (onTap != null) ...[
+              const SizedBox(width: 8),
+              Icon(
+                Icons.edit_outlined,
+                size: 20,
+                color: iconColor.withOpacity(0.7),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

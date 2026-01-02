@@ -27,6 +27,7 @@ class ThemeVariations {
     ThemeVariant.blush,
     ThemeVariant.crimson,
     ThemeVariant.abyss,
+    ThemeVariant.vintageRed,
   ];
 
   /// Generate light theme for a specific variant
@@ -298,7 +299,8 @@ enum ThemeVariant {
   mauve,
   blush,
   crimson,
-  abyss;
+  abyss,
+  vintageRed;
 
   String getDisplayName(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -318,6 +320,7 @@ enum ThemeVariant {
       ThemeVariant.blush => l10n.themeBlush,
       ThemeVariant.crimson => l10n.themeCrimson,
       ThemeVariant.abyss => l10n.themeAbyss,
+      ThemeVariant.vintageRed => l10n.themeVintageRed,
     };
   }
 
@@ -339,6 +342,20 @@ enum ThemeVariant {
       ThemeVariant.blush => l10n.themeBlushDesc,
       ThemeVariant.crimson => l10n.themeCrimsonDesc,
       ThemeVariant.abyss => l10n.themeAbyssDesc,
+      ThemeVariant.vintageRed => l10n.themeVintageRedDesc,
+    };
+  }
+
+  bool get isPremium {
+    return switch (this) {
+      ThemeVariant.cotton => false,
+      ThemeVariant.matcha => false,
+      ThemeVariant.lavender => false,
+      ThemeVariant.sky => false,
+      ThemeVariant.rose => false,
+      ThemeVariant.slate => false,
+      ThemeVariant.ocean => false,
+      _ => true,
     };
   }
 }
@@ -447,6 +464,13 @@ extension ThemeVariantConfig on ThemeVariant {
     ),
     ThemeVariant.abyss => ThemeConfig(
       primary: const Color(0xFF02182B), // #02182B - Deep navy abyss
+      lightBackground: const Color(0xFFFAFAFA),
+      lightSurface: const Color(0xFFFFFFFF),
+      darkBackground: const Color(0xFF121212),
+      darkSurface: const Color(0xFF1E1E1E),
+    ),
+    ThemeVariant.vintageRed => ThemeConfig(
+      primary: const Color(0xFFb43a38), // #b43a38 - Vintage Red
       lightBackground: const Color(0xFFFAFAFA),
       lightSurface: const Color(0xFFFFFFFF),
       darkBackground: const Color(0xFF121212),

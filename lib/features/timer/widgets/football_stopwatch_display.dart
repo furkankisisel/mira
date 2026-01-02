@@ -84,7 +84,7 @@ class _FootballStopwatchDisplayState extends State<FootballStopwatchDisplay>
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 400, maxWidth: 400),
             child: DotLottieLoader.fromAsset(
-              "assets/animations/football_juggling.lottie",
+              "assets/animations/ping-pong.lottie",
               frameBuilder: (BuildContext ctx, DotLottie? dotlottie) {
                 if (dotlottie != null) {
                   return Lottie.memory(
@@ -92,8 +92,7 @@ class _FootballStopwatchDisplayState extends State<FootballStopwatchDisplay>
                     controller: _controller,
                     fit: BoxFit.contain,
                     onLoaded: (composition) {
-                      _controller.duration =
-                          composition.duration * 0.5; // 2x speed
+                      _controller.duration = composition.duration;
                       if (widget.isRunning) {
                         _controller.repeat();
                       }

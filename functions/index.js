@@ -133,3 +133,19 @@ exports.sendBugReport = functions.https.onRequest((req, res) => {
         }
     });
 });
+
+exports.setPremium = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    const { uid } = req.body || {};
+    await admin.auth().setCustomUserClaims(uid, { premium: true });
+    res.json({ ok: true });
+  });
+});
+
+exports.removePremium = functions.https.onRequest((req, res) => {
+  cors(req, res, async () => {
+    const { uid } = req.body || {};
+    await admin.auth().setCustomUserClaims(uid, { premium: false });
+    res.json({ ok: true });
+  });
+});

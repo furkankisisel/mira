@@ -4,7 +4,7 @@ import 'dart:math' as math;
 import '../../l10n/app_localizations.dart';
 import '../../core/timer/timer_controller.dart';
 import '../../design_system/theme/theme_variations.dart';
-import '../../services/premium_manager.dart';
+
 import '../../ui/premium_gate.dart';
 import '../habit/domain/habit_repository.dart';
 import '../habit/domain/habit_types.dart';
@@ -151,7 +151,7 @@ class _TimerScreenState extends State<TimerScreen>
           ),
           actions: [
             IconButton(
-              tooltip: 'Hard Mode', // TODO: Localize
+              tooltip: AppLocalizations.of(context).hardMode,
               icon: AnimatedBuilder(
                 animation: controller,
                 builder: (context, _) {
@@ -193,10 +193,7 @@ class _TimerScreenState extends State<TimerScreen>
               ),
               onPressed: () async {
                 // Premium kontrolü
-                if (!PremiumManager.instance.isPremium) {
-                  await showPremiumDialog(context);
-                  return;
-                }
+                if (!await requirePremium(context)) return;
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) =>
@@ -1077,6 +1074,7 @@ class _TimerScreenState extends State<TimerScreen>
             child: TomatoTimerDisplay(
               remaining: remaining,
               totalDuration: total,
+              isRunning: isRunning,
             ),
           ),
         ),

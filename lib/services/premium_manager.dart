@@ -19,7 +19,7 @@ class PremiumManager {
   static const String _promoCodeUsedKey = 'promo_code_used';
 
   // Valid promo codes for unlimited premium access
-  static const List<String> _validPromoCodes = ['OZELKULLANICI'];
+  static const List<String> _validPromoCodes = [];
 
   /// Whether the user currently has premium.
   bool _isPremium = false;

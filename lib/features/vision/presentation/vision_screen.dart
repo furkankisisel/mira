@@ -9,7 +9,7 @@ import '../../habit/domain/habit_types.dart';
 import '../data/vision_model.dart';
 import '../../../design_system/theme/theme_variations.dart';
 import '../data/vision_repository.dart';
-import 'vision_create_screen.dart';
+import 'vision_wizard_screen.dart';
 import '../../../l10n/app_localizations.dart';
 import '../data/freeform_text_repository.dart';
 import '../data/freeform_text_model.dart';
@@ -273,9 +273,7 @@ class _VisionScreenState extends State<VisionScreen> {
 
   Future<void> _openCreate() async {
     final created = await Navigator.of(context).push<Vision>(
-      MaterialPageRoute(
-        builder: (_) => VisionCreateScreen(variant: widget.variant),
-      ),
+      MaterialPageRoute(builder: (_) => VisionWizardScreen(repo: _repo)),
     );
     if (created != null) {
       // Already added in create screen; stream updates will refresh UI.
@@ -1165,8 +1163,7 @@ class _VisionScreenState extends State<VisionScreen> {
   Future<void> _editVision(Vision v) async {
     await Navigator.of(context).push<Vision>(
       MaterialPageRoute(
-        builder: (_) =>
-            VisionCreateScreen(variant: widget.variant, initialVision: v),
+        builder: (_) => VisionWizardScreen(repo: _repo, initialVision: v),
       ),
     );
     // Updates and pop are handled inside VisionCreateScreen.

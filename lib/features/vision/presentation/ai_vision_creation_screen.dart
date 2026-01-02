@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../habit/domain/ai_habit_repository.dart';
 import '../../vision/domain/ai_vision_dto.dart';
+import 'package:mira/l10n/app_localizations.dart';
 
 class AiVisionCreationScreen extends StatefulWidget {
   final AiHabitRepository repository;
@@ -24,7 +25,7 @@ class _AiVisionCreationScreenState extends State<AiVisionCreationScreen> {
       setState(() {
         _messages.add({
           'role': 'assistant',
-          'content': "Tell me your dream. I'll help you build a Vision Board.",
+          'content': AppLocalizations.of(context).tellMeYourDream,
           // Ideally use l10n here, but hardcoding for MVP speed as user speaks English/Turkish automatically handled by AI
         });
       });

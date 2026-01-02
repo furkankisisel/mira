@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:mira/l10n/app_localizations.dart';
 import 'google_drive_backup_manager.dart';
 import 'backup_data_service.dart';
+import 'auto_backup_service.dart';
+import '../../ui/premium_gate.dart';
 
 class BackupPage extends StatefulWidget {
   const BackupPage({super.key});
@@ -15,14 +17,29 @@ class _BackupPageState extends State<BackupPage> {
   bool _busy = false;
   List<dynamic> _files = [];
   String? _statusMessage;
+  bool _autoBackup = false;
 
   @override
   void initState() {
     super.initState();
+    _loadAutoBackupState();
     _refreshList();
   }
 
+  Future<void> _loadAutoBackupState() async {
+    final enabled = await AutoBackupService.instance.isAutoBackupEnabled();
+    if (mounted) setState(() => _autoBackup = enabled);
+  }
+
+  Future<void> _toggleAutoBackup(bool value) async {
+    if (!await requirePremium(context)) return;
+    setState(() => _autoBackup = value);
+    await AutoBackupService.instance.setAutoBackupEnabled(value);
+  }
+
   Future<void> _backup() async {
+    if (!await requirePremium(context)) return;
+
     setState(() {
       _busy = true;
       _statusMessage = null;
@@ -42,7 +59,7 @@ class _BackupPageState extends State<BackupPage> {
           _busy = false;
           _statusMessage = res == null
               ? AppLocalizations.of(context).backupFailed
-              : AppLocalizations.of(context).backupSuccess('OK');
+              : AppLocalizations.of(context).backupSuccess("OK");
         });
         if (res != null) {
           _refreshList();
@@ -209,7 +226,36 @@ class _BackupPageState extends State<BackupPage> {
             ),
           ),
 
-          const SizedBox(height: 16),
+          // Auto Backup Switch
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: SwitchListTile(
+              value: _autoBackup,
+              onChanged: _toggleAutoBackup,
+              secondary: Icon(Icons.schedule, color: theme.colorScheme.primary),
+              title: Text(
+                l10n.autoBackupTitle,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              subtitle: Text(
+                l10n.autoBackupSubtitle,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
 
           // List Header
           Padding(

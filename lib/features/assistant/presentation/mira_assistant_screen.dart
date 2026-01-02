@@ -395,7 +395,7 @@ class _MiraAssistantScreenState extends State<MiraAssistantScreen> {
             child: TextField(
               controller: _controller,
               decoration: InputDecoration(
-                hintText: 'Mesaj yaz...',
+                hintText: AppLocalizations.of(context).writeMessage,
                 filled: true,
                 fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.5),
                 border: OutlineInputBorder(

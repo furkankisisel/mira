@@ -1,32 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../core/utils/emoji_presets.dart';
+import '../../../ui/widgets/wizard_base_widgets.dart';
+import '../domain/habit_model.dart';
 import '../domain/habit_types.dart';
-import '../domain/category_repository.dart';
+import '../domain/subtask_model.dart';
 
-// Logical step identifiers to allow reordering without changing logic.
-// Enums cannot be declared inside classes in Dart, so this must be top-level.
-enum _StepId { type, details, frequency, scheduling }
-
+/// Gelişmiş alışkanlık oluşturma wizard'ı
+/// Kullanıcıyı adım adım yönlendiren, konuşma tarzı akış
 class AdvancedHabitWizardScreen extends StatefulWidget {
-  final bool isEditing;
-  final Map<String, dynamic>? editingHabit;
-  // When true, show Scheduling step before Frequency step
-  final bool scheduleBeforeFrequency;
-  // When true, Scheduling step uses vision-day offsets (1-365)
-  final bool useVisionDayOffsets;
-  // Optional explicit vision start date to compute 1-based day offsets.
-  final DateTime? visionStartDate;
-
-  const AdvancedHabitWizardScreen({
-    super.key,
-    this.isEditing = false,
-    this.editingHabit,
-    this.scheduleBeforeFrequency = false,
-    this.useVisionDayOffsets = false,
-    this.visionStartDate,
-  });
+  const AdvancedHabitWizardScreen({super.key});
 
   @override
   State<AdvancedHabitWizardScreen> createState() =>
@@ -35,2733 +19,1406 @@ class AdvancedHabitWizardScreen extends StatefulWidget {
 
 class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
   final PageController _pageController = PageController();
-  int _currentStep = 0;
-  int get _totalSteps => _steps.length;
+  int _currentPage = 0;
 
-  List<_StepId> get _steps {
-    // Vision offsets modunda da artık sıklık seçimi gösterilecek.
-    return widget.scheduleBeforeFrequency
-        ? const [
-            _StepId.details,
-            _StepId.type,
-            _StepId.scheduling, // start offset + duration
-            _StepId.frequency,
-          ]
-        : const [
-            _StepId.details,
-            _StepId.type,
-            _StepId.frequency,
-            _StepId.scheduling,
-          ];
-  }
-
-  // Step 1: Category
-  String? _selectedCategoryId;
-  final List<HabitCategory> _predefinedCategories = [
-    // Names will be localized at render-time using l10n and these IDs
-    HabitCategory('health', 'health', Icons.favorite, Colors.red, emoji: '💊'),
-    HabitCategory(
-      'fitness',
-      'fitness',
-      Icons.fitness_center,
-      Colors.orange,
-      emoji: '🏋️',
-    ),
-    HabitCategory(
-      'productivity',
-      'productivity',
-      Icons.work,
-      Colors.blue,
-      emoji: '💼',
-    ),
-    HabitCategory(
-      'mindfulness',
-      'mindfulness',
-      Icons.self_improvement,
-      Colors.purple,
-      emoji: '🧘',
-    ),
-    HabitCategory(
-      'education',
-      'education',
-      Icons.school,
-      Colors.green,
-      emoji: '📚',
-    ),
-    HabitCategory('social', 'social', Icons.groups, Colors.teal, emoji: '👥'),
-  ];
-  final List<HabitCategory> _customCategories = [];
-
-  // Step 2: Habit Type
-  HabitType? _selectedHabitType;
-
-  // Numerical Habit Configuration
-  int _numericalTarget = 1;
-  NumericalTargetType _numericalTargetType = NumericalTargetType.exact;
-  String _numericalUnit = '';
-  // Removed _numericalDailyFrequency & _numericalTimePeriod (UI simplified)
-
-  // Timer Habit Configuration
-  int _timerTargetMinutes = 30;
-  TimerTargetType _timerTargetType = TimerTargetType.minimum;
-  // Removed _timerDailyFrequency & _timerTimePeriod (UI simplified)
-
-  // Step 3: Details
+  // Wizard data
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _targetController = TextEditingController(text: '1');
+  final _unitController = TextEditingController();
 
-  // Visual identity when not using predefined category
-  Color _selectedColor = Colors.blue;
-  String _selectedEmoji = '🌟';
-
-  // Additional controllers for manual input
-  final _numericalTargetController = TextEditingController();
-  final _numericalUnitController = TextEditingController();
-  // Removed _numericalFrequencyController
-  final _timerTargetController = TextEditingController();
-  // Removed _timerFrequencyController
-
-  // Step 4: Frequency
-  FrequencyType? _selectedFrequencyType;
-  List<int> _selectedWeekdays = [];
-  List<int> _selectedMonthDays = [];
-  List<DateTime> _selectedYearDays = [];
-  int _periodicDays = 1;
-
-  // Step 5: Scheduling
+  HabitType _habitType = HabitType.numerical;
+  String _selectedEmoji = '🎯';
+  Color _selectedColor = const Color(0xFF6366F1);
+  String _selectedFrequency = 'daily';
+  final Set<int> _weeklyDays = {};
+  final Set<int> _monthDays = {};
+  int _periodicDays = 2;
   DateTime _startDate = DateTime.now();
   DateTime? _endDate;
-  bool _hasEndDate = false;
-
-  // Vision-day scheduling (1-365) when enabled
-  int _visionStartDay = 1;
-  int? _visionEndDay;
-  int? _visionDurationDays; // yeni: süre (gün)
-  String? _visionEndError;
-  String? _visionStartError;
-  final TextEditingController _visionStartDayCtrl = TextEditingController();
-  final TextEditingController _visionEndDayCtrl = TextEditingController();
-  // NOTE: Previous implementation allowed selecting specific active offsets (days) within
-  // the start/end range. New vision scheduling model simplifies this to Start Day + Duration.
-  // Manual per-day selection & _activeOffsets set removed.
-
-  // Reminder settings
   bool _reminderEnabled = false;
-  TimeOfDay? _reminderTime;
+  TimeOfDay _reminderTime = const TimeOfDay(hour: 9, minute: 0);
+
+  // Hedef tipi
+  NumericalTargetType _numericalTargetType = NumericalTargetType.minimum;
+  TimerTargetType _timerTargetType = TimerTargetType.minimum;
+  Duration _timerDuration = const Duration(minutes: 30);
+
+  // Subtasks
+  final List<TextEditingController> _subtaskControllers = [];
+
+  // Page indices
+  static const int _frequencyPage = 5;
+  static const int _daysPage = 6;
+
+  // Renk paleti
+  // Pastel Renk paleti
+  // Renk paleti - Genişletilmiş
+  static const List<Color> _colors = [
+    // Pastels
+    Color(0xFFEF9A9A), // Red 200
+    Color(0xFFF48FB1), // Pink 200
+    Color(0xFFCE93D8), // Purple 200
+    Color(0xFFB39DDB), // Deep Purple 200
+    Color(0xFF9FA8DA), // Indigo 200
+    Color(0xFF90CAF9), // Blue 200
+    Color(0xFF81D4FA), // Light Blue 200
+    Color(0xFF80CBC4), // Teal 200
+    Color(0xFFA5D6A7), // Green 200
+    Color(0xFFC5E1A5), // Light Green 200
+    Color(0xFFFFCC80), // Orange 200
+    Color(0xFFFFAB91), // Deep Orange 200
+    Color(0xFFBCAAA4), // Brown 200
+    Color(0xFFB0BEC5), // Blue Grey 200
+    // Vibrants
+    Color(0xFFEF4444), // Red 500
+    Color(0xFFEC4899), // Pink 500
+    Color(0xFFA855F7), // Purple 500
+    Color(0xFF6366F1), // Indigo 500
+    Color(0xFF3B82F6), // Blue 500
+    Color(0xFF0EA5E9), // Sky 500
+    Color(0xFF14B8A6), // Teal 500
+    Color(0xFF22C55E), // Green 500
+    Color(0xFFEAB308), // Yellow 500
+    Color(0xFFF97316), // Orange 500
+    Color(0xFFF43F5E), // Rose 500
+    Color(0xFF78716C), // Stone 500
+    // Deep/Dark
+    Color(0xFFB91C1C), // Red 700
+    Color(0xFFBE185D), // Pink 700
+    Color(0xFF7E22CE), // Purple 700
+    Color(0xFF4338CA), // Indigo 700
+    Color(0xFF1D4ED8), // Blue 700
+    Color(0xFF0F766E), // Teal 700
+    Color(0xFF15803D), // Green 700
+    Color(0xFFA16207), // Yellow 700
+    Color(0xFFC2410C), // Orange 700
+    Color(0xFF374151), // Gray 700
+  ];
+
+  // Emoji kategorileri
+  static const List<String> _quickEmojis = [
+    '🎯',
+    '📊',
+    '⏱️',
+    '✅',
+    '💪',
+    '🏃',
+    '📚',
+    '💧',
+    '🧘',
+    '💤',
+    '🍎',
+    '🏋️',
+    '🧠',
+    '💊',
+    '🌱',
+    '☀️',
+    '🎨',
+    '🎵',
+    '🎬',
+    '✈️',
+    '🐶',
+    '🎓',
+    '💼',
+    '💰',
+  ];
+
+  int get _totalPages {
+    // Sıklığa göre gün seçimi sayfası logic ile atlanıyor ama
+    // PageView children sayısı sabittir. Navigation logic'i _nextPage içinde yönetildiği için
+    // burası toplam sayfa sayısını (children length) dönmelidir.
+    return 10;
+  }
 
   @override
   void initState() {
     super.initState();
-    _initializeControllers();
-
-    // Düzenleme modundaysa mevcut değerleri yükle
-    if (widget.isEditing && widget.editingHabit != null) {
-      _loadHabitForEditing();
-    }
-
-    // Load persisted custom categories
-    _loadCustomCategories();
-  }
-
-  void _initializeControllers() {
-    _numericalTargetController.text = _numericalTarget.toString();
-    _timerTargetController.text = _timerTargetMinutes.toString();
-    _visionStartDayCtrl.text = _visionStartDay.toString();
-    if (_visionDurationDays != null) {
-      _visionEndDayCtrl.text = _visionDurationDays.toString();
-    }
+    // Varsayılan 1 subtask ekle
+    _subtaskControllers.add(TextEditingController());
   }
 
   @override
   void dispose() {
-    CategoryRepository.instance.removeListener(_onCategoriesChanged);
+    _pageController.dispose();
     _nameController.dispose();
     _descriptionController.dispose();
-    _numericalTargetController.dispose();
-    _numericalUnitController.dispose();
-    _timerTargetController.dispose();
-    _visionStartDayCtrl.dispose();
-    _visionEndDayCtrl.dispose();
-    _pageController.dispose();
+    _targetController.dispose();
+    _unitController.dispose();
+    for (final c in _subtaskControllers) {
+      c.dispose();
+    }
     super.dispose();
   }
 
-  HabitCategory? _getSelectedCategory() {
-    // Find in predefined first
-    final pre = _predefinedCategories
-        .where((c) => c.id == _selectedCategoryId)
-        .toList();
-    if (pre.isNotEmpty) return pre.first;
-    final custom = _customCategories
-        .where((c) => c.id == _selectedCategoryId)
-        .toList();
-    if (custom.isNotEmpty) return custom.first;
-    return null;
-  }
+  void _nextPage() {
+    if (_currentPage < _totalPages - 1) {
+      int nextPage = _currentPage + 1;
 
-  String _localizedCategoryName(String id, AppLocalizations l10n) {
-    // Existing localization keys for categories not found; fallback to capitalized id.
-    if (id.isEmpty) return id;
-    return id[0].toUpperCase() + id.substring(1);
-  }
-
-  void _previousStep() {
-    if (_currentStep == 0) return;
-    setState(() => _currentStep--);
-    _pageController.animateToPage(
-      _currentStep,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
-  }
-
-  void _nextStep() {
-    if (_currentStep >= _totalSteps - 1) return;
-    setState(() => _currentStep++);
-    _pageController.animateToPage(
-      _currentStep,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
-  }
-
-  bool _canProceed() {
-    // Basic validation for each step
-    final step = _steps[_currentStep];
-    switch (step) {
-      case _StepId.details:
-        return _nameController.text.trim().isNotEmpty;
-      case _StepId.type:
-        return _selectedHabitType != null;
-      case _StepId.frequency:
-        if (_selectedFrequencyType == null) return false;
-        switch (_selectedFrequencyType!) {
-          case FrequencyType.daily:
-            return true;
-          case FrequencyType.specificWeekdays:
-            return _selectedWeekdays.isNotEmpty;
-          case FrequencyType.specificMonthDays:
-            return _selectedMonthDays.isNotEmpty;
-          case FrequencyType.specificYearDays:
-            return _selectedYearDays.isNotEmpty;
-          case FrequencyType.periodic:
-            return _periodicDays > 0;
-        }
-      case _StepId.scheduling:
-        if (widget.useVisionDayOffsets) {
-          if (_visionStartDay < 1 || _visionStartDay > 365) return false;
-          if (_visionDurationDays == null || _visionDurationDays! < 1) {
-            return false;
-          }
-          final end = _visionStartDay + _visionDurationDays! - 1;
-          if (end > 365) return false;
-          return true;
-        } else {
-          // Calendar-based always valid; optional end date
-          return true;
-        }
-    }
-  }
-
-  Future<void> _loadCustomCategories() async {
-    await CategoryRepository.instance.initialize();
-    setState(() {
-      _customCategories
-        ..clear()
-        ..addAll(CategoryRepository.instance.customCategories);
-    });
-    // Listen for external changes while this screen is alive
-    CategoryRepository.instance.addListener(_onCategoriesChanged);
-  }
-
-  // Listener cleanup merged into main dispose below
-
-  void _onCategoriesChanged() {
-    setState(() {
-      _customCategories
-        ..clear()
-        ..addAll(CategoryRepository.instance.customCategories);
-    });
-  }
-
-  void _loadHabitForEditing() {
-    final habit = widget.editingHabit!;
-
-    // Temel bilgileri yükle
-    _nameController.text = habit['title'] ?? '';
-    _descriptionController.text = habit['description'] ?? '';
-
-    // Habit tipini ayarla
-    if (habit['habitType'] != null) {
-      _selectedHabitType = habit['habitType'];
-    }
-
-    // Load color and emoji (before category matching)
-    try {
-      // Load color
-      final col = habit['color'];
-      if (col is Color) {
-        _selectedColor = col;
-      } else if (col is int) {
-        _selectedColor = Color(col);
+      // Sıklık sayfasından çıkarken daily seçiliyse gün seçimi sayfasını atla
+      if (_currentPage == _frequencyPage && _selectedFrequency == 'daily') {
+        nextPage = _currentPage + 2;
       }
 
-      // Load emoji
-      final em = habit['emoji']?.toString();
-      if (em != null && em.trim().isNotEmpty) {
-        _selectedEmoji = em.trim();
-      }
-    } catch (_) {}
-
-    // Kategori: düzenlemede mevcut görsel kimliği koru; mümkünse otomatik eşleştir
-    _selectedCategoryId = null;
-    try {
-      // 1) Emoji ile eşleşme
-      final em = habit['emoji']?.toString();
-      if (em != null && em.isNotEmpty) {
-        final cat = _predefinedCategories.firstWhere(
-          (c) => c.emoji == em,
-          orElse: () => HabitCategory('_none', '', Icons.help, Colors.grey),
-        );
-        if (cat.id != '_none') {
-          _selectedCategoryId = cat.id;
-        }
-      }
-      // 2) İkon + renk ile eşleşme (predefined içinde)
-      if (_selectedCategoryId == null) {
-        final ic = habit['icon'];
-        final col = habit['color'];
-        final codePoint = ic is IconData
-            ? ic.codePoint
-            : (ic is int ? ic : null);
-        final colorVal = col is Color ? col.value : (col is int ? col : null);
-        if (codePoint != null && colorVal != null) {
-          for (final c in _predefinedCategories) {
-            if (c.icon.codePoint == codePoint && c.color.value == colorVal) {
-              _selectedCategoryId = c.id;
-              break;
-            }
-          }
-        }
-      }
-    } catch (_) {}
-    // Tip özel ayarları yükle
-    if (_selectedHabitType == HabitType.numerical) {
-      _numericalTarget = habit['targetCount'] ?? 1;
-      _numericalUnit = habit['unit'] ?? '';
-      _numericalTargetController.text = _numericalTarget.toString();
-      _numericalUnitController.text = _numericalUnit;
-      // Prefill target policy type if provided
-      final nt = habit['numericalTargetType']?.toString().toLowerCase();
-      if (nt != null) {
-        if (nt.contains('exact')) {
-          _numericalTargetType = NumericalTargetType.exact;
-        } else if (nt.contains('maximum') || nt.contains('max')) {
-          _numericalTargetType = NumericalTargetType.maximum;
-        } else {
-          _numericalTargetType = NumericalTargetType.minimum;
-        }
-      }
-    } else if (_selectedHabitType == HabitType.timer) {
-      _timerTargetMinutes = habit['targetCount'] ?? 1;
-      _timerTargetController.text = _timerTargetMinutes.toString();
-      // Prefill timer policy type if provided
-      final tt = habit['timerTargetType']?.toString().toLowerCase();
-      if (tt != null) {
-        if (tt.contains('exact')) {
-          _timerTargetType = TimerTargetType.exact;
-        } else if (tt.contains('maximum') || tt.contains('max')) {
-          _timerTargetType = TimerTargetType.maximum;
-        } else {
-          _timerTargetType = TimerTargetType.minimum;
-        }
-      }
-    }
-
-    // Scheduling: initialize from provided start/end dates
-    try {
-      final startStr = habit['startDate']?.toString();
-      final endStr = habit['endDate']?.toString();
-      if (startStr != null) {
-        _startDate = DateTime.parse(startStr);
-      }
-      if (endStr != null) {
-        _hasEndDate = true;
-        _endDate = DateTime.parse(endStr);
-      }
-
-      if (widget.useVisionDayOffsets) {
-        final today = DateTime.now();
-        final today0 = DateTime(today.year, today.month, today.day);
-        final base = widget.visionStartDate != null
-            ? DateTime(
-                widget.visionStartDate!.year,
-                widget.visionStartDate!.month,
-                widget.visionStartDate!.day,
-              )
-            : today0;
-        _visionStartDay = _startDate.difference(base).inDays + 1;
-        if (_visionStartDay < 1) _visionStartDay = 1;
-        _visionEndDay = (_endDate ?? _startDate).difference(base).inDays + 1;
-        if (_visionEndDay! < _visionStartDay) _visionEndDay = _visionStartDay;
-        _visionDurationDays = (_visionEndDay! - _visionStartDay + 1).clamp(
-          1,
-          365,
-        );
-        _visionStartDayCtrl.text = _visionStartDay.toString();
-        _visionEndDayCtrl.text = (_visionDurationDays ?? '').toString();
-
-        // (activeOffsets deprecated) – if coming from an older saved habit, ignore.
-      }
-    } catch (_) {}
-
-    // Frekans: varsa map'ten oku; yoksa düzenlemede günlük (daily) seçili başlasın
-    try {
-      final ft = habit['frequencyType']?.toString().toLowerCase();
-      if (ft != null) {
-        if (ft.contains('daily')) {
-          _selectedFrequencyType = FrequencyType.daily;
-        } else if (ft.contains('specificweekdays')) {
-          _selectedFrequencyType = FrequencyType.specificWeekdays;
-        } else if (ft.contains('specificmonthdays')) {
-          _selectedFrequencyType = FrequencyType.specificMonthDays;
-        } else if (ft.contains('specificyeardays')) {
-          _selectedFrequencyType = FrequencyType.specificYearDays;
-        } else if (ft.contains('periodic')) {
-          _selectedFrequencyType = FrequencyType.periodic;
-        }
-      }
-      final w = habit['selectedWeekdays'];
-      if (w is List) {
-        _selectedWeekdays = w.whereType<num>().map((e) => e.toInt()).toList();
-      }
-      final m = habit['selectedMonthDays'];
-      if (m is List) {
-        _selectedMonthDays = m.whereType<num>().map((e) => e.toInt()).toList();
-      }
-      final y = habit['selectedYearDays'];
-      if (y is List) {
-        _selectedYearDays = y
-            .whereType<String>()
-            .map((e) {
-              try {
-                return DateTime.parse(e);
-              } catch (_) {
-                return null;
-              }
-            })
-            .whereType<DateTime>()
-            .toList();
-      }
-      final pd = habit['periodicDays'];
-      if (pd is num && pd.toInt() > 0) _periodicDays = pd.toInt();
-    } catch (_) {}
-
-    // Load reminder settings
-    try {
-      _reminderEnabled = habit['reminderEnabled'] as bool? ?? false;
-      final rt = habit['reminderTime'];
-      if (rt is Map) {
-        final hour = rt['hour'] as int?;
-        final minute = rt['minute'] as int?;
-        if (hour != null && minute != null) {
-          _reminderTime = TimeOfDay(hour: hour, minute: minute);
-        }
-      }
-      print(
-        '[AdvancedHabitWizard] Loaded reminder: enabled=$_reminderEnabled, time=$_reminderTime',
+      _pageController.animateToPage(
+        nextPage,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
       );
-    } catch (_) {}
+    }
   }
 
-  void _finishHabitCreation() {
-    final selectedCategory = _getSelectedCategory();
-    final habit = {
-      // Not a real category in data model anymore; used only to pick icon & color
-      'categoryId': _selectedCategoryId,
-      // Keep both for backward compatibility
-      'type': _selectedHabitType.toString(),
-      'habitType': _selectedHabitType,
-      'name': _nameController.text,
-      'description': _descriptionController.text,
-      // Persist visual identity from the chosen "category" only if selected;
-      // otherwise include manually selected color/emoji
-      if (selectedCategory != null) ...{
-        'icon': selectedCategory.icon.codePoint,
-        'color': selectedCategory.color.value,
-        // Use the actual category emoji when available (covers custom categories)
-        'emoji': selectedCategory.emoji,
-        // Also include a categoryName field so downstream code can show the
-        // user-provided name for custom categories or a localized label for
-        // predefined ones.
-        'categoryName':
-            _predefinedCategories.any((c) => c.id == selectedCategory.id)
-            ? _localizedCategoryName(
-                selectedCategory.id,
-                AppLocalizations.of(context),
-              )
-            : selectedCategory.name,
-      } else ...{
-        'icon': Icons.star.codePoint,
-        'color': _selectedColor.value,
-        'emoji': _selectedEmoji,
-      },
+  void _previousPage() {
+    if (_currentPage > 0) {
+      int prevPage = _currentPage - 1;
 
-      // Habit type specific configuration
-      if (_selectedHabitType == HabitType.numerical) ...{
-        'numericalTarget': _numericalTarget,
-        'numericalTargetType': _numericalTargetType.toString(),
-        'numericalUnit': _numericalUnit,
-        // Removed numericalDailyFrequency & numericalTimePeriod (simplified UI)
-      },
-      if (_selectedHabitType == HabitType.timer) ...{
-        'timerTargetMinutes': _timerTargetMinutes,
-        'timerTargetType': _timerTargetType.toString(),
-        // Removed timerDailyFrequency & timerTimePeriod (simplified UI)
-      },
+      // Tarih sayfasından geriye giderken daily seçiliyse gün seçimi sayfasını atla
+      if (_currentPage == _daysPage + 1 && _selectedFrequency == 'daily') {
+        prevPage = _currentPage - 2;
+      }
 
-      'frequencyType': _selectedFrequencyType.toString(),
-      'selectedWeekdays': _selectedWeekdays,
-      'selectedMonthDays': _selectedMonthDays,
-      'selectedYearDays': _selectedYearDays
-          .map((d) => d.toIso8601String())
-          .toList(),
-      'periodicDays': _periodicDays,
-      // If using vision-day offsets, convert offsets to actual dates relative to today
-      ...(() {
-        if (widget.useVisionDayOffsets) {
-          final today = DateTime.now();
-          final today0 = DateTime(today.year, today.month, today.day);
-          final base = widget.visionStartDate != null
-              ? DateTime(
-                  widget.visionStartDate!.year,
-                  widget.visionStartDate!.month,
-                  widget.visionStartDate!.day,
-                )
-              : today0;
-          final s = base.add(Duration(days: _visionStartDay - 1));
-          final e = _visionEndDay != null
-              ? base.add(Duration(days: _visionEndDay! - 1))
-              : null;
-          return {
-            'startDate': s.toIso8601String(),
-            'endDate': e?.toIso8601String(),
-          };
-        } else {
-          return {
-            'startDate': _startDate.toIso8601String(),
-            'endDate': _endDate?.toIso8601String(),
-          };
-        }
-      })(),
-      // Reminder settings
-      'reminderEnabled': _reminderEnabled,
-      if (_reminderTime != null)
-        'reminderTime': {
-          'hour': _reminderTime!.hour,
-          'minute': _reminderTime!.minute,
-        },
-      // Reminder/notification fields removed from returned map
-      'createdAt': DateTime.now().toIso8601String(),
-      'isAdvanced': true,
-    };
+      _pageController.animateToPage(
+        prevPage,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      Navigator.pop(context);
+    }
+  }
 
-    // Vision offsets modunda artık explicit activeOffsets seçmiyoruz (frekans kullanıyoruz)
-    if (widget.useVisionDayOffsets) {
-      // manual activeOffsets logic removed
+  Future<void> _saveHabit() async {
+    final today = DateTime.now();
+    final dateStr =
+        '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+
+    // Parse target
+    int targetCount = 1;
+    if (_habitType == HabitType.numerical) {
+      targetCount = int.tryParse(_targetController.text) ?? 1;
+    } else if (_habitType == HabitType.timer) {
+      targetCount = _timerDuration.inMinutes;
+    } else if (_habitType == HabitType.simple) {
+      targetCount = 1;
     }
 
-    Navigator.of(context).pop(habit);
+    // Build subtasks if applicable
+    List<Subtask>? subtasks;
+    if (_habitType == HabitType.subtasks) {
+      subtasks = _subtaskControllers
+          .where((c) => c.text.trim().isNotEmpty)
+          .map(
+            (c) => Subtask(
+              id: 'subtask_${DateTime.now().millisecondsSinceEpoch}_${_subtaskControllers.indexOf(c)}',
+              title: c.text.trim(),
+            ),
+          )
+          .toList();
+    }
+
+    final habit = Habit(
+      id: 'habit_${DateTime.now().millisecondsSinceEpoch}',
+      title: _nameController.text.trim(),
+      description: _descriptionController.text.trim(),
+      icon: Icons.auto_graph,
+      emoji: _selectedEmoji,
+      color: _selectedColor,
+      habitType: _habitType,
+      targetCount: targetCount,
+      unit: _habitType == HabitType.numerical
+          ? _unitController.text.trim()
+          : '',
+      currentStreak: 0,
+      isCompleted: false,
+      progressDate: dateStr,
+      frequencyType: _selectedFrequency,
+      frequency: _getFrequencyText(),
+      selectedWeekdays: _selectedFrequency == 'weekly'
+          ? _weeklyDays.toList()
+          : null,
+      selectedMonthDays: _selectedFrequency == 'monthly'
+          ? _monthDays.toList()
+          : null,
+      periodicDays: _selectedFrequency == 'periodic' ? _periodicDays : null,
+      startDate:
+          '${_startDate.year}-${_startDate.month.toString().padLeft(2, '0')}-${_startDate.day.toString().padLeft(2, '0')}',
+      endDate: _endDate != null
+          ? '${_endDate!.year}-${_endDate!.month.toString().padLeft(2, '0')}-${_endDate!.day.toString().padLeft(2, '0')}'
+          : null,
+      reminderEnabled: _reminderEnabled,
+      reminderTime: _reminderEnabled ? _reminderTime : null,
+      numericalTargetType: _numericalTargetType,
+      timerTargetType: _timerTargetType,
+      subtasks: subtasks ?? [],
+    )..isAdvanced = true;
+
+    Navigator.pop(context, habit);
+  }
+
+  String _getFrequencyText() {
+    final l10n = AppLocalizations.of(context);
+    switch (_selectedFrequency) {
+      case 'daily':
+        return l10n.daily;
+      case 'weekly':
+        return l10n.weekly;
+      case 'monthly':
+        return l10n.monthly;
+      case 'periodic':
+        return l10n.everyXDays(_periodicDays);
+      default:
+        return l10n.daily;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    return WizardScaffold(
+      currentStep: _currentPage,
+      totalSteps: _totalPages,
+      showProgress: _currentPage > 0,
+      onBack: _previousPage,
+      onClose: () => Navigator.pop(context),
+      child: PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        onPageChanged: (index) {
+          setState(() {
+            _currentPage = index;
+          });
+        },
+        children: [
+          // 0: Karşılama sayfası
+          _buildWelcomePage(),
+
+          // 1: Tip seçimi sayfası
+          _buildTypePage(),
+
+          // 2: İsim sayfası
+          _buildNamePage(),
+
+          // 3: Emoji sayfası
+          _buildEmojiPage(),
+
+          // 4: Hedef ayarları sayfası (tipe göre değişir)
+          _buildTargetPage(),
+
+          // 5: Sıklık sayfası
+          _buildFrequencyPage(),
+
+          // 6: Gün seçimi sayfası (koşullu)
+          _buildDaysPage(),
+
+          // 7: Tarih aralığı sayfası
+          _buildDateRangePage(),
+
+          // 8: Hatırlatıcı sayfası
+          _buildReminderPage(),
+
+          // 9: Önizleme sayfası
+          _buildPreviewPage(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWelcomePage() {
+    final l10n = AppLocalizations.of(context);
+    return WizardWelcomePage(
+      emoji: '🚀',
+      title: l10n.advancedHabitTitle,
+      description: l10n.advancedAnalysisAndReports,
+      buttonText: l10n.letsStart,
+      onStart: _nextPage,
+      accentColor: _selectedColor,
+    );
+  }
+
+  Widget _buildTypePage() {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.isEditing ? l10n.editHabit : l10n.createAdvancedHabit,
-        ),
-        backgroundColor: colorScheme.surfaceContainerHighest,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(80),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+    final types = [
+      (HabitType.numerical, l10n.numericalType, '📊', l10n.numericTypeDesc),
+      (HabitType.timer, 'Timer', '⏱️', 'Timer tracking'),
+      (HabitType.simple, l10n.checkboxType, '✅', l10n.checkboxTypeDesc),
+      (HabitType.subtasks, 'Subtasks', '📋', 'Multiple sub-items'),
+    ];
+
+    return WizardPage(
+      emoji: '🎯',
+      title: l10n.habitTypeLabel,
+      subtitle: l10n.howToTrackHabit,
+      child: Column(
+        children: types.map((type) {
+          final isSelected = _habitType == type.$1;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: InkWell(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                setState(() => _habitType = type.$1);
+              },
+              borderRadius: BorderRadius.circular(16),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? _selectedColor.withOpacity(0.1)
+                      : colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(16),
+                  border: isSelected
+                      ? Border.all(color: _selectedColor, width: 2)
+                      : null,
+                ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      l10n.stepOf(_currentStep + 1, _totalSteps),
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    Text(
-                      '${((_currentStep + 1) / _totalSteps * 100).round()}%',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
+                    Text(type.$3, style: const TextStyle(fontSize: 28)),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            type.$2,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            type.$4,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurface.withOpacity(0.6),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                    if (isSelected)
+                      Icon(Icons.check_circle, color: _selectedColor),
                   ],
                 ),
               ),
-              const SizedBox(height: 8),
-              LinearProgressIndicator(
-                value: (_currentStep + 1) / _totalSteps,
-                backgroundColor: colorScheme.surfaceContainerHighest,
-                valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        ),
-      ),
-      body: PageView(
-        controller: _pageController,
-        // Keep user swipes disabled but ensure programmatic animations feel smooth
-        physics: const NeverScrollableScrollPhysics(),
-        children: _steps.map<Widget>((s) {
-          switch (s) {
-            case _StepId.type:
-              return _buildHabitTypeSelectionPage(l10n, theme, colorScheme);
-            case _StepId.details:
-              return _buildHabitDetailsPage(l10n, theme, colorScheme);
-            case _StepId.frequency:
-              return _buildFrequencySelectionPage(l10n, theme, colorScheme);
-            case _StepId.scheduling:
-              return _buildSchedulingPage(l10n, theme, colorScheme);
-          }
+            ),
+          );
         }).toList(),
       ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 4,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            if (_currentStep > 0)
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: _previousStep,
-                  child: Text(l10n.previous),
-                ),
-              ),
-            if (_currentStep > 0) const SizedBox(width: 16),
-            Expanded(
-              child: FilledButton(
-                onPressed: _canProceed()
-                    ? (_currentStep == _totalSteps - 1
-                          ? _finishHabitCreation
-                          : _nextStep)
-                    : null,
-                child: Text(
-                  _currentStep == _totalSteps - 1 ? l10n.finish : l10n.next,
-                ),
-              ),
-            ),
-          ],
-        ),
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        accentColor: _selectedColor,
       ),
     );
   }
 
-  Widget _buildCategorySelectionPage(
-    AppLocalizations l10n,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+  Widget _buildNamePage() {
+    final l10n = AppLocalizations.of(context);
+    final isValid = _nameController.text.trim().isNotEmpty;
+
+    return WizardPage(
+      emoji: '✏️',
+      title: l10n.simpleHabitNameTitle,
+      subtitle: l10n.simpleHabitNameSubtitle,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            l10n.selectCategory,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.chooseBestCategory,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Predefined Categories
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 1.2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-            ),
-            itemCount: _predefinedCategories.length,
-            itemBuilder: (context, index) {
-              final category = _predefinedCategories[index];
-              final isSelected = _selectedCategoryId == category.id;
-
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedCategoryId = category.id;
-                  });
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? category.color.withOpacity(0.1)
-                        : colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: isSelected ? category.color : colorScheme.outline,
-                      width: isSelected ? 2 : 1,
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      (category.hasEmoji)
-                          ? Text(
-                              category.emoji!,
-                              style: const TextStyle(fontSize: 32),
-                            )
-                          : Icon(
-                              category.icon,
-                              size: 32,
-                              color: isSelected
-                                  ? category.color
-                                  : colorScheme.onSurfaceVariant,
-                            ),
-                      const SizedBox(height: 8),
-                      Text(
-                        // For predefined categories use localized labels;
-                        // for custom categories show the stored name (user typed).
-                        _predefinedCategories.any((c) => c.id == category.id)
-                            ? _localizedCategoryName(category.id, l10n)
-                            : category.name,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                          color: isSelected
-                              ? category.color
-                              : colorScheme.onSurfaceVariant,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-
-          const SizedBox(height: 24),
-
-          // Create New Category Button
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: _showCreateCategoryDialog,
-              icon: const Icon(Icons.add),
-              label: Text(l10n.createNewCategory),
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-          ),
-
-          // Custom Categories
-          if (_customCategories.isNotEmpty) ...[
-            const SizedBox(height: 24),
-            Text(
-              l10n.customCategories,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 12),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1.2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-              ),
-              itemCount: _customCategories.length,
-              itemBuilder: (context, index) {
-                final category = _customCategories[index];
-                final isSelected = _selectedCategoryId == category.id;
-
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedCategoryId = category.id;
-                    });
-                  },
-                  onLongPress: () => _showCustomCategoryMenu(category),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? category.color.withOpacity(0.1)
-                          : colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: isSelected
-                            ? category.color
-                            : colorScheme.outline,
-                        width: isSelected ? 2 : 1,
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        (category.hasEmoji)
-                            ? Text(
-                                category.emoji!,
-                                style: const TextStyle(fontSize: 32),
-                              )
-                            : Icon(
-                                category.icon,
-                                size: 32,
-                                color: isSelected
-                                    ? category.color
-                                    : colorScheme.onSurfaceVariant,
-                              ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _predefinedCategories.any((c) => c.id == category.id)
-                              ? _localizedCategoryName(category.id, l10n)
-                              : category.name,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: isSelected
-                                ? FontWeight.w600
-                                : FontWeight.normal,
-                            color: isSelected
-                                ? category.color
-                                : colorScheme.onSurfaceVariant,
-                          ),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHabitTypeSelectionPage(
-    AppLocalizations l10n,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.selectHabitType,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.howToTrackHabit,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 32),
-
-          _buildHabitTypeCard(
-            HabitType.simple,
-            l10n.yesNoType,
-            l10n.yesNoDescription,
-            Icons.check_circle_outline,
-            l10n.yesNoExample,
-            l10n,
-            theme,
-            colorScheme,
-          ),
-
-          const SizedBox(height: 16),
-
-          _buildHabitTypeCard(
-            HabitType.numerical,
-            l10n.numericalType,
-            l10n.numericalDescription,
-            Icons.numbers,
-            l10n.numericExample,
-            l10n,
-            theme,
-            colorScheme,
-          ),
-
-          const SizedBox(height: 16),
-
-          _buildHabitTypeCard(
-            HabitType.timer,
-            l10n.timerType,
-            l10n.timerDescription,
-            Icons.timer_outlined,
-            l10n.timerExample,
-            l10n,
-            theme,
-            colorScheme,
-          ),
-
-          // Configuration for selected habit type
-          if (_selectedHabitType != null) ...[
-            const SizedBox(height: 24),
-            _buildHabitTypeConfiguration(l10n, theme, colorScheme),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHabitTypeCard(
-    HabitType type,
-    String title,
-    String description,
-    IconData icon,
-    String example,
-    AppLocalizations l10n,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    final isSelected = _selectedHabitType == type;
-
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedHabitType = type;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? colorScheme.primaryContainer
-              : colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? colorScheme.primary : colorScheme.outline,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? colorScheme.primary
-                    : colorScheme.onSurfaceVariant,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                color: isSelected ? colorScheme.onPrimary : colorScheme.surface,
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: isSelected
-                          ? colorScheme.onPrimaryContainer
-                          : colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    description,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: isSelected
-                          ? colorScheme.onPrimaryContainer
-                          : colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.examplePrefix(example),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: isSelected
-                          ? colorScheme.onPrimaryContainer.withValues(
-                              alpha: 0.8,
-                            )
-                          : colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (isSelected)
-              Icon(Icons.check_circle, color: colorScheme.primary, size: 24),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHabitTypeConfiguration(
-    AppLocalizations l10n,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    switch (_selectedHabitType!) {
-      case HabitType.numerical:
-        return _buildNumericalConfiguration(l10n, theme, colorScheme);
-      case HabitType.timer:
-        return _buildTimerConfiguration(l10n, theme, colorScheme);
-      default:
-        return const SizedBox.shrink();
-    }
-  }
-
-  Widget _buildNumericalConfiguration(
-    AppLocalizations l10n,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.outline.withOpacity(0.5)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.numericSettings,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 20),
-
-          // Target value
-          Text(
-            l10n.targetValue,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: TextField(
-                  decoration: InputDecoration(
-                    labelText: l10n.numberLabel,
-                    border: const OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.number,
-                  controller: _numericalTargetController,
-                  onChanged: (value) {
-                    setState(() {
-                      _numericalTarget = int.tryParse(value) ?? 1;
-                    });
-                  },
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                flex: 3,
-                child: TextField(
-                  decoration: InputDecoration(
-                    labelText: l10n.unitHint,
-                    border: const OutlineInputBorder(),
-                  ),
-                  controller: _numericalUnitController,
-                  onChanged: (value) {
-                    setState(() {
-                      _numericalUnit = value;
-                    });
-                  },
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Target type
-          Text(l10n.targetType, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 10,
-            runSpacing: 8,
-            children: [
-              for (final t in [
-                NumericalTargetType.minimum,
-                NumericalTargetType.exact,
-                NumericalTargetType.maximum,
-              ])
-                t == _numericalTargetType
-                    ? FilledButton.icon(
-                        style: _selectedCompactStyle(),
-                        onPressed: () {},
-                        icon: Icon(_iconForNumericalType(t), size: 20),
-                        label: Text(_labelForNumericalType(context, l10n, t)),
-                      )
-                    : OutlinedButton.icon(
-                        style: _unselectedCompactStyle(),
-                        onPressed: () =>
-                            setState(() => _numericalTargetType = t),
-                        icon: Icon(_iconForNumericalType(t), size: 20),
-                        label: Text(_labelForNumericalType(context, l10n, t)),
-                      ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Daily frequency & time period removed per simplified configuration
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTimerConfiguration(
-    AppLocalizations l10n,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colorScheme.outline.withOpacity(0.5)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.timerSettings,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 20),
-
-          // Target duration
-          Text(
-            l10n.targetDurationMinutes,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
           TextField(
+            controller: _nameController,
+            autofocus: true,
+            textAlign: TextAlign.center,
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
             decoration: InputDecoration(
-              labelText: l10n.minutes,
-              border: const OutlineInputBorder(),
-              suffixText: l10n.minutesSuffixShort,
+              hintText: l10n.habitNameHint,
+              hintStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide.none,
+              ),
+              filled: true,
+              fillColor: Theme.of(
+                context,
+              ).colorScheme.surfaceContainerHighest.withOpacity(0.5),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 16,
+              ),
             ),
-            keyboardType: TextInputType.number,
-            controller: _timerTargetController,
-            onChanged: (value) {
-              setState(() {
-                _timerTargetMinutes = int.tryParse(value) ?? 30;
-              });
+            onChanged: (_) => setState(() {}),
+            onSubmitted: (_) {
+              if (isValid) _nextPage();
             },
           ),
-
           const SizedBox(height: 16),
-
-          // Timer target type
-          Text(
-            l10n.durationType,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 10,
-            runSpacing: 8,
-            children: [
-              for (final t in [
-                TimerTargetType.minimum,
-                TimerTargetType.exact,
-                TimerTargetType.maximum,
-              ])
-                t == _timerTargetType
-                    ? FilledButton.icon(
-                        style: _selectedCompactStyle(),
-                        onPressed: () {},
-                        icon: Icon(_iconForTimerType(t), size: 20),
-                        label: Text(_labelForTimerType(context, l10n, t)),
-                      )
-                    : OutlinedButton.icon(
-                        style: _unselectedCompactStyle(),
-                        onPressed: () => setState(() => _timerTargetType = t),
-                        icon: Icon(_iconForTimerType(t), size: 20),
-                        label: Text(_labelForTimerType(context, l10n, t)),
-                      ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Daily frequency & completion period removed per simplified configuration
-        ],
-      ),
-    );
-  }
-
-  IconData _iconForNumericalType(NumericalTargetType t) {
-    switch (t) {
-      case NumericalTargetType.minimum:
-        return Icons.trending_up;
-      case NumericalTargetType.exact:
-        return Icons.my_location;
-      case NumericalTargetType.maximum:
-        return Icons.trending_down;
-    }
-  }
-
-  String _labelForNumericalType(
-    BuildContext context,
-    AppLocalizations l10n,
-    NumericalTargetType t,
-  ) {
-    switch (t) {
-      case NumericalTargetType.minimum:
-        return l10n.atLeast;
-      case NumericalTargetType.exact:
-        return l10n.exact;
-      case NumericalTargetType.maximum:
-        return l10n.atMost;
-    }
-  }
-
-  IconData _iconForTimerType(TimerTargetType t) {
-    switch (t) {
-      case TimerTargetType.minimum:
-        return Icons.timer;
-      case TimerTargetType.exact:
-        return Icons.schedule;
-      case TimerTargetType.maximum:
-        return Icons.timer_off;
-    }
-  }
-
-  String _labelForTimerType(
-    BuildContext context,
-    AppLocalizations l10n,
-    TimerTargetType t,
-  ) {
-    switch (t) {
-      case TimerTargetType.minimum:
-        return l10n.atLeast;
-      case TimerTargetType.exact:
-        return l10n.exact;
-      case TimerTargetType.maximum:
-        return l10n.atMost;
-    }
-  }
-
-  // Compact button styles used for target-type buttons so they fit side-by-side
-  ButtonStyle _selectedCompactStyle() {
-    return FilledButton.styleFrom(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      minimumSize: const Size(64, 40),
-      visualDensity: VisualDensity.adaptivePlatformDensity,
-      textStyle: Theme.of(context).textTheme.bodyMedium,
-    );
-  }
-
-  ButtonStyle _unselectedCompactStyle() {
-    return OutlinedButton.styleFrom(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      minimumSize: const Size(60, 40),
-      visualDensity: VisualDensity.adaptivePlatformDensity,
-      textStyle: Theme.of(context).textTheme.bodyMedium,
-    );
-  }
-
-  Widget _buildHabitDetailsPage(
-    AppLocalizations l10n,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.habitDetails,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.enterNameAndDesc,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 32),
-
-          TextFormField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              labelText: l10n.habitName,
-              hintText: l10n.nameHint,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              filled: true,
-              fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
-            ),
-            onChanged: (value) => setState(() {}),
-          ),
-
-          const SizedBox(height: 24),
-
-          TextFormField(
+          TextField(
             controller: _descriptionController,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            style: Theme.of(context).textTheme.bodyMedium,
             decoration: InputDecoration(
-              labelText: l10n.habitDescription,
-              hintText: l10n.descHint,
+              hintText: l10n.descriptionHintOptional,
+              hintStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+              ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide.none,
               ),
               filled: true,
-              fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+              fillColor: Theme.of(
+                context,
+              ).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 12,
+              ),
             ),
-            maxLines: 4,
-            minLines: 3,
           ),
+        ],
+      ),
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        isNextEnabled: isValid,
+        accentColor: _selectedColor,
+      ),
+    );
+  }
 
-          const SizedBox(height: 24),
+  Widget _buildEmojiPage() {
+    final l10n = AppLocalizations.of(context);
 
-          // Color and Emoji selection buttons
-          Row(
+    return WizardPage(
+      emoji: '🎨',
+      title: l10n.simpleHabitEmojiTitle,
+      subtitle: l10n.simpleHabitEmojiSubtitle,
+      child: Column(
+        children: [
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            alignment: WrapAlignment.center,
             children: [
-              Expanded(
-                child: Builder(
-                  builder: (buttonCtx) => OutlinedButton.icon(
-                    onPressed: () async {
-                      final color = await _openColorPopup(buttonCtx);
-                      if (color != null) setState(() => _selectedColor = color);
-                    },
-                    icon: Icon(Icons.color_lens, color: _selectedColor),
-                    label: Text(l10n.chooseColor),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Builder(
-                  builder: (buttonCtx) => OutlinedButton.icon(
-                    onPressed: () async {
-                      final emoji = await _openEmojiPopup(buttonCtx);
-                      if (emoji != null && emoji.isNotEmpty) {
-                        setState(() => _selectedEmoji = emoji);
-                      }
-                    },
-                    icon: Text(
-                      _selectedEmoji,
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                    label: Text(l10n.chooseEmoji),
-                  ),
+              ..._quickEmojis.map((emoji) {
+                final isSelected = emoji == _selectedEmoji;
+                return WizardSelectionCard(
+                  isSelected: isSelected,
+                  onTap: () => setState(() => _selectedEmoji = emoji),
+                  size: 56,
+                  borderRadius: 14,
+                  selectedColor: _selectedColor,
+                  child: Text(emoji, style: const TextStyle(fontSize: 28)),
+                );
+              }),
+              // Özel emoji ekle butonu
+              WizardSelectionCard(
+                isSelected: false,
+                onTap: _showCustomEmojiInput,
+                size: 56,
+                borderRadius: 14,
+                selectedColor: _selectedColor,
+                child: Icon(
+                  Icons.add_reaction_outlined,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<Color?> _openColorPopup(BuildContext buttonCtx) async {
-    // Show a centered AlertDialog page listing colors in a grid and return
-    // the selected color.
-    // Expanded, more curated palette including softer/pastel tones.
-    final colors = [
-      // Vibrant options
-      Colors.red.shade600,
-      Colors.deepOrange.shade600,
-      Colors.orange.shade400,
-      Colors.amber.shade600,
-      Colors.yellow.shade600,
-      Colors.lime.shade600,
-      Colors.green.shade600,
-      Colors.teal.shade600,
-      Colors.cyan.shade400,
-      Colors.lightBlue.shade400,
-      Colors.blue.shade600,
-      Colors.indigo.shade600,
-      Colors.deepPurple.shade400,
-
-      // Pastel / softer tones
-      Colors.pink.shade200,
-      Colors.orange.shade200,
-      Colors.amber.shade200,
-      Colors.lime.shade200,
-      Colors.lightGreen.shade200,
-      Colors.teal.shade200,
-      Colors.cyan.shade200,
-      Colors.lightBlue.shade200,
-      Colors.blue.shade200,
-      Colors.indigo.shade200,
-      Colors.deepPurple.shade200,
-    ];
-
-    return showDialog<Color?>(
-      context: buttonCtx,
-      builder: (dctx) {
-        final l10n = AppLocalizations.of(dctx);
-        return AlertDialog(
-          title: Text(l10n.chooseColor),
-          content: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 420),
-            child: SingleChildScrollView(
-              child: Center(
-                child: Wrap(
-                  alignment: WrapAlignment.center,
-                  runAlignment: WrapAlignment.center,
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: colors
-                      .map(
-                        (color) => GestureDetector(
-                          onTap: () => Navigator.of(dctx).pop(color),
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: color,
-                              shape: BoxShape.circle,
-                              // minimal subtle shadow for depth
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.04),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 1),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dctx).pop(),
-              child: Text(l10n.cancel),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<String?> _openEmojiPopup(BuildContext buttonCtx) async {
-    // Show a centered AlertDialog with emoji presets and a small input for
-    // custom emoji text.
-    final l10n = AppLocalizations.of(buttonCtx);
-    String custom = '';
-    String selected = _selectedEmoji;
-    return showDialog<String?>(
-      context: buttonCtx,
-      builder: (dctx) {
-        return StatefulBuilder(
-          builder: (ctx, setDialogState) => AlertDialog(
-            title: Text(l10n.chooseEmoji),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
-                    alignment: WrapAlignment.center,
-                    children: kEmojiPresets
-                        .map(
-                          (e) => GestureDetector(
-                            onTap: () => setDialogState(() => selected = e),
-                            child: Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: selected == e
-                                      ? Theme.of(ctx).colorScheme.primary
-                                      : Colors.transparent,
-                                  width: selected == e ? 2 : 0,
-                                ),
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                e,
-                                style: const TextStyle(fontSize: 20),
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                  const SizedBox(height: 8),
-                  // Minimal custom emoji input (small height)
-                  SizedBox(
-                    height: 40,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 8,
-                          horizontal: 12,
-                        ),
-                        hintText: l10n.customEmojiOptional,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onChanged: (v) => setDialogState(() => custom = v),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dctx).pop(),
-                child: Text(l10n.cancel),
-              ),
-              FilledButton(
-                onPressed: () => Navigator.of(
-                  dctx,
-                ).pop((custom.trim().isNotEmpty) ? custom.trim() : selected),
-                child: Text(l10n.select),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildFrequencySelectionPage(
-    AppLocalizations l10n,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.selectFrequency,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.howOftenDoHabit,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
           ),
           const SizedBox(height: 24),
-
-          _buildFrequencyOption(
-            FrequencyType.daily,
-            l10n.everyday,
-            l10n.repeatEveryDay,
-            Icons.calendar_today,
-            theme,
-            colorScheme,
-          ),
-
-          const SizedBox(height: 12),
-
-          _buildFrequencyOption(
-            FrequencyType.specificWeekdays,
-            l10n.specificDaysOfWeek,
-            l10n.onSpecificWeekdays,
-            Icons.view_week,
-            theme,
-            colorScheme,
-          ),
-
-          const SizedBox(height: 12),
-
-          _buildFrequencyOption(
-            FrequencyType.specificMonthDays,
-            l10n.specificDaysOfMonth,
-            l10n.onSpecificMonthDays,
-            Icons.calendar_month,
-            theme,
-            colorScheme,
-          ),
-
-          const SizedBox(height: 12),
-
-          _buildFrequencyOption(
-            FrequencyType.specificYearDays,
-            l10n.specificDaysOfYear,
-            l10n.onSpecificYearDays,
-            Icons.event,
-            theme,
-            colorScheme,
-          ),
-
-          const SizedBox(height: 12),
-
-          _buildFrequencyOption(
-            FrequencyType.periodic,
-            l10n.periodicSelection,
-            l10n.onPeriodic,
-            Icons.schedule,
-            theme,
-            colorScheme,
-          ),
-
-          // Extra configuration for selected frequency type
-          if (_selectedFrequencyType != null) ...[
-            const SizedBox(height: 24),
-            _buildFrequencyConfiguration(l10n, theme, colorScheme),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFrequencyOption(
-    FrequencyType type,
-    String title,
-    String description,
-    IconData icon,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    final isSelected = _selectedFrequencyType == type;
-
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedFrequencyType = type;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? colorScheme.primaryContainer
-              : colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? colorScheme.primary : colorScheme.outline,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              color: isSelected
-                  ? colorScheme.primary
-                  : colorScheme.onSurfaceVariant,
-              size: 24,
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: isSelected
-                          ? colorScheme.onPrimaryContainer
-                          : colorScheme.onSurface,
-                    ),
-                  ),
-                  Text(
-                    description,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: isSelected
-                          ? colorScheme.onPrimaryContainer
-                          : colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (isSelected)
-              Icon(Icons.check_circle, color: colorScheme.primary, size: 20),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFrequencyConfiguration(
-    AppLocalizations l10n,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    switch (_selectedFrequencyType!) {
-      case FrequencyType.specificWeekdays:
-        return _buildWeekdaySelector(l10n, theme, colorScheme);
-      case FrequencyType.specificMonthDays:
-        return _buildMonthDaySelector(l10n, theme, colorScheme);
-      case FrequencyType.specificYearDays:
-        return _buildYearDaySelector(l10n, theme, colorScheme);
-      case FrequencyType.periodic:
-        return _buildPeriodicConfiguration(l10n, theme, colorScheme);
-      default:
-        return const SizedBox.shrink();
-    }
-  }
-
-  Widget _buildWeekdaySelector(
-    AppLocalizations l10n,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    final weekdays = [
-      l10n.weekdaysShortMon,
-      l10n.weekdaysShortTue,
-      l10n.weekdaysShortWed,
-      l10n.weekdaysShortThu,
-      l10n.weekdaysShortFri,
-      l10n.weekdaysShortSat,
-      l10n.weekdaysShortSun,
-    ];
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+          // Renk seçimi de burada gösterelim
           Text(
-            l10n.whichWeekdays,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            l10n.simpleHabitColorTitle,
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
           Wrap(
-            spacing: 8,
-            children: List.generate(7, (index) {
-              final isSelected = _selectedWeekdays.contains(index + 1);
-              return FilterChip(
-                label: Text(weekdays[index]),
-                selected: isSelected,
-                onSelected: (selected) {
-                  setState(() {
-                    if (selected) {
-                      _selectedWeekdays.add(index + 1);
-                    } else {
-                      _selectedWeekdays.remove(index + 1);
-                    }
-                    _selectedWeekdays.sort();
-                  });
-                },
-              );
-            }),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMonthDaySelector(
-    AppLocalizations l10n,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.whichMonthDays,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 4,
-            runSpacing: 4,
-            children: List.generate(31, (index) {
-              final day = index + 1;
-              final isSelected = _selectedMonthDays.contains(day);
+            spacing: 12,
+            runSpacing: 12,
+            alignment: WrapAlignment.center,
+            children: _colors.map((color) {
+              final isSelected = color.value == _selectedColor.value;
               return GestureDetector(
                 onTap: () {
-                  setState(() {
-                    if (isSelected) {
-                      _selectedMonthDays.remove(day);
-                    } else {
-                      _selectedMonthDays.add(day);
-                    }
-                    _selectedMonthDays.sort();
-                  });
+                  HapticFeedback.lightImpact();
+                  setState(() => _selectedColor = color);
                 },
-                child: Container(
-                  width: 40,
-                  height: 40,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: isSelected ? 44 : 36,
+                  height: isSelected ? 44 : 36,
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? colorScheme.primary
-                        : colorScheme.surface,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: isSelected
-                          ? colorScheme.primary
-                          : colorScheme.outline,
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      day.toString(),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: isSelected
-                            ? colorScheme.onPrimary
-                            : colorScheme.onSurface,
-                        fontWeight: isSelected
-                            ? FontWeight.w600
-                            : FontWeight.normal,
-                      ),
-                    ),
+                    color: color,
+                    shape: BoxShape.circle,
+                    border: isSelected
+                        ? Border.all(
+                            color: Theme.of(context).colorScheme.surface,
+                            width: 3,
+                          )
+                        : null,
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: color.withOpacity(0.4),
+                              blurRadius: 12,
+                              spreadRadius: 2,
+                            ),
+                          ]
+                        : null,
                   ),
                 ),
               );
-            }),
+            }).toList(),
           ),
         ],
+      ),
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        accentColor: _selectedColor,
       ),
     );
   }
 
-  Widget _buildYearDaySelector(
-    AppLocalizations l10n,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.addSpecialDays,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
+  Widget _buildTargetPage() {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    Widget content;
+    String title;
+    String subtitle;
+
+    switch (_habitType) {
+      case HabitType.numerical:
+        title = l10n.numericalGoalShort;
+        subtitle = l10n.enterValueTitle;
+        content = Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: TextField(
+                    controller: _targetController,
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: _selectedColor,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: '1',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: colorScheme.surfaceContainerHighest
+                          .withOpacity(0.5),
+                    ),
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 3,
+                  child: TextField(
+                    controller: _unitController,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleMedium,
+                    decoration: InputDecoration(
+                      hintText: l10n.customUnitHint,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: colorScheme.surfaceContainerHighest
+                          .withOpacity(0.5),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 12),
-          if (_selectedYearDays.isNotEmpty) ...[
-            ...(_selectedYearDays.map(
-              (date) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
+            const SizedBox(height: 24),
+            // Hedef tipi seçimi
+            _buildTargetTypeSelector(),
+          ],
+        );
+        break;
+
+      case HabitType.timer:
+        title = l10n.duration;
+        subtitle = l10n.timerPendingLabel('');
+        content = Column(
+          children: [
+            Text(
+              '${_timerDuration.inMinutes} ${l10n.minLabel}',
+              style: theme.textTheme.displaySmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: _selectedColor,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Container(
+              height: 200,
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: CupertinoTimerPicker(
+                mode: CupertinoTimerPickerMode.hm,
+                initialTimerDuration: _timerDuration,
+                onTimerDurationChanged: (Duration newDuration) {
+                  // TimerPicker 0 seçilmesine izin veriyor ama habits için mantıksız olabilir,
+                  // fakat kullanıcı deneyimi için anlık tepki verelim, validasyon butonda yapılır.
+                  setState(() => _timerDuration = newDuration);
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.duration,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurface.withOpacity(0.6),
+              ),
+            ),
+          ],
+        );
+        break;
+
+      case HabitType.subtasks:
+        title = 'Subtasks';
+        subtitle = l10n.addSubtask;
+        content = Column(
+          children: [
+            ...List.generate(_subtaskControllers.length, (index) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        '${date.day}/${date.month}/${date.year}',
-                        style: theme.textTheme.bodyMedium,
+                      child: TextField(
+                        controller: _subtaskControllers[index],
+                        decoration: InputDecoration(
+                          hintText: '${l10n.subtaskIndex(index + 1)}',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: colorScheme.surfaceContainerHighest
+                              .withOpacity(0.5),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                        ),
                       ),
                     ),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _selectedYearDays.remove(date);
-                        });
-                      },
-                      icon: const Icon(Icons.delete),
-                    ),
+                    if (_subtaskControllers.length > 1)
+                      IconButton(
+                        icon: Icon(
+                          Icons.remove_circle_outline,
+                          color: colorScheme.error,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _subtaskControllers[index].dispose();
+                            _subtaskControllers.removeAt(index);
+                          });
+                        },
+                      ),
                   ],
                 ),
-              ),
-            )),
-            const SizedBox(height: 8),
-          ],
-          FilledButton.icon(
-            onPressed: () async {
-              final DateTime firstAllowedForYear =
-                  widget.visionStartDate != null
-                  ? DateTime(
-                      widget.visionStartDate!.year,
-                      widget.visionStartDate!.month,
-                      widget.visionStartDate!.day,
-                    )
-                  : DateTime.now();
-              final DateTime initialForYear = widget.visionStartDate != null
-                  ? DateTime(
-                      widget.visionStartDate!.year,
-                      widget.visionStartDate!.month,
-                      widget.visionStartDate!.day,
-                    )
-                  : DateTime.now();
-              final date = await showDatePicker(
-                context: context,
-                initialDate: initialForYear,
-                firstDate: firstAllowedForYear,
-                lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
               );
-              if (date != null && !_selectedYearDays.contains(date)) {
+            }),
+            TextButton.icon(
+              onPressed: () {
                 setState(() {
-                  _selectedYearDays.add(date);
-                  _selectedYearDays.sort();
+                  _subtaskControllers.add(TextEditingController());
                 });
-              }
-            },
-            icon: const Icon(Icons.add),
-            label: Text(l10n.addDate),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPeriodicConfiguration(
-    AppLocalizations l10n,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.everyNDaysQuestion,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: Slider(
-                  value: _periodicDays.toDouble(),
-                  min: 1,
-                  max: 30,
-                  divisions: 29,
-                  label: l10n.nDaysLabel(_periodicDays),
-                  onChanged: (value) {
-                    setState(() {
-                      _periodicDays = value.round();
-                    });
-                  },
-                ),
+              },
+              icon: Icon(Icons.add, color: _selectedColor),
+              label: Text(
+                l10n.addSubtask,
+                style: TextStyle(color: _selectedColor),
               ),
-              const SizedBox(width: 16),
+            ),
+          ],
+        );
+        break;
+
+      default:
+        title = l10n.checkboxType;
+        subtitle = l10n.checkboxTypeDesc;
+        content = Container(
+          padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: _selectedColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            children: [
+              Icon(Icons.check_circle, size: 64, color: _selectedColor),
+              const SizedBox(height: 16),
               Text(
-                l10n.nDaysLabel(_periodicDays),
+                l10n.dailyCheck,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ],
           ),
-        ],
+        );
+    }
+
+    bool isValid = true;
+    if (_habitType == HabitType.numerical) {
+      isValid = (int.tryParse(_targetController.text) ?? 0) > 0;
+    } else if (_habitType == HabitType.subtasks) {
+      isValid = _subtaskControllers.any((c) => c.text.trim().isNotEmpty);
+    }
+
+    return WizardPage(
+      emoji: _habitType == HabitType.timer ? '⏱️' : '🎯',
+      title: title,
+      subtitle: subtitle,
+      child: content,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        isNextEnabled: isValid,
+        accentColor: _selectedColor,
       ),
     );
   }
 
-  Widget _buildSchedulingPage(
-    AppLocalizations l10n,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.schedulingOptions,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.scheduleHabit,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 32),
-          if (widget.useVisionDayOffsets) ...[
-            // Vision Start Day
-            Text(
-              l10n.visionStartDayQuestion,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _visionStartDayCtrl,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                hintText: '1 - 365',
-                border: const OutlineInputBorder(),
-                errorText: _visionStartError,
-              ),
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              onChanged: (value) {
-                final parsed = int.tryParse(value);
-                setState(() {
-                  _visionStartDay = parsed ?? 0;
-                  if (_visionStartDay < 1 || _visionStartDay > 365) {
-                    _visionStartError = l10n.visionStartDayInvalid;
-                  } else {
-                    _visionStartError = null;
-                  }
-                  // Recompute end if we already have a valid duration
-                  if (_visionDurationDays != null) {
-                    final end = _visionStartDay + _visionDurationDays! - 1;
-                    if (end > 365) {
-                      _visionEndError = l10n.visionEndDayInvalid;
-                    } else {
-                      _visionEndError = null;
-                      _visionEndDay = end;
-                    }
-                  }
-                });
+  Widget _buildTargetTypeSelector() {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    final types = [
+      (NumericalTargetType.minimum, l10n.atLeast, Icons.arrow_upward),
+      (NumericalTargetType.exact, l10n.exact, Icons.radio_button_checked),
+      (NumericalTargetType.maximum, l10n.atMost, Icons.arrow_downward),
+    ];
+
+    return Row(
+      children: types.map((type) {
+        final isSelected = _numericalTargetType == type.$1;
+        return Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: InkWell(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                setState(() => _numericalTargetType = type.$1);
               },
-            ),
-            const SizedBox(height: 24),
-            Text(
-              l10n.visionDurationDaysLabel,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _visionEndDayCtrl,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                hintText: '1 - 365',
-                border: const OutlineInputBorder(),
-                errorText: _visionEndError,
-              ),
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              onChanged: (value) {
-                final v = int.tryParse(value);
-                setState(() {
-                  _visionDurationDays = v;
-                  if (v == null || v < 1) {
-                    _visionEndError = l10n.visionEndDayRequired;
-                  } else {
-                    final end = _visionStartDay + v - 1;
-                    if (end > 365) {
-                      _visionEndError = l10n.visionEndDayInvalid;
-                    } else {
-                      _visionEndError = null;
-                      _visionEndDay = end;
-                    }
-                  }
-                });
-              },
-            ),
-            const SizedBox(height: 8),
-            if (_visionDurationDays != null && _visionEndError == null)
-              Text(
-                'Computed end day: $_visionEndDay',
-                style: theme.textTheme.bodySmall,
-              ),
-          ] else ...[
-            // Calendar-based scheduling (default)
-            Text(
-              l10n.startDate,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            InkWell(
-              onTap: () => _selectStartDate(context),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: colorScheme.outline),
-                  borderRadius: BorderRadius.circular(12),
-                  color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(12),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 8,
                 ),
-                child: Row(
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? _selectedColor.withOpacity(0.1)
+                      : colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(12),
+                  border: isSelected
+                      ? Border.all(color: _selectedColor, width: 2)
+                      : null,
+                ),
+                child: Column(
                   children: [
-                    Icon(Icons.calendar_today, color: colorScheme.primary),
-                    const SizedBox(width: 12),
-                    Text(
-                      '${_startDate.day}/${_startDate.month}/${_startDate.year}',
-                      style: theme.textTheme.bodyLarge,
-                    ),
-                    const Spacer(),
                     Icon(
-                      Icons.arrow_drop_down,
-                      color: colorScheme.onSurfaceVariant,
+                      type.$3,
+                      color: isSelected
+                          ? _selectedColor
+                          : colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      type.$2,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontWeight: isSelected
+                            ? FontWeight.w600
+                            : FontWeight.normal,
+                        color: isSelected
+                            ? _selectedColor
+                            : colorScheme.onSurface.withOpacity(0.6),
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildFrequencyPage() {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    final frequencies = [
+      ('daily', l10n.daily, '📅', l10n.dailyDesc),
+      ('weekly', l10n.weekly, '📆', l10n.weeklyDesc),
+      ('monthly', l10n.monthly, '🗓️', l10n.monthlyDesc),
+      ('periodic', l10n.periodic, '🔄', l10n.periodicDesc),
+    ];
+
+    return WizardPage(
+      emoji: '⏰',
+      title: l10n.simpleHabitFrequencyTitle,
+      subtitle: l10n.simpleHabitFrequencySubtitle,
+      child: Column(
+        children: frequencies.map((freq) {
+          final isSelected = _selectedFrequency == freq.$1;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: InkWell(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                setState(() => _selectedFrequency = freq.$1);
+              },
+              borderRadius: BorderRadius.circular(16),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? _selectedColor.withOpacity(0.1)
+                      : colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(16),
+                  border: isSelected
+                      ? Border.all(color: _selectedColor, width: 2)
+                      : null,
+                ),
+                child: Row(
+                  children: [
+                    Text(freq.$3, style: const TextStyle(fontSize: 28)),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            freq.$2,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            freq.$4,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurface.withOpacity(0.6),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (isSelected)
+                      Icon(Icons.check_circle, color: _selectedColor),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        accentColor: _selectedColor,
+      ),
+    );
+  }
+
+  Widget _buildDaysPage() {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    Widget content;
+    String title;
+    String subtitle;
+
+    switch (_selectedFrequency) {
+      case 'weekly':
+        title = l10n.simpleHabitWeekdaysTitle;
+        subtitle = l10n.simpleHabitWeekdaysSubtitle;
+        final weekdays = [
+          l10n.mondayShort,
+          l10n.tuesdayShort,
+          l10n.wednesdayShort,
+          l10n.thursdayShort,
+          l10n.fridayShort,
+          l10n.saturdayShort,
+          l10n.sundayShort,
+        ];
+        content = Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          alignment: WrapAlignment.center,
+          children: List.generate(7, (index) {
+            final isSelected = _weeklyDays.contains(index);
+            return GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                setState(() {
+                  if (isSelected) {
+                    _weeklyDays.remove(index);
+                  } else {
+                    _weeklyDays.add(index);
+                  }
+                });
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? _selectedColor
+                      : colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: Text(
+                    weekdays[index],
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : colorScheme.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }),
+        );
+        break;
+
+      case 'monthly':
+        title = l10n.simpleHabitMonthDaysTitle;
+        subtitle = l10n.simpleHabitMonthDaysSubtitle;
+        content = Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          alignment: WrapAlignment.center,
+          children: List.generate(31, (index) {
+            final day = index + 1;
+            final isSelected = _monthDays.contains(day);
+            return GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                setState(() {
+                  if (isSelected) {
+                    _monthDays.remove(day);
+                  } else {
+                    _monthDays.add(day);
+                  }
+                });
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? _selectedColor
+                      : colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(
+                    '$day',
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : colorScheme.onSurface,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }),
+        );
+        break;
+
+      case 'periodic':
+        title = l10n.simpleHabitPeriodicTitle;
+        subtitle = l10n.simpleHabitPeriodicSubtitle;
+        content = Column(
+          children: [
+            Text(
+              '$_periodicDays',
+              style: theme.textTheme.displayMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: _selectedColor,
+              ),
+            ),
+            Text(
+              l10n.days,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: colorScheme.onSurface.withOpacity(0.6),
+              ),
+            ),
             const SizedBox(height: 24),
-            Row(
+            Slider(
+              value: _periodicDays.toDouble(),
+              min: 2,
+              max: 30,
+              divisions: 28,
+              activeColor: _selectedColor,
+              onChanged: (value) {
+                HapticFeedback.selectionClick();
+                setState(() => _periodicDays = value.round());
+              },
+            ),
+          ],
+        );
+        break;
+
+      default:
+        title = '';
+        subtitle = '';
+        content = const SizedBox.shrink();
+    }
+
+    bool isValid = true;
+    if (_selectedFrequency == 'weekly') {
+      isValid = _weeklyDays.isNotEmpty;
+    } else if (_selectedFrequency == 'monthly') {
+      isValid = _monthDays.isNotEmpty;
+    }
+
+    return WizardPage(
+      emoji: '📅',
+      title: title,
+      subtitle: subtitle,
+      child: content,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        isNextEnabled: isValid,
+        accentColor: _selectedColor,
+      ),
+    );
+  }
+
+  Widget _buildDateRangePage() {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return WizardPage(
+      emoji: '📆',
+      title: l10n.dateRangeLabel,
+      subtitle: l10n.simpleHabitStartDateSubtitle,
+      child: Column(
+        children: [
+          // Başlangıç tarihi
+          ListTile(
+            leading: Icon(Icons.play_arrow, color: _selectedColor),
+            title: Text(l10n.startDate),
+            subtitle: Text(
+              '${_startDate.day}/${_startDate.month}/${_startDate.year}',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () async {
+              final picked = await showDatePicker(
+                context: context,
+                initialDate: _startDate,
+                firstDate: DateTime.now().subtract(const Duration(days: 30)),
+                lastDate: DateTime.now().add(const Duration(days: 365)),
+              );
+              if (picked != null) {
+                setState(() => _startDate = picked);
+              }
+            },
+          ),
+          const Divider(),
+          // Bitiş tarihi (isteğe bağlı)
+          ListTile(
+            leading: Icon(Icons.stop, color: colorScheme.error),
+            title: Text(l10n.endDate),
+            subtitle: Text(
+              _endDate != null
+                  ? '${_endDate!.day}/${_endDate!.month}/${_endDate!.year}'
+                  : l10n.durationIndefinite,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
+                if (_endDate != null)
+                  IconButton(
+                    icon: Icon(Icons.clear, color: colorScheme.error),
+                    onPressed: () => setState(() => _endDate = null),
+                  ),
+                const Icon(Icons.chevron_right),
+              ],
+            ),
+            onTap: () async {
+              final picked = await showDatePicker(
+                context: context,
+                initialDate:
+                    _endDate ?? _startDate.add(const Duration(days: 30)),
+                firstDate: _startDate,
+                lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
+              );
+              if (picked != null) {
+                setState(() => _endDate = picked);
+              }
+            },
+          ),
+        ],
+      ),
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        accentColor: _selectedColor,
+      ),
+    );
+  }
+
+  Widget _buildReminderPage() {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return WizardPage(
+      emoji: '🔔',
+      title: l10n.simpleHabitReminderTitle,
+      subtitle: l10n.simpleHabitReminderSubtitle,
+      isOptional: true,
+      child: Column(
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: _reminderEnabled
+                  ? _selectedColor.withOpacity(0.1)
+                  : colorScheme.surfaceContainerHighest.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(20),
+              border: _reminderEnabled
+                  ? Border.all(color: _selectedColor, width: 2)
+                  : null,
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: _reminderEnabled
+                        ? _selectedColor.withOpacity(0.2)
+                        : colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    _reminderEnabled
+                        ? Icons.notifications_active
+                        : Icons.notifications_off_outlined,
+                    color: _reminderEnabled
+                        ? _selectedColor
+                        : colorScheme.onSurface.withOpacity(0.5),
+                  ),
+                ),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Text(
-                    l10n.endDate,
+                    _reminderEnabled
+                        ? l10n.reminderEnabled
+                        : l10n.reminderDisabled,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
                 Switch(
-                  value: _hasEndDate,
+                  value: _reminderEnabled,
+                  activeColor: _selectedColor,
                   onChanged: (value) {
-                    setState(() {
-                      _hasEndDate = value;
-                      if (!value) _endDate = null;
-                    });
+                    HapticFeedback.lightImpact();
+                    setState(() => _reminderEnabled = value);
                   },
                 ),
               ],
             ),
-            const SizedBox(height: 8),
-            if (!_hasEndDate)
-              Container(
-                padding: const EdgeInsets.all(16),
+          ),
+          if (_reminderEnabled) ...[
+            const SizedBox(height: 24),
+            InkWell(
+              onTap: () async {
+                final picked = await showTimePicker(
+                  context: context,
+                  initialTime: _reminderTime,
+                );
+                if (picked != null) {
+                  setState(() => _reminderTime = picked);
+                }
+              },
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
                 decoration: BoxDecoration(
-                  border: Border.all(
-                    color: colorScheme.outline.withOpacity(0.5),
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  color: colorScheme.surfaceContainerHighest.withOpacity(0.1),
+                  color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.all_inclusive,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
+                    Icon(Icons.access_time, color: _selectedColor),
                     const SizedBox(width: 12),
                     Text(
-                      l10n.noEndDate,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
+                      _reminderTime.format(context),
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: _selectedColor,
                       ),
                     ),
                   ],
                 ),
-              )
-            else
-              InkWell(
-                onTap: () => _selectEndDate(context),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: colorScheme.outline),
-                    borderRadius: BorderRadius.circular(12),
-                    color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.calendar_today, color: colorScheme.primary),
-                      const SizedBox(width: 12),
-                      Text(
-                        _endDate != null
-                            ? '${_endDate!.day}/${_endDate!.month}/${_endDate!.year}'
-                            : l10n.selectEndDate,
-                        style: theme.textTheme.bodyLarge,
-                      ),
-                      const Spacer(),
-                      Icon(
-                        Icons.arrow_drop_down,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ],
-                  ),
-                ),
               ),
+            ),
           ],
-          const SizedBox(height: 32),
-          // Reminder Section
-          Card(
-            elevation: 0,
-            color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.notifications_outlined,
-                        color: colorScheme.primary,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        l10n.reminder,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(l10n.enableReminder),
-                    value: _reminderEnabled,
-                    onChanged: (v) => setState(() => _reminderEnabled = v),
-                  ),
-                  if (_reminderEnabled) ...[
-                    const SizedBox(height: 8),
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.access_time),
-                      title: Text(
-                        _reminderTime != null
-                            ? '${_reminderTime!.hour.toString().padLeft(2, '0')}:${_reminderTime!.minute.toString().padLeft(2, '0')}'
-                            : l10n.selectTime,
-                      ),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: _selectReminderTime,
-                    ),
-                  ],
-                ],
+        ],
+      ),
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        onSkip: _nextPage,
+        showSkip: !_reminderEnabled,
+        accentColor: _selectedColor,
+      ),
+    );
+  }
+
+  Widget _buildPreviewPage() {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    String targetText = '';
+    if (_habitType == HabitType.numerical) {
+      final unit = _unitController.text.trim();
+      targetText = '${_targetController.text} ${unit.isNotEmpty ? unit : ''}';
+    } else if (_habitType == HabitType.timer) {
+      targetText = '${_timerDuration.inMinutes} ${l10n.minLabel}';
+    } else if (_habitType == HabitType.subtasks) {
+      final count = _subtaskControllers
+          .where((c) => c.text.trim().isNotEmpty)
+          .length;
+      targetText = '$count subtasks';
+    }
+
+    // Build tags list
+    final List<String> tags = [
+      if (targetText.isNotEmpty) targetText,
+      _getFrequencyText(),
+      '${l10n.startsOn}: ${_startDate.day}/${_startDate.month}/${_startDate.year}',
+      if (_reminderEnabled) _reminderTime.format(context),
+    ];
+
+    return WizardPage(
+      emoji: '🎉',
+      title: l10n.simpleHabitPreviewTitle,
+      subtitle: l10n.simpleHabitPreviewSubtitle,
+      child: WizardPreviewCard(
+        emoji: _selectedEmoji,
+        title: _nameController.text.trim(),
+        subtitle: _descriptionController.text.trim().isNotEmpty
+            ? _descriptionController.text.trim()
+            : null,
+        color: _selectedColor,
+        tags: tags,
+      ),
+
+      bottomWidget: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: SizedBox(
+          width: double.infinity,
+          child: FilledButton(
+            onPressed: _saveHabit,
+            style: FilledButton.styleFrom(
+              backgroundColor: _selectedColor,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
             ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  l10n.createHabit,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(Icons.check, size: 20),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showCustomEmojiInput() async {
+    String? customEmoji;
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Özel Emoji'),
+        content: TextField(
+          autofocus: true,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 32),
+          decoration: InputDecoration(
+            hintText: '😀',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+          ),
+          onChanged: (value) {
+            // Sadece ilk karakteri/emojiyi al
+            if (value.characters.isNotEmpty) {
+              customEmoji = value.characters.first;
+            }
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('İptal'),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (customEmoji != null) {
+                setState(() => _selectedEmoji = customEmoji!);
+              }
+              Navigator.pop(context);
+            },
+            child: const Text('Seç'),
           ),
         ],
       ),
     );
-  }
-
-  Future<void> _selectReminderTime() async {
-    final time = await showTimePicker(
-      context: context,
-      initialTime: _reminderTime ?? TimeOfDay.now(),
-    );
-    if (time != null) {
-      setState(() => _reminderTime = time);
-    }
-  }
-
-  void _showCreateCategoryDialog() async {
-    final l10n = AppLocalizations.of(context);
-    final categoryNameController = TextEditingController();
-    String selectedEmoji = '🌟';
-    Color selectedColor = Colors.blue;
-
-    final result = await showDialog<HabitCategory>(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text(l10n.createNewCategory),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: categoryNameController,
-                  decoration: InputDecoration(
-                    labelText: l10n.categoryName,
-                    border: const OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.chooseEmoji,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: kEmojiPresets
-                      .map(
-                        (e) => GestureDetector(
-                          onTap: () => setDialogState(() => selectedEmoji = e),
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: selectedEmoji == e
-                                    ? selectedColor
-                                    : Colors.grey,
-                                width: selectedEmoji == e ? 2 : 1,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              e,
-                              style: const TextStyle(fontSize: 22),
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: l10n.customEmojiOptional,
-                    hintText: l10n.customEmojiHint,
-                  ),
-                  onChanged: (v) => setDialogState(() {
-                    if (v.trim().isNotEmpty) selectedEmoji = v.trim();
-                  }),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.chooseColor,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children:
-                      [
-                            Colors.red,
-                            Colors.deepOrange,
-                            Colors.orange,
-                            Colors.amber,
-                            Colors.yellow,
-                            Colors.lime,
-                            Colors.lightGreen,
-                            Colors.green,
-                            Colors.teal,
-                            Colors.cyan,
-                            Colors.lightBlue,
-                            Colors.blue,
-                            Colors.indigo,
-                            Colors.deepPurple,
-                            Colors.purple,
-                            Colors.pink,
-                            Colors.brown,
-                            Colors.blueGrey,
-                            Colors.grey,
-                          ]
-                          .map(
-                            (color) => GestureDetector(
-                              onTap: () =>
-                                  setDialogState(() => selectedColor = color),
-                              child: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: color,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: selectedColor == color
-                                        ? Colors.black
-                                        : Colors.transparent,
-                                    width: 3,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(l10n.cancel),
-            ),
-            FilledButton(
-              onPressed: () {
-                if (categoryNameController.text.trim().isNotEmpty) {
-                  final newCategory = HabitCategory(
-                    DateTime.now().millisecondsSinceEpoch.toString(),
-                    categoryNameController.text.trim(),
-                    Icons.star,
-                    selectedColor,
-                    emoji: selectedEmoji,
-                  );
-                  Navigator.of(context).pop(newCategory);
-                }
-              },
-              child: Text(l10n.create),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    if (result != null) {
-      // Persist and update selection
-      await CategoryRepository.instance.initialize();
-      await CategoryRepository.instance.addCustom(result);
-      setState(() {
-        _selectedCategoryId = result.id;
-      });
-    }
-  }
-
-  Future<void> _showEditCategoryDialog(HabitCategory category) async {
-    final l10n = AppLocalizations.of(context);
-    final categoryNameController = TextEditingController(text: category.name);
-    String selectedEmoji = category.emoji ?? '🌟';
-    Color selectedColor = category.color;
-
-    final result = await showDialog<HabitCategory>(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text(l10n.editCategory),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: categoryNameController,
-                  decoration: InputDecoration(
-                    labelText: l10n.categoryName,
-                    border: const OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.chooseEmoji,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: kEmojiPresets
-                      .map(
-                        (e) => GestureDetector(
-                          onTap: () => setDialogState(() => selectedEmoji = e),
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: selectedEmoji == e
-                                    ? selectedColor
-                                    : Colors.grey,
-                                width: selectedEmoji == e ? 2 : 1,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              e,
-                              style: const TextStyle(fontSize: 22),
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: TextEditingController(text: selectedEmoji),
-                  decoration: InputDecoration(
-                    labelText: l10n.customEmojiOptional,
-                    hintText: l10n.customEmojiHint,
-                  ),
-                  onChanged: (v) => setDialogState(() {
-                    if (v.trim().isNotEmpty) selectedEmoji = v.trim();
-                  }),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  l10n.chooseColor,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children:
-                      [
-                            Colors.red,
-                            Colors.deepOrange,
-                            Colors.orange,
-                            Colors.amber,
-                            Colors.yellow,
-                            Colors.lime,
-                            Colors.lightGreen,
-                            Colors.green,
-                            Colors.teal,
-                            Colors.cyan,
-                            Colors.lightBlue,
-                            Colors.blue,
-                            Colors.indigo,
-                            Colors.deepPurple,
-                            Colors.purple,
-                            Colors.pink,
-                            Colors.brown,
-                            Colors.blueGrey,
-                            Colors.grey,
-                          ]
-                          .map(
-                            (color) => GestureDetector(
-                              onTap: () =>
-                                  setDialogState(() => selectedColor = color),
-                              child: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: color,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: selectedColor == color
-                                        ? Colors.black
-                                        : Colors.transparent,
-                                    width: 3,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(l10n.cancel),
-            ),
-            FilledButton(
-              onPressed: () {
-                if (categoryNameController.text.trim().isNotEmpty) {
-                  final updated = HabitCategory(
-                    category.id,
-                    categoryNameController.text.trim(),
-                    category.icon, // keep legacy icon value
-                    selectedColor,
-                    emoji: selectedEmoji,
-                  );
-                  Navigator.of(context).pop(updated);
-                }
-              },
-              child: Text(l10n.save),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    if (result != null) {
-      await CategoryRepository.instance.updateCustom(result);
-      setState(() {
-        if (_selectedCategoryId == result.id) {
-          // keep selected; no change needed beyond UI update
-        }
-      });
-    }
-  }
-
-  void _showCustomCategoryMenu(HabitCategory category) {
-    showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (ctx) {
-        final l10n = AppLocalizations.of(ctx);
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.edit_outlined),
-                title: Text(l10n.edit),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  _showEditCategoryDialog(category);
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.delete_outline, color: Colors.red[600]),
-                title: Text(
-                  l10n.delete,
-                  style: TextStyle(color: Colors.red[600]),
-                ),
-                onTap: () async {
-                  Navigator.pop(ctx);
-                  final confirmed =
-                      await showDialog<bool>(
-                        context: context,
-                        builder: (dctx) => AlertDialog(
-                          title: Text(l10n.deleteCategoryTitle),
-                          content: Text(l10n.deleteCustomCategoryConfirm),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(dctx, false),
-                              child: Text(l10n.cancel),
-                            ),
-                            FilledButton(
-                              style: FilledButton.styleFrom(
-                                backgroundColor: Colors.red[600],
-                              ),
-                              onPressed: () => Navigator.pop(dctx, true),
-                              child: Text(l10n.delete),
-                            ),
-                          ],
-                        ),
-                      ) ??
-                      false;
-                  if (confirmed) {
-                    await CategoryRepository.instance.removeCustom(category.id);
-                    setState(() {
-                      if (_selectedCategoryId == category.id) {
-                        _selectedCategoryId = null;
-                      }
-                    });
-                  }
-                },
-              ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Future<void> _selectStartDate(BuildContext context) async {
-    final DateTime defaultFirst = DateTime(DateTime.now().year - 5, 1, 1);
-    final DateTime firstAllowed = widget.visionStartDate != null
-        ? DateTime(
-            widget.visionStartDate!.year,
-            widget.visionStartDate!.month,
-            widget.visionStartDate!.day,
-          )
-        : defaultFirst;
-    // Ensure initialDate is within [firstAllowed, lastDate]
-    final DateTime lastAllowed = DateTime(DateTime.now().year + 2, 12, 31);
-    DateTime initial = _startDate;
-    if (initial.isBefore(firstAllowed)) initial = firstAllowed;
-    if (initial.isAfter(lastAllowed)) initial = lastAllowed;
-
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: initial,
-      // Allow selecting only from the vision start (if set) or the default range
-      firstDate: firstAllowed,
-      lastDate: lastAllowed,
-    );
-    if (picked != null && picked != _startDate) {
-      setState(() {
-        _startDate = picked;
-      });
-    }
-  }
-
-  Future<void> _selectEndDate(BuildContext context) async {
-    // Ensure end-date selection cannot be before the vision start when provided
-    final DateTime minFirst = widget.visionStartDate != null
-        ? DateTime(
-            widget.visionStartDate!.year,
-            widget.visionStartDate!.month,
-            widget.visionStartDate!.day,
-          )
-        : _startDate;
-    final DateTime firstAllowed = _startDate.isAfter(minFirst)
-        ? _startDate
-        : minFirst;
-    final DateTime lastAllowed = DateTime.now().add(
-      const Duration(days: 365 * 2),
-    );
-
-    DateTime initial = _endDate ?? _startDate.add(const Duration(days: 30));
-    if (initial.isBefore(firstAllowed)) initial = firstAllowed;
-    if (initial.isAfter(lastAllowed)) initial = lastAllowed;
-
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: initial,
-      firstDate: firstAllowed,
-      lastDate: lastAllowed,
-    );
-    if (picked != null) {
-      setState(() {
-        _endDate = picked;
-      });
-    }
   }
 }

@@ -19,16 +19,16 @@ class EmojiColorPicker extends StatelessWidget {
   final ValueChanged<Color> onColorChanged;
 
   static const List<Color> defaultColors = [
-    Colors.red,
-    Colors.orange,
-    Colors.amber,
-    Colors.green,
-    Colors.teal,
-    Colors.blue,
-    Colors.indigo,
-    Colors.purple,
-    Colors.pink,
-    Colors.brown,
+    Color(0xFF90CAF9), // Pastel Blue
+    Color(0xFFB39DDB), // Pastel Indigo
+    Color(0xFFF48FB1), // Pastel Pink
+    Color(0xFFFFCC80), // Pastel Orange
+    Color(0xFFFFF59D), // Pastel Yellow
+    Color(0xFFA5D6A7), // Pastel Green
+    Color(0xFF80CBC4), // Pastel Teal
+    Color(0xFFEF9A9A), // Pastel Red
+    Color(0xFFBCAAA4), // Pastel Brown
+    Color(0xFF9FA8DA), // Pastel Periwinkle
   ];
 
   @override

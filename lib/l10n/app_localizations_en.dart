@@ -98,6 +98,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageSubscription => 'Manage Subscription';
 
   @override
+  String get autoBackupTitle => 'Automatic Backup';
+
+  @override
+  String get autoBackupSubtitle =>
+      'Automatically backup your data to Google Drive every 24 hours.';
+
+  @override
   String get backupNow => 'Backup Now';
 
   @override
@@ -1399,6 +1406,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get themeCrimsonDesc => 'Bold & Passionate';
+
+  @override
+  String get themeVintageRed => 'Vintage Kırmızı';
+
+  @override
+  String get themeVintageRedDesc => 'Klasik ve zamansız kırmızı';
 
   @override
   String get themeAbyss => 'Abyss';
@@ -2981,7 +2994,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newHabit => 'New Habit';
 
   @override
-  String get typeEmoji => 'Type an emoji from keyboard';
+  String get typeEmoji => 'Type an emoji';
 
   @override
   String get habitNameHint => 'Ex: Drink water, Read book...';
@@ -3394,4 +3407,285 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tapSpinToStart => 'Tap spin to start';
+
+  @override
+  String get simpleHabitWizardTitle => 'Ready to build a new habit?';
+
+  @override
+  String get simpleHabitWizardDesc =>
+      'I\'ll guide you step by step. Let\'s create an amazing habit together!';
+
+  @override
+  String get letsStart => 'Let\'s Start';
+
+  @override
+  String get simpleHabitNameTitle => 'Give your habit a name';
+
+  @override
+  String get simpleHabitNameSubtitle => 'What do you want to make a habit of?';
+
+  @override
+  String get descriptionHintOptional => 'Add description (optional)';
+
+  @override
+  String get simpleHabitEmojiTitle => 'Choose an emoji to represent it';
+
+  @override
+  String get simpleHabitEmojiSubtitle => 'Make your habit more fun!';
+
+  @override
+  String get simpleHabitColorTitle => 'Pick a color';
+
+  @override
+  String get simpleHabitColorSubtitle => 'Reflect your habit\'s personality';
+
+  @override
+  String get simpleHabitFrequencyTitle => 'How often do you want to do it?';
+
+  @override
+  String get simpleHabitFrequencySubtitle => 'Set your goals';
+
+  @override
+  String get dailyDesc => 'Every day';
+
+  @override
+  String get weeklyDesc => 'On specific days of the week';
+
+  @override
+  String get monthlyDesc => 'On specific days of the month';
+
+  @override
+  String get periodicDesc => 'At regular intervals';
+
+  @override
+  String get simpleHabitWeekdaysTitle => 'Which days?';
+
+  @override
+  String get simpleHabitWeekdaysSubtitle => 'Select the active days';
+
+  @override
+  String get simpleHabitMonthDaysTitle => 'Which days of the month?';
+
+  @override
+  String get simpleHabitMonthDaysSubtitle => 'Select the active days';
+
+  @override
+  String get simpleHabitPeriodicTitle => 'How many days apart?';
+
+  @override
+  String get simpleHabitPeriodicSubtitle => 'Set the repeat interval';
+
+  @override
+  String get days => 'days';
+
+  @override
+  String get simpleHabitStartDateTitle => 'When will you start?';
+
+  @override
+  String get simpleHabitStartDateSubtitle =>
+      'Choose a starting point for your journey';
+
+  @override
+  String get nextWeek => 'Next Week';
+
+  @override
+  String get pickFromCalendar => 'Pick from Calendar';
+
+  @override
+  String get simpleHabitReminderTitle => 'Shall I remind you?';
+
+  @override
+  String get simpleHabitReminderSubtitle =>
+      'Don\'t miss your habit with daily reminders';
+
+  @override
+  String get reminderEnabled => 'Reminder On';
+
+  @override
+  String get reminderDisabled => 'Reminder Off';
+
+  @override
+  String get simpleHabitPreviewTitle => 'Awesome! Here\'s your habit';
+
+  @override
+  String get simpleHabitPreviewSubtitle => 'Does everything look right?';
+
+  @override
+  String get startsOn => 'Starts on';
+
+  @override
+  String get mondayShort => 'Mon';
+
+  @override
+  String get tuesdayShort => 'Tue';
+
+  @override
+  String get wednesdayShort => 'Wed';
+
+  @override
+  String get thursdayShort => 'Thu';
+
+  @override
+  String get fridayShort => 'Fri';
+
+  @override
+  String get saturdayShort => 'Sat';
+
+  @override
+  String get sundayShort => 'Sun';
+
+  @override
+  String get visionBoard => 'Vision Board';
+
+  @override
+  String get visionBoardDesc =>
+      'Create a vision to organize your goals and track your journey';
+
+  @override
+  String get nameYourVision => 'Name Your Vision';
+
+  @override
+  String get nameYourVisionDesc => 'Give your vision a meaningful name';
+
+  @override
+  String get myBigGoal => 'My Big Goal';
+
+  @override
+  String get choosePhoto => 'Choose Photo';
+
+  @override
+  String get choosePhotoDesc => 'Select a photo that inspires you';
+
+  @override
+  String get photo => 'Photo';
+
+  @override
+  String get emojiAndColor => 'Emoji & Color';
+
+  @override
+  String get tapToPickImage => 'Tap to pick image';
+
+  @override
+  String get createVisionWithAI => 'Create Vision with AI';
+
+  @override
+  String get tellMeYourDream =>
+      'Tell me your dream. I\'ll help you build a Vision Board.';
+
+  @override
+  String get setVisionTimeline => 'Set the timeline for your vision';
+
+  @override
+  String get hardMode => 'Hard Mode';
+
+  @override
+  String get multipleSubItemsDesc => 'Multiple sub-items';
+
+  @override
+  String motivationDayStart(Object title) {
+    return 'Great day for $title! 🌟';
+  }
+
+  @override
+  String get motivationSmallSteps =>
+      'Start with small steps to reach big goals 💪';
+
+  @override
+  String get motivationJourneyStart =>
+      'Every journey begins with a single step!';
+
+  @override
+  String motivationWaiting(Object title) {
+    return '$title is waiting for you 🚀';
+  }
+
+  @override
+  String get quickSuggestions => 'Quick Suggestions';
+
+  @override
+  String get trackSpending => 'Track your spending';
+
+  @override
+  String get trackEarnings => 'Track your earnings';
+
+  @override
+  String get writeMessage => 'Write a message...';
+
+  @override
+  String get softPeach => 'Soft Peach';
+
+  @override
+  String get softPeachDesc => 'Warm peach & cream tones';
+
+  @override
+  String get lavenderDreams => 'Lavender Dreams';
+
+  @override
+  String get lavenderDreamsDesc => 'Elegant lavender & purple tones';
+
+  @override
+  String get mintFresh => 'Mint Fresh';
+
+  @override
+  String get mintFreshDesc => 'Fresh mint & turquoise tones';
+
+  @override
+  String get cottonCandy => 'Cotton Candy';
+
+  @override
+  String get cottonCandyDesc => 'Cotton candy - pink & blue';
+
+  @override
+  String get focusedZen => 'Focused Zen';
+
+  @override
+  String get focusedZenDesc => 'Minimalist, single focus point';
+
+  @override
+  String get guidedJourney => 'Guided Journey';
+
+  @override
+  String get guidedJourneyDesc => 'Step-by-step guided flow';
+
+  @override
+  String get softCloud => 'Soft Cloud';
+
+  @override
+  String get softCloudDesc => 'Cloud-like, dreamy soft';
+
+  @override
+  String get warmJournal => 'Warm Journal';
+
+  @override
+  String get warmJournalDesc => 'Warm journal & emotion tracking';
+
+  @override
+  String get cozyJournal => 'Cozy Journal';
+
+  @override
+  String get cozyJournalDesc => 'Brown tones & timeline';
+
+  @override
+  String get goodMorning => 'Good morning! ☀️';
+
+  @override
+  String get greatDayAhead => 'Today is a great day, you got this!';
+
+  @override
+  String get todaysHabits => 'Today\'s Habits';
+
+  @override
+  String get drinkWater => 'Drink Water';
+
+  @override
+  String get meditation => 'Meditation';
+
+  @override
+  String get readBook => 'Read Book';
+
+  @override
+  String get howDoYouFeel => 'How do you feel today?';
+
+  @override
+  String get keepItUp => 'Awesome! Keep it up! 💪';
 }
