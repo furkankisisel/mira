@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/timer/timer_controller.dart';
 import '../../../design_system/theme/theme_variations.dart';
-import '../../../../design_system/tokens/colors.dart';
+
 import '../../../../design_system/tokens/radii.dart';
 import '../timer_screen.dart';
 

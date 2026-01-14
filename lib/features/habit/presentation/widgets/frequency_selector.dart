@@ -43,6 +43,7 @@ class FrequencySelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,31 +54,31 @@ class FrequencySelector extends StatelessWidget {
           runSpacing: 8,
           children: [
             _FrequencyChip(
-              label: 'Günlük',
+              label: l10n.daily,
               icon: Icons.today,
               isSelected: selectedFrequency == 'daily',
               onTap: () => onFrequencyChanged('daily'),
             ),
             _FrequencyChip(
-              label: 'Haftalık',
+              label: l10n.weekly,
               icon: Icons.date_range,
               isSelected: selectedFrequency == 'weekly',
               onTap: () => onFrequencyChanged('weekly'),
             ),
             _FrequencyChip(
-              label: 'Aylık',
+              label: l10n.monthly,
               icon: Icons.calendar_view_month,
               isSelected: selectedFrequency == 'monthly',
               onTap: () => onFrequencyChanged('monthly'),
             ),
             _FrequencyChip(
-              label: 'Yıllık',
+              label: l10n.yearly,
               icon: Icons.event,
               isSelected: selectedFrequency == 'yearly',
               onTap: () => onFrequencyChanged('yearly'),
             ),
             _FrequencyChip(
-              label: 'Periyodik',
+              label: l10n.periodic,
               icon: Icons.repeat,
               isSelected: selectedFrequency == 'periodic',
               onTap: () => onFrequencyChanged('periodic'),
@@ -128,6 +129,7 @@ class FrequencySelector extends StatelessWidget {
 
   Widget _buildDailyInfo(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return Container(
       key: const ValueKey('daily'),
       padding: const EdgeInsets.all(16),
@@ -140,10 +142,7 @@ class FrequencySelector extends StatelessWidget {
           Icon(Icons.check_circle, color: theme.colorScheme.primary),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              'Bu alışkanlık her gün tekrarlanacak',
-              style: theme.textTheme.bodyMedium,
-            ),
+            child: Text(l10n.dailyHabitInfo, style: theme.textTheme.bodyMedium),
           ),
         ],
       ),
@@ -225,12 +224,22 @@ class _WeeklyDayPicker extends StatelessWidget {
   final Set<int> selected;
   final ValueChanged<Set<int>> onChanged;
 
-  static const _dayLabels = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+  List<String> _getDayLabels(AppLocalizations l10n) => [
+    l10n.dayMonShort,
+    l10n.dayTueShort,
+    l10n.dayWedShort,
+    l10n.dayThuShort,
+    l10n.dayFriShort,
+    l10n.daySatShort,
+    l10n.daySunShort,
+  ];
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
+    final dayLabels = _getDayLabels(l10n);
 
     return Container(
       key: const ValueKey('weekly'),
@@ -243,7 +252,7 @@ class _WeeklyDayPicker extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Hangi günler?',
+            l10n.whichDays,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -276,7 +285,7 @@ class _WeeklyDayPicker extends StatelessWidget {
                   ),
                   child: Center(
                     child: Text(
-                      _dayLabels[index],
+                      dayLabels[index],
                       style: theme.textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isSelected
@@ -306,6 +315,7 @@ class _MonthDayPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       key: const ValueKey('monthly'),
@@ -318,7 +328,7 @@ class _MonthDayPicker extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Ayın hangi günleri?',
+            l10n.whichMonthDays,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -389,6 +399,7 @@ class _YearDayPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       key: const ValueKey('yearly'),
@@ -401,7 +412,7 @@ class _YearDayPicker extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Yılın hangi günleri?',
+            l10n.whichYearDays,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -472,6 +483,7 @@ class _YearDayPicker extends StatelessWidget {
 }
 
 /// Periyodik gün seçici
+/// Periyodik gün seçici
 class _PeriodicPicker extends StatelessWidget {
   const _PeriodicPicker({required this.days, required this.onChanged});
 
@@ -482,6 +494,7 @@ class _PeriodicPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       key: const ValueKey('periodic'),
@@ -494,7 +507,7 @@ class _PeriodicPicker extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Kaç günde bir?',
+            l10n.everyNDays(days),
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -518,7 +531,7 @@ class _PeriodicPicker extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  '$days gün',
+                  l10n.nDays(days),
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: colorScheme.onPrimaryContainer,
@@ -535,7 +548,7 @@ class _PeriodicPicker extends StatelessWidget {
           const SizedBox(height: 12),
           Center(
             child: Text(
-              'Her $days günde bir tekrarlanacak',
+              l10n.everyNDaysInfo(days),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),

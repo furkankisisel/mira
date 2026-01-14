@@ -44,7 +44,7 @@ class BackupDataService {
       };
 
       for (final key in _backupKeys) {
-        final value = prefs.getString(key);
+        final value = prefs.get(key);
         if (value != null) {
           backupData['data'][key] = value;
           debugPrint('[BackupDataService] Collected key: $key');
@@ -56,7 +56,7 @@ class BackupDataService {
       for (final key in allKeys) {
         if (!_backupKeys.contains(key) &&
             (key.endsWith('_v1') || key.endsWith('_v2'))) {
-          final value = prefs.getString(key);
+          final value = prefs.get(key);
           if (value != null) {
             backupData['data'][key] = value;
             debugPrint('[BackupDataService] Collected extra key: $key');
@@ -110,7 +110,23 @@ class BackupDataService {
 
         if (value is String) {
           await prefs.setString(key, value);
-          debugPrint('[BackupDataService] Restored key: $key');
+          debugPrint('[BackupDataService] Restored key (String): $key');
+          restoredCount++;
+        } else if (value is bool) {
+          await prefs.setBool(key, value);
+          debugPrint('[BackupDataService] Restored key (bool): $key');
+          restoredCount++;
+        } else if (value is int) {
+          await prefs.setInt(key, value);
+          debugPrint('[BackupDataService] Restored key (int): $key');
+          restoredCount++;
+        } else if (value is double) {
+          await prefs.setDouble(key, value);
+          debugPrint('[BackupDataService] Restored key (double): $key');
+          restoredCount++;
+        } else if (value is List<String>) {
+          await prefs.setStringList(key, value);
+          debugPrint('[BackupDataService] Restored key (List<String>): $key');
           restoredCount++;
         } else if (value != null) {
           // If value is already decoded (e.g., Map or List), encode it back

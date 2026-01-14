@@ -303,7 +303,7 @@ enum ThemeVariant {
   vintageRed;
 
   String getDisplayName(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return switch (this) {
       ThemeVariant.cotton => l10n.themeCotton,
       ThemeVariant.matcha => l10n.themeMatcha,
@@ -325,7 +325,7 @@ enum ThemeVariant {
   }
 
   String getDescription(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return switch (this) {
       ThemeVariant.cotton => l10n.themeCottonDesc,
       ThemeVariant.matcha => l10n.themeMatchaDesc,

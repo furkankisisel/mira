@@ -20,7 +20,7 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: FinanceAnalysisScreen(
             month: DateTime(DateTime.now().year, DateTime.now().month, 1),
-            variant: ThemeVariant.world,
+            variant: ThemeVariant.cotton,
           ),
         ),
       );

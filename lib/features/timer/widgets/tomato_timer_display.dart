@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'dart:ui';
 
 /// Pomodoro timer için domates şeklinde görüntü widget'ı
 class TomatoTimerDisplay extends StatefulWidget {

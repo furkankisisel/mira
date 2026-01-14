@@ -1,7 +1,7 @@
-/// Focus model representing the daily focus item (habit or daily task).
-///
-/// This model stores which habit or task is set as the user's focus for
-/// the day, along with any AI-generated motivation message.
+// Focus model representing the daily focus item (habit or daily task).
+//
+// This model stores which habit or task is set as the user's focus for
+// the day, along with any AI-generated motivation message.
 
 enum FocusType { habit, dailyTask }
 

@@ -605,15 +605,7 @@ class HabitRepository extends ChangeNotifier {
     for (final h in _habits) {
       h.applyDailyReset(now);
 
-      // Auto-reset focus if it's from a different day
-      if (h.isFocus && h.focusSetAt != null) {
-        final setDate = _dateStr(h.focusSetAt!);
-        if (setDate != today) {
-          h.isFocus = false;
-          h.focusMessage = null;
-          h.focusSetAt = null;
-        }
-      }
+      // Auto-reset focus logic removed to persist focus across days
     }
   }
 

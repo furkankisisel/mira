@@ -348,22 +348,96 @@ class HabitScreenState extends State<HabitScreen>
   // _ensureAutoFocus removed. Logic is simplified: if no focus, no card.
 
   bool _isHabitScheduledForDate(Habit habit, DateTime date) {
-    // Logic similar to _isHabitCompletedOnDate but checking schedule
+    // 1. Start/End Date Check
     final String startDateStr = habit.startDate;
     final DateTime startDate = DateTime(
       int.parse(startDateStr.substring(0, 4)),
       int.parse(startDateStr.substring(5, 7)),
       int.parse(startDateStr.substring(8, 10)),
     );
-    if (date.isBefore(startDate)) return false;
+    // Normalize date to YYYY-MM-DD for comparison
+    final DateTime checkDate = DateTime(date.year, date.month, date.day);
+    final DateTime startOnly = DateTime(
+      startDate.year,
+      startDate.month,
+      startDate.day,
+    );
 
+    if (checkDate.isBefore(startOnly)) return false;
+
+    if (habit.endDate != null && habit.endDate!.isNotEmpty) {
+      final String endDateStr = habit.endDate!;
+      final DateTime endDate = DateTime(
+        int.parse(endDateStr.substring(0, 4)),
+        int.parse(endDateStr.substring(5, 7)),
+        int.parse(endDateStr.substring(8, 10)),
+      );
+      final DateTime endOnly = DateTime(
+        endDate.year,
+        endDate.month,
+        endDate.day,
+      );
+      if (checkDate.isAfter(endOnly)) return false;
+    }
+
+    // 2. Explicit Schedule Check provided by scheduledDates (e.g. from calendar picker)
     final dayKey = _dayKeyFromDate(date);
     if (habit.scheduledDates != null && habit.scheduledDates!.isNotEmpty) {
       return habit.scheduledDates!.contains(dayKey);
     }
-    return true; // Simple habits usually everyday if no schedule?
-    // Actually Habit model default is everyday if frequencies logic is handled elsewhere.
-    // Assuming if scheduledDates is null/empty it means daily or simple.
+
+    // 3. Frequency Logic
+    if (habit.frequencyType == null) {
+      // Default fallback: if no specific frequency type, assume daily (unless otherwise implied)
+      return true;
+    }
+
+    switch (habit.frequencyType) {
+      case 'daily':
+        return true;
+      case 'weekly': // Legacy/Wizard compatibility
+      case 'specificWeekdays':
+        if (habit.selectedWeekdays == null || habit.selectedWeekdays!.isEmpty) {
+          return true;
+        }
+        // DateTime.weekday is 1..7 (Mon..Sun)
+        // Ensure habit.selectedWeekdays matches this (1-indexed)
+        // SimpleHabitWizard uses 0..6 (Mon..Sun) ? Let's check.
+        // Wizard uses: weekdays = [l10n.mondayShort...]; index 0 = Mon.
+        // So wizard saves 0 for Mon. DateTime.weekday gives 1 for Mon.
+        // We need to adjust: stored 0 => check 1.
+        // Actually let's assume wizard saves 0-indexed where 0=Monday.
+        // DateTime.weekday: 1=Mon, 7=Sun.
+        // So we check if selectedWeekdays contains (date.weekday - 1).
+
+        // Let's verify what index wizard uses.
+        // SimpleHabitWizard: _weeklyDays.add(index); index 0 is Monday.
+        // Habit model might expect 1-7 or 0-6.
+        // Let's handle 0-indexed (Mon=0) to match wizard.
+        final int weekdayIndex = date.weekday - 1; // 0=Mon, 6=Sun
+        return habit.selectedWeekdays!.contains(weekdayIndex);
+
+      case 'monthly': // Legacy/Wizard compatibility
+      case 'specificMonthDays':
+        if (habit.selectedMonthDays == null ||
+            habit.selectedMonthDays!.isEmpty) {
+          return true;
+        }
+        return habit.selectedMonthDays!.contains(date.day);
+      case 'specificYearDays':
+        final md =
+            '${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+        if (habit.selectedYearDays == null || habit.selectedYearDays!.isEmpty) {
+          return true;
+        }
+        return habit.selectedYearDays!.contains(md);
+      case 'periodic':
+        if (habit.periodicDays == null || habit.periodicDays! <= 1) return true;
+        final diff = checkDate.difference(startOnly).inDays;
+        return (diff % habit.periodicDays!) == 0;
+      default:
+        return true;
+    }
   }
 
   /// Builds the FocusCard widget if a focus is set for today
@@ -1351,51 +1425,13 @@ class HabitScreenState extends State<HabitScreen>
   };
 
   List<Habit> _filteredHabits() {
-    // Only include habits that exist on or after their startDate for the selected day
-    final DateTime selectedDate = DateTime(
-      _selected.year,
-      _selected.month,
-      _selected.day,
-    );
     return _repo.habits
         .where((h) => _selectedTypes.contains(h.habitType))
         .where(_matchesCompletionFilter)
         .where(
           (h) => _selectedListId == null ? true : h.listId == _selectedListId,
         )
-        .where((h) {
-          // Parse startDate (YYYY-MM-DD) and hide the habit if selected day is before it
-          final s = h.startDate;
-          if (s.length >= 10) {
-            final sd = DateTime(
-              int.parse(s.substring(0, 4)),
-              int.parse(s.substring(5, 7)),
-              int.parse(s.substring(8, 10)),
-            );
-            final inStart = !selectedDate.isBefore(
-              DateTime(sd.year, sd.month, sd.day),
-            );
-            if (!inStart) return false;
-            // If habit has endDate, hide if selected day is after it
-            if (h.endDate != null && h.endDate!.length >= 10) {
-              final ed = DateTime(
-                int.parse(h.endDate!.substring(0, 4)),
-                int.parse(h.endDate!.substring(5, 7)),
-                int.parse(h.endDate!.substring(8, 10)),
-              );
-              if (selectedDate.isAfter(DateTime(ed.year, ed.month, ed.day))) {
-                return false;
-              }
-            }
-            // Respect explicit schedule: only show on scheduled dates
-            if (h.scheduledDates != null && h.scheduledDates!.isNotEmpty) {
-              final key = _dayKeyFromDate(selectedDate);
-              if (!h.scheduledDates!.contains(key)) return false;
-            }
-            return true;
-          }
-          return true;
-        })
+        .where((h) => _isHabitScheduledForDate(h, _selected))
         .toList();
   }
 
@@ -1427,12 +1463,15 @@ class HabitScreenState extends State<HabitScreen>
     final items = <_GroupedItem>[];
     final l10n = AppLocalizations.of(context);
 
-    // Filter out the focused item from the list (it's shown in FocusCard)
+    // Filter out the focused item from the list ONLY if we are viewing Today
+    // (Because FocusCard is only shown for Today)
+    final isToday = _isSameDay(_selected, DateTime.now());
     final (focusHabit, focusTask) = _findFocusedItem();
-    final filteredHabits = focusHabit != null
+
+    final filteredHabits = (isToday && focusHabit != null)
         ? habits.where((h) => h.id != focusHabit.id).toList()
         : habits;
-    final filteredTasks = focusTask != null
+    final filteredTasks = (isToday && focusTask != null)
         ? tasks.where((t) => t.id != focusTask.id).toList()
         : tasks;
 

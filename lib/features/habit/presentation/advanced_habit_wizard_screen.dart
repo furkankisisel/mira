@@ -41,7 +41,7 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
 
   // Hedef tipi
   NumericalTargetType _numericalTargetType = NumericalTargetType.minimum;
-  TimerTargetType _timerTargetType = TimerTargetType.minimum;
+  final TimerTargetType _timerTargetType = TimerTargetType.minimum;
   Duration _timerDuration = const Duration(minutes: 30);
 
   // Subtasks
@@ -341,15 +341,19 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
 
     final types = [
       (HabitType.numerical, l10n.numericalType, '📊', l10n.numericTypeDesc),
-      (HabitType.timer, 'Timer', '⏱️', 'Timer tracking'),
+      (HabitType.timer, l10n.timer, '⏱️', l10n.timerTracking),
       (HabitType.simple, l10n.checkboxType, '✅', l10n.checkboxTypeDesc),
-      (HabitType.subtasks, 'Subtasks', '📋', 'Multiple sub-items'),
+      (HabitType.subtasks, l10n.subtasks, '📋', l10n.multipleSubItems),
     ];
 
     return WizardPage(
       emoji: '🎯',
       title: l10n.habitTypeLabel,
       subtitle: l10n.howToTrackHabit,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        accentColor: _selectedColor,
+      ),
       child: Column(
         children: types.map((type) {
           final isSelected = _habitType == type.$1;
@@ -405,10 +409,6 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
           );
         }).toList(),
       ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        accentColor: _selectedColor,
-      ),
     );
   }
 
@@ -420,6 +420,11 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
       emoji: '✏️',
       title: l10n.simpleHabitNameTitle,
       subtitle: l10n.simpleHabitNameSubtitle,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        isNextEnabled: isValid,
+        accentColor: _selectedColor,
+      ),
       child: Column(
         children: [
           TextField(
@@ -479,11 +484,6 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
           ),
         ],
       ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        isNextEnabled: isValid,
-        accentColor: _selectedColor,
-      ),
     );
   }
 
@@ -494,6 +494,10 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
       emoji: '🎨',
       title: l10n.simpleHabitEmojiTitle,
       subtitle: l10n.simpleHabitEmojiSubtitle,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        accentColor: _selectedColor,
+      ),
       child: Column(
         children: [
           Wrap(
@@ -574,10 +578,6 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
             }).toList(),
           ),
         ],
-      ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        accentColor: _selectedColor,
       ),
     );
   }
@@ -691,7 +691,7 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
         break;
 
       case HabitType.subtasks:
-        title = 'Subtasks';
+        title = l10n.subtasks;
         subtitle = l10n.addSubtask;
         content = Column(
           children: [
@@ -704,7 +704,7 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
                       child: TextField(
                         controller: _subtaskControllers[index],
                         decoration: InputDecoration(
-                          hintText: '${l10n.subtaskIndex(index + 1)}',
+                          hintText: l10n.subtaskIndex(index + 1),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide.none,
@@ -787,12 +787,12 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
       emoji: _habitType == HabitType.timer ? '⏱️' : '🎯',
       title: title,
       subtitle: subtitle,
-      child: content,
       bottomWidget: WizardNavigationButtons(
         onNext: _nextPage,
         isNextEnabled: isValid,
         accentColor: _selectedColor,
       ),
+      child: content,
     );
   }
 
@@ -880,6 +880,10 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
       emoji: '⏰',
       title: l10n.simpleHabitFrequencyTitle,
       subtitle: l10n.simpleHabitFrequencySubtitle,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        accentColor: _selectedColor,
+      ),
       child: Column(
         children: frequencies.map((freq) {
           final isSelected = _selectedFrequency == freq.$1;
@@ -934,10 +938,6 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
             ),
           );
         }).toList(),
-      ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        accentColor: _selectedColor,
       ),
     );
   }
@@ -1104,12 +1104,12 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
       emoji: '📅',
       title: title,
       subtitle: subtitle,
-      child: content,
       bottomWidget: WizardNavigationButtons(
         onNext: _nextPage,
         isNextEnabled: isValid,
         accentColor: _selectedColor,
       ),
+      child: content,
     );
   }
 
@@ -1122,6 +1122,10 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
       emoji: '📆',
       title: l10n.dateRangeLabel,
       subtitle: l10n.simpleHabitStartDateSubtitle,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        accentColor: _selectedColor,
+      ),
       child: Column(
         children: [
           // Başlangıç tarihi
@@ -1186,10 +1190,6 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
           ),
         ],
       ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        accentColor: _selectedColor,
-      ),
     );
   }
 
@@ -1203,6 +1203,12 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
       title: l10n.simpleHabitReminderTitle,
       subtitle: l10n.simpleHabitReminderSubtitle,
       isOptional: true,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        onSkip: _nextPage,
+        showSkip: !_reminderEnabled,
+        accentColor: _selectedColor,
+      ),
       child: Column(
         children: [
           AnimatedContainer(
@@ -1300,12 +1306,6 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
           ],
         ],
       ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        onSkip: _nextPage,
-        showSkip: !_reminderEnabled,
-        accentColor: _selectedColor,
-      ),
     );
   }
 
@@ -1339,15 +1339,6 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
       emoji: '🎉',
       title: l10n.simpleHabitPreviewTitle,
       subtitle: l10n.simpleHabitPreviewSubtitle,
-      child: WizardPreviewCard(
-        emoji: _selectedEmoji,
-        title: _nameController.text.trim(),
-        subtitle: _descriptionController.text.trim().isNotEmpty
-            ? _descriptionController.text.trim()
-            : null,
-        color: _selectedColor,
-        tags: tags,
-      ),
 
       bottomWidget: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -1379,6 +1370,15 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
           ),
         ),
       ),
+      child: WizardPreviewCard(
+        emoji: _selectedEmoji,
+        title: _nameController.text.trim(),
+        subtitle: _descriptionController.text.trim().isNotEmpty
+            ? _descriptionController.text.trim()
+            : null,
+        color: _selectedColor,
+        tags: tags,
+      ),
     );
   }
 
@@ -1387,7 +1387,7 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Özel Emoji'),
+        title: Text(AppLocalizations.of(context).customEmoji),
         content: TextField(
           autofocus: true,
           textAlign: TextAlign.center,
@@ -1406,7 +1406,7 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('İptal'),
+            child: Text(AppLocalizations.of(context).cancel),
           ),
           FilledButton(
             onPressed: () {
@@ -1415,7 +1415,7 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
               }
               Navigator.pop(context);
             },
-            child: const Text('Seç'),
+            child: Text(AppLocalizations.of(context).select),
           ),
         ],
       ),

@@ -2213,7 +2213,9 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
         ),
         child: Center(
           child: Text(
-            widget.isEditing ? 'Değişiklikleri Kaydet' : 'Alışkanlık Oluştur',
+            widget.isEditing
+                ? AppLocalizations.of(context).saveChanges
+                : AppLocalizations.of(context).createHabitAction,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
               color: canSave
@@ -2271,7 +2273,7 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
                         TextButton(
                           onPressed: () => Navigator.pop(context),
                           child: Text(
-                            'İptal',
+                            AppLocalizations.of(context).cancel,
                             style: TextStyle(
                               color: colorScheme.onSurface.withOpacity(0.6),
                               fontWeight: FontWeight.w500,
@@ -2279,7 +2281,7 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
                           ),
                         ),
                         Text(
-                          'Saat Seç',
+                          AppLocalizations.of(context).selectTime,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -2293,7 +2295,7 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
                             ),
                           ),
                           child: Text(
-                            'Tamam',
+                            AppLocalizations.of(context).ok,
                             style: TextStyle(
                               color: _selectedColor,
                               fontWeight: FontWeight.w600,
@@ -2426,71 +2428,92 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
   }
 
   String _formatDuration(Duration d) {
+    final l10n = AppLocalizations.of(context);
     final hours = d.inHours;
     final minutes = d.inMinutes.remainder(60);
-    if (hours > 0 && minutes > 0) return '$hours sa $minutes dk';
-    if (hours > 0) return '$hours saat';
-    return '$minutes dakika';
+    if (hours > 0 && minutes > 0)
+      return '$hours ${l10n.hourShort} $minutes ${l10n.minLabel}';
+    if (hours > 0) return '$hours ${l10n.hours}';
+    return '$minutes ${l10n.minutes}';
   }
 
   String _getHabitTypeText() {
+    final l10n = AppLocalizations.of(context);
     switch (_habitType) {
       case HabitType.timer:
-        return 'Zamanlayıcı';
+        return l10n.timerType; // or l10n.timer
       case HabitType.numerical:
-        return 'Sayısal';
+        return l10n.numericalType;
       default:
-        return 'Sayısal';
+        return l10n.numericalType;
     }
   }
 
   String _getTargetText() {
     if (_habitType == HabitType.timer) {
+      final l10n = AppLocalizations.of(context);
       final prefix = _timerTargetType == TimerTargetType.minimum
-          ? 'En az'
+          ? l10n.atLeast
           : _timerTargetType == TimerTargetType.maximum
-          ? 'En fazla'
-          : 'Tam';
+          ? l10n.atMost
+          : l10n.exact;
       return '$prefix ${_formatDuration(_timerDuration)}';
     } else {
+      final l10n = AppLocalizations.of(context);
       final target = int.tryParse(_targetController.text) ?? 1;
-      final unit = _unitController.text.isEmpty ? 'adet' : _unitController.text;
+      final unit = _unitController.text.isEmpty
+          ? l10n.defaultUnit
+          : _unitController.text;
       final prefix = _numericalTargetType == NumericalTargetType.minimum
-          ? 'En az'
+          ? l10n.atLeast
           : _numericalTargetType == NumericalTargetType.maximum
-          ? 'En fazla'
-          : 'Tam';
+          ? l10n.atMost
+          : l10n.exact;
       return '$prefix $target $unit';
     }
   }
 
   String _getFrequencyText() {
+    final l10n = AppLocalizations.of(context);
     switch (_selectedFrequency) {
       case 'daily':
-        return 'Her gün';
+        return l10n.everyDay;
       case 'weekly':
-        if (_weeklyDays.isEmpty) return 'Haftalık';
-        final days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+        if (_weeklyDays.isEmpty) return l10n.weekly;
+        // Use standard DateFormat for days or keep using custom map if needed
+        // For now, let's defer to a helper or just l10n.weekly + details
+        // Ideally: DateFormat.E(locale).format...
+        // But for simplicity in this replacement:
+        final days = [
+          l10n.weekdaysShortMon,
+          l10n.weekdaysShortTue,
+          l10n.weekdaysShortWed,
+          l10n.weekdaysShortThu,
+          l10n.weekdaysShortFri,
+          l10n.weekdaysShortSat,
+          l10n.weekdaysShortSun,
+        ];
         final selected = _weeklyDays.toList()..sort();
         return selected.map((d) => days[d - 1]).join(', ');
       case 'monthly':
-        if (_monthDays.isEmpty) return 'Aylık';
+        if (_monthDays.isEmpty) return l10n.monthly;
         final sorted = _monthDays.toList()..sort();
-        return 'Ayın ${sorted.join(", ")}. günleri';
+        return l10n.selectedDaysOfMonth(sorted.join(", "));
       case 'periodic':
-        return 'Her $_periodicDays günde bir';
+        return l10n.everyXDays(_periodicDays);
       default:
-        return 'Her gün';
+        return l10n.everyDay;
     }
   }
 
   Widget _buildDateRangeSection(ThemeData theme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
         _buildDateRow(
           theme,
           colorScheme,
-          label: 'Başlangıç',
+          label: l10n.startDate,
           date: _startDate,
           onTap: () async {
             final picked = await showDatePicker(
@@ -2498,7 +2521,8 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
               initialDate: _startDate,
               firstDate: DateTime(2020),
               lastDate: DateTime(2030),
-              locale: const Locale('tr'),
+              // locale removed to use system default, or use:
+              // locale: Localizations.localeOf(context),
             );
             if (picked != null) {
               setState(() => _startDate = picked);
@@ -2509,7 +2533,7 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
         _buildDateRow(
           theme,
           colorScheme,
-          label: 'Bitiş',
+          label: l10n.endDate,
           date: _endDate,
           isOptional: true,
           onTap: () async {
@@ -2518,7 +2542,8 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
               initialDate: _endDate ?? _startDate.add(const Duration(days: 30)),
               firstDate: _startDate,
               lastDate: DateTime(2030),
-              locale: const Locale('tr'),
+              // locale removed
+              // locale: Localizations.localeOf(context),
             );
             if (picked != null) {
               setState(() => _endDate = picked);
@@ -2568,7 +2593,9 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    date != null ? _formatDate(date) : 'Seçilmedi',
+                    date != null
+                        ? _formatDate(date)
+                        : AppLocalizations.of(context).notSelected,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w500,
                       color: date != null
@@ -2856,6 +2883,7 @@ class _DurationPickerSheetState extends State<_DurationPickerSheet> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -2878,7 +2906,7 @@ class _DurationPickerSheetState extends State<_DurationPickerSheet> {
           const SizedBox(height: 24),
 
           Text(
-            'Süre Seç',
+            l10n.durationSelection,
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -2893,7 +2921,7 @@ class _DurationPickerSheetState extends State<_DurationPickerSheet> {
               _buildPickerColumn(
                 value: _hours,
                 maxValue: 23,
-                label: 'Saat',
+                label: l10n.hours,
                 onChanged: (v) => setState(() => _hours = v),
                 theme: theme,
                 colorScheme: colorScheme,
@@ -2906,7 +2934,7 @@ class _DurationPickerSheetState extends State<_DurationPickerSheet> {
                 value: _minutes,
                 maxValue: 59,
                 step: 5,
-                label: 'Dakika',
+                label: l10n.minutes,
                 onChanged: (v) => setState(() => _minutes = v),
                 theme: theme,
                 colorScheme: colorScheme,

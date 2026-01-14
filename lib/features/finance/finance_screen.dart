@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../l10n/app_localizations.dart';
 import '../../design_system/theme/theme_variations.dart';
-import '../../design_system/tokens/colors.dart';
 import 'data/transaction_model.dart';
 import 'data/transaction_repository.dart';
 import 'data/finance_category_repository.dart';
@@ -420,7 +419,6 @@ class FinanceScreenState extends State<FinanceScreen>
       ),
       builder: (ctx) {
         final scheme = Theme.of(ctx).colorScheme;
-        final bool isWorld = false;
         return StatefulBuilder(
           builder: (context, setSheetState) {
             return SafeArea(
@@ -507,11 +505,7 @@ class FinanceScreenState extends State<FinanceScreen>
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton.icon(
-                          style: isWorld
-                              ? TextButton.styleFrom(
-                                  foregroundColor: AppColors.accentBlue,
-                                )
-                              : null,
+                          style: null,
                           onPressed: () {
                             final now = DateTime.now();
                             setState(
@@ -915,9 +909,15 @@ class _SpendingAdvisorCard extends StatelessWidget {
         message = l10n.spendingAdvisorOverBudget;
       } else {
         final dailySafe = remaining / daysLeft;
+        final isDark = Theme.of(context).brightness == Brightness.dark;
 
-        iconColor = const Color(0xFF2E7D32); // Success Green
-        bgColor = const Color(0xFFE8F5E9); // Light Green
+        if (isDark) {
+          iconColor = Colors.greenAccent;
+          bgColor = Colors.green.withValues(alpha: 0.2);
+        } else {
+          iconColor = const Color(0xFF2E7D32); // Success Green
+          bgColor = const Color(0xFFE8F5E9); // Light Green
+        }
         icon = Icons.tips_and_updates_outlined;
 
         message = l10n.spendingAdvisorSafe(nf.format(dailySafe));
@@ -1079,10 +1079,8 @@ class _LoadingSection extends StatelessWidget {
 
 class _EmptySection extends StatelessWidget {
   final String message;
-  final VoidCallback? onAdd;
-  final String? actionLabel;
 
-  const _EmptySection({required this.message, this.onAdd, this.actionLabel});
+  const _EmptySection({required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -1128,20 +1126,6 @@ class _EmptySection extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 32),
-            // Centered action button
-            if (onAdd != null)
-              FilledButton.icon(
-                onPressed: onAdd,
-                icon: const Icon(Icons.add),
-                label: Text(actionLabel ?? l10n.addFirstTransaction),
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 14,
-                  ),
-                ),
-              ),
           ],
         ),
       ),

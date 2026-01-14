@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:dotlottie_loader/dotlottie_loader.dart';
-import 'dart:ui';
 
 class HourglassTimerDisplay extends StatefulWidget {
   const HourglassTimerDisplay({

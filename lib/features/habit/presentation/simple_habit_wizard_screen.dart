@@ -160,7 +160,11 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
         debugPrint('DEBUG: freqText: $freqText');
       } catch (e) {
         debugPrint('DEBUG: Error getting frequency text: $e');
-        freqText = 'Daily'; // Fallback
+        if (mounted) {
+          freqText = AppLocalizations.of(context).daily; // Fallback
+        } else {
+          freqText = 'Daily';
+        }
       }
 
       // 4. Start Date string
@@ -211,7 +215,7 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Hata: $e'),
+            content: Text('Error: $e'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 4),
           ),
@@ -304,6 +308,11 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
       emoji: '✏️',
       title: l10n.simpleHabitNameTitle,
       subtitle: l10n.simpleHabitNameSubtitle,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        isNextEnabled: isValid,
+        accentColor: _selectedColor,
+      ),
       child: Column(
         children: [
           TextField(
@@ -364,11 +373,6 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
           ),
         ],
       ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        isNextEnabled: isValid,
-        accentColor: _selectedColor,
-      ),
     );
   }
 
@@ -380,6 +384,10 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
       emoji: '🎨',
       title: l10n.simpleHabitEmojiTitle,
       subtitle: l10n.simpleHabitEmojiSubtitle,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        accentColor: _selectedColor,
+      ),
       child: Wrap(
         spacing: 12,
         runSpacing: 12,
@@ -410,10 +418,6 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
           ),
         ],
       ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        accentColor: _selectedColor,
-      ),
     );
   }
 
@@ -424,6 +428,10 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
       emoji: '🌈',
       title: l10n.simpleHabitColorTitle,
       subtitle: l10n.simpleHabitColorSubtitle,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        accentColor: _selectedColor,
+      ),
       child: Wrap(
         spacing: 16,
         runSpacing: 16,
@@ -462,10 +470,6 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
           );
         }).toList(),
       ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        accentColor: _selectedColor,
-      ),
     );
   }
 
@@ -485,6 +489,10 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
       emoji: '⏰',
       title: l10n.simpleHabitFrequencyTitle,
       subtitle: l10n.simpleHabitFrequencySubtitle,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        accentColor: _selectedColor,
+      ),
       child: Column(
         children: frequencies.map((freq) {
           final isSelected = _selectedFrequency == freq.$1;
@@ -539,10 +547,6 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
             ),
           );
         }).toList(),
-      ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        accentColor: _selectedColor,
       ),
     );
   }
@@ -709,12 +713,12 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
       emoji: '📅',
       title: title,
       subtitle: subtitle,
-      child: content,
       bottomWidget: WizardNavigationButtons(
         onNext: _nextPage,
         isNextEnabled: isValid,
         accentColor: _selectedColor,
       ),
+      child: content,
     );
   }
 
@@ -741,6 +745,10 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
       emoji: '🚀',
       title: l10n.simpleHabitStartDateTitle,
       subtitle: l10n.simpleHabitStartDateSubtitle,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        accentColor: _selectedColor,
+      ),
       child: Column(
         children: [
           // Hızlı seçenekler
@@ -812,10 +820,6 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
           ),
         ],
       ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        accentColor: _selectedColor,
-      ),
     );
   }
 
@@ -829,6 +833,12 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
       title: l10n.simpleHabitReminderTitle,
       subtitle: l10n.simpleHabitReminderSubtitle,
       isOptional: true,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        onSkip: _nextPage,
+        showSkip: !_reminderEnabled,
+        accentColor: _selectedColor,
+      ),
       child: Column(
         children: [
           // Toggle
@@ -929,12 +939,6 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
           ],
         ],
       ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        onSkip: _nextPage,
-        showSkip: !_reminderEnabled,
-        accentColor: _selectedColor,
-      ),
     );
   }
 
@@ -951,6 +955,15 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
       emoji: '🎉',
       title: l10n.simpleHabitPreviewTitle,
       subtitle: l10n.simpleHabitPreviewSubtitle,
+      bottomWidget: WizardNavigationButtons(
+        onNext: () {
+          debugPrint('DEBUG: Preview Page Next Button Clicked');
+          _saveHabit();
+        },
+        nextLabel: l10n.createHabit,
+        isLastStep: true,
+        accentColor: _selectedColor,
+      ),
       child: Column(
         children: [
           // Önizleme kartı
@@ -994,15 +1007,6 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
           ),
         ],
       ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: () {
-          debugPrint('DEBUG: Preview Page Next Button Clicked');
-          _saveHabit();
-        },
-        nextLabel: l10n.createHabit,
-        isLastStep: true,
-        accentColor: _selectedColor,
-      ),
     );
   }
 
@@ -1039,7 +1043,7 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Özel Emoji'),
+        title: Text(AppLocalizations.of(context).customEmoji),
         content: TextField(
           autofocus: true,
           textAlign: TextAlign.center,
@@ -1057,7 +1061,7 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('İptal'),
+            child: Text(AppLocalizations.of(context).cancel),
           ),
           FilledButton(
             onPressed: () {
@@ -1066,7 +1070,7 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
               }
               Navigator.pop(context);
             },
-            child: const Text('Seç'),
+            child: Text(AppLocalizations.of(context).select),
           ),
         ],
       ),

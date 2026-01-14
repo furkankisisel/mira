@@ -3,7 +3,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../domain/ai_habit_dto.dart';
 import '../domain/ai_habit_repository.dart';
 import '../domain/habit_repository.dart';
-import '../domain/habit_repository.dart';
+
 import '../domain/daily_task_repository.dart'; // Added
 
 class AiHabitPreviewScreen extends StatefulWidget {
@@ -46,7 +46,7 @@ class _AiHabitPreviewScreenState extends State<AiHabitPreviewScreen> {
     try {
       final habitRepo = HabitRepository.instance;
       final taskRepo = DailyTaskRepository.instance; // Added
-      final l10n = AppLocalizations.of(context)!;
+      final l10n = AppLocalizations.of(context);
 
       int addedCount = 0;
       for (var dto in _habits) {
@@ -85,7 +85,7 @@ class _AiHabitPreviewScreenState extends State<AiHabitPreviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
     return Scaffold(

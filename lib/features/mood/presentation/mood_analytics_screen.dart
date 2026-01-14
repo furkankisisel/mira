@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../design_system/theme/theme_variations.dart';
-import '../../../design_system/tokens/colors.dart';
+
 import '../data/mood_models.dart';
 import '../data/detailed_mood_repository.dart';
 
@@ -57,10 +57,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
-    final bool isWorld = false;
-    final Color accent = isWorld
-        ? AppColors.accentPurple
-        : theme.colorScheme.primary;
+    final Color accent = theme.colorScheme.primary;
 
     final themed = theme.copyWith(
       colorScheme: theme.colorScheme.copyWith(primary: accent),
@@ -316,10 +313,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
       context: context,
       builder: (ctx) {
         final theme = Theme.of(ctx);
-        final bool isWorld = false;
-        final Color accent = isWorld
-            ? AppColors.accentPurple
-            : theme.colorScheme.primary;
+        final Color accent = theme.colorScheme.primary;
         final themed = theme.copyWith(
           colorScheme: theme.colorScheme.copyWith(primary: accent),
           appBarTheme: theme.appBarTheme.copyWith(foregroundColor: accent),
@@ -372,10 +366,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
       context: context,
       builder: (ctx) {
         final theme = Theme.of(ctx);
-        final bool isWorld = false;
-        final Color accent = isWorld
-            ? AppColors.accentPurple
-            : theme.colorScheme.primary;
+        final Color accent = theme.colorScheme.primary;
         final themed = theme.copyWith(
           colorScheme: theme.colorScheme.copyWith(primary: accent),
           appBarTheme: theme.appBarTheme.copyWith(foregroundColor: accent),

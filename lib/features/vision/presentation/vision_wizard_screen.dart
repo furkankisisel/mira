@@ -206,8 +206,13 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
 
     return WizardPage(
       emoji: '✏️',
-      title: 'Name Your Vision',
-      subtitle: 'Give your vision a meaningful name',
+      title: l10n.nameYourVision,
+      subtitle: l10n.nameYourVisionSubtitle,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        isNextEnabled: isValid,
+        accentColor: _selectedColor,
+      ),
       child: Column(
         children: [
           TextField(
@@ -267,11 +272,6 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
           ),
         ],
       ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        isNextEnabled: isValid,
-        accentColor: _selectedColor,
-      ),
     );
   }
 
@@ -282,10 +282,15 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
 
     return WizardPage(
       emoji: _useImage ? '🖼️' : '🎨',
-      title: _useImage ? 'Choose Photo' : l10n.simpleHabitEmojiTitle,
+      title: _useImage ? l10n.choosePhoto : l10n.simpleHabitEmojiTitle,
       subtitle: _useImage
-          ? 'Select a photo that inspires you'
+          ? l10n.choosePhotoSubtitle
           : l10n.simpleHabitEmojiSubtitle,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        isNextEnabled: !_useImage || (_useImage && _imagePath != null),
+        accentColor: _selectedColor,
+      ),
       child: Column(
         children: [
           // Toggle between Style and Photo
@@ -505,11 +510,6 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
           ],
         ],
       ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        isNextEnabled: !_useImage || (_useImage && _imagePath != null),
-        accentColor: _selectedColor,
-      ),
     );
   }
 
@@ -534,6 +534,10 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
       emoji: '📅',
       title: l10n.dateRangeLabel,
       subtitle: l10n.setVisionTimeline,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        accentColor: _selectedColor,
+      ),
       child: Column(
         children: [
           // Başlangıç tarihi
@@ -628,10 +632,6 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
           ),
         ],
       ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        accentColor: _selectedColor,
-      ),
     );
   }
 
@@ -649,6 +649,36 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
       emoji: '🎉',
       title: l10n.simpleHabitPreviewTitle,
       subtitle: l10n.simpleHabitPreviewSubtitle,
+      bottomWidget: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: SizedBox(
+          width: double.infinity,
+          child: FilledButton(
+            onPressed: _saveVision,
+            style: FilledButton.styleFrom(
+              backgroundColor: _selectedColor,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  l10n.createHabit,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(Icons.check, size: 20),
+              ],
+            ),
+          ),
+        ),
+      ),
       child: Column(
         children: [
           // Preview card
@@ -718,36 +748,6 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
             ),
           ),
         ],
-      ),
-      bottomWidget: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: SizedBox(
-          width: double.infinity,
-          child: FilledButton(
-            onPressed: _saveVision,
-            style: FilledButton.styleFrom(
-              backgroundColor: _selectedColor,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  l10n.createHabit,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                const Icon(Icons.check, size: 20),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }

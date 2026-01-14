@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart'; // Added for WidgetsBindingObserver
 import 'package:flutter_background_service/flutter_background_service.dart';

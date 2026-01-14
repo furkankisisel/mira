@@ -591,6 +591,10 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
       emoji: '💰',
       title: l10n.add,
       subtitle: l10n.category,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        accentColor: _accentColor,
+      ),
       child: Column(
         children: [
           _buildTypeCard(
@@ -610,10 +614,6 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
             color: const Color(0xFF22C55E),
           ),
         ],
-      ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        accentColor: _accentColor,
       ),
     );
   }
@@ -687,6 +687,11 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
       emoji: '🏷️',
       title: l10n.category,
       subtitle: l10n.selectCategory,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        isNextEnabled: _selectedCategory != null,
+        accentColor: _accentColor,
+      ),
       child: SizedBox(
         height: 400,
         child: SingleChildScrollView(
@@ -707,11 +712,6 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
           ),
         ),
       ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        isNextEnabled: _selectedCategory != null,
-        accentColor: _accentColor,
-      ),
     );
   }
 
@@ -728,6 +728,11 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
       emoji: _type == TransactionType.income ? '💵' : '💸',
       title: l10n.amountLabel,
       subtitle: l10n.amountLabel,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        isNextEnabled: isValid,
+        accentColor: _accentColor,
+      ),
       child: Column(
         children: [
           // Amount input
@@ -799,11 +804,6 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
           ),
         ],
       ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        isNextEnabled: isValid,
-        accentColor: _accentColor,
-      ),
     );
   }
 
@@ -825,6 +825,10 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
       emoji: '📅',
       title: l10n.date,
       subtitle: l10n.selectDate,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        accentColor: _accentColor,
+      ),
       child: Column(
         children: dateOptions.map((option) {
           final isCalendar = option.$2 == null;
@@ -891,10 +895,6 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
           );
         }).toList(),
       ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        accentColor: _accentColor,
-      ),
     );
   }
 
@@ -908,6 +908,12 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
       title: 'Recurring',
       subtitle: 'Make this a monthly transaction',
       isOptional: true,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        onSkip: _nextPage,
+        showSkip: !_isRecurring,
+        accentColor: _accentColor,
+      ),
       child: Column(
         children: [
           // Recurring toggle
@@ -1000,12 +1006,6 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
           ],
         ],
       ),
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        onSkip: _nextPage,
-        showSkip: !_isRecurring,
-        accentColor: _accentColor,
-      ),
     );
   }
 
@@ -1066,6 +1066,36 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
       emoji: '🎉',
       title: l10n.simpleHabitPreviewTitle,
       subtitle: l10n.simpleHabitPreviewSubtitle,
+      bottomWidget: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: SizedBox(
+          width: double.infinity,
+          child: FilledButton(
+            onPressed: _saveTransaction,
+            style: FilledButton.styleFrom(
+              backgroundColor: _accentColor,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  l10n.save,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(Icons.check, size: 20),
+              ],
+            ),
+          ),
+        ),
+      ),
       child: Column(
         children: [
           // Preview card
@@ -1106,36 +1136,6 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
             ),
           ),
         ],
-      ),
-      bottomWidget: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: SizedBox(
-          width: double.infinity,
-          child: FilledButton(
-            onPressed: _saveTransaction,
-            style: FilledButton.styleFrom(
-              backgroundColor: _accentColor,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  l10n.save,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                const Icon(Icons.check, size: 20),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }

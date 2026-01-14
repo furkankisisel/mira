@@ -1,5 +1,10 @@
 {
     "@@locale": "en",
+    "@aiContextMessage": {
+        "placeholders": {
+            "tip": {}
+        }
+    },
     "@approxVisionDurationDays": {
         "placeholders": {
             "days": {}
@@ -85,6 +90,13 @@
             }
         }
     },
+    "@lastBackup": {
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
     "@levelLabel": {
         "description": "Level label",
         "placeholders": {
@@ -107,109 +119,9 @@
             "days": {}
         }
     },
-    "@ruleEnteredDurationAtLeast": {
-        "placeholders": {
-            "target": {}
-        }
-    },
-    "@ruleEnteredDurationAtMost": {
-        "placeholders": {
-            "target": {}
-        }
-    },
-    "@ruleEnteredDurationExactly": {
-        "placeholders": {
-            "target": {}
-        }
-    },
-    "@ruleEnteredValueAtLeast": {
-        "placeholders": {
-            "target": {}
-        }
-    },
-    "@ruleEnteredValueAtMost": {
-        "placeholders": {
-            "target": {}
-        }
-    },
-    "@ruleEnteredValueExactly": {
-        "placeholders": {
-            "target": {}
-        }
-    },
-    "@selectedDaysOfMonth": {
-        "placeholders": {
-            "sorted": {}
-        }
-    },
-    "@spendingAdvisorSafe": {
-        "placeholders": {
-            "amount": {}
-        }
-    },
-    "@spendingAdvisorWarning": {
-        "placeholders": {
-            "amount": {}
-        }
-    },
-    "@stepOf": {
-        "description": "A message that indicates the current step of a process.",
-        "placeholders": {
-            "current": {},
-            "total": {}
-        }
-    },
-    "@streakDays": {
-        "placeholders": {
-            "count": {}
-        }
-    },
     "@subtaskIndex": {
         "placeholders": {
             "index": {}
-        }
-    },
-    "@successfulDaysCount": {
-        "placeholders": {
-            "count": {}
-        }
-    },
-    "@targetShort": {
-        "placeholders": {
-            "value": {}
-        }
-    },
-    "@timerPendingDurationLabel": {
-        "placeholders": {
-            "duration": {}
-        }
-    },
-    "@timerPendingLabel": {
-        "placeholders": {
-            "duration": {}
-        }
-    },
-    "@timerPomodoroCompletedWork": {
-        "placeholders": {
-            "count": {}
-        }
-    },
-    "@visionAutoDurationInfo": {
-        "placeholders": {
-            "day": {}
-        }
-    },
-    "@visionStartedMessage": {
-        "placeholders": {
-            "title": {}
-        }
-    },
-    "@xpProgressSummary": {
-        "description": "XP progress summary",
-        "placeholders": {
-            "current": {},
-            "total": {},
-            "toNext": {}
         }
     },
     "about": "About",
@@ -220,10 +132,13 @@
     "adFreeExperience": "Ad-Free Experience",
     "add": "Add",
     "addDate": "Add Date",
+    "addFirstTransaction": "Add first transaction",
     "addHabit": "Add Habit",
     "addImage": "Add image",
     "addNew": "Add New",
     "addNewHabit": "Add New Habit",
+    "addOptionHint": "Add option...",
+    "addOptionsToStart": "Add options to start",
     "addSpecialDays": "Add special days",
     "addSubtask": "Add Subtask",
     "addTask": "Add Task",
@@ -234,7 +149,39 @@
     "advancedHabit": "Advanced Habit",
     "advancedHabitTitle": "Advanced Habit",
     "advancedTimer": "Advanced Timer",
+    "aiAssistantOnline": "Online",
+    "aiAssistantTitle": "AI Assistant",
+    "aiContextMessage": "Hello! I noticed you are interested in this tip:\n\n\"{tip}\"\n\nWould you like me to show you how to apply this in Mira?",
+    "aiHabitAddedMessage": "{count} habits added via AI",
+    "@aiHabitAddedMessage": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "aiInputHint": "Describe the habit you want to build...",
     "aiPoweredRecommendations": "AI powered recommendations",
+    "aiPreviewTitle": "AI Suggestions",
+    "aiQuickFinance": "Budgeting tips",
+    "aiQuickGamification": "Explain XP system",
+    "aiQuickHabit": "Create a new habit",
+    "aiQuickMood": "Analyze my mood",
+    "aiQuickMotivation": "Give me motivation",
+    "aiQuickProfile": "My AI Character",
+    "aiQuickTimer": "How to use Timer?",
+    "aiQuickVision": "Help with Vision Board",
+    "aiRetry": "Retry with Stricter Rules",
+    "aiShowMeHow": "Yes, show me how",
+    "aiTip0": "Did you know? You can create a Vision Board for your long-term goals.",
+    "aiTip1": "Tip: Use the Timer for focused work sessions.",
+    "aiTip2": "Track your mood daily to see patterns over time.",
+    "aiTip3": "Habits stick better when you do them at the same time every day.",
+    "aiTip4": "Break down big Visions into smaller, manageable Tasks.",
+    "aiTip5": "Use the Finance tab to keep track of your daily expenses.",
+    "aiTip6": "Need help? Tap here to ask the AI assistant!",
+    "aiTip7": "Consistency is key! Don't break the chain",
+    "aiWelcomeMessage": "Hello! I'm your Mira assistant. How can I help you today? You can ask me how to use visions, habits, timers, or any other feature.",
     "allDataDeleted": "All data deleted",
     "allLabel": "All",
     "alsoDeleteLinkedHabits": "Also delete linked habits",
@@ -244,13 +191,6 @@
     "analysisTooltip": "Analysis",
     "annualPlanDesc": "Uninterrupted access for 12 months",
     "appTitle": "Mira",
-    "signInToSaveData": "Sign in to save data",
-    "guestAccount": "Guest Account",
-    "backupRestore": "Backup & Restore",
-    "subscription": "Subscription",
-    "emptyHabitTitle": "Start Your Journey",
-    "emptyHabitSubtitle": "Create your first habit to begin tracking your progress.",
-    "createFirstHabit": "Create Habit",
     "appearance": "Appearance",
     "apply": "Apply",
     "applyCode": "Apply Code",
@@ -259,15 +199,21 @@
     "assetsReloadHint": "A full app restart may be required to load some assets.",
     "atLeast": "At Least",
     "atMost": "At Most",
+    "autoBackupSubtitle": "Automatically backup your data to Google Drive every 24 hours.",
+    "autoBackupTitle": "Automatic Backup",
     "averageMood": "Average Mood",
     "back": "Back",
     "backgroundPlate": "Background plate",
     "backupError": "Backup Error",
     "backupFailed": "Backup failed",
-    "autoBackupTitle": "Automatic Backup",
-    "autoBackupSubtitle": "Automatically backup your data to Google Drive every 24 hours.",
     "backupNow": "Backup Now",
+    "backupRestore": "Backup & Restore",
     "backupSuccess": "Backed up: {id}",
+    "@backupSuccess": {
+        "placeholders": {
+            "id": {}
+        }
+    },
     "backupTitle": "Backup",
     "backupToDrive": "Backup to Drive",
     "badgeActive100dDesc": "Be active for 100 days",
@@ -352,25 +298,38 @@
     "chooseBestCategory": "Choose the best category for your habit",
     "chooseColor": "Choose Color:",
     "chooseEmoji": "Choose Emoji:",
+    "choosePhoto": "Choose Photo",
+    "choosePhotoSubtitle": "Choose a photo to motivate you",
+    "choosePhotoDesc": "Select a photo that inspires you",
     "clear": "Clear",
     "clearFilters": "Clear Filters",
     "clearHistory": "Clear History",
     "close": "Close",
     "cloudBackup": "Cloud Backup",
+    "coinFlipDescription": "Decide between two options",
+    "coinFlipInstruction": "Enter two options and flip the coin!",
+    "coinFlipTitle": "Coin Flip",
     "colorLabel": "Color",
     "colorTheme": "Color theme",
     "completeAllSubtasksToFinish": "complete all to finish habit",
     "completedSelectedDay": "Completed on selected day",
     "confirmDeleteAccount": "Confirm Account Deletion",
+    "confirmHabits": "Confirm Habits",
     "continueButton": "Continue",
+    "continueText": "Continue",
+    "cottonCandy": "Cotton Candy",
+    "cottonCandyDesc": "Cotton candy - pink & blue",
     "countdownConfigureTitle": "Configure Countdown",
     "countdownLabel": "COUNTDOWN",
+    "cozyJournal": "Cozy Journal",
+    "cozyJournalDesc": "Brown tones & timeline",
     "crashReports": "Crash reports",
     "crashReportsSubtitle": "Send anonymous reports on app crashes",
-    "continueText": "Continue",
     "create": "Create",
     "createAdvancedHabit": "Create Advanced Habit",
     "createDailyTask": "Create Daily Task",
+    "createFirstHabit": "Create Habit",
+    "createFirstVision": "Create Your First Vision",
     "createHabit": "Create Habit",
     "createHabitAction": "Create Habit",
     "createHabitTemplateTitle": "Create Habit Template",
@@ -379,10 +338,10 @@
     "createNewCategory": "Create New Category",
     "createNewList": "Create New List",
     "createVision": "Create Vision",
-    "createFirstVision": "Create Your First Vision",
-    "visionEmptyDescription": "Visualize your goals and add your first vision to turn your dreams into reality.",
-    "tapFabToCreate": "Tap the + button to start",
     "createVisionTemplateTitle": "Create Vision Template",
+    "createVisionWithAI": "Create Vision with AI",
+    "createWithAi": "Create with AI",
+    "creatingBackup": "Yedek oluşturuluyor...",
     "currentStreak": "Current Streak",
     "custom": "Custom",
     "customCategories": "Custom Categories",
@@ -394,6 +353,7 @@
     "customUnitHint": "Ex: portion, set, km...",
     "daily": "Daily",
     "dailyCheck": "Daily check",
+    "dailyDesc": "Every day",
     "dailyLimit": "Daily limit",
     "dailyTask": "Daily Task",
     "dailyTaskCreatedMessage": "Daily task created successfully",
@@ -404,6 +364,14 @@
     "dateRangeLabel": "Date Range",
     "dayRangeShort": "Day {start}–{end}",
     "dayShort": "Day {day}",
+    "days": "days",
+    "dayMonShort": "Mon",
+    "dayTueShort": "Tue",
+    "dayWedShort": "Wed",
+    "dayThuShort": "Thu",
+    "dayFriShort": "Fri",
+    "daySatShort": "Sat",
+    "daySunShort": "Sun",
     "daysAgo": "{days} days ago",
     "daysAverageShort": "{days}d avg.",
     "daysCount": "{count} days",
@@ -412,6 +380,9 @@
     "daysLater": "{days} days later",
     "daysLeft": "days left",
     "daysRemaining": "Days Remaining",
+    "decisionEggDescription": "Pick a mystical egg for answers",
+    "decisionEggTitle": "Decision Egg",
+    "defaultUnit": "count",
     "delete": "Delete",
     "deleteAccountFailed": "Account deletion failed",
     "deleteAccountRequestSuccess": "Your account deletion request has been successfully received",
@@ -421,6 +392,11 @@
     "deleteAllData": "Delete all data",
     "deleteAllDataConfirmContent": "Are you sure you want to delete all your app data? This action cannot be undone.",
     "deleteCategoryConfirmNamed": "Delete the category \"{name}\"?",
+    "@deleteCategoryConfirmNamed": {
+        "placeholders": {
+            "name": {}
+        }
+    },
     "deleteCategoryTitle": "Delete category",
     "deleteCustomCategoryConfirm": "Delete this custom category?",
     "deleteEntryConfirm": "Are you sure you want to delete this entry?",
@@ -432,14 +408,21 @@
     "deleteTaskConfirmMessage": "Are you sure you want to delete this task?",
     "deleteTaskConfirmTitle": "Delete Task",
     "deleteTransactionConfirm": "Delete the record \"{title}\"?",
+    "@deleteTransactionConfirm": {
+        "placeholders": {
+            "title": {}
+        }
+    },
     "deleteVisionMessage": "Delete this vision?",
     "deleteVisionTitle": "Delete vision",
     "descHint": "Details about your habit (optional)",
+    "descriptionHintOptional": "Add description (optional)",
     "descriptionLabel": "Description",
     "detailedCharts": "Detailed charts and statistics",
     "diagnosticsData": "Diagnostics data",
     "diagnosticsDataSubtitle": "Share anonymous usage statistics",
     "difficulty": "Difficulty Level",
+    "drinkWater": "Drink Water",
     "duration": "Duration",
     "durationAutoLabel": "Duration (auto)",
     "durationIndefinite": "Indefinite",
@@ -454,6 +437,9 @@
     "editHabit": "Edit Habit",
     "editListTitle": "Edit List",
     "education": "Education",
+    "eggRevealMessage": "The mystical egg has spoken! ✨",
+    "eggSelectMessage": "Think of a question and tap an egg 🥚",
+    "emojiAndColor": "Emoji & Color",
     "emojiCategoryAnimals": "Animals",
     "emojiCategoryCare": "Care",
     "emojiCategoryFood": "Food",
@@ -464,11 +450,14 @@
     "emojiCategoryProductivity": "Productivity",
     "emojiCategorySport": "Sport",
     "emojiLabel": "Emoji",
+    "emptyHabitSubtitle": "Create your first habit to begin tracking your progress.",
+    "emptyHabitTitle": "Start Your Journey",
     "enableNotifications": "Enable Notifications",
     "enableReminder": "Enable Reminder",
     "endDate": "End Date",
     "endDateLabel": "End",
     "endDayOptionalLabel": "End day (optional)",
+    "enterBothOptions": "Please enter both options",
     "enterMonthlyPlanToComputeDailyLimit": "Enter a monthly plan to compute a daily limit.",
     "enterNameAndDesc": "Enter your habit's name and description",
     "enterPromoCode": "Please enter a promo code",
@@ -486,6 +475,11 @@
     "exact": "Exact",
     "exactAlarmPermission": "Exact Alarm Permission (Android 12+)",
     "examplePrefix": "Example: {example}",
+    "@examplePrefix": {
+        "placeholders": {
+            "example": {}
+        }
+    },
     "expenseDelta": "Expense Δ",
     "expenseDistributionPie": "Expense distribution (pie)",
     "expenseEditTitle": "Edit Expense",
@@ -502,13 +496,21 @@
     "filterTooltip": "Filter",
     "finance": "Finance",
     "financeAnalysisTitle": "Finance Analysis · {month}",
+    "@financeAnalysisTitle": {
+        "placeholders": {
+            "month": {}
+        }
+    },
     "financeLast7Days": "Finance · Last 7 days",
     "financeNet": "Net",
     "finish": "Finish",
     "fitness": "Fitness",
     "fixedDuration": "Fixed",
     "flexiblePlan": "Flexible plan, cancel anytime",
+    "flipCoin": "Flip Coin",
     "focusLabel": "FOCUS",
+    "focusedZen": "Focused Zen",
+    "focusedZenDesc": "Minimalist, single focus point",
     "font": "Font",
     "forestTheme": "Forest",
     "forestThemeDesc": "Natural green theme",
@@ -527,24 +529,38 @@
     "freeTrial14Days": "14-day free trial",
     "frequency": "Frequency",
     "frequencyLabel": "Frequency",
+    "fridayShort": "Fri",
     "fullName": "Full Name",
     "fullScreen": "Full screen",
     "gallery": "Gallery",
+    "gamesDescription": "Having trouble deciding? Let fun games help you decide!",
+    "gamesTitle": "Games",
     "general": "General",
     "generalNotifications": "General notifications",
+    "generate": "Generate",
     "glasses": "Glasses",
     "goToPlayStore": "Go to Play Store",
     "goldenTheme": "Golden",
     "goldenThemeDesc": "Warm golden theme",
+    "goodMorning": "Good morning! ☀️",
     "googleDrive": "Google Drive",
     "granted": "Granted",
+    "greatDayAhead": "Today is a great day, you got this!",
     "greetingAfternoon": "Good afternoon",
     "greetingEvening": "Good evening",
     "greetingMorning": "Good morning",
+    "guestAccount": "Guest Account",
+    "guidedJourney": "Guided Journey",
+    "guidedJourneyDesc": "Step-by-step guided flow",
     "habit": "Habit",
     "habitAddError": "Error adding habits: {error}",
     "habitAddSuccess": "{count, plural, =0{No habits added} =1{1 habit added} other{{count} habits added}}",
     "habitCreatedMessage": "Habit created successfully: {title}",
+    "@habitCreatedMessage": {
+        "placeholders": {
+            "title": {}
+        }
+    },
     "habitDeletedMessage": "Habit deleted",
     "habitDescription": "Description",
     "habitDescriptionHint": "Add a short description...",
@@ -604,6 +620,7 @@
     "habits": "Habits",
     "habitsSection": "Habits",
     "hard": "Hard",
+    "hardMode": "Hard Mode",
     "headerFocusLabel": "Focus",
     "headerFocusReady": "Ready",
     "headerHabitsLabel": "Habit",
@@ -611,8 +628,10 @@
     "helpAndSupport": "Help & Support",
     "history": "History",
     "historyTitle": "History",
+    "hourShort": "h",
     "hours": "Hours",
     "howAreYouFeeling": "How are you feeling?",
+    "howDoYouFeel": "How do you feel today?",
     "howOftenDoHabit": "Decide how often you'll do your habit",
     "howToCancel": "How to cancel?",
     "howToEarn": "How to earn",
@@ -637,9 +656,15 @@
     "journalEntryDesc": "Is there anything you'd like to write about today?",
     "journalHint": "Something you'd like to write about today...",
     "jsonDataExample": "JSON Data (example):",
+    "keepItUp": "Awesome! Keep it up! 💪",
     "language": "Language",
     "languageSelection": "Language Selection",
+    "lastBackup": "Son Yedekleme: {date}",
     "later": "Later",
+    "lavenderDreams": "Lavender Dreams",
+    "lavenderDreamsDesc": "Elegant lavender & purple tones",
+    "letsPlayGame": "Let's play! 🎮",
+    "letsStart": "Let's Start",
     "levelLabel": "Level {level}",
     "levelShort": "L{level}",
     "lightTheme": "Light theme",
@@ -664,19 +689,26 @@
     "manageSubscriptionDesc": "Change plan, cancel or view billing info",
     "manageSubscriptionSubtitle": "Manage Mira Plus subscription via Google Play",
     "manageVisionTasks": "Manage Tasks",
+    "manualFallback": "Create Manually",
+    "maxOptionsReached": "Maximum 12 options allowed",
+    "meditation": "Meditation",
     "medium": "Medium",
     "minLabel": "min",
     "mindfulness": "Mindfulness",
+    "mintFresh": "Mint Fresh",
+    "mintFreshDesc": "Fresh mint & turquoise tones",
     "minutes": "Minutes",
     "minutesSuffixShort": "min",
     "miraPlusActive": "Mira Plus Active",
     "miraPlusInactive": "Mira Plus Inactive",
     "miraPremium": "Mira Premium",
+    "mondayShort": "Mon",
     "monthCount": "Month count",
     "monthCountHint": "Ex: 12",
     "monthSuffixShort": "mo",
     "monthly": "Monthly",
     "monthlyDays": "Days {days} of the month",
+    "monthlyDesc": "On specific days of the month",
     "monthlyProgress": "Monthly progress",
     "monthlyTrend": "Monthly trend",
     "monthsShort": "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec",
@@ -709,23 +741,57 @@
     "mostCommonReason": "Most Common Reason",
     "motivation": "Motivation",
     "motivationBody": "Great! You achieved a {percent}% success rate over {period}.",
+    "@motivationBody": {
+        "placeholders": {
+            "percent": {},
+            "period": {}
+        }
+    },
+    "motivationDayStart": "Great day for {title}! 🌟",
+    "@motivationDayStart": {
+        "placeholders": {
+            "title": {}
+        }
+    },
+    "motivationJourneyStart": "Every journey begins with a single step!",
+    "motivationSmallSteps": "Start with small steps to reach big goals 💪",
+    "motivationWaiting": "{title} is waiting for you 🚀",
+    "@motivationWaiting": {
+        "placeholders": {
+            "title": {}
+        }
+    },
     "mtdAverageShort": "MTD avg.",
     "multiple": "Multiple",
+    "multipleSubItems": "Multiple sub-items",
+    "multipleSubItemsDesc": "Multiple sub-items",
     "mustBePremiumToUse": "You must be a Premium subscriber to use this feature.",
+    "myBigGoal": "My Big Goal",
     "myBoard": "My Board",
     "mysticTheme": "Mystic",
     "mysticThemeDesc": "Mystic purple theme",
     "nDaysLabel": "{count} days",
+    "@nDaysLabel": {
+        "placeholders": {
+            "count": {}
+        }
+    },
     "nameHint": "Ex: Daily workout",
     "nameLabel": "Name",
     "nameRequired": "Name is required",
+    "nameYourVision": "Name Your Vision",
+    "nameYourVisionDesc": "Give your vision a meaningful name",
+    "nameYourVisionSubtitle": "Give your vision a meaningful name",
+    "needAtLeastTwoOptions": "Need at least 2 options",
     "newCategory": "New category",
     "newHabit": "New Habit",
     "newHabits": "New habits",
     "newList": "New List",
     "next": "Next",
     "nextLabel": "Next",
+    "nextWeek": "Next Week",
     "nextYear": "Next year",
+    "noBackups": "Yedek bulunamadı",
     "noBackupsFound": "No backups found.",
     "noDataLast7Days": "No data for last 7 days",
     "noDataThisMonth": "No data for this month",
@@ -744,8 +810,6 @@
     "noPlansAvailable": "No plans available at the moment.",
     "noReadyVisionsFound": "No ready visions found.",
     "noRecordsThisMonth": "No records for this month",
-    "startTrackingFinances": "Start tracking your finances and take control of your spending.",
-    "addFirstTransaction": "Add first transaction",
     "noTasksYet": "No tasks added yet",
     "noTrendData": "Not enough data for trends",
     "notAddedYet": "Not added yet.",
@@ -798,6 +862,8 @@
     "openBatteryOptimization": "Open battery optimization",
     "openNotificationSettings": "Open notification settings",
     "openSystemSettings": "Open system settings",
+    "option1": "Option 1",
+    "option2": "Option 2",
     "optional": "optional",
     "optionalLabel": "optional",
     "other": "Other",
@@ -812,31 +878,22 @@
     "perMonth": "/mo",
     "perYear": "/yr",
     "periodic": "Periodic",
+    "periodicDesc": "At regular intervals",
     "periodicSelection": "Periodic Selection",
-    "aiAssistantTitle": "AI Assistant",
-    "aiAssistantOnline": "Online",
-    "aiTip0": "Did you know? You can create a Vision Board for your long-term goals.",
-    "aiTip1": "Tip: Use the Timer for focused work sessions.",
-    "aiTip2": "Track your mood daily to see patterns over time.",
-    "aiTip3": "Habits stick better when you do them at the same time every day.",
-    "aiTip4": "Break down big Visions into smaller, manageable Tasks.",
-    "aiTip5": "Use the Finance tab to keep track of your daily expenses.",
-    "aiTip6": "Need help? Tap here to ask the AI assistant!",
-    "aiTip7": "Consistency is key! Don't break the chain",
-    "aiWelcomeMessage": "Hello! I'm your Mira assistant. How can I help you today? You can ask me how to use visions, habits, timers, or any other feature.",
-    "aiContextMessage": "Hello! I noticed you are interested in this tip:\n\n\"{tip}\"\n\nWould you like me to show you how to apply this in Mira?",
-    "@aiContextMessage": {
-        "placeholders": {
-            "tip": {}
-        }
-    },
-    "aiShowMeHow": "Yes, show me how",
     "personalizedInsights": "Personalized Insights",
+    "photo": "Photo",
+    "pickFromCalendar": "Pick from Calendar",
     "pickTime": "Pick Time",
     "pickTodaysMood": "Pick today's mood",
     "plannedMonthlySpend": "Planned monthly spend",
     "plansLoadError": "Error loading plans: {error}",
+    "@plansLoadError": {
+        "placeholders": {
+            "error": {}
+        }
+    },
     "plateColor": "Plate color",
+    "playAgain": "Play Again",
     "pleaseEnterEmail": "Please enter email",
     "pleaseFillAllFields": "Please fill all fields",
     "pomodoroAndCustomTimers": "Pomodoro and custom timers",
@@ -861,6 +918,8 @@
     "promoCodeInvalid": "Invalid promo code. Please check and try again.",
     "promoCodeLabel": "Promo Code",
     "promoCodeSuccess": "🎉 Promo code applied successfully! Premium access activated.",
+    "quickSuggestions": "Quick Suggestions",
+    "readBook": "Read Book",
     "readyVisionsLoadFailed": "Ready visions couldn't be loaded.",
     "reasonAcademic": "Academic",
     "reasonFinance": "Finance",
@@ -880,6 +939,8 @@
     "reload": "Reload",
     "remainingToday": "Remaining today",
     "reminder": "Reminder",
+    "reminderDisabled": "Reminder Off",
+    "reminderEnabled": "Reminder On",
     "reminderFrequency": "Reminder Frequency",
     "reminderLabel": "Reminder",
     "reminderSettings": "Reminder Settings",
@@ -901,17 +962,53 @@
     "restoreLatest": "Restore Latest",
     "restorePurchases": "Restore Purchases",
     "restoreSuccess": "Downloaded: {content}",
+    "@restoreSuccess": {
+        "placeholders": {
+            "content": {}
+        }
+    },
     "restoreSuccessMessage": "Your data has been successfully restored. We recommend restarting the app for changes to take full effect.",
     "retakePersonalityTest": "Retake Personality Test",
     "retry": "Retry",
     "roundCorners": "Round Corners",
     "ruleEnteredDurationAtLeast": "Rule: Entered duration ≥ {target}",
+    "@ruleEnteredDurationAtLeast": {
+        "placeholders": {
+            "target": {}
+        }
+    },
     "ruleEnteredDurationAtMost": "Rule: Entered duration ≤ {target}",
+    "@ruleEnteredDurationAtMost": {
+        "placeholders": {
+            "target": {}
+        }
+    },
     "ruleEnteredDurationExactly": "Rule: Entered duration = {target}",
+    "@ruleEnteredDurationExactly": {
+        "placeholders": {
+            "target": {}
+        }
+    },
     "ruleEnteredValueAtLeast": "Rule: Entered value ≥ {target}",
+    "@ruleEnteredValueAtLeast": {
+        "placeholders": {
+            "target": {}
+        }
+    },
     "ruleEnteredValueAtMost": "Rule: Entered value ≤ {target}",
+    "@ruleEnteredValueAtMost": {
+        "placeholders": {
+            "target": {}
+        }
+    },
     "ruleEnteredValueExactly": "Rule: Entered value = {target}",
+    "@ruleEnteredValueExactly": {
+        "placeholders": {
+            "target": {}
+        }
+    },
     "runningLabel": "RUNNING",
+    "saturdayShort": "Sat",
     "save": "Save",
     "saveChanges": "Save Changes",
     "saveEntry": "Save Entry",
@@ -943,8 +1040,14 @@
     "selectYourCurrentMood": "Select your current mood",
     "selectYourMood": "Select your mood",
     "selectedDaysOfMonth": "Days {sorted} of the month",
+    "@selectedDaysOfMonth": {
+        "placeholders": {
+            "sorted": {}
+        }
+    },
     "send": "Send",
     "sendBackward": "Send backward",
+    "setVisionTimeline": "Set the timeline for your vision",
     "settings": "Settings",
     "shareAsLink": "Share as link",
     "shareBoard": "Share board",
@@ -955,17 +1058,46 @@
     "showText": "Show text",
     "shuffle": "Shuffle",
     "signInFailed": "Sign in failed. Please try again.",
+    "signInToSaveData": "Sign in to save data",
     "signInWithGoogle": "Sign in with Google",
     "signInWithGoogleButton": "Sign in with Google",
     "signInWithGoogleDesc": "Connect your Google account to continue. Your profile info will be filled automatically.",
     "signInWithGoogleTitle": "Sign in with Google",
+    "signOut": "Sign Out",
+    "signOutConfirmation": "Are you sure you want to sign out?",
+    "simpleHabitColorSubtitle": "Reflect your habit's personality",
+    "simpleHabitColorTitle": "Pick a color",
+    "simpleHabitEmojiSubtitle": "Make your habit more fun!",
+    "simpleHabitEmojiTitle": "Choose an emoji to represent it",
+    "simpleHabitFrequencySubtitle": "Set your goals",
+    "simpleHabitFrequencyTitle": "How often do you want to do it?",
+    "simpleHabitMonthDaysSubtitle": "Select the active days",
+    "simpleHabitMonthDaysTitle": "Which days of the month?",
+    "simpleHabitNameSubtitle": "What do you want to make a habit of?",
+    "simpleHabitNameTitle": "Give your habit a name",
+    "simpleHabitPeriodicSubtitle": "Set the repeat interval",
+    "simpleHabitPeriodicTitle": "How many days apart?",
+    "simpleHabitPreviewSubtitle": "Does everything look right?",
+    "simpleHabitPreviewTitle": "Awesome! Here's your habit",
+    "simpleHabitReminderSubtitle": "Don't miss your habit with daily reminders",
+    "simpleHabitReminderTitle": "Shall I remind you?",
+    "simpleHabitStartDateSubtitle": "Choose a starting point for your journey",
+    "simpleHabitStartDateTitle": "When will you start?",
     "simpleHabitTargetOne": "Simple habit (target = 1)",
+    "simpleHabitWeekdaysSubtitle": "Select the active days",
+    "simpleHabitWeekdaysTitle": "Which days?",
+    "simpleHabitWizardDesc": "I'll guide you step by step. Let's create an amazing habit together!",
+    "simpleHabitWizardTitle": "Ready to build a new habit?",
     "simpleTypeShort": "Simple",
     "skip": "Skip",
     "skipOnboarding": "Skip",
     "skipTest": "Skip Test",
     "social": "Social",
     "socialFeedTitle": "Feed",
+    "softCloud": "Soft Cloud",
+    "softCloudDesc": "Cloud-like, dreamy soft",
+    "softPeach": "Soft Peach",
+    "softPeachDesc": "Warm peach & cream tones",
     "sound": "Sound",
     "soundAlerts": "Sound alerts",
     "soundSubtitle": "Play sound with notifications",
@@ -976,10 +1108,32 @@
     "spendingAdvisorOnTrack": "Great! You are on track with your budget.",
     "spendingAdvisorOverBudget": "You are over budget. Stop spending.",
     "spendingAdvisorSafe": "You can spend {amount} per day.",
+    "@spendingAdvisorSafe": {
+        "placeholders": {
+            "amount": {}
+        }
+    },
     "spendingAdvisorTitle": "Spending Advisor",
     "spendingAdvisorWarning": "Reduce daily spending by {amount} to stay on track.",
+    "@spendingAdvisorWarning": {
+        "placeholders": {
+            "amount": {}
+        }
+    },
     "spendingLessThanDailyAvg": "Great! You're spending {amount} less than the daily average.",
+    "@spendingLessThanDailyAvg": {
+        "placeholders": {
+            "amount": {}
+        }
+    },
     "spendingMoreThanDailyAvg": "Warning! You're spending {amount} more than the daily average.",
+    "@spendingMoreThanDailyAvg": {
+        "placeholders": {
+            "amount": {}
+        }
+    },
+    "spin": "SPIN",
+    "spinAgain": "Spin Again",
     "start": "Start",
     "startDate": "Start Date",
     "startDateLabel": "Start",
@@ -988,55 +1142,101 @@
     "startTest": "Start Test",
     "startTestDesc": "If you complete the test, you will get personalized suggestions and habit recommendations. You can skip this step if you wish.",
     "startTestTitle": "Do you want to start the personality test?",
+    "startTrackingFinances": "Start tracking your finances and take control of your spending.",
     "startTrackingMood": "Start tracking your mood to see analytics",
+    "startsOn": "Starts on",
+    "statsActiveDays": "Active Days",
     "statusLabel": "Status",
     "step": "Step",
     "stepOf": "Step {current} of {total}",
+    "@stepOf": {
+        "placeholders": {
+            "current": {},
+            "total": {}
+        }
+    },
     "steps": "Steps",
     "stopwatchLabel": "STOPWATCH",
     "streakDays": "{count} Day Streak",
+    "@streakDays": {
+        "placeholders": {
+            "count": {}
+        }
+    },
     "streakIndicator": "Streak indicator",
     "streakIndicatorDesc": "Show flame and ice effects",
     "subEmotionAmazing": "Amazing",
     "subEmotionAngry": "Angry",
     "subEmotionAnxious": "Anxious",
+    "subEmotionBlessed": "Blessed",
+    "subEmotionBored": "Bored",
     "subEmotionCalm": "Calm",
     "subEmotionCheerful": "Cheerful",
+    "subEmotionConfident": "Confident",
+    "subEmotionConfused": "Confused",
     "subEmotionDemoralized": "Demoralized",
     "subEmotionDetermined": "Determined",
+    "subEmotionDistracted": "Distracted",
     "subEmotionDrained": "Drained",
     "subEmotionEmpty": "Empty",
     "subEmotionEnergetic": "Energetic",
     "subEmotionEnthusiastic": "Enthusiastic",
+    "subEmotionEuphoric": "Euphoric",
     "subEmotionExcited": "Excited",
     "subEmotionExhausted": "Exhausted",
     "subEmotionGrateful": "Grateful",
+    "subEmotionGuilty": "Guilty",
     "subEmotionHappy": "Happy",
     "subEmotionHelpless": "Helpless",
+    "subEmotionHopeful": "Hopeful",
     "subEmotionHopeless": "Hopeless",
     "subEmotionHurt": "Hurt",
     "subEmotionIndecisive": "Indecisive",
+    "subEmotionInsecure": "Insecure",
+    "subEmotionLonely": "Lonely",
     "subEmotionLoving": "Loving",
     "subEmotionMotivated": "Motivated",
+    "subEmotionNumb": "Numb",
     "subEmotionOrdinary": "Ordinary",
+    "subEmotionOverwhelmed": "Overwhelmed",
     "subEmotionPeaceful": "Peaceful",
+    "subEmotionProud": "Proud",
+    "subEmotionRegretful": "Regretful",
     "subEmotionSad": "Sad",
     "subEmotionSelection": "Let's describe this feeling in more detail",
     "subEmotionStressed": "Stressed",
     "subEmotionTired": "Tired",
+    "subEmotionUnstoppable": "Unstoppable",
     "subscribeToEnjoyPremium": "Subscribe to enjoy premium features",
+    "subscription": "Subscription",
     "subscriptionDetails": "Subscription Details",
     "subtaskIndex": "Subtask {index}",
+    "subtasks": "Subtasks",
+    "subtasksTitle": "Subtasks",
     "subtasksType": "Subtasks",
     "subtasksTypeDesc": "Multi-task",
     "success": "Success",
     "successfulDayLegend": "Successful day",
     "successfulDaysCount": "{count} Successful Days",
+    "@successfulDaysCount": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "sundayShort": "Sun",
     "systemInfo": "System Information",
     "systemTheme": "System theme",
+    "tapFabToCreate": "Tap the + button to start",
+    "tapSpinToStart": "Tap spin to start",
+    "tapToPickImage": "Tap to pick image",
     "target": "Target",
     "targetDurationMinutes": "Target Duration (minutes)",
     "targetShort": "Target: {value}",
+    "@targetShort": {
+        "placeholders": {
+            "value": {}
+        }
+    },
     "targetType": "Target Type",
     "targetValue": "Target Value",
     "targetValueLabel": "Target Value",
@@ -1047,57 +1247,78 @@
     "taskPending": "Pending",
     "taskTitle": "Task Title",
     "taskTitleRequired": "Task title is required",
+    "tellMeYourDream": "Tell me your dream. I'll help you build a Vision Board.",
     "tellUsMore": "Tell us more",
     "templateDetailsNotFound": "Template details not found",
     "templatesTabManual": "Manual",
     "templatesTabReady": "Ready",
     "textLabel": "Text",
+    "theWinnerIs": "The winner is:",
     "theme": "Theme",
-    "themeCotton": "Cotton",
-    "themeCottonDesc": "Warm & Neutral",
-    "themeMatcha": "Matcha",
-    "themeMatchaDesc": "Fresh & Natural",
-    "themeLavender": "Lavender",
-    "themeLavenderDesc": "Calm & Dreamy",
-    "themeSky": "Sky",
-    "themeSkyDesc": "Airy & Light",
-    "themeRose": "Rose",
-    "themeRoseDesc": "Soft & Warm",
-    "themeSlate": "Slate",
-    "themeSlateDesc": "Modern & Cool",
-    "themeOcean": "Ocean",
-    "themeOceanDesc": "Deep & Serene",
-    "themeSunset": "Sunset",
-    "themeSunsetDesc": "Warm & Golden",
-    "themeForest": "Forest",
-    "themeForestDesc": "Rich & Organic",
-    "themeCream": "Cream",
-    "themeCreamDesc": "Warm & Soft",
-    "themeMidnight": "Midnight",
-    "themeMidnightDesc": "Deep & Mysterious",
-    "themeMauve": "Mauve",
-    "themeMauveDesc": "Elegant & Romantic",
-    "themeBlush": "Blush",
-    "themeBlushDesc": "Sweet & Feminine",
-    "themeCrimson": "Crimson",
-    "themeCrimsonDesc": "Bold & Passionate",
     "themeAbyss": "Abyss",
     "themeAbyssDesc": "Dark & Sophisticated",
+    "themeBlush": "Blush",
+    "themeBlushDesc": "Sweet & Feminine",
+    "themeCotton": "Cotton",
+    "themeCottonDesc": "Warm & Neutral",
+    "themeCream": "Cream",
+    "themeCreamDesc": "Warm & Soft",
+    "themeCrimson": "Crimson",
+    "themeCrimsonDesc": "Bold & Passionate",
     "themeDetails": "Theme Details",
+    "themeForest": "Forest",
+    "themeForestDesc": "Rich & Organic",
+    "themeLavender": "Lavender",
+    "themeLavenderDesc": "Calm & Dreamy",
+    "themeMatcha": "Matcha",
+    "themeMatchaDesc": "Fresh & Natural",
+    "themeMauve": "Mauve",
+    "themeMauveDesc": "Elegant & Romantic",
+    "themeMidnight": "Midnight",
+    "themeMidnightDesc": "Deep & Mysterious",
+    "themeOcean": "Ocean",
+    "themeOceanDesc": "Deep & Serene",
+    "themeRose": "Rose",
+    "themeRoseDesc": "Soft & Warm",
     "themeSelection": "Theme Selection",
+    "themeSky": "Sky",
+    "themeSkyDesc": "Airy & Light",
+    "themeSlate": "Slate",
+    "themeSlateDesc": "Modern & Cool",
+    "themeSunset": "Sunset",
+    "themeSunsetDesc": "Warm & Golden",
+    "themeVintageRed": "Vintage Kırmızı",
+    "themeVintageRedDesc": "Klasik ve zamansız kırmızı",
     "thisFeatureIsPremium": "This feature is Premium",
     "thisMonth": "This month",
     "thisWeek": "This week",
     "thisYear": "This year",
+    "thursdayShort": "Thu",
+    "timer": "Timer",
     "timerCreateTimerHabitFirst": "Create a timer habit first",
     "timerDescription": "Time-based tracking",
     "timerExample": "Do a 30-minute workout",
     "timerHabitLabel": "Timer Habit",
     "timerPause": "Pause",
     "timerPendingDurationLabel": "Pending duration: {duration}",
+    "@timerPendingDurationLabel": {
+        "placeholders": {
+            "duration": {}
+        }
+    },
     "timerPendingLabel": "Pending: {duration}",
+    "@timerPendingLabel": {
+        "placeholders": {
+            "duration": {}
+        }
+    },
     "timerPomodoroBreakPhase": "Break",
     "timerPomodoroCompletedWork": "Completed Work: {count}",
+    "@timerPomodoroCompletedWork": {
+        "placeholders": {
+            "count": {}
+        }
+    },
     "timerPomodoroLongBreakIntervalLabel": "Long Break Cycle (e.g., 4)",
     "timerPomodoroLongBreakMinutesLabel": "Long Break (min)",
     "timerPomodoroSettings": "Pomodoro Settings",
@@ -1116,12 +1337,14 @@
     "timerTabCountdown": "Countdown",
     "timerTabPomodoro": "Pomodoro",
     "timerTabStopwatch": "Stopwatch",
+    "timerTracking": "Timer tracking",
     "timerType": "Timer",
     "times": "Times",
     "timezone": "Time Zone",
     "titleHint": "Ex: Groceries, Freelance, etc.",
     "titleOptional": "Title (optional)",
     "today": "Today",
+    "todaysHabits": "Today's Habits",
     "tomorrow": "Tomorrow",
     "topCategories": "Top Categories",
     "totalDuration": "Total Duration",
@@ -1129,10 +1352,13 @@
     "totalProgress": "Total progress",
     "totalSuccessfulDays": "Total successful days",
     "totalUnsuccessfulDays": "Total unsuccessful days",
+    "trackEarnings": "Track your earnings",
+    "trackSpending": "Track your spending",
     "trends": "Trends",
     "trialCancelEffect": "If you cancel during the free trial, you won't be charged immediately.",
     "trialInfo": "14-day free trial, cancel anytime.",
-    "typeEmoji": "Type an emoji from keyboard",
+    "tuesdayShort": "Tue",
+    "typeEmoji": "Type an emoji",
     "typeEmojiHint": "Type an emoji from keyboard",
     "typeLabel": "Type",
     "typeNotChangeable": "Type cannot be changed",
@@ -1164,11 +1390,19 @@
     "viewInvoicesOnPlayStore": "View your invoices on Google Play Store",
     "vision": "Vision",
     "visionAutoDurationInfo": "This vision will use the last day in the template: {day}.",
+    "@visionAutoDurationInfo": {
+        "placeholders": {
+            "day": {}
+        }
+    },
+    "visionBoard": "Vision Board",
+    "visionBoardDesc": "Create a vision to organize your goals and track your journey",
     "visionBoardViewTooltip": "Board view",
     "visionCreateTitle": "Create Vision",
     "visionDurationDaysLabel": "Duration (days)",
     "visionDurationNote": "Note: When the vision starts, a total duration is set; if the end day exceeds this duration it will be shortened automatically.",
     "visionEditTitle": "Edit Vision",
+    "visionEmptyDescription": "Visualize your goals and add your first vision to turn your dreams into reality.",
     "visionEndDayInvalid": "End day must be between 1 and 365",
     "visionEndDayLess": "End day cannot be less than start day",
     "visionEndDayQuestion": "On which day of the vision should it end?",
@@ -1182,8 +1416,16 @@
     "visionStartFailed": "Could not start the vision.",
     "visionStartLabel": "Vision start: ",
     "visionStartedMessage": "Vision started: {title}",
-    "visionTasks": "Tasks",
+    "@visionStartedMessage": {
+        "placeholders": {
+            "title": {}
+        }
+    },
+    "visionTasks": "Vision Tasks",
     "visual": "Visual",
+    "warmJournal": "Warm Journal",
+    "warmJournalDesc": "Warm journal & emotion tracking",
+    "wednesdayShort": "Wed",
     "weekDaysShort": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
     "weekdaysShortFri": "Fri",
     "weekdaysShortMon": "Mon",
@@ -1193,17 +1435,29 @@
     "weekdaysShortTue": "Tue",
     "weekdaysShortWed": "Wed",
     "weekly": "Weekly",
+    "weeklyDesc": "On specific days of the week",
     "weeklyEmailSummary": "Weekly email summary",
     "weeklyProgress": "Weekly progress",
     "weeklySummaryEmail": "Weekly summary email",
     "whatHappensIfCancel": "What happens if I cancel?",
     "whatsTheCause": "What's the cause of this state?",
+    "wheelOfFortuneDescription": "Add options and spin the wheel",
+    "wheelOfFortuneTitle": "Wheel of Fortune",
     "whichDaysActive": "Which days should be active?",
     "whichMonthDays": "Which days of the month?",
     "whichWeekdays": "Which weekdays?",
     "worldTheme": "World",
     "worldThemeDesc": "Harmony of all colors",
+    "writeMessage": "Write a message...",
     "xpProgressSummary": "{current} / {total} XP • {toNext} XP to next level",
+    "@xpProgressSummary": {
+        "placeholders": {
+            "current": {},
+            "total": {},
+            "toNext": {}
+        }
+    },
+    "xpToNextLevel": "to next level",
     "yearly": "Yearly",
     "yearlyProgress": "Yearly progress",
     "yesNoDescription": "Simple yes/no tracking",
@@ -1214,168 +1468,20 @@
     "yourEmail": "Your Email",
     "yourEmailAddress": "Your Email Address",
     "yourMoodToday": "Your Mood Today",
-    "createWithAi": "Create with AI",
-    "aiInputHint": "Describe the habit you want to build...",
-    "generate": "Generate",
-    "aiPreviewTitle": "AI Suggestions",
-    "confirmHabits": "Confirm Habits",
-    "aiRetry": "Retry with Stricter Rules",
-    "manualFallback": "Create Manually",
-    "aiHabitAddedMessage": "{count} habits added via AI",
-    "aiQuickHabit": "Create a new habit",
-    "aiQuickVision": "Help with Vision Board",
-    "aiQuickTimer": "How to use Timer?",
-    "aiQuickGamification": "Explain XP system",
-    "aiQuickMood": "Analyze my mood",
-    "aiQuickFinance": "Budgeting tips",
-    "aiQuickMotivation": "Give me motivation",
-    "aiQuickProfile": "My AI Character",
-    "signOut": "Sign Out",
-    "signOutConfirmation": "Are you sure you want to sign out?",
-    "xpToNextLevel": "to next level",
-    "statsActiveDays": "Active Days",
-    "subEmotionOverwhelmed": "Overwhelmed",
-    "subEmotionLonely": "Lonely",
-    "subEmotionRegretful": "Regretful",
-    "subEmotionInsecure": "Insecure",
-    "subEmotionGuilty": "Guilty",
-    "subEmotionBored": "Bored",
-    "subEmotionNumb": "Numb",
-    "subEmotionConfused": "Confused",
-    "subEmotionDistracted": "Distracted",
-    "subEmotionProud": "Proud",
-    "subEmotionConfident": "Confident",
-    "subEmotionHopeful": "Hopeful",
-    "subEmotionEuphoric": "Euphoric",
-    "subEmotionBlessed": "Blessed",
-    "subEmotionUnstoppable": "Unstoppable",
-    "gamesTitle": "Games",
-    "letsPlayGame": "Let's play! 🎮",
-    "gamesDescription": "Having trouble deciding? Let fun games help you decide!",
-    "decisionEggTitle": "Decision Egg",
-    "decisionEggDescription": "Pick a mystical egg for answers",
-    "coinFlipTitle": "Coin Flip",
-    "coinFlipDescription": "Decide between two options",
-    "wheelOfFortuneTitle": "Wheel of Fortune",
-    "wheelOfFortuneDescription": "Add options and spin the wheel",
-    "eggSelectMessage": "Think of a question and tap an egg 🥚",
-    "eggRevealMessage": "The mystical egg has spoken! ✨",
-    "playAgain": "Play Again",
-    "coinFlipInstruction": "Enter two options and flip the coin!",
-    "option1": "Option 1",
-    "option2": "Option 2",
-    "enterBothOptions": "Please enter both options",
-    "flipCoin": "Flip Coin",
-    "theWinnerIs": "The winner is:",
-    "addOptionHint": "Add option...",
-    "spin": "SPIN",
-    "spinAgain": "Spin Again",
-    "maxOptionsReached": "Maximum 12 options allowed",
-    "needAtLeastTwoOptions": "Need at least 2 options",
-    "addOptionsToStart": "Add options to start",
-    "tapSpinToStart": "Tap spin to start",
-    "simpleHabitWizardTitle": "Ready to build a new habit?",
-    "simpleHabitWizardDesc": "I'll guide you step by step. Let's create an amazing habit together!",
-    "letsStart": "Let's Start",
-    "simpleHabitNameTitle": "Give your habit a name",
-    "simpleHabitNameSubtitle": "What do you want to make a habit of?",
-    "descriptionHintOptional": "Add description (optional)",
-    "simpleHabitEmojiTitle": "Choose an emoji to represent it",
-    "simpleHabitEmojiSubtitle": "Make your habit more fun!",
-    "simpleHabitColorTitle": "Pick a color",
-    "simpleHabitColorSubtitle": "Reflect your habit's personality",
-    "simpleHabitFrequencyTitle": "How often do you want to do it?",
-    "simpleHabitFrequencySubtitle": "Set your goals",
-    "dailyDesc": "Every day",
-    "weeklyDesc": "On specific days of the week",
-    "monthlyDesc": "On specific days of the month",
-    "periodicDesc": "At regular intervals",
-    "simpleHabitWeekdaysTitle": "Which days?",
-    "simpleHabitWeekdaysSubtitle": "Select the active days",
-    "simpleHabitMonthDaysTitle": "Which days of the month?",
-    "simpleHabitMonthDaysSubtitle": "Select the active days",
-    "simpleHabitPeriodicTitle": "How many days apart?",
-    "simpleHabitPeriodicSubtitle": "Set the repeat interval",
-    "days": "days",
-    "simpleHabitStartDateTitle": "When will you start?",
-    "simpleHabitStartDateSubtitle": "Choose a starting point for your journey",
-    "today": "Today",
-    "tomorrow": "Tomorrow",
-    "nextWeek": "Next Week",
-    "pickFromCalendar": "Pick from Calendar",
-    "simpleHabitReminderTitle": "Shall I remind you?",
-    "simpleHabitReminderSubtitle": "Don't miss your habit with daily reminders",
-    "reminderEnabled": "Reminder On",
-    "reminderDisabled": "Reminder Off",
-    "simpleHabitPreviewTitle": "Awesome! Here's your habit",
-    "simpleHabitPreviewSubtitle": "Does everything look right?",
-    "startsOn": "Starts on",
-    "mondayShort": "Mon",
-    "tuesdayShort": "Tue",
-    "wednesdayShort": "Wed",
-    "thursdayShort": "Thu",
-    "fridayShort": "Fri",
-    "saturdayShort": "Sat",
-    "sundayShort": "Sun",
-    "typeEmoji": "Type an emoji",
-    "visionBoard": "Vision Board",
-    "visionBoardDesc": "Create a vision to organize your goals and track your journey",
-    "nameYourVision": "Name Your Vision",
-    "nameYourVisionDesc": "Give your vision a meaningful name",
-    "myBigGoal": "My Big Goal",
-    "choosePhoto": "Choose Photo",
-    "choosePhotoDesc": "Select a photo that inspires you",
-    "photo": "Photo",
-    "emojiAndColor": "Emoji & Color",
-    "tapToPickImage": "Tap to pick image",
-    "createVisionWithAI": "Create Vision with AI",
-    "tellMeYourDream": "Tell me your dream. I'll help you build a Vision Board.",
-    "setVisionTimeline": "Set the timeline for your vision",
-    "hardMode": "Hard Mode",
-    "subtasksType": "Subtasks",
-    "multipleSubItemsDesc": "Multiple sub-items",
-    "motivationDayStart": "Great day for {title}! 🌟",
-    "@motivationDayStart": {
+    "dailyHabitInfo": "Daily habit info",
+    "whichDays": "Which days",
+    "whichYearDays": "Which year days",
+    "everyNDays": "Every {days} days",
+    "@everyNDays": {
         "placeholders": {
-            "title": {}
+            "days": {}
         }
     },
-    "motivationSmallSteps": "Start with small steps to reach big goals 💪",
-    "motivationJourneyStart": "Every journey begins with a single step!",
-    "motivationWaiting": "{title} is waiting for you 🚀",
-    "@motivationWaiting": {
+    "nDays": "{days} days",
+    "everyNDaysInfo": "Occurs every {days} days",
+    "@everyNDaysInfo": {
         "placeholders": {
-            "title": {}
+            "days": {}
         }
-    },
-    "quickSuggestions": "Quick Suggestions",
-    "trackSpending": "Track your spending",
-    "trackEarnings": "Track your earnings",
-    "writeMessage": "Write a message...",
-    "softPeach": "Soft Peach",
-    "softPeachDesc": "Warm peach & cream tones",
-    "lavenderDreams": "Lavender Dreams",
-    "lavenderDreamsDesc": "Elegant lavender & purple tones",
-    "mintFresh": "Mint Fresh",
-    "mintFreshDesc": "Fresh mint & turquoise tones",
-    "cottonCandy": "Cotton Candy",
-    "cottonCandyDesc": "Cotton candy - pink & blue",
-    "focusedZen": "Focused Zen",
-    "focusedZenDesc": "Minimalist, single focus point",
-    "guidedJourney": "Guided Journey",
-    "guidedJourneyDesc": "Step-by-step guided flow",
-    "softCloud": "Soft Cloud",
-    "softCloudDesc": "Cloud-like, dreamy soft",
-    "warmJournal": "Warm Journal",
-    "warmJournalDesc": "Warm journal & emotion tracking",
-    "cozyJournal": "Cozy Journal",
-    "cozyJournalDesc": "Brown tones & timeline",
-    "goodMorning": "Good morning! ☀️",
-    "greatDayAhead": "Today is a great day, you got this!",
-    "todaysHabits": "Today's Habits",
-    "drinkWater": "Drink Water",
-    "meditation": "Meditation",
-    "readBook": "Read Book",
-    "howDoYouFeel": "How do you feel today?",
-    "keepItUp": "Awesome! Keep it up! 💪"
+    }
 }

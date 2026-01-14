@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'ai_habit_preview_screen.dart';
 import '../domain/ai_habit_repository.dart';
-import '../domain/ai_habit_service.dart'; // for AiChatResponse
+// for AiChatResponse
 
 class AiHabitCreationScreen extends StatefulWidget {
   final AiHabitRepository repository;
@@ -26,7 +26,7 @@ class _AiHabitCreationScreenState extends State<AiHabitCreationScreen> {
     super.initState();
     // Add initial welcome message
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final l10n = AppLocalizations.of(context)!;
+      final l10n = AppLocalizations.of(context);
       setState(() {
         _messages.add({
           'role': 'assistant',
@@ -108,7 +108,7 @@ class _AiHabitCreationScreenState extends State<AiHabitCreationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
     return Scaffold(

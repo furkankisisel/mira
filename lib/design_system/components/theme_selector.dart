@@ -135,7 +135,7 @@ class ThemeSelector extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                AppLocalizations.of(context)!.themeDetails,
+                AppLocalizations.of(context).themeDetails,
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: scheme.onSurfaceVariant,

@@ -39,13 +39,7 @@ warning - The '!' will have no effect because the receiver can't be null - lib\f
    info - The 'child' argument should be last in widget constructor invocations - lib\features\habit\presentation\simple_habit_wizard_screen.dart:748:7 - sort_child_properties_last
    info - The 'child' argument should be last in widget constructor invocations - lib\features\habit\presentation\simple_habit_wizard_screen.dart:836:7 - sort_child_properties_last
    info - The 'child' argument should be last in widget constructor invocations - lib\features\habit\presentation\simple_habit_wizard_screen.dart:958:7 - sort_child_properties_last
-  error - The getter 'dailyHabitInfo' isn't defined for the type 'AppLocalizations' - lib\features\habit\presentation\widgets\frequency_selector.dart:145:30 - undefined_getter
-  error - The getter 'whichDays' isn't defined for the type 'AppLocalizations' - lib\features\habit\presentation\widgets\frequency_selector.dart:255:18 - undefined_getter
-  error - The getter 'whichMonthDays' isn't defined for the type 'AppLocalizations' - lib\features\habit\presentation\widgets\frequency_selector.dart:331:18 - undefined_getter
-  error - The getter 'whichYearDays' isn't defined for the type 'AppLocalizations' - lib\features\habit\presentation\widgets\frequency_selector.dart:415:18 - undefined_getter
-  error - The getter 'everyNDays' isn't defined for the type 'AppLocalizations' - lib\features\habit\presentation\widgets\frequency_selector.dart:510:18 - undefined_getter
-  error - The method 'nDays' isn't defined for the type 'AppLocalizations' - lib\features\habit\presentation\widgets\frequency_selector.dart:534:24 - undefined_method
-  error - The method 'everyNDaysInfo' isn't defined for the type 'AppLocalizations' - lib\features\habit\presentation\widgets\frequency_selector.dart:551:20 - undefined_method
+  error - The argument type 'String Function(Object)' can't be assigned to the parameter type 'String'.  - lib\features\habit\presentation\widgets\frequency_selector.dart:510:13 - argument_type_not_assignable
 warning - Dead code - lib\features\mood\presentation\mood_analytics_screen.dart:62:11 - dead_code
 warning - Dead code - lib\features\mood\presentation\mood_analytics_screen.dart:321:15 - dead_code
 warning - Dead code - lib\features\mood\presentation\mood_analytics_screen.dart:377:15 - dead_code
@@ -57,6 +51,4 @@ warning - Unused import: '../../../../design_system/tokens/colors.dart' - lib\fe
    info - The 'child' argument should be last in widget constructor invocations - lib\features\vision\presentation\vision_wizard_screen.dart:289:7 - sort_child_properties_last
    info - The 'child' argument should be last in widget constructor invocations - lib\features\vision\presentation\vision_wizard_screen.dart:537:7 - sort_child_properties_last
    info - The 'child' argument should be last in widget constructor invocations - lib\features\vision\presentation\vision_wizard_screen.dart:652:7 - sort_child_properties_last
-  error - There's no constant named 'world' in 'ThemeVariant' - test\finance_analysis_screen_test.dart:23:35 - undefined_enum_constant
 
-58 issues found. (ran in 4.6s)
