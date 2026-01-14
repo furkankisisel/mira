@@ -3688,4 +3688,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get keepItUp => 'Awesome! Keep it up! 💪';
+
+  @override
+  String get months => 'months';
+
+  @override
+  String get monthsLimit => 'Months Limit';
+
+  @override
+  String get recurring => 'Recurring';
+
+  @override
+  String get repeatsForever => 'Repeats Forever';
+
+  @override
+  String get repeatsLimited => 'Repeats for a Limited Time';
+
+  @override
+  String get visionTitle => 'Vision Title';
 }

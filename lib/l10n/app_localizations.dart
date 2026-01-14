@@ -7033,6 +7033,42 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Harika! Aynen devam! 💪'**
   String get keepItUp;
+
+  /// No description provided for @months.
+  ///
+  /// In tr, this message translates to:
+  /// **'ay'**
+  String get months;
+
+  /// No description provided for @monthsLimit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ay Sınırı'**
+  String get monthsLimit;
+
+  /// No description provided for @recurring.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tekrarlı'**
+  String get recurring;
+
+  /// No description provided for @repeatsForever.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonsuza Kadar Tekrarla'**
+  String get repeatsForever;
+
+  /// No description provided for @repeatsLimited.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sınırlı Süre Tekrarla'**
+  String get repeatsLimited;
+
+  /// No description provided for @visionTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vizyon Başlığı'**
+  String get visionTitle;
 }
 
 class _AppLocalizationsDelegate

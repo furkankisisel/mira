@@ -199,7 +199,13 @@
     "meditation",
     "readBook",
     "howDoYouFeel",
-    "keepItUp"
+    "keepItUp",
+    "months",
+    "monthsLimit",
+    "recurring",
+    "repeatsForever",
+    "repeatsLimited",
+    "visionTitle"
   ],
 
   "de": [
@@ -402,7 +408,13 @@
     "meditation",
     "readBook",
     "howDoYouFeel",
-    "keepItUp"
+    "keepItUp",
+    "months",
+    "monthsLimit",
+    "recurring",
+    "repeatsForever",
+    "repeatsLimited",
+    "visionTitle"
   ],
 
   "en": [
@@ -613,7 +625,13 @@
     "meditation",
     "readBook",
     "howDoYouFeel",
-    "keepItUp"
+    "keepItUp",
+    "months",
+    "monthsLimit",
+    "recurring",
+    "repeatsForever",
+    "repeatsLimited",
+    "visionTitle"
   ],
 
   "fr": [
@@ -816,7 +834,13 @@
     "meditation",
     "readBook",
     "howDoYouFeel",
-    "keepItUp"
+    "keepItUp",
+    "months",
+    "monthsLimit",
+    "recurring",
+    "repeatsForever",
+    "repeatsLimited",
+    "visionTitle"
   ],
 
   "hi": [
@@ -1019,7 +1043,13 @@
     "meditation",
     "readBook",
     "howDoYouFeel",
-    "keepItUp"
+    "keepItUp",
+    "months",
+    "monthsLimit",
+    "recurring",
+    "repeatsForever",
+    "repeatsLimited",
+    "visionTitle"
   ],
 
   "it": [
@@ -1222,7 +1252,13 @@
     "meditation",
     "readBook",
     "howDoYouFeel",
-    "keepItUp"
+    "keepItUp",
+    "months",
+    "monthsLimit",
+    "recurring",
+    "repeatsForever",
+    "repeatsLimited",
+    "visionTitle"
   ],
 
   "ja": [
@@ -1425,7 +1461,13 @@
     "meditation",
     "readBook",
     "howDoYouFeel",
-    "keepItUp"
+    "keepItUp",
+    "months",
+    "monthsLimit",
+    "recurring",
+    "repeatsForever",
+    "repeatsLimited",
+    "visionTitle"
   ],
 
   "ko": [
@@ -1628,7 +1670,13 @@
     "meditation",
     "readBook",
     "howDoYouFeel",
-    "keepItUp"
+    "keepItUp",
+    "months",
+    "monthsLimit",
+    "recurring",
+    "repeatsForever",
+    "repeatsLimited",
+    "visionTitle"
   ],
 
   "nl": [
@@ -1831,7 +1879,13 @@
     "meditation",
     "readBook",
     "howDoYouFeel",
-    "keepItUp"
+    "keepItUp",
+    "months",
+    "monthsLimit",
+    "recurring",
+    "repeatsForever",
+    "repeatsLimited",
+    "visionTitle"
   ],
 
   "pt": [
@@ -2034,7 +2088,13 @@
     "meditation",
     "readBook",
     "howDoYouFeel",
-    "keepItUp"
+    "keepItUp",
+    "months",
+    "monthsLimit",
+    "recurring",
+    "repeatsForever",
+    "repeatsLimited",
+    "visionTitle"
   ],
 
   "ru": [
@@ -2237,7 +2297,13 @@
     "meditation",
     "readBook",
     "howDoYouFeel",
-    "keepItUp"
+    "keepItUp",
+    "months",
+    "monthsLimit",
+    "recurring",
+    "repeatsForever",
+    "repeatsLimited",
+    "visionTitle"
   ],
 
   "zh": [
@@ -2440,6 +2506,12 @@
     "meditation",
     "readBook",
     "howDoYouFeel",
-    "keepItUp"
+    "keepItUp",
+    "months",
+    "monthsLimit",
+    "recurring",
+    "repeatsForever",
+    "repeatsLimited",
+    "visionTitle"
   ]
 }

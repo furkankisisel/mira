@@ -3711,4 +3711,22 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get keepItUp => 'Harika! Aynen devam! 💪';
+
+  @override
+  String get months => 'ay';
+
+  @override
+  String get monthsLimit => 'Ay Sınırı';
+
+  @override
+  String get recurring => 'Tekrarlı';
+
+  @override
+  String get repeatsForever => 'Sonsuza Kadar Tekrarla';
+
+  @override
+  String get repeatsLimited => 'Sınırlı Süre Tekrarla';
+
+  @override
+  String get visionTitle => 'Vizyon Başlığı';
 }
