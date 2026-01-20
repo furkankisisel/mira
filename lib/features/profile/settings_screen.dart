@@ -9,6 +9,7 @@ import '../notifications/presentation/notification_settings_screen.dart';
 import 'privacy_security_screen.dart';
 import 'auth_repository.dart';
 import '../onboarding/presentation/onboarding_screen.dart';
+import '../rhythm/presentation/rhythm_onboarding_screen.dart';
 import '../../features/backup/backup_page.dart';
 import '../../ui/manage_subscription_screen.dart';
 import 'package:provider/provider.dart';
@@ -254,6 +255,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           const SizedBox(height: 12),
           _SettingsSection(
+            title: l10n.testsSection,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.psychology_outlined),
+                title: Text(l10n.retakePersonalityTest),
+                subtitle: Text(l10n.retakePersonalityTestDesc),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const OnboardingScreen(
+                        isRetake: true,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.schedule_outlined),
+                title: Text(l10n.retakeRhythmTest),
+                subtitle: Text(l10n.retakeRhythmTestDesc),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const RhythmOnboardingScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _SettingsSection(
             title: l10n.privacySecurity,
             children: [
               ListTile(
@@ -321,9 +356,9 @@ class _SettingsSection extends StatelessWidget {
           child: Text(
             title,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
         ),
         Card(

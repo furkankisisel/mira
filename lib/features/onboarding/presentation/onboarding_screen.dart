@@ -9,7 +9,10 @@ import '../../../core/config/api_config.dart';
 
 /// Onboarding flow with welcome, quiz, and result screens
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key});
+  const OnboardingScreen({super.key, this.isRetake = false});
+
+  /// If true, navigates back to home after completion instead of full app reset
+  final bool isRetake;
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -222,8 +225,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   left: 24,
                   right: 24,
                   child: LinearProgressIndicator(
-                    value:
-                        _currentPage /
+                    value: _currentPage /
                         (OnboardingQuestions.questions.length + 1),
                     borderRadius: BorderRadius.circular(4),
                   ),

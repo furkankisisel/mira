@@ -6,6 +6,7 @@ import '../domain/habit_recommendation.dart';
 import '../../habit/domain/habit_model.dart';
 import '../../habit/domain/habit_types.dart';
 import '../../habit/domain/habit_repository.dart';
+import '../../rhythm/presentation/rhythm_teaser_screen.dart';
 
 /// Character result screen showing personality type and habit recommendations
 class CharacterResultScreen extends StatefulWidget {
@@ -286,7 +287,12 @@ class _CharacterResultScreenState extends State<CharacterResultScreen> {
   }
 
   void _navigateToHome() {
-    Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+    // Navigate to Rhythm Teaser screen after personality test
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => const RhythmTeaserScreen(),
+      ),
+    );
   }
 
   @override
@@ -573,8 +579,8 @@ class _CharacterResultScreenState extends State<CharacterResultScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : _selectedHabitIndices.isNotEmpty
-                ? const Icon(Icons.rocket_launch_rounded, size: 20)
-                : const Icon(Icons.skip_next_rounded, size: 20),
+                    ? const Icon(Icons.rocket_launch_rounded, size: 20)
+                    : const Icon(Icons.skip_next_rounded, size: 20),
             label: Text(
               _selectedHabitIndices.isEmpty
                   ? l10n.skipOnboarding

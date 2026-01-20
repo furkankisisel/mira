@@ -31,6 +31,7 @@ import '../../vision/data/vision_repository.dart';
 import '../../vision/data/vision_model.dart';
 import '../../../core/config/api_config.dart';
 import '../../../ui/premium_gate.dart';
+import 'live_rhythm_header.dart';
 // removed unused imports
 
 /// Represents a grouped item for the habit/task list view
@@ -55,20 +56,20 @@ class _HabitItem extends _GroupedItem {
 enum Mood { terrible, bad, ok, good, great }
 
 IconData _iconFor(Mood m) => switch (m) {
-  Mood.terrible => Icons.sentiment_very_dissatisfied,
-  Mood.bad => Icons.sentiment_dissatisfied,
-  Mood.ok => Icons.sentiment_neutral,
-  Mood.good => Icons.sentiment_satisfied,
-  Mood.great => Icons.sentiment_very_satisfied,
-};
+      Mood.terrible => Icons.sentiment_very_dissatisfied,
+      Mood.bad => Icons.sentiment_dissatisfied,
+      Mood.ok => Icons.sentiment_neutral,
+      Mood.good => Icons.sentiment_satisfied,
+      Mood.great => Icons.sentiment_very_satisfied,
+    };
 
 Color _colorFor(Mood m) => switch (m) {
-  Mood.terrible => Colors.redAccent,
-  Mood.bad => Colors.deepOrange,
-  Mood.ok => AppColors.accentSand,
-  Mood.good => AppColors.accentBlue,
-  Mood.great => AppColors.accentGold,
-};
+      Mood.terrible => Colors.redAccent,
+      Mood.bad => Colors.deepOrange,
+      Mood.ok => AppColors.accentSand,
+      Mood.good => AppColors.accentBlue,
+      Mood.great => AppColors.accentGold,
+    };
 
 class HabitScreen extends StatefulWidget {
   const HabitScreen({super.key, this.variant = ThemeVariant.cotton});
@@ -108,9 +109,9 @@ class HabitScreenState extends State<HabitScreen>
   DateTime get _today =>
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   List<DateTime> get _dateRange => List.generate(
-    _dateRangeDays * 2 + 1, // 20 gün önce + bugün + 20 gün sonra = 41 gün
-    (i) => _today.add(Duration(days: i - _dateRangeDays)),
-  );
+        _dateRangeDays * 2 + 1, // 20 gün önce + bugün + 20 gün sonra = 41 gün
+        (i) => _today.add(Duration(days: i - _dateRangeDays)),
+      );
 
   final HabitRepository _repo = HabitRepository.instance;
   final ListRepository _listRepo = ListRepository.instance;
@@ -727,9 +728,8 @@ class HabitScreenState extends State<HabitScreen>
                             ],
                           )
                         : null,
-                    color: isSelected
-                        ? null
-                        : colorScheme.surfaceContainerHighest,
+                    color:
+                        isSelected ? null : colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isSelected
@@ -813,9 +813,8 @@ class HabitScreenState extends State<HabitScreen>
                           label,
                           style: TextStyle(
                             fontSize: 14,
-                            fontWeight: isSelected
-                                ? FontWeight.w600
-                                : FontWeight.w500,
+                            fontWeight:
+                                isSelected ? FontWeight.w600 : FontWeight.w500,
                             color: isSelected
                                 ? colorScheme.onPrimaryContainer
                                 : colorScheme.onSurfaceVariant,
@@ -1046,10 +1045,10 @@ class HabitScreenState extends State<HabitScreen>
                           onPressed: localTypes.isEmpty
                               ? null
                               : () => Navigator.of(context).pop({
-                                  'types': localTypes,
-                                  'completion': localCompletion,
-                                  'listId': localListId,
-                                }),
+                                    'types': localTypes,
+                                    'completion': localCompletion,
+                                    'listId': localListId,
+                                  }),
                           style: FilledButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
@@ -1242,9 +1241,9 @@ class HabitScreenState extends State<HabitScreen>
                                                 value: cascadeHabits,
                                                 onChanged: (v) =>
                                                     setStateDialog(
-                                                      () => cascadeHabits =
-                                                          v ?? true,
-                                                    ),
+                                                  () =>
+                                                      cascadeHabits = v ?? true,
+                                                ),
                                                 title: Text(
                                                   AppLocalizations.of(
                                                     context,
@@ -1256,9 +1255,9 @@ class HabitScreenState extends State<HabitScreen>
                                                 value: cascadeTasks,
                                                 onChanged: (v) =>
                                                     setStateDialog(
-                                                      () => cascadeTasks =
-                                                          v ?? true,
-                                                    ),
+                                                  () =>
+                                                      cascadeTasks = v ?? true,
+                                                ),
                                                 title: Text(
                                                   AppLocalizations.of(
                                                     context,
@@ -1413,16 +1412,16 @@ class HabitScreenState extends State<HabitScreen>
     // Today: in-memory completion or explicit log; Other days: explicit log only
     final bool dayCompleted = isToday
         ? (habit.isCompleted ||
-              HabitRepository.evaluateCompletionFromLog(habit, dayKey))
+            HabitRepository.evaluateCompletionFromLog(habit, dayKey))
         : HabitRepository.evaluateCompletionFromLog(habit, dayKey);
     return dayCompleted;
   }
 
   bool _matchesCompletionFilter(Habit h) => switch (_completionFilter) {
-    CompletionFilter.all => true,
-    CompletionFilter.completed => _isHabitCompletedOnSelected(h),
-    CompletionFilter.incomplete => !_isHabitCompletedOnSelected(h),
-  };
+        CompletionFilter.all => true,
+        CompletionFilter.completed => _isHabitCompletedOnSelected(h),
+        CompletionFilter.incomplete => !_isHabitCompletedOnSelected(h),
+      };
 
   List<Habit> _filteredHabits() {
     return _repo.habits
@@ -1503,9 +1502,8 @@ class HabitScreenState extends State<HabitScreen>
 
     // Build grouped items
     for (final listId in sortedListIds) {
-      final listHabits = filteredHabits
-          .where((h) => h.listId == listId)
-          .toList();
+      final listHabits =
+          filteredHabits.where((h) => h.listId == listId).toList();
       final listTasks = filteredTasks.where((t) => t.listId == listId).toList();
 
       if (listHabits.isEmpty && listTasks.isEmpty) continue;
@@ -1657,12 +1655,11 @@ class HabitScreenState extends State<HabitScreen>
       DateTime(startDate.year, startDate.month, startDate.day),
     );
 
-    final int dayProgress = isToday
-        ? habit.currentStreak
-        : (habit.dailyLog[dayKey] ?? 0);
+    final int dayProgress =
+        isToday ? habit.currentStreak : (habit.dailyLog[dayKey] ?? 0);
     final bool dayCompleted = isToday
         ? (habit.isCompleted ||
-              HabitRepository.evaluateCompletionFromLog(habit, dayKey))
+            HabitRepository.evaluateCompletionFromLog(habit, dayKey))
         : HabitRepository.evaluateCompletionFromLog(habit, dayKey);
     final int missedBefore = _consecutiveMissedDaysBefore(
       habit,
@@ -1716,13 +1713,11 @@ class HabitScreenState extends State<HabitScreen>
       numericalTargetType: habit.habitType == HabitType.numerical
           ? habit.numericalTargetType
           : null,
-      timerTargetType: habit.habitType == HabitType.timer
-          ? habit.timerTargetType
-          : null,
+      timerTargetType:
+          habit.habitType == HabitType.timer ? habit.timerTargetType : null,
       unit: habit.unit,
       readOnly: isFuture || isBeforeStart,
-      iceEnabled:
-          !isFuture &&
+      iceEnabled: !isFuture &&
           !isBeforeStart &&
           (habit.habitType == HabitType.simple ||
               habit.habitType == HabitType.checkbox),
@@ -1796,9 +1791,9 @@ class HabitScreenState extends State<HabitScreen>
       await visionRepo.initialize();
       final visions = await visionRepo.stream.first;
       final vision = visions.cast<Vision?>().firstWhere(
-        (v) => v?.id == habit.linkedVisionId,
-        orElse: () => null,
-      );
+            (v) => v?.id == habit.linkedVisionId,
+            orElse: () => null,
+          );
 
       if (!mounted) return;
 
@@ -2590,8 +2585,8 @@ class HabitScreenState extends State<HabitScreen>
             Text(
               l10n.emptyHabitSubtitle,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -2699,11 +2694,13 @@ class HabitScreenState extends State<HabitScreen>
                           ? groupedItems
                           : <_GroupedItem>[];
 
-                      // Calculate item count: focus + toggle button (if focus active) + items + action card (when expanded)
+                      // Calculate item count: rhythm header + focus + toggle button (if focus active) + items + action card (when expanded)
+                      const int rhythmHeaderCount =
+                          1; // Always show rhythm header
                       final int focusItemCount = isFocusActive ? 1 : 0;
                       final int toggleButtonCount = isFocusActive ? 1 : 0;
                       final int actionCardCount = shouldShowOtherItems ? 1 : 0;
-                      final int totalCount =
+                      final int totalCount = rhythmHeaderCount +
                           focusItemCount +
                           toggleButtonCount +
                           itemsToShow.length +
@@ -2713,19 +2710,30 @@ class HabitScreenState extends State<HabitScreen>
                         padding: EdgeInsets.only(bottom: bottomReserve),
                         itemCount: totalCount,
                         itemBuilder: (context, index) {
-                          // 1. Show focus card first
-                          if (isFocusActive && index == 0) {
+                          // 0. Show rhythm header first
+                          if (index == 0) {
+                            return LiveRhythmHeader(
+                              aiMessage: _focusAiMessage,
+                              isLoadingAiMessage: _isLoadingFocusAi,
+                            );
+                          }
+
+                          // 1. Show focus card after rhythm header
+                          if (isFocusActive && index == 1) {
                             return focusWidget;
                           }
 
                           // 2. Show toggle button after focus card
-                          if (isFocusActive && index == 1) {
+                          if (isFocusActive && index == 2) {
                             return _buildOtherItemsToggle(groupedItems.length);
                           }
 
                           // 3. Show items if expanded or if no focus
-                          final adjustedIndex =
-                              index - focusItemCount - toggleButtonCount;
+
+                          final adjustedIndex = index -
+                              rhythmHeaderCount -
+                              focusItemCount -
+                              toggleButtonCount;
 
                           // 4. Show inline action card at the end (when items are shown)
                           if (shouldShowOtherItems &&
@@ -2751,8 +2759,7 @@ class HabitScreenState extends State<HabitScreen>
 
                     return ListView.builder(
                       padding: EdgeInsets.only(bottom: bottomReserve),
-                      itemCount:
-                          (tasks.isNotEmpty ? (1 + tasks.length) : 0) +
+                      itemCount: (tasks.isNotEmpty ? (1 + tasks.length) : 0) +
                           (habits.isNotEmpty ? (1 + habits.length) : 0),
                       itemBuilder: (context, index) {
                         int cursor = 0;
@@ -2763,7 +2770,9 @@ class HabitScreenState extends State<HabitScreen>
                               padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
                               child: Text(
                                 AppLocalizations.of(context).dailyTasksSection,
-                                style: Theme.of(context).textTheme.labelLarge
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelLarge
                                     ?.copyWith(fontWeight: FontWeight.w600),
                               ),
                             );
@@ -2781,12 +2790,12 @@ class HabitScreenState extends State<HabitScreen>
                               listName: task.listId == null
                                   ? null
                                   : _listRepo.lists
-                                        .firstWhere(
-                                          (l) => l.id == task.listId,
-                                          orElse: () =>
-                                              AppList(id: '', title: ''),
-                                        )
-                                        .title,
+                                      .firstWhere(
+                                        (l) => l.id == task.listId,
+                                        orElse: () =>
+                                            AppList(id: '', title: ''),
+                                      )
+                                      .title,
                               onToggleDone: (value) {
                                 setState(() {
                                   task.isDone = value;
@@ -2803,16 +2812,16 @@ class HabitScreenState extends State<HabitScreen>
                                 // Prefill edit dialog using same DailyTaskDialog
                                 final res =
                                     await showDialog<Map<String, dynamic>>(
-                                      context: context,
-                                      builder: (ctx) => DailyTaskDialog(),
-                                    );
+                                  context: context,
+                                  builder: (ctx) => DailyTaskDialog(),
+                                );
                                 if (res != null) {
                                   final newTitle =
                                       (res['title'] as String?)?.trim() ??
-                                      task.title;
+                                          task.title;
                                   final newDescription =
                                       (res['description'] as String?)?.trim() ??
-                                      task.description;
+                                          task.description;
                                   task.title = newTitle;
                                   task.description = newDescription;
                                   await _taskRepo.updateTask(task);
@@ -2848,7 +2857,9 @@ class HabitScreenState extends State<HabitScreen>
                               padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
                               child: Text(
                                 AppLocalizations.of(context).habitsSection,
-                                style: Theme.of(context).textTheme.labelLarge
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelLarge
                                     ?.copyWith(fontWeight: FontWeight.w600),
                               ),
                             );
@@ -2896,10 +2907,10 @@ class HabitScreenState extends State<HabitScreen>
                                 : (habit.dailyLog[dayKey] ?? 0);
                             final bool dayCompleted = isToday
                                 ? (habit.isCompleted ||
-                                      HabitRepository.evaluateCompletionFromLog(
-                                        habit,
-                                        dayKey,
-                                      ))
+                                    HabitRepository.evaluateCompletionFromLog(
+                                      habit,
+                                      dayKey,
+                                    ))
                                 : HabitRepository.evaluateCompletionFromLog(
                                     habit,
                                     dayKey,
@@ -2907,10 +2918,10 @@ class HabitScreenState extends State<HabitScreen>
                             // Ice mechanic: number of missed days prior to selected
                             final int missedBefore =
                                 _consecutiveMissedDaysBefore(
-                                  habit,
-                                  selectedDate,
-                                  cap: 7,
-                                );
+                              habit,
+                              selectedDate,
+                              cap: 7,
+                            );
                             final isMuted = false;
                             // Swipe-to-dismiss removed: present HabitCard directly.
                             return HabitCard(
@@ -2922,28 +2933,26 @@ class HabitScreenState extends State<HabitScreen>
                               categoryName: habit.categoryName,
                               color: habit.color,
                               currentStreak: dayProgress,
-                              streakCount: HabitRepository.instance
-                                  .consecutiveStreak(
-                                    habit.id,
-                                    upTo: selectedDate,
-                                  ),
+                              streakCount:
+                                  HabitRepository.instance.consecutiveStreak(
+                                habit.id,
+                                upTo: selectedDate,
+                              ),
                               targetCount: habit.targetCount,
                               isCompleted: dayCompleted,
                               habitType: habit.habitType,
                               numericalTargetType:
                                   habit.habitType == HabitType.numerical
-                                  ? habit.numericalTargetType
-                                  : null,
+                                      ? habit.numericalTargetType
+                                      : null,
                               timerTargetType:
                                   habit.habitType == HabitType.timer
-                                  ? habit.timerTargetType
-                                  : null,
+                                      ? habit.timerTargetType
+                                      : null,
                               unit: habit.unit,
-                              readOnly:
-                                  isFuture ||
+                              readOnly: isFuture ||
                                   isBeforeStart, // gelecek veya başlangıçtan önce günler kilitli
-                              iceEnabled:
-                                  !isFuture &&
+                              iceEnabled: !isFuture &&
                                   !isBeforeStart &&
                                   habit.habitType == HabitType.simple,
                               requiredBreakTaps: missedBefore,
@@ -2962,8 +2971,8 @@ class HabitScreenState extends State<HabitScreen>
                               },
                               onAssignToList: () =>
                                   _assignHabitToListDialog(habit),
-                              showStreakIndicator: _repo
-                                  .getShowStreakIndicatorFor(habit.id),
+                              showStreakIndicator:
+                                  _repo.getShowStreakIndicatorFor(habit.id),
                               onToggleStreakIndicator: (v) async {
                                 await _repo.setShowStreakIndicatorFor(
                                   habit.id,
@@ -3038,110 +3047,88 @@ class HabitScreenState extends State<HabitScreen>
                                     print('     - ${v.title} (${v.id})');
                                   }
 
-                                  final vision = visions
-                                      .cast<Vision?>()
-                                      .firstWhere(
-                                        (v) => v?.id == habit.linkedVisionId,
-                                        orElse: () => null,
-                                      );
+                                  final vision =
+                                      visions.cast<Vision?>().firstWhere(
+                                            (v) =>
+                                                v?.id == habit.linkedVisionId,
+                                            orElse: () => null,
+                                          );
 
                                   if (vision != null) {
                                     print('   ✅ Vision found: ${vision.title}');
                                     // Prepare editing map for AdvancedHabitScreen
                                     final result = await Navigator.of(context)
                                         .push<Map<String, dynamic>>(
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                AdvancedHabitScreen(
-                                                  useVisionDayOffsets: true,
-                                                  returnAsMap: true,
-                                                  editingHabitMap: {
-                                                    'id': habit.id,
-                                                    'title': habit.title,
-                                                    'description':
-                                                        habit.description,
-                                                    'icon': habit.icon,
-                                                    'color': habit.color,
-                                                    'targetCount':
-                                                        habit.targetCount,
-                                                    'habitType':
-                                                        habit.habitType,
-                                                    'unit': habit.unit,
-                                                    'currentStreak':
-                                                        habit.currentStreak,
-                                                    'isCompleted':
-                                                        habit.isCompleted,
-                                                    'startDate':
-                                                        habit.startDate,
-                                                    'endDate': habit.endDate,
-                                                    if (habit.scheduledDates !=
-                                                        null)
-                                                      'scheduledDates':
-                                                          habit.scheduledDates,
-                                                    'numericalTargetType': habit
-                                                        .numericalTargetType,
-                                                    'timerTargetType':
-                                                        habit.timerTargetType,
-                                                    if (habit.emoji != null)
-                                                      'emoji': habit.emoji,
-                                                    if (habit.frequency != null)
-                                                      'frequency':
-                                                          habit.frequency,
-                                                    if (habit.frequencyType !=
-                                                        null)
-                                                      'frequencyType':
-                                                          habit.frequencyType,
-                                                    if (habit
-                                                            .selectedWeekdays !=
-                                                        null)
-                                                      'selectedWeekdays': habit
-                                                          .selectedWeekdays,
-                                                    if (habit
-                                                            .selectedMonthDays !=
-                                                        null)
-                                                      'selectedMonthDays': habit
-                                                          .selectedMonthDays,
-                                                    if (habit
-                                                            .selectedYearDays !=
-                                                        null)
-                                                      'selectedYearDays': habit
-                                                          .selectedYearDays,
-                                                    if (habit.periodicDays !=
-                                                        null)
-                                                      'periodicDays':
-                                                          habit.periodicDays,
-                                                    'reminderEnabled':
-                                                        habit.reminderEnabled,
-                                                    if (habit.reminderTime !=
-                                                        null)
-                                                      'reminderTime': {
-                                                        'hour': habit
-                                                            .reminderTime!
-                                                            .hour,
-                                                        'minute': habit
-                                                            .reminderTime!
-                                                            .minute,
-                                                      },
-                                                    // Vision-specific context
-                                                    'visionId': vision.id,
-                                                    'visionStartDate':
-                                                        vision.startDate,
-                                                    'visionEndDate':
-                                                        vision.endDate,
-                                                  },
-                                                ),
-                                          ),
-                                        );
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            AdvancedHabitScreen(
+                                          useVisionDayOffsets: true,
+                                          returnAsMap: true,
+                                          editingHabitMap: {
+                                            'id': habit.id,
+                                            'title': habit.title,
+                                            'description': habit.description,
+                                            'icon': habit.icon,
+                                            'color': habit.color,
+                                            'targetCount': habit.targetCount,
+                                            'habitType': habit.habitType,
+                                            'unit': habit.unit,
+                                            'currentStreak':
+                                                habit.currentStreak,
+                                            'isCompleted': habit.isCompleted,
+                                            'startDate': habit.startDate,
+                                            'endDate': habit.endDate,
+                                            if (habit.scheduledDates != null)
+                                              'scheduledDates':
+                                                  habit.scheduledDates,
+                                            'numericalTargetType':
+                                                habit.numericalTargetType,
+                                            'timerTargetType':
+                                                habit.timerTargetType,
+                                            if (habit.emoji != null)
+                                              'emoji': habit.emoji,
+                                            if (habit.frequency != null)
+                                              'frequency': habit.frequency,
+                                            if (habit.frequencyType != null)
+                                              'frequencyType':
+                                                  habit.frequencyType,
+                                            if (habit.selectedWeekdays != null)
+                                              'selectedWeekdays':
+                                                  habit.selectedWeekdays,
+                                            if (habit.selectedMonthDays != null)
+                                              'selectedMonthDays':
+                                                  habit.selectedMonthDays,
+                                            if (habit.selectedYearDays != null)
+                                              'selectedYearDays':
+                                                  habit.selectedYearDays,
+                                            if (habit.periodicDays != null)
+                                              'periodicDays':
+                                                  habit.periodicDays,
+                                            'reminderEnabled':
+                                                habit.reminderEnabled,
+                                            if (habit.reminderTime != null)
+                                              'reminderTime': {
+                                                'hour':
+                                                    habit.reminderTime!.hour,
+                                                'minute':
+                                                    habit.reminderTime!.minute,
+                                              },
+                                            // Vision-specific context
+                                            'visionId': vision.id,
+                                            'visionStartDate': vision.startDate,
+                                            'visionEndDate': vision.endDate,
+                                          },
+                                        ),
+                                      ),
+                                    );
 
                                     if (result != null) {
                                       // Apply updates to habit
-                                      habit.title =
-                                          (result['title'] ?? habit.title)
-                                              as String;
+                                      habit.title = (result['title'] ??
+                                          habit.title) as String;
                                       habit.description =
                                           (result['description'] ??
-                                                  habit.description)
-                                              as String;
+                                              habit.description) as String;
                                       if (result['color'] is int) {
                                         habit.color = Color(
                                           result['color'] as int,
@@ -3214,8 +3201,8 @@ class HabitScreenState extends State<HabitScreen>
                                       )) {
                                         habit.reminderEnabled =
                                             (result['reminderEnabled']
-                                                as bool?) ??
-                                            false;
+                                                    as bool?) ??
+                                                false;
                                       }
                                       if (result['reminderTime'] is Map) {
                                         final rt =
@@ -3248,13 +3235,12 @@ class HabitScreenState extends State<HabitScreen>
                                     !habit.isAdvanced) {
                                   final editedHabit =
                                       await Navigator.of(context).push<Habit>(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              SimpleHabitScreen(
-                                                existingHabit: habit,
-                                              ),
-                                        ),
-                                      );
+                                    MaterialPageRoute(
+                                      builder: (context) => SimpleHabitScreen(
+                                        existingHabit: habit,
+                                      ),
+                                    ),
+                                  );
                                   if (editedHabit != null) {
                                     // SimpleHabitScreen döndürdüğü Habit'ten değerleri kopyala
                                     habit.title = editedHabit.title;
@@ -3283,15 +3269,14 @@ class HabitScreenState extends State<HabitScreen>
                                   return;
                                 }
                                 // Otherwise use advanced habit screen
-                                final editedHabit = await Navigator.of(context)
-                                    .push<Habit>(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            AdvancedHabitScreen(
-                                              existingHabit: habit,
-                                            ),
-                                      ),
-                                    );
+                                final editedHabit =
+                                    await Navigator.of(context).push<Habit>(
+                                  MaterialPageRoute(
+                                    builder: (context) => AdvancedHabitScreen(
+                                      existingHabit: habit,
+                                    ),
+                                  ),
+                                );
                                 if (editedHabit != null) {
                                   habit.title = editedHabit.title;
                                   habit.description = editedHabit.description;
@@ -3395,9 +3380,8 @@ class HabitScreenState extends State<HabitScreen>
 
     // Format date: "15 Oct"
     final locale = Localizations.localeOf(context).toString();
-    final dateDisplay = isToday
-        ? l10n.today
-        : DateFormat.MMMd(locale).format(_selected);
+    final dateDisplay =
+        isToday ? l10n.today : DateFormat.MMMd(locale).format(_selected);
 
     return Container(
       padding: EdgeInsets.only(
@@ -3549,25 +3533,25 @@ class HabitScreenState extends State<HabitScreen>
                     Text(
                       _weekdayLabel(context, day.weekday),
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 11,
-                        color: selected
-                            ? scheme.onPrimaryContainer
-                            : today
-                            ? scheme.primary
-                            : scheme.onSurfaceVariant,
-                      ),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 11,
+                            color: selected
+                                ? scheme.onPrimaryContainer
+                                : today
+                                    ? scheme.primary
+                                    : scheme.onSurfaceVariant,
+                          ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       '${day.day}',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        height: 1.1,
-                        color: selected
-                            ? scheme.onPrimaryContainer
-                            : scheme.onSurface,
-                      ),
+                            fontWeight: FontWeight.bold,
+                            height: 1.1,
+                            color: selected
+                                ? scheme.onPrimaryContainer
+                                : scheme.onSurface,
+                          ),
                     ),
                   ],
                 ),
@@ -3729,7 +3713,9 @@ class _TaskCard extends StatelessWidget {
                           children: [
                             Text(
                               title,
-                              style: Theme.of(context).textTheme.titleMedium
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
                                   ?.copyWith(
                                     decoration: isDone
                                         ? TextDecoration.lineThrough
@@ -3747,7 +3733,9 @@ class _TaskCard extends StatelessWidget {
                                 padding: const EdgeInsets.only(top: 4),
                                 child: Text(
                                   description,
-                                  style: Theme.of(context).textTheme.bodySmall
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
                                       ?.copyWith(
                                         color: scheme.onSurfaceVariant,
                                         decoration: isDone
@@ -3776,11 +3764,11 @@ class _TaskCard extends StatelessWidget {
                         ),
                         child: Text(
                           listName!,
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(
-                                color: scheme.onSecondaryContainer,
-                                fontWeight: FontWeight.w600,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: scheme.onSecondaryContainer,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                         ),
                       ),
                   ],

@@ -3760,4 +3760,246 @@ class AppLocalizationsEn extends AppLocalizations {
   String everyNDaysInfo(Object days) {
     return 'Occurs every $days days';
   }
+
+  @override
+  String get rhythmTeaserTitle =>
+      'Maximize Your Habits Based on Your Biological Clock';
+
+  @override
+  String get rhythmTeaserSubtitle =>
+      'Live Rhythm learns your most productive moments and places habits at the right time.';
+
+  @override
+  String get rhythmTeaserSkip => 'Skip';
+
+  @override
+  String get rhythmTeaserCta => 'View Packages';
+
+  @override
+  String get rhythmWindowFocus => 'Focus Time';
+
+  @override
+  String get rhythmWindowFocusDesc => 'Mental clarity, learning, analysis';
+
+  @override
+  String get rhythmWindowEnergy => 'Energy Time';
+
+  @override
+  String get rhythmWindowEnergyDesc => 'Movement, action, sports';
+
+  @override
+  String get rhythmWindowLight => 'Light Time';
+
+  @override
+  String get rhythmWindowLightDesc => 'Low effort, small tasks';
+
+  @override
+  String get rhythmWindowReflection => 'Reflection Time';
+
+  @override
+  String get rhythmWindowReflectionDesc => 'Journaling, contemplation, closure';
+
+  @override
+  String get rhythmBenefit1 => 'Right task at the right time';
+
+  @override
+  String get rhythmBenefit2 => 'No decision fatigue';
+
+  @override
+  String get rhythmBenefit3 => 'Personalization every week';
+
+  @override
+  String get rhythmAnalyzing => 'Live Rhythm is analyzing...';
+
+  @override
+  String get rhythmDisclaimer =>
+      'These are not definitive results. Live Rhythm will adjust as it gets to know you.';
+
+  @override
+  String get rhythmQ1 => 'What time do you usually go to sleep?';
+
+  @override
+  String get rhythmQ2 => 'What time do you usually wake up?';
+
+  @override
+  String get rhythmQ3 => 'When do you tackle difficult tasks most comfortably?';
+
+  @override
+  String get rhythmQ4 => 'When do you feel most clear-headed for learning?';
+
+  @override
+  String get rhythmQ5 =>
+      'During which part of the day do you feel more energetic?';
+
+  @override
+  String get rhythmQ6 => 'When does physical exercise feel easiest for you?';
+
+  @override
+  String get rhythmQ7 => 'At what time of day do you tend to procrastinate?';
+
+  @override
+  String get rhythmQ8 =>
+      'What do you usually do during these low-energy times?';
+
+  @override
+  String get rhythmQ9 => 'At the end of the day, which feels better to you?';
+
+  @override
+  String get rhythmQ10 => 'How does your mind usually feel in the evening?';
+
+  @override
+  String get rhythmQ11 => 'Which do you identify with more?';
+
+  @override
+  String get rhythmA1_1 => '10:00 PM – 11:00 PM';
+
+  @override
+  String get rhythmA1_2 => '11:00 PM – 12:00 AM';
+
+  @override
+  String get rhythmA1_3 => '12:00 AM – 1:00 AM';
+
+  @override
+  String get rhythmA1_4 => '1:00 AM+';
+
+  @override
+  String get rhythmA2_1 => '6:00 AM – 7:00 AM';
+
+  @override
+  String get rhythmA2_2 => '7:00 AM – 8:00 AM';
+
+  @override
+  String get rhythmA2_3 => '8:00 AM – 9:00 AM';
+
+  @override
+  String get rhythmA2_4 => '9:00 AM+';
+
+  @override
+  String get rhythmA3_1 => 'Early morning';
+
+  @override
+  String get rhythmA3_2 => 'Mid-morning';
+
+  @override
+  String get rhythmA3_3 => 'Afternoon';
+
+  @override
+  String get rhythmA3_4 => 'Evening';
+
+  @override
+  String get rhythmA3_5 => 'No difference';
+
+  @override
+  String get rhythmA4_1 => 'Morning';
+
+  @override
+  String get rhythmA4_2 => 'Noon';
+
+  @override
+  String get rhythmA4_3 => 'Evening';
+
+  @override
+  String get rhythmA4_4 => 'Night';
+
+  @override
+  String get rhythmA4_5 => 'Varies';
+
+  @override
+  String get rhythmA5_1 => 'Morning';
+
+  @override
+  String get rhythmA5_2 => 'Noon';
+
+  @override
+  String get rhythmA5_3 => 'Evening';
+
+  @override
+  String get rhythmA5_4 => 'None';
+
+  @override
+  String get rhythmA5_5 => 'Fluctuates throughout the day';
+
+  @override
+  String get rhythmA6_1 => 'Morning';
+
+  @override
+  String get rhythmA6_2 => 'Afternoon';
+
+  @override
+  String get rhythmA6_3 => 'Evening';
+
+  @override
+  String get rhythmA6_4 => 'No difference';
+
+  @override
+  String get rhythmA7_1 => 'After noon';
+
+  @override
+  String get rhythmA7_2 => 'Late afternoon';
+
+  @override
+  String get rhythmA7_3 => 'Night';
+
+  @override
+  String get rhythmA7_4 => 'Not specific';
+
+  @override
+  String get rhythmA8_1 => 'I browse social media';
+
+  @override
+  String get rhythmA8_2 => 'I do simple tasks';
+
+  @override
+  String get rhythmA8_3 => 'I rest';
+
+  @override
+  String get rhythmA8_4 => 'I try to push through';
+
+  @override
+  String get rhythmA9_1 => 'Writing / thinking';
+
+  @override
+  String get rhythmA9_2 => 'Quiet rest';
+
+  @override
+  String get rhythmA9_3 => 'Reading';
+
+  @override
+  String get rhythmA9_4 => 'Going straight to sleep';
+
+  @override
+  String get rhythmA10_1 => 'Calm and collected';
+
+  @override
+  String get rhythmA10_2 => 'Tired but thoughtful';
+
+  @override
+  String get rhythmA10_3 => 'Scattered';
+
+  @override
+  String get rhythmA10_4 => 'Still active';
+
+  @override
+  String get rhythmA11_1 => 'I\'m a morning person';
+
+  @override
+  String get rhythmA11_2 => 'I\'m an evening person';
+
+  @override
+  String get rhythmA11_3 => 'I\'m in between';
+
+  @override
+  String get rhythmA11_4 => 'It changes seasonally';
+
+  @override
+  String get testsSection => 'Tests';
+
+  @override
+  String get retakePersonalityTestDesc => 'Rediscover your character type';
+
+  @override
+  String get retakeRhythmTest => 'Retake Rhythm Test';
+
+  @override
+  String get retakeRhythmTestDesc => 'Reconfigure your biological clock';
 }
