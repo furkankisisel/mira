@@ -46,8 +46,23 @@ import 'features/backup/auto_backup_service.dart';
 import 'package:provider/provider.dart';
 import 'providers/premium_provider.dart';
 
+import 'package:flutter/services.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Android 15 Edge-to-Edge enforcement
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarDividerColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ),
+  );
+
   // In widget tests, Firebase may not be available; guard initialization.
   try {
     await Firebase.initializeApp(

@@ -67,17 +67,15 @@ class NotificationService {
       showBadge: true,
     );
 
-    final androidPlugin = _plugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >();
+    final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
 
     await androidPlugin?.createNotificationChannel(androidChannel);
     await androidPlugin?.createNotificationChannel(habitReminderChannel);
 
     // Request notification permissions
-    final notificationPermission = await androidPlugin
-        ?.requestNotificationsPermission();
+    final notificationPermission =
+        await androidPlugin?.requestNotificationsPermission();
     print('🔔 Notification permission: $notificationPermission');
 
     // Do not request exact alarm permission; we use inexact scheduling to avoid this requirement on Android 12+
@@ -162,7 +160,7 @@ class NotificationService {
       channelDescription: _timerChannelDescription,
       importance: Importance.max, // Max importance for best visibility
       priority: Priority.max, // Max priority
-      icon: 'ic_stat_miralogo',
+
       ongoing: true,
       autoCancel: false,
       playSound: false,
@@ -338,7 +336,6 @@ class NotificationService {
       channelDescription: 'Daily reminders for your habits',
       importance: Importance.high,
       priority: Priority.high,
-      icon: 'ic_stat_miralogo',
       playSound: playSound,
       enableVibration: vibrate,
       largeIcon: const DrawableResourceAndroidBitmap(
@@ -370,8 +367,6 @@ class NotificationService {
         details,
         // Use inexact scheduling to avoid exact alarm permission on Android 12+
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
         // Try daily repeat at this time
         matchDateTimeComponents: DateTimeComponents.time,
         payload: 'habit:${habit.id}',
@@ -392,8 +387,6 @@ class NotificationService {
             scheduledDate,
             details,
             androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-            uiLocalNotificationDateInterpretation:
-                UILocalNotificationDateInterpretation.absoluteTime,
             // No repeat component -> one-shot
             payload: 'habit:${habit.id}',
           );

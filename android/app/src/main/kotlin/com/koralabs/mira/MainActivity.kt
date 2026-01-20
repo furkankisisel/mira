@@ -6,7 +6,14 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
+import androidx.core.view.WindowCompat
+
 class MainActivity : FlutterActivity() {
+    override fun onCreate(savedInstanceState: android.os.Bundle?) {
+        // Aligns the Window to be edge-to-edge
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        super.onCreate(savedInstanceState)
+    }
     private val CHANNEL = "com.koralabs.mira/timer_actions"
     private var sharedPrefs: SharedPreferences? = null
     private var methodChannel: MethodChannel? = null
