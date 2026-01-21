@@ -136,9 +136,8 @@ class _TimerScreenState extends State<TimerScreen>
         iconTheme: theme.iconTheme.copyWith(color: accent),
       ),
       child: Scaffold(
-        backgroundColor: isDark
-            ? theme.scaffoldBackgroundColor
-            : Colors.grey[50],
+        backgroundColor:
+            isDark ? theme.scaffoldBackgroundColor : Colors.grey[50],
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -237,9 +236,8 @@ class _TimerScreenState extends State<TimerScreen>
                 indicatorSize: TabBarIndicatorSize.tab,
                 indicatorPadding: const EdgeInsets.all(4),
                 labelColor: Colors.white,
-                unselectedLabelColor: isDark
-                    ? Colors.white70
-                    : Colors.grey[600],
+                unselectedLabelColor:
+                    isDark ? Colors.white70 : Colors.grey[600],
                 labelStyle: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
@@ -349,14 +347,20 @@ class _TimerScreenState extends State<TimerScreen>
           const SizedBox(height: 16),
         ],
         // Simple large time display
-        Text(
-          timeText,
-          style: TextStyle(
-            fontSize: 64,
-            fontWeight: FontWeight.w300,
-            fontFeatures: const [FontFeature.tabularFigures()],
-            letterSpacing: 2,
-            color: isDark ? Colors.white : Colors.black87,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              timeText,
+              style: TextStyle(
+                fontSize: 64,
+                fontWeight: FontWeight.w300,
+                fontFeatures: const [FontFeature.tabularFigures()],
+                letterSpacing: 2,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+            ),
           ),
         ),
       ],
@@ -379,16 +383,16 @@ class _TimerScreenState extends State<TimerScreen>
     final buttonColor = isDestructive
         ? Colors.red
         : isPrimary
-        ? accent
-        : (isDark
-              ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.6)
-              : colorScheme.surfaceContainerHighest);
+            ? accent
+            : (isDark
+                ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.6)
+                : colorScheme.surfaceContainerHighest);
 
     final textColor = isDestructive || isPrimary
         ? Colors.white
         : (isDark
-              ? Colors.white.withValues(alpha: 0.85)
-              : colorScheme.onSurface);
+            ? Colors.white.withValues(alpha: 0.85)
+            : colorScheme.onSurface);
 
     return Container(
       decoration: BoxDecoration(
@@ -907,11 +911,10 @@ class _TimerScreenState extends State<TimerScreen>
               onPlayPause: !hasDuration
                   ? _showCountdownConfigDialog
                   : () => isRunning
-                        ? controller.pause()
-                        : controller.startCountdown(),
-              onFinish: hasDuration && (rem != total)
-                  ? controller.finish
-                  : null,
+                      ? controller.pause()
+                      : controller.startCountdown(),
+              onFinish:
+                  hasDuration && (rem != total) ? controller.finish : null,
               onReset: hasDuration ? controller.reset : null,
               onSettings: _showCountdownConfigDialog,
             ),
@@ -998,13 +1001,12 @@ class _TimerScreenState extends State<TimerScreen>
     final total = isWorkPhase
         ? controller.pomodoroWorkDuration
         : (controller.pomodoroCompletedWorkSessions %
-                      controller.pomodoroLongBreakInterval ==
-                  0
-              ? controller.pomodoroLongBreakDuration
-              : controller.pomodoroShortBreakDuration);
-    final progress = total.inSeconds > 0
-        ? remaining.inSeconds / total.inSeconds
-        : 1.0;
+                    controller.pomodoroLongBreakInterval ==
+                0
+            ? controller.pomodoroLongBreakDuration
+            : controller.pomodoroShortBreakDuration);
+    final progress =
+        total.inSeconds > 0 ? remaining.inSeconds / total.inSeconds : 1.0;
 
     final accent = _getAccentColor(context);
     final phaseColor = isWorkPhase ? accent : Colors.green;
@@ -1019,12 +1021,10 @@ class _TimerScreenState extends State<TimerScreen>
             children: List.generate(controller.pomodoroLongBreakInterval, (
               index,
             ) {
-              final isCompleted =
-                  index <
+              final isCompleted = index <
                   controller.pomodoroCompletedWorkSessions %
                       controller.pomodoroLongBreakInterval;
-              final isCurrent =
-                  index ==
+              final isCurrent = index ==
                   controller.pomodoroCompletedWorkSessions %
                       controller.pomodoroLongBreakInterval;
 
@@ -1232,9 +1232,9 @@ class _TimerScreenState extends State<TimerScreen>
                     color: s.assigned
                         ? null
                         : (isDark
-                              ? theme.colorScheme.surfaceContainerHighest
-                                    .withValues(alpha: 0.4)
-                              : Colors.white),
+                            ? theme.colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.4)
+                            : Colors.white),
                     borderRadius: BorderRadius.circular(16),
                     border: s.assigned
                         ? Border.all(
@@ -1327,9 +1327,8 @@ class _TimerScreenState extends State<TimerScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: isDark
-            ? colorScheme.surfaceContainerHigh
-            : colorScheme.surface,
+        backgroundColor:
+            isDark ? colorScheme.surfaceContainerHigh : colorScheme.surface,
         title: Text(
           l10n.delete,
           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -1360,25 +1359,23 @@ class _TimerScreenState extends State<TimerScreen>
   }
 
   IconData _iconForMode(TimerMode mode) => switch (mode) {
-    TimerMode.stopwatch => Icons.timer_outlined,
-    TimerMode.countdown => Icons.hourglass_bottom_outlined,
-    TimerMode.pomodoro => Icons.local_fire_department_outlined,
-  };
+        TimerMode.stopwatch => Icons.timer_outlined,
+        TimerMode.countdown => Icons.hourglass_bottom_outlined,
+        TimerMode.pomodoro => Icons.local_fire_department_outlined,
+      };
 
   void _showSaveDialog() {
     final l10n = AppLocalizations.of(context);
     final repo = HabitRepository.instance;
-    final timerHabits = repo.habits
-        .where((h) => h.habitType == HabitType.timer)
-        .toList();
+    final timerHabits =
+        repo.habits.where((h) => h.habitType == HabitType.timer).toList();
     if (timerHabits.isEmpty) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l10n.timerCreateTimerHabitFirst)));
       return;
     }
-    String? selectedId =
-        controller.activeTimerHabitId ??
+    String? selectedId = controller.activeTimerHabitId ??
         (timerHabits.isNotEmpty ? timerHabits.first.id : null);
 
     final accent = _getAccentColor(context);
@@ -1389,9 +1386,8 @@ class _TimerScreenState extends State<TimerScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: isDark
-            ? colorScheme.surfaceContainerHigh
-            : colorScheme.surface,
+        backgroundColor:
+            isDark ? colorScheme.surfaceContainerHigh : colorScheme.surface,
         title: Text(
           l10n.timerSaveDurationTitle,
           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -1497,9 +1493,8 @@ class _TimerScreenState extends State<TimerScreen>
       return;
     }
     final repo = HabitRepository.instance;
-    final timerHabits = repo.habits
-        .where((h) => h.habitType == HabitType.timer)
-        .toList();
+    final timerHabits =
+        repo.habits.where((h) => h.habitType == HabitType.timer).toList();
     if (timerHabits.isEmpty) {
       ScaffoldMessenger.of(
         context,
@@ -1515,9 +1510,8 @@ class _TimerScreenState extends State<TimerScreen>
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        backgroundColor: isDark
-            ? colorScheme.surfaceContainerHigh
-            : colorScheme.surface,
+        backgroundColor:
+            isDark ? colorScheme.surfaceContainerHigh : colorScheme.surface,
         title: Text(
           l10n.timerSaveSessionTitle,
           style: const TextStyle(fontWeight: FontWeight.bold),

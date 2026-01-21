@@ -12,6 +12,8 @@ import '../../habit/domain/habit_repository.dart';
 import '../../mood/data/mood_models.dart';
 import '../../habit/domain/habit_model.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../reports/domain/report_model.dart';
+import 'mira_premium_report_screen.dart';
 
 /// Message bubble for chat display
 class _ChatMessage {
@@ -19,12 +21,14 @@ class _ChatMessage {
   final bool isUser;
   final List<QuickAction>? actions;
   final List<String>? quickReplies;
+  final WeeklyReport? report;
 
   _ChatMessage({
     required this.text,
     required this.isUser,
     this.actions,
     this.quickReplies,
+    this.report,
   });
 }
 
@@ -150,6 +154,7 @@ class _MiraAssistantScreenState extends State<MiraAssistantScreen> {
             isUser: false,
             actions: response.actions,
             quickReplies: response.quickReplies,
+            report: response.report,
           ),
         );
         _isLoading = false;
@@ -182,8 +187,20 @@ class _MiraAssistantScreenState extends State<MiraAssistantScreen> {
     });
   }
 
-  Future<void> _handleQuickAction(QuickAction action) async {
+  Future<void> _handleQuickAction(QuickAction action,
+      [WeeklyReport? report]) async {
     switch (action.routeId) {
+      case 'open_report':
+        if (report != null) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => MiraPremiumReportScreen(
+                report: report,
+              ),
+            ),
+          );
+        }
+        break;
       case 'create_habit':
         final result = await Navigator.of(
           context,
@@ -267,9 +284,8 @@ class _MiraAssistantScreenState extends State<MiraAssistantScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Column(
-        crossAxisAlignment: message.isUser
-            ? CrossAxisAlignment.end
-            : CrossAxisAlignment.start,
+        crossAxisAlignment:
+            message.isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Container(
             constraints: BoxConstraints(
@@ -277,9 +293,8 @@ class _MiraAssistantScreenState extends State<MiraAssistantScreen> {
             ),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: message.isUser
-                  ? accent
-                  : colorScheme.surfaceContainerHighest,
+              color:
+                  message.isUser ? accent : colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(16).copyWith(
                 bottomRight: message.isUser ? const Radius.circular(4) : null,
                 bottomLeft: !message.isUser ? const Radius.circular(4) : null,
@@ -301,7 +316,7 @@ class _MiraAssistantScreenState extends State<MiraAssistantScreen> {
               runSpacing: 8,
               children: message.actions!.map((action) {
                 return FilledButton.icon(
-                  onPressed: () => _handleQuickAction(action),
+                  onPressed: () => _handleQuickAction(action, message.report),
                   icon: Icon(action.icon, size: 18),
                   label: Text(action.label),
                   style: FilledButton.styleFrom(

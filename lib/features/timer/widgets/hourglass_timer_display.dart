@@ -65,14 +65,17 @@ class _HourglassTimerDisplayState extends State<HourglassTimerDisplay>
         // Digital Timer Display (Top)
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Text(
-            timeText,
-            style: TextStyle(
-              fontSize: 72,
-              fontWeight: FontWeight.w300,
-              fontFeatures: const [FontFeature.tabularFigures()],
-              letterSpacing: 2,
-              color: isDark ? Colors.white : Colors.black87,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              timeText,
+              style: TextStyle(
+                fontSize: 72,
+                fontWeight: FontWeight.w300,
+                fontFeatures: const [FontFeature.tabularFigures()],
+                letterSpacing: 2,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
             ),
           ),
         ),

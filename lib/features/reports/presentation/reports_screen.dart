@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:mira/features/assistant/presentation/mira_premium_report_screen.dart';
 import '../../../providers/premium_provider.dart';
 import '../../../services/token_repository.dart';
 import '../../../services/rewarded_ad_service.dart';
@@ -286,11 +287,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   void _showReportDetail(WeeklyReport report) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (ctx) => _ReportDetailSheet(report: report),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MiraPremiumReportScreen(report: report),
+      ),
     );
   }
 

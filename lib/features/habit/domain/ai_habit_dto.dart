@@ -53,7 +53,6 @@ class AiHabitDto {
     required this.frequency,
     required this.days,
     this.targetValue,
-
     required this.category,
     this.emoji,
     this.colorCode,
@@ -81,9 +80,8 @@ class AiHabitDto {
       final emoji = json['emoji'] as String?;
       final colorCode = json['color_code'] as String?;
       final type = json['type'] as String?;
-      final subtasks = (json['subtasks'] as List?)
-          ?.map((e) => e.toString())
-          .toList();
+      final subtasks =
+          (json['subtasks'] as List?)?.map((e) => e.toString()).toList();
       final duration = json['duration_minutes'] as int?;
       final rationale = json['rationale'] as String?;
       final durationDays = json['duration_days'] as int?;
@@ -97,7 +95,9 @@ class AiHabitDto {
 
       // Frequency fallback
       if (frequency == null ||
-          (frequency != 'daily' && frequency != 'weekly')) {
+          (frequency != 'daily' &&
+              frequency != 'weekly' &&
+              frequency != 'monthly')) {
         frequency = 'daily';
       }
 
@@ -155,10 +155,6 @@ class AiHabitDto {
   /// Mapper to convert DTO to internal Habit model.
   Habit toHabit() {
     // Map frequency/days to Habit model structure
-    // 'daily' -> simple habit or numerical if target > 0?
-    // The prompt schema says "target_value". If present -> Numerical or Timer?
-    // We default to Numerical if target_value is present, otherwise Simple.
-
     HabitType finalType = HabitType.simple;
     int finalTargetCount = 1;
     String? finalUnit;
@@ -201,7 +197,6 @@ class AiHabitDto {
     }
 
     // Default icon/color based on category
-    // Categories: Study | Health | Personal | Other
     IconData icon;
     Color color;
     switch (category.toLowerCase()) {
@@ -235,33 +230,57 @@ class AiHabitDto {
       } catch (_) {}
     }
 
-    // Convert keys 'mon'...'sun' to ISO ints 1..7
-    final dayMap = {
-      'mon': 1,
-      'tue': 2,
-      'wed': 3,
-      'thu': 4,
-      'fri': 5,
-      'sat': 6,
-      'sun': 7,
-    };
-    final selectedWeekdays = days
-        .map((d) => dayMap[d])
-        .whereType<int>()
-        .toList();
-    if (frequency == 'daily' && selectedWeekdays.isEmpty) {
-      // If daily but no days specified, assume all 7 days?
-      // Or strictly follow 'days'. Schema says "days" is required.
-    }
-
-    // Is it a "Specific Days" habit?
-    // If frequency is weekly or daily-with-subset, usage is similar.
-    // Core Habit model supports `selectedWeekdays`.
-
     // Create new Habit
     final now = DateTime.now();
     final dateStr =
         '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+
+    // Frequency Logic
+    String? finalFrequencyType;
+    List<int>? finalSelectedWeekdays; // 0=Mon, 6=Sun
+    List<int>? finalSelectedMonthDays;
+
+    if (frequency == 'weekly') {
+      finalFrequencyType = 'specificWeekdays';
+      // If specific days provided in JSON, use them.
+      // Otherwise, default to TODAY (user's join / add day).
+      // Note: mapping keys 'mon'...'sun' to 0..6 (Mon=0)
+      final dayMap = {
+        'mon': 0,
+        'tue': 1,
+        'wed': 2,
+        'thu': 3,
+        'fri': 4,
+        'sat': 5,
+        'sun': 6,
+      };
+
+      // Check if original JSON 'days' list had specific inputs distinct from the default "all days" fallback
+      // In tryFromJson we defaulted to allDays. We can inspect 'days' directly.
+      // If days contains ALL days, and frequency is weekly, it's ambiguous.
+      // But typically 'weekly' implies once or few times a week.
+      // Better strategy:
+      // If days are strictly subset of all days (e.g. just ["mon"]), use them.
+      // If days are ALL days (default fallback), ignore them and use TODAY.
+      bool useProvidedDays = days.length < 7 && days.isNotEmpty;
+
+      if (useProvidedDays) {
+        finalSelectedWeekdays =
+            days.map((d) => dayMap[d]).whereType<int>().toList();
+      } else {
+        // Default to current weekday (0-6)
+        finalSelectedWeekdays = [now.weekday - 1];
+      }
+    } else if (frequency == 'monthly') {
+      finalFrequencyType = 'specificMonthDays';
+      // Default to current day of month
+      finalSelectedMonthDays = [now.day];
+    } else {
+      // Daily
+      finalFrequencyType = 'daily';
+      // Explicitly set all weekdays 0..6 just in case
+      finalSelectedWeekdays = [0, 1, 2, 3, 4, 5, 6];
+    }
 
     // Calculate End Date if duration_days provided
     String? finalEndDate;
@@ -287,11 +306,10 @@ class AiHabitDto {
       habitType: finalType,
       unit: finalUnit, // Default unit
       subtasks: finalSubtasks,
-      frequency: frequency, // 'daily' or 'weekly' hints
-      frequencyType: selectedWeekdays.length == 7
-          ? 'daily'
-          : 'specificWeekdays',
-      selectedWeekdays: selectedWeekdays,
+      frequency: frequency,
+      frequencyType: finalFrequencyType,
+      selectedWeekdays: finalSelectedWeekdays,
+      selectedMonthDays: finalSelectedMonthDays,
       currentStreak: 0,
       isCompleted: false,
       progressDate: dateStr,

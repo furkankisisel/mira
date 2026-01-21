@@ -516,6 +516,7 @@ class HabitScreenState extends State<HabitScreen>
 
     // Premium users see the AI message in the LiveRhythmHeader, so we hide it here to avoid duplication.
     final isPremium = context.watch<PremiumProvider>().isPremium;
+    if (!isPremium) return null;
 
     return FocusCard(
       // focusItem: focus, // Deprecated/Removed
@@ -1818,8 +1819,10 @@ class HabitScreenState extends State<HabitScreen>
         }
       },
       onSetAsFocus: isToday
-          ? () {
-              _setAsFocus(habit.id);
+          ? () async {
+              if (await requirePremium(context)) {
+                _setAsFocus(habit.id);
+              }
             }
           : null,
       onAnalyze: () {

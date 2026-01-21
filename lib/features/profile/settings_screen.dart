@@ -14,6 +14,7 @@ import '../../features/backup/backup_page.dart';
 import '../../ui/manage_subscription_screen.dart';
 import 'package:provider/provider.dart';
 import '../../providers/premium_provider.dart';
+import '../../ui/premium_gate.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({
@@ -277,12 +278,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: Text(l10n.retakeRhythmTest),
                 subtitle: Text(l10n.retakeRhythmTestDesc),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const RhythmOnboardingScreen(),
-                    ),
-                  );
+                onTap: () async {
+                  if (await requirePremium(context)) {
+                    if (context.mounted) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const RhythmOnboardingScreen(),
+                        ),
+                      );
+                    }
+                  }
                 },
               ),
             ],

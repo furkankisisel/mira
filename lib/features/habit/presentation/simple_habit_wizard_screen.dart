@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../ui/widgets/wizard_base_widgets.dart';
 import '../../../providers/premium_provider.dart';
+import '../../../ui/premium_gate.dart';
 import '../domain/habit_model.dart';
 import '../domain/habit_types.dart';
 import '../../rhythm/domain/live_rhythm_model.dart';
@@ -1207,52 +1208,67 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
             ),
           ...windows.map((w) {
             final isSelected = _selectedRhythmWindow == w.$1;
+            final isPremium = context.read<PremiumProvider>().isPremium;
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: InkWell(
-                onTap: () {
+                onTap: () async {
+                  if (!isPremium) {
+                    await requirePremium(context);
+                    return;
+                  }
                   HapticFeedback.lightImpact();
                   setState(() => _selectedRhythmWindow = w.$1);
                 },
                 borderRadius: BorderRadius.circular(14),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? _selectedColor.withOpacity(0.12)
-                        : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(14),
-                    border: isSelected
-                        ? Border.all(color: _selectedColor, width: 2)
-                        : null,
-                  ),
-                  child: Row(
-                    children: [
-                      Text(w.$2, style: const TextStyle(fontSize: 26)),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              w.$3,
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w600,
+                child: Opacity(
+                  opacity: isPremium ? 1.0 : 0.6,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? _selectedColor.withOpacity(0.12)
+                          : colorScheme.surfaceContainerHighest
+                              .withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(14),
+                      border: isSelected
+                          ? Border.all(color: _selectedColor, width: 2)
+                          : null,
+                    ),
+                    child: Row(
+                      children: [
+                        Text(w.$2, style: const TextStyle(fontSize: 26)),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                w.$3,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            ),
-                            Text(
-                              w.$4,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurface.withOpacity(0.6),
+                              Text(
+                                w.$4,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurface.withOpacity(0.6),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      if (isSelected)
-                        Icon(Icons.check_circle, color: _selectedColor),
-                    ],
+                        if (!isPremium)
+                          Icon(
+                            Icons.lock_outline,
+                            color: colorScheme.onSurface.withOpacity(0.5),
+                            size: 20,
+                          )
+                        else if (isSelected)
+                          Icon(Icons.check_circle, color: _selectedColor),
+                      ],
+                    ),
                   ),
                 ),
               ),

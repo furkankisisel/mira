@@ -29,7 +29,7 @@ class HabitCard extends StatefulWidget {
   final bool readOnly;
   final VoidCallback? onAssignToList;
   final VoidCallback?
-  onSetAsFocus; // Callback to set this habit as focus for today
+      onSetAsFocus; // Callback to set this habit as focus for today
   final int requiredBreakTaps;
   final bool iceEnabled;
 
@@ -512,7 +512,8 @@ class _HabitCardState extends State<HabitCard>
   }
 
   void _showMenu() async {
-    if (widget.readOnly) return;
+    // We allow showing the menu even if readOnly (e.g. future habits) so users can Edit/Delete them.
+    // However, we still prevent tapping to complete via _handleTapUp checks.
     // Unfocus any active input and wait for the keyboard/focus to settle
     // This prevents gesture/focus conflicts when returning from other tabs
     FocusScope.of(context).unfocus();
@@ -552,15 +553,15 @@ class _HabitCardState extends State<HabitCard>
                         child: Center(
                           child:
                               (widget.emoji != null && widget.emoji!.isNotEmpty)
-                              ? Text(
-                                  widget.emoji!,
-                                  style: const TextStyle(fontSize: 22),
-                                )
-                              : Icon(
-                                  widget.icon,
-                                  color: widget.color,
-                                  size: 22,
-                                ),
+                                  ? Text(
+                                      widget.emoji!,
+                                      style: const TextStyle(fontSize: 22),
+                                    )
+                                  : Icon(
+                                      widget.icon,
+                                      color: widget.color,
+                                      size: 22,
+                                    ),
                         ),
                       ),
                       const SizedBox(width: 14),
@@ -568,8 +569,8 @@ class _HabitCardState extends State<HabitCard>
                         child: Text(
                           widget.title,
                           style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                                fontWeight: FontWeight.w600,
+                              ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -586,8 +587,8 @@ class _HabitCardState extends State<HabitCard>
                       child: Text(
                         widget.categoryName!,
                         style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
-                          color: cs.onSurfaceVariant,
-                        ),
+                              color: cs.onSurfaceVariant,
+                            ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -678,18 +679,15 @@ class _HabitCardState extends State<HabitCard>
     final cs = theme.colorScheme;
     final bool done = widget.isCompleted;
     final Color completedBg = widget.color;
-    final Color onCompleted = completedBg.computeLuminance() < 0.5
-        ? Colors.white
-        : Colors.black;
+    final Color onCompleted =
+        completedBg.computeLuminance() < 0.5 ? Colors.white : Colors.black;
 
-    final int need = widget.iceEnabled && !done
-        ? widget.requiredBreakTaps.clamp(0, 7)
-        : 0;
+    final int need =
+        widget.iceEnabled && !done ? widget.requiredBreakTaps.clamp(0, 7) : 0;
     final int remaining = (need - _brokenTaps).clamp(0, 7);
     final bool remainingCapped = need - _brokenTaps > 7;
-    final double frostStrength = need == 0
-        ? 0
-        : (remaining / need).clamp(0.0, 1.0);
+    final double frostStrength =
+        need == 0 ? 0 : (remaining / need).clamp(0.0, 1.0);
 
     // Resolve margin (allow override)
     final resolvedMargin = widget.margin ?? _defaultMargin(context);
@@ -723,11 +721,11 @@ class _HabitCardState extends State<HabitCard>
                       color: widget.isMuted
                           ? Colors.transparent
                           : (done
-                                ? completedBg
-                                : Color.alphaBlend(
-                                    widget.color.withValues(alpha: 0.06),
-                                    cs.surfaceContainerHighest,
-                                  )),
+                              ? completedBg
+                              : Color.alphaBlend(
+                                  widget.color.withValues(alpha: 0.06),
+                                  cs.surfaceContainerHighest,
+                                )),
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: (done && !widget.isMuted)
                           ? [
@@ -749,8 +747,7 @@ class _HabitCardState extends State<HabitCard>
                               width: 44,
                               height: 44,
                               child: Center(
-                                child:
-                                    (widget.emoji != null &&
+                                child: (widget.emoji != null &&
                                         widget.emoji!.isNotEmpty)
                                     ? Text(
                                         widget.emoji!,
@@ -758,9 +755,8 @@ class _HabitCardState extends State<HabitCard>
                                       )
                                     : Icon(
                                         widget.icon,
-                                        color: done
-                                            ? onCompleted
-                                            : widget.color,
+                                        color:
+                                            done ? onCompleted : widget.color,
                                         size: 24,
                                       ),
                               ),
@@ -775,11 +771,11 @@ class _HabitCardState extends State<HabitCard>
                                   children: [
                                     Text(
                                       widget.title,
-                                      style: theme.textTheme.titleMedium?.copyWith(
+                                      style:
+                                          theme.textTheme.titleMedium?.copyWith(
                                         fontWeight: FontWeight.w600,
-                                        color: done
-                                            ? onCompleted
-                                            : cs.onSurface,
+                                        color:
+                                            done ? onCompleted : cs.onSurface,
                                         // Tighter line-height when there's no description so
                                         // the single-line title visually centers with
                                         // the emoji/check area.
@@ -797,10 +793,10 @@ class _HabitCardState extends State<HabitCard>
                                           widget.description,
                                           style: theme.textTheme.bodySmall
                                               ?.copyWith(
-                                                color: done
-                                                    ? onCompleted
-                                                    : cs.onSurfaceVariant,
-                                              ),
+                                            color: done
+                                                ? onCompleted
+                                                : cs.onSurfaceVariant,
+                                          ),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -840,9 +836,7 @@ class _HabitCardState extends State<HabitCard>
                                   ],
                                 ),
                               )
-                            else if (app_settings
-                                    .SettingsRepository
-                                    .instance
+                            else if (app_settings.SettingsRepository.instance
                                     .showStreakIndicators &&
                                 widget.showStreakIndicator &&
                                 (widget.streakCount > 0 ||
@@ -963,17 +957,17 @@ class _HabitCardState extends State<HabitCard>
                                           subtask.title,
                                           style: theme.textTheme.bodyMedium
                                               ?.copyWith(
-                                                color: done
-                                                    ? onCompleted.withValues(
-                                                        alpha: 0.9,
-                                                      )
-                                                    : cs.onSurface.withValues(
-                                                        alpha: 0.8,
-                                                      ),
-                                                decoration: subtask.isCompleted
-                                                    ? TextDecoration.lineThrough
-                                                    : null,
-                                              ),
+                                            color: done
+                                                ? onCompleted.withValues(
+                                                    alpha: 0.9,
+                                                  )
+                                                : cs.onSurface.withValues(
+                                                    alpha: 0.8,
+                                                  ),
+                                            decoration: subtask.isCompleted
+                                                ? TextDecoration.lineThrough
+                                                : null,
+                                          ),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),

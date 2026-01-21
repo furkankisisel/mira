@@ -4,6 +4,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../rhythm/domain/live_rhythm_model.dart';
 import '../../rhythm/domain/live_rhythm_repository.dart';
 import '../../rhythm/presentation/rhythm_onboarding_screen.dart';
+import '../../../../ui/premium_gate.dart';
 
 /// Live Rhythm Header widget with premium breathing animations
 class LiveRhythmHeader extends StatefulWidget {
@@ -449,12 +450,16 @@ class _LiveRhythmHeaderState extends State<LiveRhythmHeader>
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const RhythmOnboardingScreen(),
-              ),
-            );
+          onTap: () async {
+            if (await requirePremium(context)) {
+              if (context.mounted) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const RhythmOnboardingScreen(),
+                  ),
+                );
+              }
+            }
           },
           borderRadius: BorderRadius.circular(16),
           child: Padding(

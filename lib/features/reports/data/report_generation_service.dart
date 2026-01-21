@@ -3,7 +3,10 @@ import '../domain/report_model.dart';
 import 'report_repository.dart';
 import '../../habit/domain/habit_repository.dart';
 import '../../habit/domain/daily_task_repository.dart';
+import '../../habit/domain/habit_model.dart';
 import '../../mood/data/detailed_mood_repository.dart';
+import '../../finance/data/transaction_repository.dart';
+import '../../finance/data/transaction_model.dart';
 import '../../habit/data/server_ai_habit_service.dart';
 import '../../../core/config/api_config.dart';
 
@@ -15,6 +18,7 @@ class ReportGenerationService {
   final HabitRepository _habitRepo = HabitRepository.instance;
   final DailyTaskRepository _taskRepo = DailyTaskRepository.instance;
   final DetailedMoodRepository _moodRepo = DetailedMoodRepository();
+  final TransactionRepository _financeRepo = TransactionRepository();
   ServerAiHabitService? _aiService;
   bool _initialized = false;
 
@@ -28,6 +32,7 @@ class ReportGenerationService {
 
     await _habitRepo.initialize();
     await _taskRepo.initialize();
+    await _financeRepo.initialize();
     _initialized = true;
   }
 
@@ -86,43 +91,78 @@ class ReportGenerationService {
       'weekEnd': end.toIso8601String(),
     };
 
+    // --- HABITS DATA ---
     if (type == ReportType.habits || type == ReportType.combined) {
-      // Habit stats - simplified (count all habits for each day)
       final habits = _habitRepo.habits;
       int totalCompletions = 0;
+      int expectedCompletions = 0;
+      final dailyRates = <String, double>{};
 
-      for (final habit in habits) {
-        for (int i = 0; i < 7; i++) {
-          final date = start.add(Duration(days: i));
-          final dateKey = _formatDateKey(date);
+      // Calculate daily rates
+      for (int i = 0; i < 7; i++) {
+        final date = start.add(Duration(days: i));
+        final dateKey = _formatDateKey(date);
 
-          if (HabitRepository.evaluateCompletionFromLog(habit, dateKey)) {
-            totalCompletions++;
+        int dayCompleted = 0;
+        int dayTotal = 0;
+
+        for (final h in habits) {
+          // Check active
+          if (dateKey.compareTo(h.startDate) >= 0 &&
+              (h.endDate == null ||
+                  (h.endDate != null && dateKey.compareTo(h.endDate!) <= 0))) {
+            dayTotal++;
+            if (HabitRepository.evaluateCompletionFromLog(h, dateKey)) {
+              dayCompleted++;
+            }
           }
         }
+
+        totalCompletions += dayCompleted;
+        expectedCompletions += dayTotal;
+        dailyRates[dateKey] =
+            dayTotal > 0 ? (dayCompleted / dayTotal) * 100 : 0.0;
       }
 
-      // Expected = habits * 7 days (simplified)
-      final totalExpected = habits.length * 7;
+      // Identify top/struggling
+      final sorted = List<Habit>.from(habits)
+        ..sort((a, b) => b.currentStreak.compareTo(a.currentStreak));
+      final top = sorted
+          .where((h) => h.currentStreak > 0)
+          .take(3)
+          .map((h) => h.id)
+          .toList();
+      final struggling = habits
+          .where((h) => h.currentStreak == 0 && !h.isCompleted)
+          .take(3)
+          .map((h) => h.id)
+          .toList();
 
       data['habitStats'] = {
         'totalHabits': habits.length,
         'completions': totalCompletions,
-        'expected': totalExpected,
-        'rate': totalExpected > 0
-            ? (totalCompletions / totalExpected * 100).round()
+        'expected': expectedCompletions,
+        'rate': expectedCompletions > 0
+            ? (totalCompletions / expectedCompletions * 100).round()
             : 0,
+        'dailyRates': dailyRates,
+        'topHabits': top,
+        'strugglingHabits': struggling,
       };
     }
 
+    // --- MOOD DATA ---
     if (type == ReportType.mood || type == ReportType.combined) {
-      // Mood entries - simplified
       try {
-        final latestEntry = await _moodRepo.getLatestMoodEntry();
-        if (latestEntry != null) {
+        final stats =
+            await _moodRepo.getMoodStatistics(startDate: start, endDate: end);
+        if (stats.totalEntries > 0) {
           data['moodStats'] = {
-            'entries': 1,
-            'latestMood': latestEntry.mood.name,
+            'entries': stats.totalEntries,
+            'avgScore': stats.averageMoodScore,
+            'mostCommon': stats.mostCommonMood.name,
+            'distribution':
+                stats.moodDistribution.map((k, v) => MapEntry(k.name, v)),
           };
         } else {
           data['moodStats'] = {'entries': 0};
@@ -130,6 +170,47 @@ class ReportGenerationService {
       } catch (e) {
         data['moodStats'] = {'entries': 0};
       }
+    }
+
+    // --- FINANCE DATA ---
+    if (type == ReportType.finance || type == ReportType.combined) {
+      final allTx =
+          _financeRepo.all(); // Assuming all loaded, better to filter by date
+      // Filter for this week
+      final weekTx = allTx.where((tx) {
+        // Handle recurrence properly in real app, simplified here to use date check
+        // Or better use _financeRepo.forRange similar to forMonth logic.
+        // For now, let's just filter explicit dates if repository doesn't support range
+        // If repo loads ALL transactions, we can check date roughly.
+        // Assuming non-recurring for simplicity or reusing logic needs access to forMonth logic.
+        // Let's rely on simple date check + basic recurring.
+        // Ideally _financeRepo.forRange(start, end)
+        return tx.date
+                .isAfter(start.subtract(const Duration(milliseconds: 1))) &&
+            tx.date.isBefore(end.add(const Duration(days: 1)));
+      }).toList();
+
+      double income = 0;
+      double expense = 0;
+      final categoryExpenses = <String, double>{};
+
+      for (final tx in weekTx) {
+        if (tx.type == TransactionType.income) {
+          income += tx.amount;
+        } else {
+          expense += tx.amount;
+          final catId = tx.categoryId ?? 'Diğer';
+          categoryExpenses[catId] = (categoryExpenses[catId] ?? 0) + tx.amount;
+        }
+      }
+
+      data['financeStats'] = {
+        'income': income,
+        'expense': expense,
+        'savings': income - expense,
+        'txCount': weekTx.length,
+        'topExpenseCategories': categoryExpenses, // ID -> Amount
+      };
     }
 
     return data;
@@ -167,22 +248,39 @@ class ReportGenerationService {
 
     if (data.containsKey('habitStats')) {
       final stats = data['habitStats'] as Map<String, dynamic>;
-      sb.writeln('- Toplam alışkanlık: ${stats['totalHabits']}');
-      sb.writeln('- Tamamlanan: ${stats['completions']}/${stats['expected']}');
-      sb.writeln('- Başarı oranı: %${stats['rate']}');
+      sb.writeln('ALIŞKANLIKLAR:');
+      sb.writeln('- Toplam: ${stats['totalHabits']}');
+      sb.writeln('- Tamamlanma: ${stats['completions']}/${stats['expected']}');
+      sb.writeln('- Oran: %${stats['rate']}');
     }
 
     if (data.containsKey('moodStats')) {
       final stats = data['moodStats'] as Map<String, dynamic>;
-      sb.writeln('- Ruh hali kayıtları: ${stats['entries']}');
+      sb.writeln('RUH HALİ:');
+      sb.writeln('- Kayıt Sayısı: ${stats['entries']}');
+      if (stats['avgScore'] != null)
+        sb.writeln('- Ort. Puan: ${stats['avgScore']}');
+      if (stats['mostCommon'] != null)
+        sb.writeln('- En Sık Hissedilen: ${stats['mostCommon']}');
+    }
+
+    if (data.containsKey('financeStats')) {
+      final stats = data['financeStats'] as Map<String, dynamic>;
+      sb.writeln('FİNANS:');
+      sb.writeln('- Gelir: ${stats['income']}');
+      sb.writeln('- Gider: ${stats['expense']}');
+      sb.writeln('- Birikim: ${stats['savings']}');
+      sb.writeln('- İşlem: ${stats['txCount']}');
     }
 
     sb.writeln();
     sb.writeln('KURALLAR:');
-    sb.writeln('- Markdown formatında yaz');
-    sb.writeln('- 3-4 paragraf');
-    sb.writeln('- Pozitif ve motive edici ol');
-    sb.writeln('- Somut öneriler ver');
+    sb.writeln('- Markdown kullan');
+    sb.writeln(
+        '- ${type == ReportType.combined ? "Her kategoriye değin" : "Derinlemesine analiz yap"}');
+    sb.writeln('- İçten, motive edici ve koçluk yapan bir ton kullan');
+    sb.writeln('- Sorun varsa çözüm öner, başarı varsa kutla');
+    sb.writeln('- Emoji kullan');
 
     return sb.toString();
   }

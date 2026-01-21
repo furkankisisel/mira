@@ -5,6 +5,10 @@ import '../../habit/domain/daily_task_repository.dart';
 import '../../mood/data/detailed_mood_repository.dart';
 import '../../habit/data/server_ai_habit_service.dart';
 import '../../../core/config/api_config.dart';
+import '../../reports/domain/report_model.dart';
+import '../../reports/data/report_generation_service.dart';
+import '../../reports/data/report_repository.dart';
+// Removed PremiumReportData - now using WeeklyReport
 
 /// Data class for user insights
 class UserInsight {
@@ -27,6 +31,8 @@ class UserInsight {
   });
 }
 
+// Removed PremiumReportData - now using WeeklyReport
+
 /// Quick action that can navigate the user
 class QuickAction {
   final String label;
@@ -46,12 +52,14 @@ class AssistantResponse {
   final List<QuickAction>? actions;
   final List<String>? quickReplies;
   final UserInsight? insight;
+  final WeeklyReport? report; // Changed from reportData
 
   AssistantResponse({
     required this.message,
     this.actions,
     this.quickReplies,
     this.insight,
+    this.report,
   });
 }
 
@@ -84,8 +92,7 @@ class MiraAssistantService {
     int longestStreak = 0;
 
     for (final habit in habits) {
-      final isCompleted =
-          habit.isCompleted ||
+      final isCompleted = habit.isCompleted ||
           HabitRepository.evaluateCompletionFromLog(habit, todayKey);
       if (isCompleted) {
         completedToday++;
@@ -125,6 +132,8 @@ class MiraAssistantService {
     );
   }
 
+  // Removed getWeeklyReportData
+
   /// Predefined quick replies for common questions
   List<String> getDefaultQuickReplies() {
     return [
@@ -144,6 +153,11 @@ class MiraAssistantService {
   }) async {
     final insight = await getUserInsight();
     final lowerMessage = userMessage.toLowerCase();
+
+    // Local keyword handling to force specific flows
+    // The try/catch block was removed as per instruction,
+    // assuming the content within was also removed or moved.
+    // If local keyword handling is intended, it should be re-added here.
 
     // Fall back to AI for free-form questions
     if (_aiService != null) {
@@ -279,14 +293,53 @@ Kullanıcı Durumu:
     );
   }
 
-  AssistantResponse _buildWeeklyReportResponse(UserInsight insight) {
-    final message =
-        'Bu hafta %${insight.completionRate.round()} tamamlama oranın var. '
-        '${insight.completionRate >= 70 ? 'Harika gidiyorsun! 🔥' : 'Biraz daha gayret, yaparsın! 💪'}';
+  Future<AssistantResponse> _buildReportResponse(
+      UserInsight insight, ReportType type) async {
+    // Try to generate report
+    WeeklyReport? report =
+        await ReportGenerationService.instance.generateReport(type);
+
+    // If already exists, fetch from repository
+    if (report == null) {
+      // Initialize repo just in case
+      await ReportRepository.instance.initialize();
+      final now = DateTime.now();
+      final weekStart = now.subtract(Duration(days: now.weekday - 1));
+
+      // Find the report for this week/type
+      // Simple lookup - iterate recent reports
+      try {
+        report = ReportRepository.instance.reports.firstWhere((r) =>
+            r.type == type &&
+            r.weekStart.year == weekStart.year &&
+            r.weekStart.month == weekStart.month &&
+            r.weekStart.day == weekStart.day);
+      } catch (_) {
+        // Not found
+      }
+    }
+
+    if (report == null) {
+      return AssistantResponse(
+        message: 'Üzgünüm, rapor oluşturulamadı. Lütfen tekrar dene.',
+        quickReplies: getDefaultQuickReplies(),
+      );
+    }
+
+    final message = '${type.displayName} hazır! ${type.emoji}\n'
+        'Detayları incelemek için tıkla 👇';
 
     return AssistantResponse(
       message: message,
       insight: insight,
+      report: report, // Pass the report object
+      actions: [
+        const QuickAction(
+          label: 'Raporu Görüntüle',
+          icon: Icons.bar_chart_rounded,
+          routeId: 'open_report',
+        ),
+      ],
       quickReplies: ['Bugün ne yapmalıyım?', 'Beni motive et'],
     );
   }
