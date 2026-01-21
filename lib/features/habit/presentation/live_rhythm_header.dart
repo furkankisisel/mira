@@ -11,10 +11,12 @@ class LiveRhythmHeader extends StatefulWidget {
     super.key,
     this.aiMessage,
     this.isLoadingAiMessage = false,
+    this.onAiMessageTap,
   });
 
   final String? aiMessage;
   final bool isLoadingAiMessage;
+  final VoidCallback? onAiMessageTap;
 
   @override
   State<LiveRhythmHeader> createState() => _LiveRhythmHeaderState();
@@ -385,26 +387,30 @@ class _LiveRhythmHeaderState extends State<LiveRhythmHeader>
                                   ),
                                 ],
                               )
-                            : Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '✨',
-                                    style: const TextStyle(fontSize: 16),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      widget.aiMessage!,
-                                      style:
-                                          theme.textTheme.bodyMedium?.copyWith(
-                                        color: colorScheme.onSurface
-                                            .withOpacity(0.85),
-                                        height: 1.4,
+                            : InkWell(
+                                onTap: widget.onAiMessageTap,
+                                borderRadius: BorderRadius.circular(12),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '✨',
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        widget.aiMessage!,
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                          color: colorScheme.onSurface
+                                              .withValues(alpha: 0.85),
+                                          height: 1.4,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                       ),
                     ],
@@ -476,6 +482,8 @@ class _LiveRhythmHeaderState extends State<LiveRhythmHeader>
                         style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w700,
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -510,132 +518,143 @@ class _LiveRhythmHeaderState extends State<LiveRhythmHeader>
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => Container(
-        padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Handle
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 20),
-            // Title
-            Row(
-              children: [
-                Text(
-                  '⏰',
-                  style: const TextStyle(fontSize: 24),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  l10n.rhythmTeaserTitle,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            // Window list
-            ...RhythmWindow.values.map((window) {
-              final isActive = window == currentWindow;
-              final color = _getWindowColor(window);
-              return Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.all(14),
+      builder: (context) => SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle
+              Container(
+                width: 40,
+                height: 4,
                 decoration: BoxDecoration(
-                  color: isActive
-                      ? color.withOpacity(0.15)
-                      : theme.colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(14),
-                  border: isActive ? Border.all(color: color, width: 2) : null,
+                  color: colorScheme.outlineVariant,
+                  borderRadius: BorderRadius.circular(2),
                 ),
-                child: Row(
-                  children: [
-                    Text(
-                      _getWindowEmoji(window),
-                      style: const TextStyle(fontSize: 28),
+              ),
+              const SizedBox(height: 20),
+              // Title
+              Row(
+                children: [
+                  Text(
+                    '⏰',
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      l10n.rhythmTeaserTitle,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                _getWindowName(context, window),
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  color: isActive ? color : null,
-                                ),
-                              ),
-                              if (isActive) ...[
-                                const SizedBox(width: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: color,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              // Window list
+              ...RhythmWindow.values.map((window) {
+                final isActive = window == currentWindow;
+                final color = _getWindowColor(window);
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: isActive
+                        ? color.withOpacity(0.15)
+                        : theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(14),
+                    border:
+                        isActive ? Border.all(color: color, width: 2) : null,
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        _getWindowEmoji(window),
+                        style: const TextStyle(fontSize: 28),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Flexible(
                                   child: Text(
-                                    'ŞİMDİ',
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 10,
+                                    _getWindowName(context, window),
+                                    style: theme.textTheme.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                      color: isActive ? color : null,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                if (isActive) ...[
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: color,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      'ŞİMDİ',
+                                      style:
+                                          theme.textTheme.labelSmall?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 10,
+                                      ),
                                     ),
                                   ),
-                                ),
+                                ],
                               ],
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            _getWindowDescription(context, window),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color:
-                                  theme.colorScheme.onSurface.withOpacity(0.6),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 4),
+                            Text(
+                              _getWindowDescription(context, window),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurface
+                                    .withOpacity(0.6),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                );
+              }),
+              const SizedBox(height: 16),
+              // Reconfigure button
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const RhythmOnboardingScreen(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.refresh_rounded),
+                  label: Text(l10n.retakeRhythmTest),
                 ),
-              );
-            }),
-            const SizedBox(height: 16),
-            // Reconfigure button
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const RhythmOnboardingScreen(),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.refresh_rounded),
-                label: Text(l10n.retakeRhythmTest),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

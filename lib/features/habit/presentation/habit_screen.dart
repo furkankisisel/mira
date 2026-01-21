@@ -33,6 +33,9 @@ import '../../../core/config/api_config.dart';
 import '../../../ui/premium_gate.dart';
 import 'live_rhythm_header.dart';
 import '../../rhythm/domain/live_rhythm_repository.dart';
+import '../../rhythm/domain/live_rhythm_model.dart';
+import 'dart:async';
+
 import '../../../providers/premium_provider.dart';
 // removed unused imports
 
@@ -165,6 +168,54 @@ class HabitScreenState extends State<HabitScreen>
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => _scrollDateRowToSelected(),
     );
+
+    // Start rhythm timer to auto-update focus based on live rhythm
+    _startRhythmTimer();
+  }
+
+  Timer? _rhythmTimer;
+  RhythmWindow? _lastRhythmWindow;
+
+  void _startRhythmTimer() {
+    _rhythmTimer?.cancel();
+    _rhythmTimer =
+        Timer.periodic(const Duration(minutes: 1), (_) => _checkRhythmUpdate());
+    // Initial check
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkRhythmUpdate());
+  }
+
+  void _checkRhythmUpdate() {
+    if (!mounted) return;
+    final rhythmRepo = LiveRhythmRepository.instance;
+    // Only premium users typically use live rhythm features, but we can check existence
+    if (!rhythmRepo.hasProfile) return;
+
+    final currentWindow = rhythmRepo.currentWindow;
+    if (currentWindow != _lastRhythmWindow) {
+      _lastRhythmWindow = currentWindow;
+      _updateFocusForRhythm(currentWindow);
+    }
+  }
+
+  Future<void> _updateFocusForRhythm(RhythmWindow? window) async {
+    if (window == null) return;
+
+    // Find habits assigned to this window
+    final candidates =
+        _repo.habits.where((h) => h.rhythmWindow == window).toList();
+    if (candidates.isEmpty) return;
+
+    // Prefer incomplete habits
+    final best = candidates.firstWhere((h) => !h.isCompleted,
+        orElse: () => candidates.first);
+
+    // Check if we need to change focus
+    final (currentFocus, _) = _findFocusedItem();
+    if (currentFocus?.id != best.id) {
+      print(
+          'refocusing to ${best.title} due to rhythm change to ${window.name}');
+      await _setAsFocus(best.id);
+    }
   }
 
   void _onRepoChange() {
@@ -463,11 +514,14 @@ class HabitScreenState extends State<HabitScreen>
     // But I plan to refactor FocusCard too.
     // For now, let's assume FocusCard will be updated to optional focusItem or handled.
 
+    // Premium users see the AI message in the LiveRhythmHeader, so we hide it here to avoid duplication.
+    final isPremium = context.watch<PremiumProvider>().isPremium;
+
     return FocusCard(
       // focusItem: focus, // Deprecated/Removed
       habit: focusHabit,
       dailyTask: focusTask,
-      aiMessage: _focusAiMessage,
+      aiMessage: isPremium ? null : _focusAiMessage,
       isLoadingAi: _isLoadingFocusAi,
       subtasks: focusHabit?.habitType == HabitType.subtasks
           ? focusHabit?.subtasks
@@ -516,6 +570,7 @@ class HabitScreenState extends State<HabitScreen>
     _listRepo.removeListener(_onRepoChange);
     _taskRepo.removeListener(_onRepoChange);
     _dateScrollController.dispose();
+    _rhythmTimer?.cancel();
     super.dispose();
   }
 
@@ -2284,12 +2339,46 @@ class HabitScreenState extends State<HabitScreen>
     );
   }
 
+  Future<void> _ensureRhythmListAndAssign(Habit habit) async {
+    // Only assign if it has a rhythm window and is NOT currently in a list (Unlisted)
+    if (habit.rhythmWindow == null || habit.listId != null) return;
+
+    final l10n = AppLocalizations.of(context);
+    String listTitle;
+    switch (habit.rhythmWindow!) {
+      case RhythmWindow.focus:
+        listTitle = l10n.rhythmWindowFocus;
+        break;
+      case RhythmWindow.energy:
+        listTitle = l10n.rhythmWindowEnergy;
+        break;
+      case RhythmWindow.light:
+        listTitle = l10n.rhythmWindowLight;
+        break;
+      case RhythmWindow.reflection:
+        listTitle = l10n.rhythmWindowReflection;
+        break;
+    }
+
+    try {
+      final existingList =
+          _listRepo.lists.firstWhere((l) => l.title == listTitle);
+      habit.listId = existingList.id;
+    } catch (_) {
+      // Create new list
+      final newList = AppList(id: UniqueKey().toString(), title: listTitle);
+      await _listRepo.addList(newList);
+      habit.listId = newList.id;
+    }
+  }
+
   void _createSimpleHabit() async {
     final habit = await Navigator.of(context).push<Habit>(
       MaterialPageRoute(builder: (context) => const SimpleHabitWizardScreen()),
     );
 
     if (habit != null && mounted) {
+      await _ensureRhythmListAndAssign(habit);
       await _repo.addHabit(habit);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -2316,6 +2405,7 @@ class HabitScreenState extends State<HabitScreen>
 
     if (habit != null && mounted) {
       habit.isAdvanced = true;
+      await _ensureRhythmListAndAssign(habit);
       await _repo.addHabit(habit);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -2729,6 +2819,8 @@ class HabitScreenState extends State<HabitScreen>
                             return LiveRhythmHeader(
                               aiMessage: _focusAiMessage,
                               isLoadingAiMessage: _isLoadingFocusAi,
+                              onAiMessageTap: () =>
+                                  _loadFocusAiMessage(forceRefresh: true),
                             );
                           }
 
@@ -3233,6 +3325,7 @@ class HabitScreenState extends State<HabitScreen>
                                           null) {
                                         habit.reminderTime = null;
                                       }
+                                      await _ensureRhythmListAndAssign(habit);
                                       await _repo.updateHabit(habit);
                                     }
                                     return;
@@ -3278,6 +3371,7 @@ class HabitScreenState extends State<HabitScreen>
                                         editedHabit.reminderEnabled;
                                     habit.reminderTime =
                                         editedHabit.reminderTime;
+                                    await _ensureRhythmListAndAssign(habit);
                                     await _repo.updateHabit(habit);
                                   }
                                   return;
@@ -3318,6 +3412,7 @@ class HabitScreenState extends State<HabitScreen>
                                   habit.reminderEnabled =
                                       editedHabit.reminderEnabled;
                                   habit.reminderTime = editedHabit.reminderTime;
+                                  await _ensureRhythmListAndAssign(habit);
                                   await _repo.updateHabit(habit);
                                 }
                               },
