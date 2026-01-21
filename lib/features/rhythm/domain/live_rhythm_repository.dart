@@ -121,11 +121,76 @@ class LiveRhythmRepository extends ChangeNotifier {
     }
   }
 
+  /// Sync getter for behavior logs (uses cached data, must be initialized)
+  List<Map<String, dynamic>> get behaviorLogs {
+    // Returns empty if not initialized; use getBehaviorLogs for fresh fetch
+    return _cachedLogs;
+  }
+
+  List<Map<String, dynamic>> _cachedLogs = [];
+
+  /// Last evolution date
+  DateTime? get lastEvolutionDate => _lastEvolutionDate;
+  DateTime? _lastEvolutionDate;
+  static const String _evolutionDateKey = 'rhythm_last_evolution';
+
+  /// Load behavior logs into cache
+  Future<void> loadBehaviorLogs() async {
+    _cachedLogs = await getBehaviorLogs();
+    // Load last evolution date
+    final prefs = await SharedPreferences.getInstance();
+    final dateStr = prefs.getString(_evolutionDateKey);
+    if (dateStr != null) {
+      _lastEvolutionDate = DateTime.tryParse(dateStr);
+    }
+  }
+
+  /// Apply evolution suggestions to profile
+  Future<void> applyEvolutionSuggestions(
+      Map<RhythmWindow, TimeRange> suggestions) async {
+    if (_profile == null) return;
+
+    // Apply suggestions to individual windows
+    final focusWindow =
+        suggestions[RhythmWindow.focus] ?? _profile!.focusWindow;
+    final energyWindow =
+        suggestions[RhythmWindow.energy] ?? _profile!.energyWindow;
+    final lightWindow =
+        suggestions[RhythmWindow.light] ?? _profile!.lightWindow;
+    final reflectionWindow =
+        suggestions[RhythmWindow.reflection] ?? _profile!.reflectionWindow;
+
+    _profile = RhythmProfile(
+      focusWindow: focusWindow,
+      energyWindow: energyWindow,
+      lightWindow: lightWindow,
+      reflectionWindow: reflectionWindow,
+      chronoType: _profile!.chronoType,
+      flexibilityScore: _profile!.flexibilityScore,
+      createdAt: _profile!.createdAt,
+      lastEvolution: DateTime.now(),
+    );
+
+    await _persist();
+    await markEvolutionRan();
+    notifyListeners();
+    debugPrint('[LiveRhythm] Evolution suggestions applied');
+  }
+
+  /// Mark that evolution has been run
+  Future<void> markEvolutionRan() async {
+    _lastEvolutionDate = DateTime.now();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+        _evolutionDateKey, _lastEvolutionDate!.toIso8601String());
+  }
+
   /// Reload data from storage
   Future<void> reload() async {
     _initialized = false;
     _profile = null;
     await initialize();
+    await loadBehaviorLogs();
   }
 
   /// Wipe all stored data
@@ -133,7 +198,10 @@ class LiveRhythmRepository extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_profileKey);
     await prefs.remove(_behaviorLogKey);
+    await prefs.remove(_evolutionDateKey);
     _profile = null;
+    _cachedLogs = [];
+    _lastEvolutionDate = null;
     notifyListeners();
   }
 }

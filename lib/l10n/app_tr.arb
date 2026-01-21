@@ -1366,5 +1366,8 @@
     "retakePersonalityTest": "Kişilik Testini Yeniden Yap",
     "retakePersonalityTestDesc": "Karakter tipini tekrar keşfet",
     "retakeRhythmTest": "Canlı Ritim Testini Yeniden Yap",
-    "retakeRhythmTestDesc": "Biyolojik saatini tekrar belirle"
+    "retakeRhythmTestDesc": "Biyolojik saatini tekrar belirle",
+    "rhythmWindowStepTitle": "En Uygun Zaman Dilimi",
+    "rhythmWindowStepSubtitle": "Bu alışkanlığı hangi zaman diliminde yapmak istersin?",
+    "rhythmWindowNoProfileHint": "Ritim testini tamamlayarak kişiselleştirilmiş öneriler alabilirsin"
 }

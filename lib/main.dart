@@ -45,6 +45,7 @@ import 'services/iap_service.dart';
 import 'features/backup/auto_backup_service.dart';
 import 'package:provider/provider.dart';
 import 'providers/premium_provider.dart';
+import 'features/reports/presentation/reports_screen.dart';
 
 import 'package:flutter/services.dart';
 
@@ -287,27 +288,27 @@ class _MiraAppState extends State<MiraApp> {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-    debugShowCheckedModeBanner: false,
-    title: 'Mira',
-    locale: _languageManager.currentLocale,
-    localizationsDelegates: const [
-      AppLocalizations.delegate,
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
-    ],
-    supportedLocales: _languageManager.supportedLocales,
-    theme: AppTheme.light(_variant),
-    darkTheme: AppTheme.dark(_variant),
-    themeMode: _mode,
-    home: OnboardingCheckWrapper(
-      onToggleTheme: _toggleTheme,
-      themeMode: _mode,
-      currentVariant: _variant,
-      onVariantChanged: _changeThemeVariant,
-      languageManager: _languageManager,
-    ),
-  );
+        debugShowCheckedModeBanner: false,
+        title: 'Mira',
+        locale: _languageManager.currentLocale,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: _languageManager.supportedLocales,
+        theme: AppTheme.light(_variant),
+        darkTheme: AppTheme.dark(_variant),
+        themeMode: _mode,
+        home: OnboardingCheckWrapper(
+          onToggleTheme: _toggleTheme,
+          themeMode: _mode,
+          currentVariant: _variant,
+          onVariantChanged: _changeThemeVariant,
+          languageManager: _languageManager,
+        ),
+      );
 }
 
 /// Wrapper widget that checks onboarding status and shows appropriate screen
@@ -398,8 +399,8 @@ class _OnboardingCheckWrapperState extends State<OnboardingCheckWrapper> {
       // Show test choice screen with callbacks to update wrapper state
       return TestChoiceScreen(
         onSkip: () async {
-          final isCompleted = await OnboardingRepository()
-              .isOnboardingCompleted();
+          final isCompleted =
+              await OnboardingRepository().isOnboardingCompleted();
           if (!mounted) return;
           setState(() => _isOnboardingCompleted = isCompleted);
         },
@@ -407,8 +408,8 @@ class _OnboardingCheckWrapperState extends State<OnboardingCheckWrapper> {
           // when returning from onboarding, refresh flag
           // We attach a post-frame callback to check later
           WidgetsBinding.instance.addPostFrameCallback((_) async {
-            final isCompleted = await OnboardingRepository()
-                .isOnboardingCompleted();
+            final isCompleted =
+                await OnboardingRepository().isOnboardingCompleted();
             if (!mounted) return;
             setState(() => _isOnboardingCompleted = isCompleted);
           });
@@ -479,43 +480,43 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
   }
 
   Widget _buildPage(int index) => switch (index) {
-    0 => HabitScreen(key: _habitKey, variant: widget.currentVariant),
-    1 => VisionScreen(
-      variant: widget.currentVariant,
-      freeformNotifier: _visionFreeform,
-      roundCornersNotifier: _visionRoundCorners,
-      showTextNotifier: _visionShowText,
-      showProgressNotifier: _visionShowProgress,
-      boardBoundaryKey: _visionBoardKey,
-    ),
-    2 => MiraAssistantScreen(
-      variant: widget.currentVariant,
-      onNavigationCommand: _handleAssistantNavigation,
-    ),
-    3 => FinanceScreen(key: _financeKey, variant: widget.currentVariant),
-    4 => const ProfileScreen(),
-    _ => const SizedBox.shrink(),
-  };
+        0 => HabitScreen(key: _habitKey, variant: widget.currentVariant),
+        1 => VisionScreen(
+            variant: widget.currentVariant,
+            freeformNotifier: _visionFreeform,
+            roundCornersNotifier: _visionRoundCorners,
+            showTextNotifier: _visionShowText,
+            showProgressNotifier: _visionShowProgress,
+            boardBoundaryKey: _visionBoardKey,
+          ),
+        2 => MiraAssistantScreen(
+            variant: widget.currentVariant,
+            onNavigationCommand: _handleAssistantNavigation,
+          ),
+        3 => FinanceScreen(key: _financeKey, variant: widget.currentVariant),
+        4 => const ProfileScreen(),
+        _ => const SizedBox.shrink(),
+      };
 
   Widget _buildBody() => PageView.builder(
-    controller: _pageController,
-    onPageChanged: _onPageChanged,
-    // Disable swipe on Vision screen (index 1) to prevent accidental navigation
-    physics: (_currentIndex == 1)
-        ? const NeverScrollableScrollPhysics()
-        : const PageScrollPhysics(),
-    itemCount: 5,
-    itemBuilder: (context, index) => _buildPage(index),
-  );
+        controller: _pageController,
+        onPageChanged: _onPageChanged,
+        // Disable swipe on Vision screen (index 1) to prevent accidental navigation
+        physics: (_currentIndex == 1)
+            ? const NeverScrollableScrollPhysics()
+            : const PageScrollPhysics(),
+        itemCount: 5,
+        itemBuilder: (context, index) => _buildPage(index),
+      );
 
   String _titleFor(int i, AppLocalizations l10n) => switch (i) {
-    0 => l10n.habits,
-    1 => l10n.vision,
-    2 => l10n.aiAssistantTitle,
-    3 => l10n.finance,
-    4 => l10n.profile,
-    _ => '',
-  };
+        0 => l10n.habits,
+        1 => l10n.vision,
+        2 => l10n.aiAssistantTitle,
+        3 => l10n.finance,
+        4 => l10n.profile,
+        _ => '',
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -546,6 +547,17 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
               tooltip: l10n.mood,
               icon: const Icon(Icons.mood_outlined),
               onPressed: () => _habitKey.currentState?.openMoodScreen(),
+            ),
+          // Report icon for Mira Assistant screen
+          if (_currentIndex == 2)
+            IconButton(
+              tooltip: 'Raporlar',
+              icon: const Icon(Icons.analytics_outlined),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const ReportsScreen()),
+                );
+              },
             ),
           // Vision actions (when showing Vision on combined tab)
           // Vision actions (index 1)
@@ -757,9 +769,8 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
   Future<void> _shareVisionBoard(BuildContext context) async {
     try {
       // Find the boundary in the currently built VisionScreen
-      final boundary =
-          _visionBoardKey.currentContext?.findRenderObject()
-              as RenderRepaintBoundary?;
+      final boundary = _visionBoardKey.currentContext?.findRenderObject()
+          as RenderRepaintBoundary?;
       if (boundary == null) return;
       // Render to image
       final ui.Image image = await boundary.toImage(pixelRatio: 4.0);

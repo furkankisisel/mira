@@ -78,7 +78,10 @@
     "testsSection",
     "retakePersonalityTestDesc",
     "retakeRhythmTest",
-    "retakeRhythmTestDesc"
+    "retakeRhythmTestDesc",
+    "rhythmWindowStepTitle",
+    "rhythmWindowStepSubtitle",
+    "rhythmWindowNoProfileHint"
   ],
 
   "de": [
@@ -160,7 +163,10 @@
     "testsSection",
     "retakePersonalityTestDesc",
     "retakeRhythmTest",
-    "retakeRhythmTestDesc"
+    "retakeRhythmTestDesc",
+    "rhythmWindowStepTitle",
+    "rhythmWindowStepSubtitle",
+    "rhythmWindowNoProfileHint"
   ],
 
   "es": [
@@ -242,7 +248,10 @@
     "testsSection",
     "retakePersonalityTestDesc",
     "retakeRhythmTest",
-    "retakeRhythmTestDesc"
+    "retakeRhythmTestDesc",
+    "rhythmWindowStepTitle",
+    "rhythmWindowStepSubtitle",
+    "rhythmWindowNoProfileHint"
   ],
 
   "fr": [
@@ -324,7 +333,10 @@
     "testsSection",
     "retakePersonalityTestDesc",
     "retakeRhythmTest",
-    "retakeRhythmTestDesc"
+    "retakeRhythmTestDesc",
+    "rhythmWindowStepTitle",
+    "rhythmWindowStepSubtitle",
+    "rhythmWindowNoProfileHint"
   ],
 
   "hi": [
@@ -406,7 +418,10 @@
     "testsSection",
     "retakePersonalityTestDesc",
     "retakeRhythmTest",
-    "retakeRhythmTestDesc"
+    "retakeRhythmTestDesc",
+    "rhythmWindowStepTitle",
+    "rhythmWindowStepSubtitle",
+    "rhythmWindowNoProfileHint"
   ],
 
   "it": [
@@ -488,7 +503,10 @@
     "testsSection",
     "retakePersonalityTestDesc",
     "retakeRhythmTest",
-    "retakeRhythmTestDesc"
+    "retakeRhythmTestDesc",
+    "rhythmWindowStepTitle",
+    "rhythmWindowStepSubtitle",
+    "rhythmWindowNoProfileHint"
   ],
 
   "ja": [
@@ -570,7 +588,10 @@
     "testsSection",
     "retakePersonalityTestDesc",
     "retakeRhythmTest",
-    "retakeRhythmTestDesc"
+    "retakeRhythmTestDesc",
+    "rhythmWindowStepTitle",
+    "rhythmWindowStepSubtitle",
+    "rhythmWindowNoProfileHint"
   ],
 
   "ko": [
@@ -652,7 +673,10 @@
     "testsSection",
     "retakePersonalityTestDesc",
     "retakeRhythmTest",
-    "retakeRhythmTestDesc"
+    "retakeRhythmTestDesc",
+    "rhythmWindowStepTitle",
+    "rhythmWindowStepSubtitle",
+    "rhythmWindowNoProfileHint"
   ],
 
   "nl": [
@@ -734,7 +758,10 @@
     "testsSection",
     "retakePersonalityTestDesc",
     "retakeRhythmTest",
-    "retakeRhythmTestDesc"
+    "retakeRhythmTestDesc",
+    "rhythmWindowStepTitle",
+    "rhythmWindowStepSubtitle",
+    "rhythmWindowNoProfileHint"
   ],
 
   "pt": [
@@ -816,7 +843,10 @@
     "testsSection",
     "retakePersonalityTestDesc",
     "retakeRhythmTest",
-    "retakeRhythmTestDesc"
+    "retakeRhythmTestDesc",
+    "rhythmWindowStepTitle",
+    "rhythmWindowStepSubtitle",
+    "rhythmWindowNoProfileHint"
   ],
 
   "ru": [
@@ -898,7 +928,10 @@
     "testsSection",
     "retakePersonalityTestDesc",
     "retakeRhythmTest",
-    "retakeRhythmTestDesc"
+    "retakeRhythmTestDesc",
+    "rhythmWindowStepTitle",
+    "rhythmWindowStepSubtitle",
+    "rhythmWindowNoProfileHint"
   ],
 
   "zh": [
@@ -980,6 +1013,9 @@
     "testsSection",
     "retakePersonalityTestDesc",
     "retakeRhythmTest",
-    "retakeRhythmTestDesc"
+    "retakeRhythmTestDesc",
+    "rhythmWindowStepTitle",
+    "rhythmWindowStepSubtitle",
+    "rhythmWindowNoProfileHint"
   ]
 }

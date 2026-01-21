@@ -1563,5 +1563,8 @@
     "retakePersonalityTest": "Retake Personality Test",
     "retakePersonalityTestDesc": "Rediscover your character type",
     "retakeRhythmTest": "Retake Rhythm Test",
-    "retakeRhythmTestDesc": "Reconfigure your biological clock"
+    "retakeRhythmTestDesc": "Reconfigure your biological clock",
+    "rhythmWindowStepTitle": "Best Time Window",
+    "rhythmWindowStepSubtitle": "When would you like to do this habit?",
+    "rhythmWindowNoProfileHint": "Complete the rhythm test to get personalized suggestions"
 }

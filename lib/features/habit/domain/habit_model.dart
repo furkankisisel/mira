@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'habit_types.dart';
 import 'subtask_model.dart';
 import '../../../core/icons/icon_mapping.dart';
+import '../../rhythm/domain/live_rhythm_model.dart';
 
 class Habit {
   Habit({
@@ -37,9 +38,10 @@ class Habit {
     this.linkedVisionId,
     List<Subtask>? subtasks,
     Map<String, List<Map<String, dynamic>>>? subtasksLog,
-  }) : dailyLog = dailyLog ?? <String, int>{},
-       subtasks = subtasks ?? [],
-       subtasksLog = subtasksLog ?? <String, List<Map<String, dynamic>>>{};
+    this.rhythmWindow,
+  })  : dailyLog = dailyLog ?? <String, int>{},
+        subtasks = subtasks ?? [],
+        subtasksLog = subtasksLog ?? <String, List<Map<String, dynamic>>>{};
 
   final String id;
   String title;
@@ -54,7 +56,7 @@ class Habit {
   String? frequency;
   // Vision-style frequency configuration for preserving edit selections
   String?
-  frequencyType; // 'daily' | 'specificWeekdays' | 'specificMonthDays' | 'specificYearDays' | 'periodic'
+      frequencyType; // 'daily' | 'specificWeekdays' | 'specificMonthDays' | 'specificYearDays' | 'periodic'
   List<int>? selectedWeekdays; // 1..7
   List<int>? selectedMonthDays; // 1..31
   List<String>? selectedYearDays; // 'MM-DD'
@@ -68,10 +70,10 @@ class Habit {
   int leftoverSeconds; // Timer habit: birikmiş 60'a tamamlanmamış saniyeler
   String? listId; // ait olduğu liste
   String?
-  categoryName; // Optional user-visible category name (custom categories)
+      categoryName; // Optional user-visible category name (custom categories)
   bool isAdvanced = false; // gelişmiş habit mi (çoklu saat vb.)
   List<String>?
-  scheduledDates; // ISO-YYYY-MM-DD list of days when this habit is active
+      scheduledDates; // ISO-YYYY-MM-DD list of days when this habit is active
   // Target evaluation policy
   NumericalTargetType numericalTargetType;
   TimerTargetType timerTargetType;
@@ -83,12 +85,15 @@ class Habit {
   // Subtasks (for subtasks habit type)
   List<Subtask> subtasks; // Alt görevler listesi
   Map<String, List<Map<String, dynamic>>>
-  subtasksLog; // tarih -> alt görevlerin durumu
+      subtasksLog; // tarih -> alt görevlerin durumu
 
   // Focus state
   bool isFocus = false;
   String? focusMessage;
   DateTime? focusSetAt;
+
+  // Rhythm window assignment
+  RhythmWindow? rhythmWindow;
 
   void applyDailyReset(DateTime now) {
     final today = _dateStr(now);
@@ -103,11 +108,9 @@ class Habit {
         // Eğer bugün için kaydedilmiş subtasksLog varsa yükle
         if (subtasksLog.containsKey(today)) {
           final savedSubtasks = subtasksLog[today]!;
-          for (
-            int i = 0;
-            i < subtasks.length && i < savedSubtasks.length;
-            i++
-          ) {
+          for (int i = 0;
+              i < subtasks.length && i < savedSubtasks.length;
+              i++) {
             final saved = savedSubtasks[i];
             if (subtasks[i].id == saved['id']) {
               subtasks[i].isCompleted = saved['isCompleted'] as bool? ?? false;
@@ -145,47 +148,48 @@ class Habit {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'title': title,
-    'description': description,
-    'iconCodePoint': icon.codePoint,
-    'emoji': emoji,
-    'colorValue': color.value,
-    'targetCount': targetCount,
-    'habitType': habitType.toString(),
-    'unit': unit,
-    'frequency': frequency,
-    'frequencyType': frequencyType,
-    if (selectedWeekdays != null) 'selectedWeekdays': selectedWeekdays,
-    if (selectedMonthDays != null) 'selectedMonthDays': selectedMonthDays,
-    if (selectedYearDays != null) 'selectedYearDays': selectedYearDays,
-    if (periodicDays != null) 'periodicDays': periodicDays,
-    'currentStreak': currentStreak,
-    'isCompleted': isCompleted,
-    'progressDate': progressDate,
-    'startDate': startDate,
-    'endDate': endDate,
-    'dailyLog': dailyLog,
-    'leftoverSeconds': leftoverSeconds,
-    'listId': listId,
-    'categoryName': categoryName,
-    'isAdvanced': isAdvanced,
-    'numericalTargetType': numericalTargetType.toString(),
-    'timerTargetType': timerTargetType.toString(),
-    if (scheduledDates != null) 'scheduledDates': scheduledDates,
-    'reminderEnabled': reminderEnabled,
-    if (reminderTime != null)
-      'reminderTime': {
-        'hour': reminderTime!.hour,
-        'minute': reminderTime!.minute,
-      },
-    if (linkedVisionId != null) 'linkedVisionId': linkedVisionId,
-    'subtasks': subtasks.map((s) => s.toJson()).toList(),
-    'subtasksLog': subtasksLog,
-    'isFocus': isFocus,
-    'focusMessage': focusMessage,
-    'focusSetAt': focusSetAt?.toIso8601String(),
-  };
+        'id': id,
+        'title': title,
+        'description': description,
+        'iconCodePoint': icon.codePoint,
+        'emoji': emoji,
+        'colorValue': color.value,
+        'targetCount': targetCount,
+        'habitType': habitType.toString(),
+        'unit': unit,
+        'frequency': frequency,
+        'frequencyType': frequencyType,
+        if (selectedWeekdays != null) 'selectedWeekdays': selectedWeekdays,
+        if (selectedMonthDays != null) 'selectedMonthDays': selectedMonthDays,
+        if (selectedYearDays != null) 'selectedYearDays': selectedYearDays,
+        if (periodicDays != null) 'periodicDays': periodicDays,
+        'currentStreak': currentStreak,
+        'isCompleted': isCompleted,
+        'progressDate': progressDate,
+        'startDate': startDate,
+        'endDate': endDate,
+        'dailyLog': dailyLog,
+        'leftoverSeconds': leftoverSeconds,
+        'listId': listId,
+        'categoryName': categoryName,
+        'isAdvanced': isAdvanced,
+        'numericalTargetType': numericalTargetType.toString(),
+        'timerTargetType': timerTargetType.toString(),
+        if (scheduledDates != null) 'scheduledDates': scheduledDates,
+        'reminderEnabled': reminderEnabled,
+        if (reminderTime != null)
+          'reminderTime': {
+            'hour': reminderTime!.hour,
+            'minute': reminderTime!.minute,
+          },
+        if (linkedVisionId != null) 'linkedVisionId': linkedVisionId,
+        'subtasks': subtasks.map((s) => s.toJson()).toList(),
+        'subtasksLog': subtasksLog,
+        'isFocus': isFocus,
+        'focusMessage': focusMessage,
+        'focusSetAt': focusSetAt?.toIso8601String(),
+        if (rhythmWindow != null) 'rhythmWindow': rhythmWindow!.name,
+      };
 
   static Habit fromJson(Map<String, dynamic> json) {
     final type = HabitType.values.firstWhere(
@@ -229,77 +233,77 @@ class Habit {
     );
 
     return Habit(
-        id: json['id'] as String,
-        title: json['title'] as String? ?? '',
-        description: json['description'] as String? ?? '',
-        icon: materialIconFromCodePoint(json['iconCodePoint'] as int),
-        emoji: json['emoji'] as String?,
-        color: Color(json['colorValue'] as int),
-        targetCount: target,
-        habitType: type,
-        unit: json['unit'] as String?,
-        frequency: json['frequency'] as String?,
-        frequencyType: json['frequencyType'] as String?,
-        selectedWeekdays: (json['selectedWeekdays'] as List?)
-            ?.whereType<num>()
-            .map((e) => e.toInt())
-            .toList(),
-        selectedMonthDays: (json['selectedMonthDays'] as List?)
-            ?.whereType<num>()
-            .map((e) => e.toInt())
-            .toList(),
-        selectedYearDays: (json['selectedYearDays'] as List?)
-            ?.map((e) => e.toString())
-            .toList(),
-        periodicDays: (json['periodicDays'] as num?)?.toInt(),
-        currentStreak: json['currentStreak'] as int? ?? 0,
-        isCompleted: json['isCompleted'] as bool? ?? false,
-        progressDate:
-            json['progressDate'] as String? ?? _dateStr(DateTime.now()),
-        startDate:
-            json['startDate'] as String? ??
-            (json['progressDate'] as String? ?? _dateStr(DateTime.now())),
-        endDate: json['endDate'] as String?,
-        dailyLog:
-            (json['dailyLog'] as Map?)?.map(
-              (k, v) => MapEntry(k.toString(), (v as num).toInt()),
-            ) ??
-            {},
-        leftoverSeconds: (json['leftoverSeconds'] as num?)?.toInt() ?? 0,
-        listId: json['listId'] as String?,
-        categoryName: json['categoryName'] as String?,
-        scheduledDates: (json['scheduledDates'] as List?)
-            ?.map((e) => e.toString())
-            .toList(),
-        numericalTargetType: numType,
-        timerTargetType: timType,
-        reminderEnabled: json['reminderEnabled'] as bool? ?? false,
-        reminderTime: json['reminderTime'] != null
-            ? TimeOfDay(
-                hour: json['reminderTime']['hour'] as int,
-                minute: json['reminderTime']['minute'] as int,
-              )
-            : null,
-        linkedVisionId: json['linkedVisionId'] as String?,
-        subtasks:
-            (json['subtasks'] as List?)
-                ?.map((e) => Subtask.fromJson(e as Map<String, dynamic>))
-                .toList() ??
-            [],
-        subtasksLog:
-            (json['subtasksLog'] as Map?)?.map(
-              (k, v) => MapEntry(
-                k.toString(),
-                (v as List).map((e) => e as Map<String, dynamic>).toList(),
-              ),
-            ) ??
-            {},
-      )
+      id: json['id'] as String,
+      title: json['title'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      icon: materialIconFromCodePoint(json['iconCodePoint'] as int),
+      emoji: json['emoji'] as String?,
+      color: Color(json['colorValue'] as int),
+      targetCount: target,
+      habitType: type,
+      unit: json['unit'] as String?,
+      frequency: json['frequency'] as String?,
+      frequencyType: json['frequencyType'] as String?,
+      selectedWeekdays: (json['selectedWeekdays'] as List?)
+          ?.whereType<num>()
+          .map((e) => e.toInt())
+          .toList(),
+      selectedMonthDays: (json['selectedMonthDays'] as List?)
+          ?.whereType<num>()
+          .map((e) => e.toInt())
+          .toList(),
+      selectedYearDays: (json['selectedYearDays'] as List?)
+          ?.map((e) => e.toString())
+          .toList(),
+      periodicDays: (json['periodicDays'] as num?)?.toInt(),
+      currentStreak: json['currentStreak'] as int? ?? 0,
+      isCompleted: json['isCompleted'] as bool? ?? false,
+      progressDate: json['progressDate'] as String? ?? _dateStr(DateTime.now()),
+      startDate: json['startDate'] as String? ??
+          (json['progressDate'] as String? ?? _dateStr(DateTime.now())),
+      endDate: json['endDate'] as String?,
+      dailyLog: (json['dailyLog'] as Map?)?.map(
+            (k, v) => MapEntry(k.toString(), (v as num).toInt()),
+          ) ??
+          {},
+      leftoverSeconds: (json['leftoverSeconds'] as num?)?.toInt() ?? 0,
+      listId: json['listId'] as String?,
+      categoryName: json['categoryName'] as String?,
+      scheduledDates:
+          (json['scheduledDates'] as List?)?.map((e) => e.toString()).toList(),
+      numericalTargetType: numType,
+      timerTargetType: timType,
+      reminderEnabled: json['reminderEnabled'] as bool? ?? false,
+      reminderTime: json['reminderTime'] != null
+          ? TimeOfDay(
+              hour: json['reminderTime']['hour'] as int,
+              minute: json['reminderTime']['minute'] as int,
+            )
+          : null,
+      linkedVisionId: json['linkedVisionId'] as String?,
+      subtasks: (json['subtasks'] as List?)
+              ?.map((e) => Subtask.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      subtasksLog: (json['subtasksLog'] as Map?)?.map(
+            (k, v) => MapEntry(
+              k.toString(),
+              (v as List).map((e) => e as Map<String, dynamic>).toList(),
+            ),
+          ) ??
+          {},
+    )
       ..isAdvanced = (json['isAdvanced'] as bool?) ?? false
       ..isFocus = (json['isFocus'] as bool?) ?? false
       ..focusMessage = json['focusMessage'] as String?
       ..focusSetAt = json['focusSetAt'] != null
           ? DateTime.parse(json['focusSetAt'] as String)
+          : null
+      ..rhythmWindow = json['rhythmWindow'] != null
+          ? RhythmWindow.values.firstWhere(
+              (w) => w.name == json['rhythmWindow'],
+              orElse: () => RhythmWindow.focus,
+            )
           : null;
   }
 

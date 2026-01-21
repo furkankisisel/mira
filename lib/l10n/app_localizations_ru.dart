@@ -4024,4 +4024,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get retakeRhythmTestDesc => 'Biyolojik saatini tekrar belirle';
+
+  @override
+  String get rhythmWindowStepTitle => 'En Uygun Zaman Dilimi';
+
+  @override
+  String get rhythmWindowStepSubtitle =>
+      'Bu alışkanlığı hangi zaman diliminde yapmak istersin?';
+
+  @override
+  String get rhythmWindowNoProfileHint =>
+      'Ritim testini tamamlayarak kişiselleştirilmiş öneriler alabilirsin';
 }

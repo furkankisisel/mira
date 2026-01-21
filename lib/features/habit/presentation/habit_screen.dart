@@ -32,6 +32,8 @@ import '../../vision/data/vision_model.dart';
 import '../../../core/config/api_config.dart';
 import '../../../ui/premium_gate.dart';
 import 'live_rhythm_header.dart';
+import '../../rhythm/domain/live_rhythm_repository.dart';
+import '../../../providers/premium_provider.dart';
 // removed unused imports
 
 /// Represents a grouped item for the habit/task list view
@@ -1502,11 +1504,22 @@ class HabitScreenState extends State<HabitScreen>
 
     // Build grouped items
     for (final listId in sortedListIds) {
-      final listHabits =
-          filteredHabits.where((h) => h.listId == listId).toList();
+      var listHabits = filteredHabits.where((h) => h.listId == listId).toList();
       final listTasks = filteredTasks.where((t) => t.listId == listId).toList();
 
       if (listHabits.isEmpty && listTasks.isEmpty) continue;
+
+      // Sort habits by rhythm match: current window matching habits first
+      final currentWindow = LiveRhythmRepository.instance.currentWindow;
+      if (currentWindow != null) {
+        listHabits.sort((a, b) {
+          final aMatches = a.rhythmWindow == currentWindow;
+          final bMatches = b.rhythmWindow == currentWindow;
+          if (aMatches && !bMatches) return -1;
+          if (!aMatches && bMatches) return 1;
+          return 0;
+        });
+      }
 
       // Add list header
       final listTitle = listId == null
@@ -2694,9 +2707,10 @@ class HabitScreenState extends State<HabitScreen>
                           ? groupedItems
                           : <_GroupedItem>[];
 
-                      // Calculate item count: rhythm header + focus + toggle button (if focus active) + items + action card (when expanded)
-                      const int rhythmHeaderCount =
-                          1; // Always show rhythm header
+                      // Calculate item count: rhythm header (premium only) + focus + toggle button (if focus active) + items + action card (when expanded)
+                      final isPremium =
+                          context.watch<PremiumProvider>().isPremium;
+                      final int rhythmHeaderCount = isPremium ? 1 : 0;
                       final int focusItemCount = isFocusActive ? 1 : 0;
                       final int toggleButtonCount = isFocusActive ? 1 : 0;
                       final int actionCardCount = shouldShowOtherItems ? 1 : 0;
@@ -2710,8 +2724,8 @@ class HabitScreenState extends State<HabitScreen>
                         padding: EdgeInsets.only(bottom: bottomReserve),
                         itemCount: totalCount,
                         itemBuilder: (context, index) {
-                          // 0. Show rhythm header first
-                          if (index == 0) {
+                          // 0. Show rhythm header first (premium only)
+                          if (isPremium && index == 0) {
                             return LiveRhythmHeader(
                               aiMessage: _focusAiMessage,
                               isLoadingAiMessage: _isLoadingFocusAi,

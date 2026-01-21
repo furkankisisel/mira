@@ -7639,6 +7639,24 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Biyolojik saatini tekrar belirle'**
   String get retakeRhythmTestDesc;
+
+  /// No description provided for @rhythmWindowStepTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'En Uygun Zaman Dilimi'**
+  String get rhythmWindowStepTitle;
+
+  /// No description provided for @rhythmWindowStepSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu alışkanlığı hangi zaman diliminde yapmak istersin?'**
+  String get rhythmWindowStepSubtitle;
+
+  /// No description provided for @rhythmWindowNoProfileHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ritim testini tamamlayarak kişiselleştirilmiş öneriler alabilirsin'**
+  String get rhythmWindowNoProfileHint;
 }
 
 class _AppLocalizationsDelegate

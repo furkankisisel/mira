@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../ui/widgets/wizard_base_widgets.dart';
+import '../../../providers/premium_provider.dart';
 import '../domain/habit_model.dart';
 import '../domain/habit_types.dart';
+import '../../rhythm/domain/live_rhythm_model.dart';
+import '../../rhythm/domain/live_rhythm_repository.dart';
 
 /// Basit alışkanlık oluşturma wizard'ı
 /// Kullanıcıyı adım adım yönlendiren, konuşma tarzı akış
@@ -31,6 +35,7 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
   DateTime _startDate = DateTime.now();
   bool _reminderEnabled = false;
   TimeOfDay _reminderTime = const TimeOfDay(hour: 9, minute: 0);
+  RhythmWindow? _selectedRhythmWindow;
 
   // Page indices
   static const int _frequencyPage = 4;
@@ -38,9 +43,9 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
 
   // Total pages (dinamik olarak hesaplanacak)
   int get _totalPages {
-    // PageView'da her zaman 9 sayfa var (0-8)
+    // PageView'da her zaman 10 sayfa var (0-9)
     // Gün seçimi sayfası atlanıyor olsa bile sayfa indeksleri değişmiyor
-    return 9;
+    return 10;
   }
 
   // Renk paleti
@@ -94,7 +99,7 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
     super.dispose();
   }
 
-  void _nextPage() {
+  void _nextPage() async {
     if (_currentPage < _totalPages - 1) {
       int nextPage = _currentPage + 1;
 
@@ -103,12 +108,160 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
         nextPage = _currentPage + 2; // page 5'i atlayıp page 6'ya git
       }
 
+      // Premium kullanıcı için: Start date sayfasından (6) reminder sayfasına (7) geçerken AI analizi yap
+      final isPremium = context.read<PremiumProvider>().isPremium;
+      if (isPremium && _currentPage == _startDatePage) {
+        await _showAiAnalysisDialog();
+      }
+
       _pageController.animateToPage(
         nextPage,
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
       );
     }
+  }
+
+  /// AI analiz dialog'u - uzun süreli, değişen metinlerle
+  Future<void> _showAiAnalysisDialog() async {
+    final statusTexts = [
+      '🔍 Alışkanlığınız analiz ediliyor...',
+      '🧠 Canlı Ritminiz hesaplanıyor...',
+      '⏰ En uygun hatırlatıcı zamanı belirleniyor...',
+      '✨ Son ayarlamalar yapılıyor...',
+    ];
+
+    int currentStatus = 0;
+    bool dialogActive = true;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => PopScope(
+        canPop: false,
+        child: StatefulBuilder(
+          builder: (context, setDialogState) {
+            // Her 1.2 saniyede metin değiştir
+            Future.delayed(const Duration(milliseconds: 1200), () {
+              if (dialogActive && currentStatus < statusTexts.length - 1) {
+                setDialogState(() => currentStatus++);
+              }
+            });
+
+            return Center(
+              child: Container(
+                margin: const EdgeInsets.all(32),
+                padding: const EdgeInsets.all(28),
+                decoration: BoxDecoration(
+                  color: Theme.of(ctx).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: _selectedColor.withOpacity(0.2),
+                      blurRadius: 30,
+                      offset: const Offset(0, 12),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Animated gradient circle
+                    Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [
+                            _selectedColor,
+                            _selectedColor.withOpacity(0.6),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: const Center(
+                        child: SizedBox(
+                          width: 28,
+                          height: 28,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      child: Text(
+                        statusTexts[currentStatus],
+                        key: ValueKey(currentStatus),
+                        style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Sizin için en iyi ayarları belirliyoruz',
+                      style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(ctx)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.5),
+                          ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    // Progress dots
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: List.generate(
+                          4,
+                          (i) => Container(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 4),
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: i <= currentStatus
+                                      ? _selectedColor
+                                      : Theme.of(ctx)
+                                          .colorScheme
+                                          .outlineVariant,
+                                ),
+                              )),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+
+    // Total ~5 seconds
+    await Future.delayed(const Duration(milliseconds: 5000));
+    dialogActive = false;
+
+    // AI determines values
+    final aiRhythmWindow = _determineOptimalRhythmWindow();
+    final aiReminderTime = _determineOptimalReminderTime(aiRhythmWindow);
+
+    // Set values so user can see and modify on next pages
+    setState(() {
+      _selectedRhythmWindow = aiRhythmWindow;
+      _reminderEnabled = true;
+      _reminderTime = aiReminderTime;
+    });
+
+    // Dismiss dialog
+    if (mounted) Navigator.of(context).pop();
   }
 
   void _previousPage() {
@@ -138,42 +291,84 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
     );
   }
 
-  void _saveHabit() {
+  void _saveHabit() async {
     debugPrint('DEBUG: _saveHabit started');
-    try {
-      // 1. Context and L10n check
-      if (!mounted) {
-        debugPrint('DEBUG: Context not mounted on start');
-        return;
-      }
+    if (!mounted) return;
 
-      // 2. Date calculation
+    // AI analizi zaten _nextPage'de yapıldı (premium için)
+    // Burada sadece state'deki değerleri kullanarak kaydet
+    await _createAndSaveHabit(
+      rhythmWindow: _selectedRhythmWindow,
+      reminderEnabled: _reminderEnabled,
+      reminderTime: _reminderEnabled ? _reminderTime : null,
+    );
+  }
+
+  RhythmWindow _determineOptimalRhythmWindow() {
+    final title = _nameController.text.toLowerCase();
+
+    // Simple keyword-based analysis
+    if (title.contains('medita') ||
+        title.contains('yat') ||
+        title.contains('günlük') ||
+        title.contains('journal') ||
+        title.contains('uyku') ||
+        title.contains('gece')) {
+      return RhythmWindow.reflection;
+    }
+    if (title.contains('spor') ||
+        title.contains('egzersiz') ||
+        title.contains('koş') ||
+        title.contains('yürü') ||
+        title.contains('fitness') ||
+        title.contains('workout')) {
+      return RhythmWindow.energy;
+    }
+    if (title.contains('oku') ||
+        title.contains('öğren') ||
+        title.contains('çalış') ||
+        title.contains('study') ||
+        title.contains('kod') ||
+        title.contains('program')) {
+      return RhythmWindow.focus;
+    }
+    // Default to light for simple habits
+    return RhythmWindow.light;
+  }
+
+  TimeOfDay _determineOptimalReminderTime(RhythmWindow window) {
+    switch (window) {
+      case RhythmWindow.focus:
+        return const TimeOfDay(hour: 9, minute: 0);
+      case RhythmWindow.energy:
+        return const TimeOfDay(hour: 14, minute: 0);
+      case RhythmWindow.light:
+        return const TimeOfDay(hour: 17, minute: 0);
+      case RhythmWindow.reflection:
+        return const TimeOfDay(hour: 21, minute: 0);
+    }
+  }
+
+  Future<void> _createAndSaveHabit({
+    required RhythmWindow? rhythmWindow,
+    required bool reminderEnabled,
+    required TimeOfDay? reminderTime,
+  }) async {
+    try {
       final today = DateTime.now();
       final dateStr =
           '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
-      debugPrint('DEBUG: dateStr: $dateStr');
 
-      // 3. Frequency text
       String freqText;
       try {
         freqText = _getFrequencyText();
-        debugPrint('DEBUG: freqText: $freqText');
       } catch (e) {
-        debugPrint('DEBUG: Error getting frequency text: $e');
-        if (mounted) {
-          freqText = AppLocalizations.of(context).daily; // Fallback
-        } else {
-          freqText = 'Daily';
-        }
+        freqText = mounted ? AppLocalizations.of(context).daily : 'Daily';
       }
 
-      // 4. Start Date string
       final startDateStr =
           '${_startDate.year}-${_startDate.month.toString().padLeft(2, '0')}-${_startDate.day.toString().padLeft(2, '0')}';
-      debugPrint('DEBUG: startDateStr: $startDateStr');
 
-      // 5. Create Habit Object
-      debugPrint('DEBUG: Creating Habit object...');
       final habit = Habit(
         id: 'habit_${DateTime.now().millisecondsSinceEpoch}',
         title: _nameController.text.trim(),
@@ -189,28 +384,22 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
         progressDate: dateStr,
         frequencyType: _selectedFrequency,
         frequency: freqText,
-        selectedWeekdays: _selectedFrequency == 'weekly'
-            ? _weeklyDays.toList()
-            : null,
-        selectedMonthDays: _selectedFrequency == 'monthly'
-            ? _monthDays.toList()
-            : null,
+        selectedWeekdays:
+            _selectedFrequency == 'weekly' ? _weeklyDays.toList() : null,
+        selectedMonthDays:
+            _selectedFrequency == 'monthly' ? _monthDays.toList() : null,
         periodicDays: _selectedFrequency == 'periodic' ? _periodicDays : null,
         startDate: startDateStr,
-        reminderEnabled: _reminderEnabled,
-        reminderTime: _reminderEnabled ? _reminderTime : null,
+        reminderEnabled: reminderEnabled,
+        reminderTime: reminderTime,
+        rhythmWindow: rhythmWindow,
       );
-      debugPrint('DEBUG: Habit object created: ${habit.title}');
 
-      // 6. Navigation
       if (mounted) {
-        debugPrint('DEBUG: calling Navigator.pop');
         Navigator.of(context).pop(habit);
-      } else {
-        debugPrint('DEBUG: Not mounted at end of save');
       }
     } catch (e, stack) {
-      debugPrint('DEBUG: CRITICAL ERROR in _saveHabit: $e');
+      debugPrint('DEBUG: CRITICAL ERROR in _createAndSaveHabit: $e');
       debugPrint(stack.toString());
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -281,7 +470,10 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
           // 7: Hatırlatıcı sayfası
           _buildReminderPage(),
 
-          // 8: Önizleme sayfası
+          // 8: Ritim penceresi sayfası
+          _buildRhythmWindowPage(),
+
+          // 9: Önizleme sayfası
           _buildPreviewPage(),
         ],
       ),
@@ -937,6 +1129,135 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRhythmWindowPage() {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    // Check if user has rhythm profile
+    final hasProfile = LiveRhythmRepository.instance.hasProfile;
+
+    final windows = [
+      (
+        RhythmWindow.focus,
+        '🧠',
+        l10n.rhythmWindowFocus,
+        l10n.rhythmWindowFocusDesc
+      ),
+      (
+        RhythmWindow.energy,
+        '⚡',
+        l10n.rhythmWindowEnergy,
+        l10n.rhythmWindowEnergyDesc
+      ),
+      (
+        RhythmWindow.light,
+        '🌤️',
+        l10n.rhythmWindowLight,
+        l10n.rhythmWindowLightDesc
+      ),
+      (
+        RhythmWindow.reflection,
+        '🌙',
+        l10n.rhythmWindowReflection,
+        l10n.rhythmWindowReflectionDesc
+      ),
+    ];
+
+    return WizardPage(
+      emoji: '⏰',
+      title: l10n.rhythmWindowStepTitle,
+      subtitle: l10n.rhythmWindowStepSubtitle,
+      isOptional: true,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        onSkip: _nextPage,
+        showSkip: _selectedRhythmWindow == null,
+        accentColor: _selectedColor,
+      ),
+      child: Column(
+        children: [
+          if (!hasProfile)
+            Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colorScheme.tertiaryContainer.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Text('💡', style: TextStyle(fontSize: 20)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      l10n.rhythmWindowNoProfileHint,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurface.withOpacity(0.7),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ...windows.map((w) {
+            final isSelected = _selectedRhythmWindow == w.$1;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: InkWell(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  setState(() => _selectedRhythmWindow = w.$1);
+                },
+                borderRadius: BorderRadius.circular(14),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? _selectedColor.withOpacity(0.12)
+                        : colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(14),
+                    border: isSelected
+                        ? Border.all(color: _selectedColor, width: 2)
+                        : null,
+                  ),
+                  child: Row(
+                    children: [
+                      Text(w.$2, style: const TextStyle(fontSize: 26)),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              w.$3,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              w.$4,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurface.withOpacity(0.6),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (isSelected)
+                        Icon(Icons.check_circle, color: _selectedColor),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
         ],
       ),
     );

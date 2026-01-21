@@ -4002,4 +4002,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get retakeRhythmTestDesc => 'Reconfigure your biological clock';
+
+  @override
+  String get rhythmWindowStepTitle => 'Best Time Window';
+
+  @override
+  String get rhythmWindowStepSubtitle =>
+      'When would you like to do this habit?';
+
+  @override
+  String get rhythmWindowNoProfileHint =>
+      'Complete the rhythm test to get personalized suggestions';
 }
