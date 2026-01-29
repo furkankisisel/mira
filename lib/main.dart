@@ -49,6 +49,7 @@ import 'providers/premium_provider.dart';
 import 'features/reports/presentation/reports_screen.dart';
 
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,6 +65,9 @@ void main() async {
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
+
+  // Initialize Mobile Ads SDK
+  unawaited(MobileAds.instance.initialize());
 
   // In widget tests, Firebase may not be available; guard initialization.
   try {

@@ -3781,93 +3781,93 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get rhythmTeaserTitle =>
-      'Biyolojik Saatinize Göre Alışkanlıkları Maksimum Verimle Kazanın';
+      'Maximaliseer Je Gewoontes op Basis van Je Biologische Klok';
 
   @override
   String get rhythmTeaserSubtitle =>
-      'Canlı Ritim, en verimli anlarınızı öğrenir ve alışkanlıklarınızı doğru zamana yerleştirir.';
+      'Live Rhythm leert je meest productieve momenten en plaatst gewoontes op het juiste moment.';
 
   @override
-  String get rhythmTeaserSkip => 'Atla';
+  String get rhythmTeaserSkip => 'Overslaan';
 
   @override
-  String get rhythmTeaserCta => 'Paketleri İncele';
+  String get rhythmTeaserCta => 'Bekijk Pakketten';
 
   @override
-  String get rhythmWindowFocus => 'Odak Zamanı';
+  String get rhythmWindowFocus => 'Focustijd';
 
   @override
-  String get rhythmWindowFocusDesc => 'Zihinsel netlik, öğrenme, analiz';
+  String get rhythmWindowFocusDesc => 'Mentale helderheid, leren, analyse';
 
   @override
-  String get rhythmWindowEnergy => 'Enerji Zamanı';
+  String get rhythmWindowEnergy => 'Energietijd';
 
   @override
-  String get rhythmWindowEnergyDesc => 'Hareket, aksiyon, spor';
+  String get rhythmWindowEnergyDesc => 'Beweging, actie, sport';
 
   @override
-  String get rhythmWindowLight => 'Hafif Zaman';
+  String get rhythmWindowLight => 'Lichte Tijd';
 
   @override
-  String get rhythmWindowLightDesc => 'Düşük efor, küçük işler';
+  String get rhythmWindowLightDesc => 'Lage inspanning, kleine taken';
 
   @override
-  String get rhythmWindowReflection => 'Refleksiyon Zamanı';
+  String get rhythmWindowReflection => 'Reflectietijd';
 
   @override
-  String get rhythmWindowReflectionDesc => 'Günlük, tefekkür, kapanış';
+  String get rhythmWindowReflectionDesc => 'Dagboek, contemplatie, afsluiting';
 
   @override
-  String get rhythmBenefit1 => 'Doğru zamanda doğru iş';
+  String get rhythmBenefit1 => 'Juiste taak op het juiste moment';
 
   @override
-  String get rhythmBenefit2 => 'Karar yorgunluğu yok';
+  String get rhythmBenefit2 => 'Geen beslissingsmoeheid';
 
   @override
-  String get rhythmBenefit3 => 'Her hafta kişiselleşme';
+  String get rhythmBenefit3 => 'Wekelijkse personalisatie';
 
   @override
-  String get rhythmAnalyzing => 'Canlı Ritim analiz ediyor...';
+  String get rhythmAnalyzing => 'Live Rhythm analyseert...';
 
   @override
   String get rhythmDisclaimer =>
-      'Bunlar kesin sonuçlar değil. Canlı Ritim seni tanıdıkça ayarlanacak.';
+      'Dit zijn geen definitieve resultaten. Live Rhythm past zich aan naarmate het je leert kennen.';
 
   @override
-  String get rhythmQ1 => 'Genelde kaçta uyuyorsun?';
+  String get rhythmQ1 => 'Hoe laat ga je meestal slapen?';
 
   @override
-  String get rhythmQ2 => 'Genelde kaçta uyanıyorsun?';
+  String get rhythmQ2 => 'Hoe laat word je meestal wakker?';
 
   @override
-  String get rhythmQ3 => 'Zor bir işi en rahat ne zaman yaparsın?';
+  String get rhythmQ3 => 'Wanneer pak je moeilijke taken het makkelijkst aan?';
 
   @override
-  String get rhythmQ4 =>
-      'Yeni bir şey öğrenirken kendini en net hissettiğin zaman?';
+  String get rhythmQ4 => 'Wanneer voel je je het helderst om te leren?';
 
   @override
-  String get rhythmQ5 => 'Günün hangi bölümünde daha hareketli hissedersin?';
+  String get rhythmQ5 =>
+      'In welk deel van de dag voel je je het meest energiek?';
 
   @override
-  String get rhythmQ6 =>
-      'Spor veya fiziksel işler sana ne zaman daha kolay gelir?';
+  String get rhythmQ6 => 'Wanneer voelt lichaamsbeweging het makkelijkst?';
 
   @override
   String get rhythmQ7 =>
-      'Günün hangi saatlerinde çabuk sıkılırsın veya ertelemeye yatkın olursun?';
+      'Op welk moment van de dag ben je geneigd uit te stellen?';
 
   @override
-  String get rhythmQ8 => 'Bu düşük enerji zamanlarında genelde ne yaparsın?';
+  String get rhythmQ8 =>
+      'Wat doe je meestal tijdens deze momenten van lage energie?';
 
   @override
-  String get rhythmQ9 => 'Günün sonunda hangisi sana daha iyi gelir?';
+  String get rhythmQ9 => 'Wat voelt aan het einde van de dag beter voor je?';
 
   @override
-  String get rhythmQ10 => 'Akşam saatlerinde zihnin genelde nasıl olur?';
+  String get rhythmQ10 => 'Hoe voelt je geest zich meestal \'s avonds?';
 
   @override
-  String get rhythmQ11 => 'Kendini hangisine daha yakın hissediyorsun?';
+  String get rhythmQ11 => 'Met welke identificeer je je het meest?';
 
   @override
   String get rhythmA1_1 => '22:00 – 23:00';
@@ -3894,142 +3894,141 @@ class AppLocalizationsNl extends AppLocalizations {
   String get rhythmA2_4 => '09:00+';
 
   @override
-  String get rhythmA3_1 => 'Sabah erken';
+  String get rhythmA3_1 => 'Vroege ochtend';
 
   @override
-  String get rhythmA3_2 => 'Sabah ortası';
+  String get rhythmA3_2 => 'Midden ochtend';
 
   @override
-  String get rhythmA3_3 => 'Öğleden sonra';
+  String get rhythmA3_3 => 'Middag';
 
   @override
-  String get rhythmA3_4 => 'Akşam';
+  String get rhythmA3_4 => 'Avond';
 
   @override
-  String get rhythmA3_5 => 'Fark etmez';
+  String get rhythmA3_5 => 'Geen verschil';
 
   @override
-  String get rhythmA4_1 => 'Sabah';
+  String get rhythmA4_1 => 'Ochtend';
 
   @override
-  String get rhythmA4_2 => 'Öğlen';
+  String get rhythmA4_2 => 'Middag';
 
   @override
-  String get rhythmA4_3 => 'Akşam';
+  String get rhythmA4_3 => 'Avond';
 
   @override
-  String get rhythmA4_4 => 'Gece';
+  String get rhythmA4_4 => 'Nacht';
 
   @override
-  String get rhythmA4_5 => 'Değişiyor';
+  String get rhythmA4_5 => 'Varieert';
 
   @override
-  String get rhythmA5_1 => 'Sabah';
+  String get rhythmA5_1 => 'Ochtend';
 
   @override
-  String get rhythmA5_2 => 'Öğlen';
+  String get rhythmA5_2 => 'Middag';
 
   @override
-  String get rhythmA5_3 => 'Akşam';
+  String get rhythmA5_3 => 'Avond';
 
   @override
-  String get rhythmA5_4 => 'Hiçbiri';
+  String get rhythmA5_4 => 'Geen';
 
   @override
-  String get rhythmA5_5 => 'Gün içinde dalgalı';
+  String get rhythmA5_5 => 'Schommelt gedurende de dag';
 
   @override
-  String get rhythmA6_1 => 'Sabah';
+  String get rhythmA6_1 => 'Ochtend';
 
   @override
-  String get rhythmA6_2 => 'Öğleden sonra';
+  String get rhythmA6_2 => 'Middag';
 
   @override
-  String get rhythmA6_3 => 'Akşam';
+  String get rhythmA6_3 => 'Avond';
 
   @override
-  String get rhythmA6_4 => 'Hiç fark etmez';
+  String get rhythmA6_4 => 'Geen verschil';
 
   @override
-  String get rhythmA7_1 => 'Öğle sonrası';
+  String get rhythmA7_1 => 'Na de middag';
 
   @override
-  String get rhythmA7_2 => 'Akşamüstü';
+  String get rhythmA7_2 => 'Late middag';
 
   @override
-  String get rhythmA7_3 => 'Gece';
+  String get rhythmA7_3 => 'Nacht';
 
   @override
-  String get rhythmA7_4 => 'Belirgin değil';
+  String get rhythmA7_4 => 'Niet specifiek';
 
   @override
-  String get rhythmA8_1 => 'Sosyal medyada oyalanırım';
+  String get rhythmA8_1 => 'Ik scroll door sociale media';
 
   @override
-  String get rhythmA8_2 => 'Basit işler yaparım';
+  String get rhythmA8_2 => 'Ik doe eenvoudige taken';
 
   @override
-  String get rhythmA8_3 => 'Dinlenirim';
+  String get rhythmA8_3 => 'Ik rust';
 
   @override
-  String get rhythmA8_4 => 'Kendimi zorlamaya çalışırım';
+  String get rhythmA8_4 => 'Ik probeer door te zetten';
 
   @override
-  String get rhythmA9_1 => 'Yazmak / düşünmek';
+  String get rhythmA9_1 => 'Schrijven / nadenken';
 
   @override
-  String get rhythmA9_2 => 'Sessizce dinlenmek';
+  String get rhythmA9_2 => 'Rustig rusten';
 
   @override
-  String get rhythmA9_3 => 'Okumak';
+  String get rhythmA9_3 => 'Lezen';
 
   @override
-  String get rhythmA9_4 => 'Direkt uyumak';
+  String get rhythmA9_4 => 'Direct gaan slapen';
 
   @override
-  String get rhythmA10_1 => 'Sakin ve toparlayıcı';
+  String get rhythmA10_1 => 'Kalm en beheerst';
 
   @override
-  String get rhythmA10_2 => 'Yorgun ama düşünceli';
+  String get rhythmA10_2 => 'Moe maar bedachtzaam';
 
   @override
-  String get rhythmA10_3 => 'Dağınık';
+  String get rhythmA10_3 => 'Verstrooid';
 
   @override
-  String get rhythmA10_4 => 'Hâlâ aktif';
+  String get rhythmA10_4 => 'Nog steeds actief';
 
   @override
-  String get rhythmA11_1 => 'Sabah insanıyım';
+  String get rhythmA11_1 => 'Ik ben een ochtendmens';
 
   @override
-  String get rhythmA11_2 => 'Akşam insanıyım';
+  String get rhythmA11_2 => 'Ik ben een avondmens';
 
   @override
-  String get rhythmA11_3 => 'Ortadayım';
+  String get rhythmA11_3 => 'Ik zit ertussenin';
 
   @override
-  String get rhythmA11_4 => 'Dönemsel değişiyor';
+  String get rhythmA11_4 => 'Het verandert per seizoen';
 
   @override
-  String get testsSection => 'Testler';
+  String get testsSection => 'Tests';
 
   @override
-  String get retakePersonalityTestDesc => 'Karakter tipini tekrar keşfet';
+  String get retakePersonalityTestDesc => 'Herontdek je persoonlijkheidstype';
 
   @override
-  String get retakeRhythmTest => 'Canlı Ritim Testini Yeniden Yap';
+  String get retakeRhythmTest => 'Ritmetest Opnieuw Doen';
 
   @override
-  String get retakeRhythmTestDesc => 'Biyolojik saatini tekrar belirle';
+  String get retakeRhythmTestDesc => 'Herconfigureer je biologische klok';
 
   @override
-  String get rhythmWindowStepTitle => 'En Uygun Zaman Dilimi';
+  String get rhythmWindowStepTitle => 'Beste Tijdvenster';
 
   @override
-  String get rhythmWindowStepSubtitle =>
-      'Bu alışkanlığı hangi zaman diliminde yapmak istersin?';
+  String get rhythmWindowStepSubtitle => 'Wanneer wil je deze gewoonte doen?';
 
   @override
   String get rhythmWindowNoProfileHint =>
-      'Ritim testini tamamlayarak kişiselleştirilmiş öneriler alabilirsin';
+      'Voltooi de ritmetest voor gepersonaliseerde suggesties';
 }

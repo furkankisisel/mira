@@ -1,3 +1,4 @@
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter/foundation.dart';
 import 'token_repository.dart';
 
@@ -7,6 +8,7 @@ class RewardedAdService {
   RewardedAdService._();
   static final RewardedAdService instance = RewardedAdService._();
 
+  RewardedAd? _rewardedAd;
   bool _isAdLoaded = false;
   bool _isLoading = false;
 
@@ -19,54 +21,78 @@ class RewardedAdService {
 
     _isLoading = true;
 
-    // TODO: Implement actual AdMob loading
-    // RewardedAd.load(
-    //   adUnitId: 'ca-app-pub-xxxxx/yyyyy',
-    //   request: const AdRequest(),
-    //   rewardedAdLoadCallback: RewardedAdLoadCallback(
-    //     onAdLoaded: (ad) { _rewardedAd = ad; _isAdLoaded = true; },
-    //     onAdFailedToLoad: (error) { _isLoading = false; },
-    //   ),
-    // );
+    // Production Ad Unit ID
+    // User provided: ca-app-pub-1488047488796818/4872741931
+    const adUnitId = kReleaseMode
+        ? 'ca-app-pub-1488047488796818/4872741931'
+        : 'ca-app-pub-3940256099942544/5224354917'; // Test ID for debug
 
-    // Simulated load for now
-    await Future.delayed(const Duration(milliseconds: 500));
-    _isAdLoaded = true;
-    _isLoading = false;
+    RewardedAd.load(
+      adUnitId: adUnitId,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          debugPrint('[RewardedAdService] Ad loaded successfully');
+          _rewardedAd = ad;
+          _isAdLoaded = true;
+          _isLoading = false;
 
-    debugPrint('[RewardedAdService] Ad loaded (simulated)');
+          // Set call backs for full screen content
+          _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              debugPrint('[RewardedAdService] Ad dismissed');
+              ad.dispose();
+              _isAdLoaded = false;
+              _rewardedAd = null;
+              loadAd(); // Preload next
+            },
+            onAdFailedToShowFullScreenContent: (ad, error) {
+              debugPrint('[RewardedAdService] Ad failed to show: $error');
+              ad.dispose();
+              _isAdLoaded = false;
+              _rewardedAd = null;
+              loadAd();
+            },
+          );
+        },
+        onAdFailedToLoad: (error) {
+          debugPrint('[RewardedAdService] Ad failed to load: $error');
+          _isLoading = false;
+          _isAdLoaded = false;
+          _rewardedAd = null;
+        },
+      ),
+    );
   }
 
   /// Show rewarded ad and earn 1 token
   /// Returns true if reward was granted
   Future<bool> showAdAndEarnToken() async {
-    if (!_isAdLoaded) {
+    if (!_isAdLoaded || _rewardedAd == null) {
+      debugPrint('[RewardedAdService] Ad not ready, loading...');
       await loadAd();
+      return false; // Or show loading indicator
     }
 
-    // TODO: Implement actual AdMob show
-    // _rewardedAd?.show(onUserEarnedReward: (ad, reward) {
-    //   TokenRepository.instance.addTokens(1);
-    // });
+    bool rewardEarned = false;
 
-    // Simulated ad watching
-    debugPrint('[RewardedAdService] Showing ad (simulated)...');
-    await Future.delayed(const Duration(seconds: 2)); // Simulate ad duration
+    await _rewardedAd!.show(onUserEarnedReward: (ad, reward) {
+      debugPrint('[RewardedAdService] User earned reward!');
+      rewardEarned = true;
+    });
 
-    // Grant reward
-    await TokenRepository.instance.addTokens(1);
-    _isAdLoaded = false;
+    if (rewardEarned) {
+      await TokenRepository.instance.addTokens(1);
+      debugPrint('[RewardedAdService] Reward granted: 1 token');
+      return true;
+    }
 
-    // Preload next ad
-    loadAd();
-
-    debugPrint('[RewardedAdService] Reward granted: 1 token');
-    return true;
+    return false;
   }
 
   /// Dispose resources
   void dispose() {
-    // TODO: Dispose actual ad
-    // _rewardedAd?.dispose();
+    _rewardedAd?.dispose();
+    _rewardedAd = null;
   }
 }
