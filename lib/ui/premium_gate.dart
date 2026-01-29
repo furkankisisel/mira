@@ -75,11 +75,11 @@ class _DefaultPremiumUpsell extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           FilledButton(
-            onPressed:
-                onTapped ??
+            onPressed: onTapped ??
                 () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const SubscriptionScreen()),
-                ),
+                      MaterialPageRoute(
+                          builder: (_) => const SubscriptionScreen()),
+                    ),
             child: Text(AppLocalizations.of(context).becomePremium),
           ),
         ],
@@ -113,6 +113,8 @@ Future<void> showPremiumDialog(
             Bullet(AppLocalizations.of(context).featureAdvancedFinance),
             Bullet(AppLocalizations.of(context).featurePremiumThemes),
             Bullet(AppLocalizations.of(context).featureBackup),
+            Bullet(AppLocalizations.of(context).featureAiBioClock),
+            Bullet(AppLocalizations.of(context).featureAiWeeklyReport),
           ],
         ),
         actions: [

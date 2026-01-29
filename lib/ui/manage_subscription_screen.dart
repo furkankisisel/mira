@@ -243,6 +243,16 @@ class _ManageSubscriptionScreenState extends State<ManageSubscriptionScreen> {
                       title: l10n.featureBackup,
                       description: l10n.aiPoweredRecommendations,
                     ),
+                    _FeatureTile(
+                      icon: Icons.access_time_filled,
+                      title: l10n.featureAiBioClock,
+                      description: l10n.featureAiBioClockDesc,
+                    ),
+                    _FeatureTile(
+                      icon: Icons.analytics_outlined,
+                      title: l10n.featureAiWeeklyReport,
+                      description: l10n.featureAiWeeklyReportDesc,
+                    ),
                     const SizedBox(height: 24),
                     SizedBox(
                       width: double.infinity,
