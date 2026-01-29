@@ -1,5 +1,34 @@
 {
     "@@locale": "zh",
+    "weeklyReportsTitle": "周报",
+    "noReportsYet": "暂无报告",
+    "createFirstReportPrompt": "点击 + 创建您的第一份周报",
+    "generating": "生成中...",
+    "createReport": "创建报告",
+    "costTokens": "消耗: {cost} 代币",
+    "@costTokens": {
+        "placeholders": {
+            "cost": {}
+        }
+    },
+    "balanceParenthesis": "(余额: {balance})",
+    "@balanceParenthesis": {
+        "placeholders": {
+            "balance": {}
+        }
+    },
+    "watchAdForToken": "观看广告 (+1 代币)",
+    "selectReportType": "选择报告类型:",
+    "generatedAtDate": "生成时间: {date}",
+    "@generatedAtDate": {
+        "placeholders": {
+            "date": {}
+        }
+    },
+    "insufficientTokensWatchAd": "代币不足！观看广告获取代币。",
+    "reportCreatedSuccess": "报告已创建！ ✨",
+    "reportAlreadyExists": "本周报告已存在。",
+    "tokenEarnedSuccess": "获得 +1 代币！ 🎉",
     "@aiContextMessage": {
         "placeholders": {
             "tip": {}

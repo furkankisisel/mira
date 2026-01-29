@@ -1,5 +1,34 @@
 {
     "@@locale": "fr",
+    "weeklyReportsTitle": "Rapports Hebdomadaires",
+    "noReportsYet": "Aucun rapport",
+    "createFirstReportPrompt": "Appuyez sur + pour créer votre premier rapport",
+    "generating": "Génération...",
+    "createReport": "Créer un Rapport",
+    "costTokens": "Coût : {cost} jetons",
+    "@costTokens": {
+        "placeholders": {
+            "cost": {}
+        }
+    },
+    "balanceParenthesis": "(Solde : {balance})",
+    "@balanceParenthesis": {
+        "placeholders": {
+            "balance": {}
+        }
+    },
+    "watchAdForToken": "Voir Pub (+1 Jeton)",
+    "selectReportType": "Type de Rapport :",
+    "generatedAtDate": "Généré le : {date}",
+    "@generatedAtDate": {
+        "placeholders": {
+            "date": {}
+        }
+    },
+    "insufficientTokensWatchAd": "Jetons insuffisants ! Regardez une pub.",
+    "reportCreatedSuccess": "Rapport créé ! ✨",
+    "reportAlreadyExists": "Le rapport existe déjà.",
+    "tokenEarnedSuccess": "+1 jeton gagné ! 🎉",
     "@aiContextMessage": {
         "placeholders": {
             "tip": {}

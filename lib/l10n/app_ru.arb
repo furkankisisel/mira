@@ -1,5 +1,34 @@
 {
     "@@locale": "ru",
+    "weeklyReportsTitle": "Еженедельные отчеты",
+    "noReportsYet": "Отчетов пока нет",
+    "createFirstReportPrompt": "Нажмите +, чтобы создать первый отчет",
+    "generating": "Создание...",
+    "createReport": "Создать отчет",
+    "costTokens": "Цена: {cost} жетонов",
+    "@costTokens": {
+        "placeholders": {
+            "cost": {}
+        }
+    },
+    "balanceParenthesis": "(Баланс: {balance})",
+    "@balanceParenthesis": {
+        "placeholders": {
+            "balance": {}
+        }
+    },
+    "watchAdForToken": "Смотреть рекламу (+1 жетон)",
+    "selectReportType": "Тип отчета:",
+    "generatedAtDate": "Создано: {date}",
+    "@generatedAtDate": {
+        "placeholders": {
+            "date": {}
+        }
+    },
+    "insufficientTokensWatchAd": "Недостаточно жетонов! Посмотрите рекламу.",
+    "reportCreatedSuccess": "Отчет создан! ✨",
+    "reportAlreadyExists": "Отчет за эту неделю уже есть.",
+    "tokenEarnedSuccess": "Получен +1 жетон! 🎉",
     "@aiContextMessage": {
         "placeholders": {
             "tip": {}

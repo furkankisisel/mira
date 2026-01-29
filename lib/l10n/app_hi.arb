@@ -1,5 +1,34 @@
 {
     "@@locale": "hi",
+    "weeklyReportsTitle": "साप्ताहिक रिपोर्ट",
+    "noReportsYet": "कोई रिपोर्ट नहीं",
+    "createFirstReportPrompt": "अपनी पहली साप्ताहिक रिपोर्ट बनाने के लिए + पर क्लिक करें",
+    "generating": "उत्पन्न हो रहा है...",
+    "createReport": "रिपोर्ट बनाएं",
+    "costTokens": "लागत: {cost} टोकन",
+    "@costTokens": {
+        "placeholders": {
+            "cost": {}
+        }
+    },
+    "balanceParenthesis": "(शेष: {balance})",
+    "@balanceParenthesis": {
+        "placeholders": {
+            "balance": {}
+        }
+    },
+    "watchAdForToken": "विज्ञापन देखें (+1 टोकन)",
+    "selectReportType": "रिपोर्ट प्रकार चुनें:",
+    "generatedAtDate": "उत्पन्न: {date}",
+    "@generatedAtDate": {
+        "placeholders": {
+            "date": {}
+        }
+    },
+    "insufficientTokensWatchAd": "अपर्याप्त टोकन! टोकन कमाने के लिए विज्ञापन देखें।",
+    "reportCreatedSuccess": "रिपोर्ट बनाई गई! ✨",
+    "reportAlreadyExists": "इस सप्ताह के लिए रिपोर्ट पहले से मौजूद है।",
+    "tokenEarnedSuccess": "+1 टोकन अर्जित! 🎉",
     "@aiContextMessage": {
         "placeholders": {
             "tip": {}

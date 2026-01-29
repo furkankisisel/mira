@@ -1,5 +1,34 @@
 {
     "@@locale": "pt",
+    "weeklyReportsTitle": "Relatórios Semanais",
+    "noReportsYet": "Nenhum relatório ainda",
+    "createFirstReportPrompt": "Clique em + para criar seu primeiro relatório",
+    "generating": "Gerando...",
+    "createReport": "Criar Relatório",
+    "costTokens": "Custo: {cost} moedas",
+    "@costTokens": {
+        "placeholders": {
+            "cost": {}
+        }
+    },
+    "balanceParenthesis": "(Saldo: {balance})",
+    "@balanceParenthesis": {
+        "placeholders": {
+            "balance": {}
+        }
+    },
+    "watchAdForToken": "Ver Anúncio (+1 Moeda)",
+    "selectReportType": "Tipo de Relatório:",
+    "generatedAtDate": "Gerado em: {date}",
+    "@generatedAtDate": {
+        "placeholders": {
+            "date": {}
+        }
+    },
+    "insufficientTokensWatchAd": "Moedas insuficientes! Assista a um anúncio.",
+    "reportCreatedSuccess": "Relatório criado! ✨",
+    "reportAlreadyExists": "Já existe um relatório para esta semana.",
+    "tokenEarnedSuccess": "+1 moeda ganha! 🎉",
     "@aiContextMessage": {
         "placeholders": {
             "tip": {}

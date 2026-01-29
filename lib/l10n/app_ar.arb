@@ -1,5 +1,34 @@
 {
     "@@locale": "ar",
+    "weeklyReportsTitle": "التقارير الأسبوعية",
+    "noReportsYet": "لا توجد تقارير بعد",
+    "createFirstReportPrompt": "انقر على + لإنشاء تقريرك الأسبوعي الأول",
+    "generating": "جارٍ الإنشاء...",
+    "createReport": "إنشاء تقرير",
+    "costTokens": "التكلفة: {cost} رموز",
+    "@costTokens": {
+        "placeholders": {
+            "cost": {}
+        }
+    },
+    "balanceParenthesis": "(الرصيد: {balance})",
+    "@balanceParenthesis": {
+        "placeholders": {
+            "balance": {}
+        }
+    },
+    "watchAdForToken": "شاهد إعلان (+1 رمز)",
+    "selectReportType": "اختر نوع التقرير:",
+    "generatedAtDate": "تم الإنشاء: {date}",
+    "@generatedAtDate": {
+        "placeholders": {
+            "date": {}
+        }
+    },
+    "insufficientTokensWatchAd": "الرموز غير كافية! شاهد إعلانًا لكسب الرموز.",
+    "reportCreatedSuccess": "تم إنشاء التقرير! ✨",
+    "reportAlreadyExists": "التقرير موجود بالفعل لهذا الأسبوع.",
+    "tokenEarnedSuccess": "تم كسب +1 رمز! 🎉",
     "@aiContextMessage": {
         "placeholders": {
             "tip": {}

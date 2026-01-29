@@ -1,5 +1,34 @@
 {
     "@@locale": "ja",
+    "weeklyReportsTitle": "週間レポート",
+    "noReportsYet": "レポートはまだありません",
+    "createFirstReportPrompt": "+をクリックして最初のレポートを作成",
+    "generating": "生成中...",
+    "createReport": "レポート作成",
+    "costTokens": "コスト: {cost} トークン",
+    "@costTokens": {
+        "placeholders": {
+            "cost": {}
+        }
+    },
+    "balanceParenthesis": "(残高: {balance})",
+    "@balanceParenthesis": {
+        "placeholders": {
+            "balance": {}
+        }
+    },
+    "watchAdForToken": "広告を見る (+1 トークン)",
+    "selectReportType": "レポートの種類:",
+    "generatedAtDate": "作成日: {date}",
+    "@generatedAtDate": {
+        "placeholders": {
+            "date": {}
+        }
+    },
+    "insufficientTokensWatchAd": "トークン不足！広告を見てトークンを獲得。",
+    "reportCreatedSuccess": "レポートを作成しました！ ✨",
+    "reportAlreadyExists": "今週のレポートは既に存在します。",
+    "tokenEarnedSuccess": "+1 トークン獲得！ 🎉",
     "@aiContextMessage": {
         "placeholders": {
             "tip": {}

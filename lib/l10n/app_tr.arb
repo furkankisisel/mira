@@ -1,5 +1,34 @@
 {
     "@@locale": "tr",
+    "weeklyReportsTitle": "Haftalık Raporlar",
+    "noReportsYet": "Henüz rapor yok",
+    "createFirstReportPrompt": "İlk haftalık raporunuzu oluşturmak için + butonuna tıklayın",
+    "generating": "Oluşturuluyor...",
+    "createReport": "Rapor Oluştur",
+    "costTokens": "Maliyet: {cost} jeton",
+    "@costTokens": {
+        "placeholders": {
+            "cost": {}
+        }
+    },
+    "balanceParenthesis": "(Bakiye: {balance})",
+    "@balanceParenthesis": {
+        "placeholders": {
+            "balance": {}
+        }
+    },
+    "watchAdForToken": "Reklam İzle (+1 Jeton)",
+    "selectReportType": "Rapor Türü Seçin:",
+    "generatedAtDate": "Oluşturulma: {date}",
+    "@generatedAtDate": {
+        "placeholders": {
+            "date": {}
+        }
+    },
+    "insufficientTokensWatchAd": "Yetersiz jeton! Reklam izleyerek jeton kazanın.",
+    "reportCreatedSuccess": "Rapor oluşturuldu! ✨",
+    "reportAlreadyExists": "Bu hafta için rapor zaten mevcut.",
+    "tokenEarnedSuccess": "+1 jeton kazandınız! 🎉",
     "@aiContextMessage": {
         "placeholders": {
             "tip": {}

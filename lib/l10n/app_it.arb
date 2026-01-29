@@ -1,5 +1,34 @@
 {
     "@@locale": "it",
+    "weeklyReportsTitle": "Rapporti Settimanali",
+    "noReportsYet": "Nessun rapporto",
+    "createFirstReportPrompt": "Clicca + per creare il primo rapporto",
+    "generating": "Generazione...",
+    "createReport": "Crea Rapporto",
+    "costTokens": "Costo: {cost} gettoni",
+    "@costTokens": {
+        "placeholders": {
+            "cost": {}
+        }
+    },
+    "balanceParenthesis": "(Saldo: {balance})",
+    "@balanceParenthesis": {
+        "placeholders": {
+            "balance": {}
+        }
+    },
+    "watchAdForToken": "Guarda Video (+1 Gettone)",
+    "selectReportType": "Tipo Rapporto:",
+    "generatedAtDate": "Generato: {date}",
+    "@generatedAtDate": {
+        "placeholders": {
+            "date": {}
+        }
+    },
+    "insufficientTokensWatchAd": "Gettoni insufficienti! Guarda un video.",
+    "reportCreatedSuccess": "Rapporto creato! ✨",
+    "reportAlreadyExists": "Rapporto già esistente.",
+    "tokenEarnedSuccess": "+1 gettone guadagnato! 🎉",
     "@aiContextMessage": {
         "placeholders": {
             "tip": {}

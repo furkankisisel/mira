@@ -1,5 +1,34 @@
 {
     "@@locale": "nl",
+    "weeklyReportsTitle": "Wekelijkse Rapporten",
+    "noReportsYet": "Nog geen rapporten",
+    "createFirstReportPrompt": "Klik op + om je eerste weekrapport te maken",
+    "generating": "Genereren...",
+    "createReport": "Rapport Maken",
+    "costTokens": "Kosten: {cost} tokens",
+    "@costTokens": {
+        "placeholders": {
+            "cost": {}
+        }
+    },
+    "balanceParenthesis": "(Saldo: {balance})",
+    "@balanceParenthesis": {
+        "placeholders": {
+            "balance": {}
+        }
+    },
+    "watchAdForToken": "Bekijk Advertentie (+1 Token)",
+    "selectReportType": "Selecteer Rapporttype:",
+    "generatedAtDate": "Gegenereerd: {date}",
+    "@generatedAtDate": {
+        "placeholders": {
+            "date": {}
+        }
+    },
+    "insufficientTokensWatchAd": "Onvoldoende tokens! Bekijk een advertentie.",
+    "reportCreatedSuccess": "Rapport gemaakt! ✨",
+    "reportAlreadyExists": "Rapport bestaat al voor deze week.",
+    "tokenEarnedSuccess": "+1 token verdiend! 🎉",
     "@aiContextMessage": {
         "placeholders": {
             "tip": {}

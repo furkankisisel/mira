@@ -1,5 +1,34 @@
 {
     "@@locale": "de",
+    "weeklyReportsTitle": "Wochenberichte",
+    "noReportsYet": "Noch keine Berichte",
+    "createFirstReportPrompt": "Klicken Sie auf +, um Ihren ersten Wochenbericht zu erstellen",
+    "generating": "Wird erstellt...",
+    "createReport": "Bericht erstellen",
+    "costTokens": "Kosten: {cost} Tokens",
+    "@costTokens": {
+        "placeholders": {
+            "cost": {}
+        }
+    },
+    "balanceParenthesis": "(Guthaben: {balance})",
+    "@balanceParenthesis": {
+        "placeholders": {
+            "balance": {}
+        }
+    },
+    "watchAdForToken": "Werbung ansehen (+1 Token)",
+    "selectReportType": "Berichtstyp wählen:",
+    "generatedAtDate": "Erstellt: {date}",
+    "@generatedAtDate": {
+        "placeholders": {
+            "date": {}
+        }
+    },
+    "insufficientTokensWatchAd": "Nicht genügend Tokens! Sehen Sie sich Werbung an, um Tokens zu verdienen.",
+    "reportCreatedSuccess": "Bericht erstellt! ✨",
+    "reportAlreadyExists": "Bericht für diese Woche existiert bereits.",
+    "tokenEarnedSuccess": "+1 Token verdient! 🎉",
     "@aiContextMessage": {
         "placeholders": {
             "tip": {}

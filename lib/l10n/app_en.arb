@@ -1,5 +1,34 @@
 {
     "@@locale": "en",
+    "weeklyReportsTitle": "Weekly Reports",
+    "noReportsYet": "No reports yet",
+    "createFirstReportPrompt": "Click + to create your first weekly report",
+    "generating": "Generating...",
+    "createReport": "Create Report",
+    "costTokens": "Cost: {cost} tokens",
+    "@costTokens": {
+        "placeholders": {
+            "cost": {}
+        }
+    },
+    "balanceParenthesis": "(Balance: {balance})",
+    "@balanceParenthesis": {
+        "placeholders": {
+            "balance": {}
+        }
+    },
+    "watchAdForToken": "Watch Ad (+1 Token)",
+    "selectReportType": "Select Report Type:",
+    "generatedAtDate": "Generated: {date}",
+    "@generatedAtDate": {
+        "placeholders": {
+            "date": {}
+        }
+    },
+    "insufficientTokensWatchAd": "Insufficient tokens! Watch an ad to earn tokens.",
+    "reportCreatedSuccess": "Report created! ✨",
+    "reportAlreadyExists": "Report already exists for this week.",
+    "tokenEarnedSuccess": "+1 token earned! 🎉",
     "@aiContextMessage": {
         "placeholders": {
             "tip": {}

@@ -1,5 +1,34 @@
 {
     "@@locale": "es",
+    "weeklyReportsTitle": "Informes Semanales",
+    "noReportsYet": "Aún no hay informes",
+    "createFirstReportPrompt": "Haga clic en + para crear su primer informe semanal",
+    "generating": "Generando...",
+    "createReport": "Crear Informe",
+    "costTokens": "Costo: {cost} fichas",
+    "@costTokens": {
+        "placeholders": {
+            "cost": {}
+        }
+    },
+    "balanceParenthesis": "(Saldo: {balance})",
+    "@balanceParenthesis": {
+        "placeholders": {
+            "balance": {}
+        }
+    },
+    "watchAdForToken": "Ver Anuncio (+1 Ficha)",
+    "selectReportType": "Tipo de Informe:",
+    "generatedAtDate": "Generado: {date}",
+    "@generatedAtDate": {
+        "placeholders": {
+            "date": {}
+        }
+    },
+    "insufficientTokensWatchAd": "¡Fichas insuficientes! Vea un anuncio para ganar fichas.",
+    "reportCreatedSuccess": "¡Informe creado! ✨",
+    "reportAlreadyExists": "Ya existe un informe para esta semana.",
+    "tokenEarnedSuccess": "¡+1 ficha ganada! 🎉",
     "@aiContextMessage": {
         "placeholders": {
             "tip": {}

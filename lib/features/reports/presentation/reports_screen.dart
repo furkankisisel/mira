@@ -7,6 +7,7 @@ import '../../../services/rewarded_ad_service.dart';
 import '../domain/report_model.dart';
 import '../data/report_repository.dart';
 import '../data/report_generation_service.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Screen for viewing and generating weekly reports
 class ReportsScreen extends StatefulWidget {
@@ -38,10 +39,11 @@ class _ReportsScreenState extends State<ReportsScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Haftalık Raporlar'),
+        title: Text(l10n.weeklyReportsTitle),
         centerTitle: true,
         actions: [
           // Token balance for non-premium
@@ -102,6 +104,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
   Widget _buildEmptyState(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return Center(
       child: Padding(
@@ -116,14 +119,14 @@ class _ReportsScreenState extends State<ReportsScreen> {
             ),
             const SizedBox(height: 24),
             Text(
-              'Henüz rapor yok',
+              l10n.noReportsYet,
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'İlk haftalık raporunuzu oluşturmak için + butonuna tıklayın',
+              l10n.createFirstReportPrompt,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withOpacity(0.6),
@@ -196,6 +199,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
   Widget _buildFab(BuildContext context) {
     final isPremium = context.watch<PremiumProvider>().isPremium;
+    final l10n = AppLocalizations.of(context);
 
     return FloatingActionButton.extended(
       onPressed: _isGenerating ? null : () => _showGenerateDialog(context),
@@ -207,7 +211,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                   strokeWidth: 2, color: Colors.white),
             )
           : const Icon(Icons.add),
-      label: Text(_isGenerating ? 'Oluşturuluyor...' : 'Rapor Oluştur'),
+      label: Text(_isGenerating ? l10n.generating : l10n.createReport),
     );
   }
 
@@ -230,6 +234,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
   Future<void> _generateReport(ReportType type) async {
     final isPremium = context.read<PremiumProvider>().isPremium;
+    final l10n = AppLocalizations.of(context);
 
     // Non-premium must spend tokens
     if (!isPremium) {
@@ -237,9 +242,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
       if (!success) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content:
-                    Text('Yetersiz jeton! Reklam izleyerek jeton kazanın.')),
+            SnackBar(content: Text(l10n.insufficientTokensWatchAd)),
           );
         }
         return;
@@ -256,19 +259,19 @@ class _ReportsScreenState extends State<ReportsScreen> {
       if (mounted) {
         if (report != null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Rapor oluşturuldu! ✨')),
+            SnackBar(content: Text(l10n.reportCreatedSuccess)),
           );
           _showReportDetail(report);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Bu hafta için rapor zaten mevcut.')),
+            SnackBar(content: Text(l10n.reportAlreadyExists)),
           );
         }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hata: $e')),
+          SnackBar(content: Text('${l10n.errorPrefix}$e')),
         );
       }
     } finally {
@@ -278,10 +281,11 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
   Future<void> _watchAdForToken() async {
     final success = await RewardedAdService.instance.showAdAndEarnToken();
+    final l10n = AppLocalizations.of(context);
 
     if (mounted && success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('+1 jeton kazandınız! 🎉')),
+        SnackBar(content: Text(l10n.tokenEarnedSuccess)),
       );
     }
   }
@@ -318,6 +322,7 @@ class _GenerateReportSheet extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final canAfford = isPremium || tokenBalance >= TokenRepository.reportCost;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
@@ -341,7 +346,7 @@ class _GenerateReportSheet extends StatelessWidget {
 
           // Title
           Text(
-            'Rapor Oluştur',
+            l10n.createReport,
             style: theme.textTheme.titleLarge
                 ?.copyWith(fontWeight: FontWeight.bold),
           ),
@@ -361,7 +366,7 @@ class _GenerateReportSheet extends StatelessWidget {
                   Icon(Icons.toll, size: 20, color: colorScheme.primary),
                   const SizedBox(width: 8),
                   Text(
-                    'Maliyet: ${TokenRepository.reportCost} jeton',
+                    l10n.costTokens(TokenRepository.reportCost),
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: colorScheme.primary,
@@ -369,7 +374,7 @@ class _GenerateReportSheet extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    '(Bakiye: $tokenBalance)',
+                    l10n.balanceParenthesis(tokenBalance),
                     style: TextStyle(
                       color: colorScheme.onSurface.withOpacity(0.6),
                     ),
@@ -387,14 +392,14 @@ class _GenerateReportSheet extends StatelessWidget {
                   onWatchAd();
                 },
                 icon: const Icon(Icons.play_circle_outline),
-                label: const Text('Reklam İzle (+1 Jeton)'),
+                label: Text(l10n.watchAdForToken),
               ),
             const SizedBox(height: 16),
           ],
 
           // Report type options
           Text(
-            'Rapor Türü Seçin:',
+            l10n.selectReportType,
             style: theme.textTheme.titleSmall,
           ),
           const SizedBox(height: 12),
@@ -422,6 +427,7 @@ class _ReportDetailSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return DraggableScrollableSheet(
       initialChildSize: 0.7,
@@ -465,7 +471,7 @@ class _ReportDetailSheet extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'Oluşturulma: ${_formatDate(report.generatedAt)}',
+                          l10n.generatedAtDate(_formatDate(report.generatedAt)),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: colorScheme.onSurface.withOpacity(0.6),
                           ),
