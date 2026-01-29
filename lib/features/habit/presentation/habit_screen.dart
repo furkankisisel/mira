@@ -1522,13 +1522,15 @@ class HabitScreenState extends State<HabitScreen>
 
     // Filter out the focused item from the list ONLY if we are viewing Today
     // (Because FocusCard is only shown for Today)
+    // AND only if the user is premium (because FocusCard is only shown for premium)
     final isToday = _isSameDay(_selected, DateTime.now());
+    final isPremium = context.read<PremiumProvider>().isPremium;
     final (focusHabit, focusTask) = _findFocusedItem();
 
-    final filteredHabits = (isToday && focusHabit != null)
+    final filteredHabits = (isToday && isPremium && focusHabit != null)
         ? habits.where((h) => h.id != focusHabit.id).toList()
         : habits;
-    final filteredTasks = (isToday && focusTask != null)
+    final filteredTasks = (isToday && isPremium && focusTask != null)
         ? tasks.where((t) => t.id != focusTask.id).toList()
         : tasks;
 
@@ -1933,6 +1935,7 @@ class HabitScreenState extends State<HabitScreen>
         habit.progressDate = editedHabit.progressDate;
         habit.reminderEnabled = editedHabit.reminderEnabled;
         habit.reminderTime = editedHabit.reminderTime;
+        habit.rhythmWindow = editedHabit.rhythmWindow;
         await _repo.updateHabit(habit);
       }
       return;
@@ -1966,6 +1969,7 @@ class HabitScreenState extends State<HabitScreen>
       habit.endDate = editedHabit.endDate;
       habit.reminderEnabled = editedHabit.reminderEnabled;
       habit.reminderTime = editedHabit.reminderTime;
+      habit.rhythmWindow = editedHabit.rhythmWindow;
       habit.subtasks = editedHabit.subtasks;
       habit.subtasksLog = editedHabit.subtasksLog;
       await _repo.updateHabit(habit);
@@ -2022,10 +2026,8 @@ class HabitScreenState extends State<HabitScreen>
           .map((e) => Subtask.fromJson(e as Map<String, dynamic>))
           .toList();
     }
-    if (result['subtasksLog'] is Map) {
-      habit.subtasksLog = Map<String, List<Map<String, dynamic>>>.from(
-        result['subtasksLog'] as Map,
-      );
+    if (result['rhythmWindow'] is RhythmWindow?) {
+      habit.rhythmWindow = result['rhythmWindow'] as RhythmWindow?;
     }
 
     _repo.updateHabit(habit);

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:mira/l10n/app_localizations.dart';
 
+import '../../../providers/premium_provider.dart';
+import '../../../ui/premium_gate.dart';
+import '../../rhythm/domain/live_rhythm_model.dart';
 import '../domain/habit_model.dart';
 import '../domain/habit_types.dart';
 import '../domain/subtask_model.dart';
@@ -72,6 +76,7 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
   // Date Range
   DateTime _startDate = DateTime.now();
   DateTime? _endDate;
+  RhythmWindow? _selectedRhythmWindow;
 
   // Emoji picker state
   bool _emojiExpanded = false;
@@ -81,32 +86,32 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
   final List<TextEditingController> _subtaskControllers = [];
   final List<String> _subtaskIds = [];
 
-  // Renk paleti - Canlı renkler
+  // Renk paleti - Wizard ile uyumlu
   static const List<Color> _colors = [
-    Color(0xFF6366F1),
-    Color(0xFF8B5CF6),
-    Color(0xFFEC4899),
-    Color(0xFFEF4444),
-    Color(0xFFF97316),
-    Color(0xFFEAB308),
-    Color(0xFF22C55E),
-    Color(0xFF14B8A6),
-    Color(0xFF06B6D4),
-    Color(0xFF3B82F6),
+    Color(0xFF6366F1), // Indigo
+    Color(0xFF8B5CF6), // Violet
+    Color(0xFFEC4899), // Pink
+    Color(0xFFEF4444), // Red
+    Color(0xFFF97316), // Orange
+    Color(0xFFEAB308), // Yellow
+    Color(0xFF22C55E), // Green
+    Color(0xFF14B8A6), // Teal
+    Color(0xFF06B6D4), // Cyan
+    Color(0xFF3B82F6), // Blue
   ];
 
-  // Pastel renk paleti
+  // Pastel renk paleti - Wizard ile uyumlu
   static const List<Color> _pastelColors = [
-    Color(0xFFA5B4FC), // Pastel Indigo
-    Color(0xFFC4B5FD), // Pastel Violet
-    Color(0xFFF9A8D4), // Pastel Pink
-    Color(0xFFFCA5A5), // Pastel Red
-    Color(0xFFFDBA74), // Pastel Orange
-    Color(0xFFFDE047), // Pastel Yellow
-    Color(0xFF86EFAC), // Pastel Green
-    Color(0xFF5EEAD4), // Pastel Teal
-    Color(0xFF67E8F9), // Pastel Cyan
-    Color(0xFF93C5FD), // Pastel Blue
+    Color(0xFF90CAF9), // Pastel Blue
+    Color(0xFFB39DDB), // Pastel Indigo
+    Color(0xFFF48FB1), // Pastel Pink
+    Color(0xFFFFCC80), // Pastel Orange
+    Color(0xFFFFF59D), // Pastel Yellow
+    Color(0xFFA5D6A7), // Pastel Green
+    Color(0xFF80CBC4), // Pastel Teal
+    Color(0xFFEF9A9A), // Pastel Red
+    Color(0xFFBCAAA4), // Pastel Brown
+    Color(0xFF9FA8DA), // Pastel Periwinkle
     Color(0xFFD8B4FE), // Pastel Purple
     Color(0xFFFBCFE8), // Pastel Rose
   ];
@@ -279,11 +284,9 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
     try {
       _startDate = DateTime.parse(h.startDate);
     } catch (_) {}
-    if (h.endDate != null) {
-      try {
-        _endDate = DateTime.parse(h.endDate!);
-      } catch (_) {}
-    }
+    _endDate = h.endDate != null ? DateTime.parse(h.endDate!) : null;
+    _selectedRhythmWindow = h.rhythmWindow; // Load rhythmWindow
+    // The original `if (h.endDate != null)` block is replaced by the ternary above.
 
     final ft = h.frequencyType?.toLowerCase() ?? h.frequency?.toLowerCase();
     if (ft != null) {
@@ -327,9 +330,8 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
     _descriptionController.text = m['description'] as String? ?? '';
 
     if (m['color'] != null) {
-      _selectedColor = m['color'] is Color
-          ? m['color'] as Color
-          : Color(m['color'] as int);
+      _selectedColor =
+          m['color'] is Color ? m['color'] as Color : Color(m['color'] as int);
     }
 
     _selectedEmoji = m['emoji'] as String? ?? '🎯';
@@ -423,8 +425,7 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
     }
 
     // Sıklık bilgisi
-    final ft =
-        (m['frequencyType'] as String?)?.toLowerCase() ??
+    final ft = (m['frequencyType'] as String?)?.toLowerCase() ??
         (m['frequency'] as String?)?.toLowerCase();
     if (ft != null) {
       if (ft.contains('daily')) {
@@ -448,6 +449,18 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
     }
     if (m['selectedYearDays'] != null) {
       _yearDays.addAll((m['selectedYearDays'] as List).cast<String>());
+    }
+
+    if (m['rhythmWindow'] != null) {
+      final rw = m['rhythmWindow'];
+      if (rw is RhythmWindow) {
+        _selectedRhythmWindow = rw;
+      } else if (rw is String) {
+        _selectedRhythmWindow = RhythmWindow.values.firstWhere(
+          (e) => e.name == rw,
+          orElse: () => RhythmWindow.focus,
+        );
+      }
     }
     if (m['periodicDays'] != null) {
       _periodicDays = (m['periodicDays'] as num).toInt();
@@ -559,6 +572,10 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
                       _buildSubtasksSection(theme, colorScheme),
                       const SizedBox(height: 28),
                     ],
+
+                    // Ritim Penceresi
+                    _buildRhythmWindowSection(theme, colorScheme),
+                    const SizedBox(height: 32),
 
                     // Sıklık
                     _buildSection(
@@ -999,28 +1016,28 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
 
           // Kategoriler
           ..._getEmojiCategories(AppLocalizations.of(context)).entries.map(
-            (entry) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  entry.key,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: colorScheme.onSurface.withOpacity(0.5),
-                    fontWeight: FontWeight.w600,
-                  ),
+                (entry) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      entry.key,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurface.withOpacity(0.5),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: entry.value
+                          .map((emoji) => _buildEmojiItem(emoji, colorScheme))
+                          .toList(),
+                    ),
+                    const SizedBox(height: 14),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: entry.value
-                      .map((emoji) => _buildEmojiItem(emoji, colorScheme))
-                      .toList(),
-                ),
-                const SizedBox(height: 14),
-              ],
-            ),
-          ),
+              ),
         ],
       ),
     );
@@ -1049,9 +1066,8 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
               ? _selectedColor.withOpacity(0.15)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
-          border: isSelected
-              ? Border.all(color: _selectedColor, width: 1.5)
-              : null,
+          border:
+              isSelected ? Border.all(color: _selectedColor, width: 1.5) : null,
         ),
         child: Center(
           child: Text(emoji, style: TextStyle(fontSize: size * 0.55)),
@@ -1209,11 +1225,11 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
                   width: 2.5,
                 )
               : (isPastel
-                    ? Border.all(
-                        color: colorScheme.outline.withOpacity(0.15),
-                        width: 1,
-                      )
-                    : null),
+                  ? Border.all(
+                      color: colorScheme.outline.withOpacity(0.15),
+                      width: 1,
+                    )
+                  : null),
           boxShadow: isSelected
               ? [
                   BoxShadow(
@@ -1332,9 +1348,8 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
   ) {
     final l10n = AppLocalizations.of(context);
     final predefinedUnits = _getPredefinedUnits(l10n);
-    final currentUnit = _unitController.text.isNotEmpty
-        ? _unitController.text
-        : l10n.unitAdet;
+    final currentUnit =
+        _unitController.text.isNotEmpty ? _unitController.text : l10n.unitAdet;
     final isCustomUnit = !predefinedUnits.any((u) => u.$1 == currentUnit);
 
     return Column(
@@ -1423,9 +1438,8 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
                       Text(
                         u.$1,
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.w500,
+                          fontWeight:
+                              isSelected ? FontWeight.w600 : FontWeight.w500,
                           color: isSelected
                               ? _selectedColor
                               : colorScheme.onSurface.withOpacity(0.7),
@@ -1471,9 +1485,8 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
                     Text(
                       isCustomUnit ? currentUnit : l10n.custom,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: isCustomUnit
-                            ? FontWeight.w600
-                            : FontWeight.w500,
+                        fontWeight:
+                            isCustomUnit ? FontWeight.w600 : FontWeight.w500,
                         color: isCustomUnit
                             ? _selectedColor
                             : colorScheme.onSurface.withOpacity(0.7),
@@ -1592,9 +1605,8 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
                   Text(
                     t.$2,
                     style: theme.textTheme.labelMedium?.copyWith(
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.w500,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.w500,
                       color: isSelected
                           ? _selectedColor
                           : colorScheme.onSurface.withOpacity(0.7),
@@ -1693,9 +1705,8 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
                   Text(
                     t.$2,
                     style: theme.textTheme.labelMedium?.copyWith(
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.w500,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.w500,
                       color: isSelected
                           ? _selectedColor
                           : colorScheme.onSurface.withOpacity(0.7),
@@ -1761,9 +1772,8 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
                     Text(
                       f.$2,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: isSelected
-                            ? FontWeight.w600
-                            : FontWeight.w500,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w500,
                         color: isSelected
                             ? _selectedColor
                             : colorScheme.onSurface.withOpacity(0.8),
@@ -1775,7 +1785,6 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
             );
           }).toList(),
         ),
-
         AnimatedSize(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
@@ -2058,6 +2067,111 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
     );
   }
 
+  Widget _buildRhythmWindowSection(ThemeData theme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context);
+    final isPremium = context.watch<PremiumProvider>().isPremium;
+
+    final List<(RhythmWindow, String, String, String)> windows = [
+      (
+        RhythmWindow.focus,
+        '🧠',
+        l10n.rhythmWindowFocus,
+        l10n.rhythmWindowFocusDesc,
+      ),
+      (
+        RhythmWindow.energy,
+        '⚡',
+        l10n.rhythmWindowEnergy,
+        l10n.rhythmWindowEnergyDesc,
+      ),
+      (
+        RhythmWindow.light,
+        '🌤️',
+        l10n.rhythmWindowLight,
+        l10n.rhythmWindowLightDesc,
+      ),
+      (
+        RhythmWindow.reflection,
+        '🌙',
+        l10n.rhythmWindowReflection,
+        l10n.rhythmWindowReflectionDesc,
+      ),
+    ];
+
+    return _buildSection(
+      title: l10n.rhythmWindowStepTitle,
+      subtitle: l10n.rhythmWindowStepSubtitle,
+      child: Column(
+        children: windows.map((w) {
+          final isSelected = _selectedRhythmWindow == w.$1;
+          final color = _selectedColor;
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: InkWell(
+              onTap: () {
+                if (!isPremium) {
+                  requirePremium(context);
+                  return;
+                }
+                HapticFeedback.lightImpact();
+                setState(() => _selectedRhythmWindow = w.$1);
+              },
+              borderRadius: BorderRadius.circular(16),
+              child: Opacity(
+                opacity: isPremium ? 1.0 : 0.6,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? color.withOpacity(0.1)
+                        : colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(16),
+                    border: isSelected
+                        ? Border.all(color: color, width: 2)
+                        : Border.all(color: Colors.transparent, width: 2),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(w.$2, style: const TextStyle(fontSize: 24)),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              w.$3,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: isSelected ? color : null,
+                              ),
+                            ),
+                            Text(
+                              w.$4,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (!isPremium)
+                        Icon(Icons.lock_outline,
+                            size: 20, color: colorScheme.outline)
+                      else if (isSelected)
+                        Icon(Icons.check_circle, color: color),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   Widget _buildSubtasksSection(ThemeData theme, ColorScheme colorScheme) {
     return _buildSection(
       title: AppLocalizations.of(context).subtasksType,
@@ -2186,8 +2300,7 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
 
   Widget _buildSaveButton(ThemeData theme, ColorScheme colorScheme) {
     // Subtasks türünde en az bir alt görev zorunlu
-    final bool canSave =
-        _nameController.text.trim().isNotEmpty &&
+    final bool canSave = _nameController.text.trim().isNotEmpty &&
         (_habitType != HabitType.subtasks || _hasValidSubtasks());
 
     return GestureDetector(
@@ -2197,9 +2310,8 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 18),
         decoration: BoxDecoration(
-          color: canSave
-              ? _selectedColor
-              : colorScheme.outline.withOpacity(0.2),
+          color:
+              canSave ? _selectedColor : colorScheme.outline.withOpacity(0.2),
           borderRadius: BorderRadius.circular(16),
           boxShadow: canSave
               ? [
@@ -2455,8 +2567,8 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
       final prefix = _timerTargetType == TimerTargetType.minimum
           ? l10n.atLeast
           : _timerTargetType == TimerTargetType.maximum
-          ? l10n.atMost
-          : l10n.exact;
+              ? l10n.atMost
+              : l10n.exact;
       return '$prefix ${_formatDuration(_timerDuration)}';
     } else {
       final l10n = AppLocalizations.of(context);
@@ -2467,8 +2579,8 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
       final prefix = _numericalTargetType == NumericalTargetType.minimum
           ? l10n.atLeast
           : _numericalTargetType == NumericalTargetType.maximum
-          ? l10n.atMost
-          : l10n.exact;
+              ? l10n.atMost
+              : l10n.exact;
       return '$prefix $target $unit';
     }
   }
@@ -2668,8 +2780,7 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
 
     // Vision Map modunda Map döndür
     if (widget.returnAsMap) {
-      final existingId =
-          widget.editingHabitMap?['id'] ??
+      final existingId = widget.editingHabitMap?['id'] ??
           widget.existingHabit?.id ??
           UniqueKey().toString();
       final map = <String, dynamic>{
@@ -2682,10 +2793,10 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
         'targetCount': _habitType == HabitType.timer
             ? _timerDuration.inMinutes
             : _habitType == HabitType.checkbox
-            ? 1
-            : _habitType == HabitType.subtasks
-            ? 1
-            : (int.tryParse(_targetController.text) ?? 1),
+                ? 1
+                : _habitType == HabitType.subtasks
+                    ? 1
+                    : (int.tryParse(_targetController.text) ?? 1),
         if (_habitType == HabitType.numerical &&
             _unitController.text.isNotEmpty)
           'unit': _unitController.text,
@@ -2720,6 +2831,7 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
                 },
               )
               .toList(),
+        'rhythmWindow': _selectedRhythmWindow,
         'isAdvanced': true,
         // Mevcut verileri koru
         if (widget.editingHabitMap?['currentStreak'] != null)
@@ -2738,8 +2850,7 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
     }
 
     final habit = Habit(
-      id:
-          widget.existingHabit?.id ??
+      id: widget.existingHabit?.id ??
           widget.editingHabitMap?['id'] as String? ??
           UniqueKey().toString(),
       title: _nameController.text.trim(),
@@ -2753,10 +2864,10 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
       targetCount: _habitType == HabitType.timer
           ? _timerDuration.inMinutes
           : _habitType == HabitType.checkbox
-          ? 1
-          : _habitType == HabitType.subtasks
-          ? 1
-          : (int.tryParse(_targetController.text) ?? 1),
+              ? 1
+              : _habitType == HabitType.subtasks
+                  ? 1
+                  : (int.tryParse(_targetController.text) ?? 1),
       unit: _habitType == HabitType.numerical
           ? (_unitController.text.isEmpty ? null : _unitController.text)
           : null,
@@ -2774,21 +2885,22 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
       progressDate: startDateStr,
       startDate: startDateStr,
       endDate: endDateStr,
+      rhythmWindow: _selectedRhythmWindow,
       reminderEnabled: _reminderEnabled,
       reminderTime: _reminderEnabled ? _reminderTime : null,
       subtasks: _habitType == HabitType.subtasks
           ? _subtaskControllers
-                .asMap()
-                .entries
-                .where((e) => e.value.text.trim().isNotEmpty)
-                .map(
-                  (e) => Subtask(
-                    id: _subtaskIds[e.key],
-                    title: e.value.text.trim(),
-                    isCompleted: false,
-                  ),
-                )
-                .toList()
+              .asMap()
+              .entries
+              .where((e) => e.value.text.trim().isNotEmpty)
+              .map(
+                (e) => Subtask(
+                  id: _subtaskIds[e.key],
+                  title: e.value.text.trim(),
+                  isCompleted: false,
+                ),
+              )
+              .toList()
           : [],
     )..isAdvanced = true;
 
@@ -3022,9 +3134,8 @@ class _DurationPickerSheetState extends State<_DurationPickerSheet> {
                   child: Text(
                     items[index].toString().padLeft(2, '0'),
                     style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.w400,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.w400,
                       color: isSelected
                           ? widget.accentColor
                           : colorScheme.onSurface.withOpacity(0.4),

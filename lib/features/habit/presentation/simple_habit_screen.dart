@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:mira/l10n/app_localizations.dart';
 
+import '../../../providers/premium_provider.dart';
+import '../../../ui/premium_gate.dart';
+import '../../rhythm/domain/live_rhythm_model.dart';
 import '../domain/habit_model.dart';
 import '../domain/habit_types.dart';
 
@@ -39,23 +43,24 @@ class _SimpleHabitScreenState extends State<SimpleHabitScreen>
   bool _reminderEnabled = false;
   TimeOfDay _reminderTime = const TimeOfDay(hour: 9, minute: 0);
   DateTime _startDate = DateTime.now();
+  RhythmWindow? _selectedRhythmWindow;
 
   // Emoji picker state
   bool _emojiExpanded = false;
   final _customEmojiController = TextEditingController();
 
-  // Modern renk paleti
+  // Renk paleti - Wizard ile uyumlu pastel renkler
   static const List<Color> _colors = [
-    Color(0xFF6366F1), // Indigo
-    Color(0xFF8B5CF6), // Violet
-    Color(0xFFEC4899), // Pink
-    Color(0xFFEF4444), // Red
-    Color(0xFFF97316), // Orange
-    Color(0xFFEAB308), // Yellow
-    Color(0xFF22C55E), // Green
-    Color(0xFF14B8A6), // Teal
-    Color(0xFF06B6D4), // Cyan
-    Color(0xFF3B82F6), // Blue
+    Color(0xFF90CAF9), // Pastel Blue
+    Color(0xFFB39DDB), // Pastel Indigo
+    Color(0xFFF48FB1), // Pastel Pink
+    Color(0xFFFFCC80), // Pastel Orange
+    Color(0xFFFFF59D), // Pastel Yellow
+    Color(0xFFA5D6A7), // Pastel Green
+    Color(0xFF80CBC4), // Pastel Teal
+    Color(0xFFEF9A9A), // Pastel Red
+    Color(0xFFBCAAA4), // Pastel Brown
+    Color(0xFF9FA8DA), // Pastel Periwinkle
   ];
 
   // Emoji listesi - Kategorize edilmiş
@@ -209,6 +214,7 @@ class _SimpleHabitScreenState extends State<SimpleHabitScreen>
     _selectedEmoji = h.emoji ?? '✅';
     _reminderEnabled = h.reminderEnabled;
     _reminderTime = h.reminderTime ?? const TimeOfDay(hour: 9, minute: 0);
+    _selectedRhythmWindow = h.rhythmWindow;
 
     // Load start date from existing habit
     final parts = h.startDate.split('-');
@@ -328,7 +334,9 @@ class _SimpleHabitScreenState extends State<SimpleHabitScreen>
                     // Hatırlatıcı
                     _buildReminderSection(theme, colorScheme),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
+                    _buildRhythmWindowSection(theme, colorScheme),
+                    const SizedBox(height: 24),
 
                     // Kaydet Butonu
                     _buildSaveButton(theme, colorScheme),
@@ -628,28 +636,28 @@ class _SimpleHabitScreenState extends State<SimpleHabitScreen>
 
           // Kategoriler
           ..._getEmojiCategories(context).entries.map(
-            (entry) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  entry.key,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: colorScheme.onSurface.withOpacity(0.5),
-                    fontWeight: FontWeight.w600,
-                  ),
+                (entry) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      entry.key,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurface.withOpacity(0.5),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: entry.value
+                          .map((emoji) => _buildEmojiItem(emoji, colorScheme))
+                          .toList(),
+                    ),
+                    const SizedBox(height: 14),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: entry.value
-                      .map((emoji) => _buildEmojiItem(emoji, colorScheme))
-                      .toList(),
-                ),
-                const SizedBox(height: 14),
-              ],
-            ),
-          ),
+              ),
         ],
       ),
     );
@@ -678,9 +686,8 @@ class _SimpleHabitScreenState extends State<SimpleHabitScreen>
               ? _selectedColor.withOpacity(0.15)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
-          border: isSelected
-              ? Border.all(color: _selectedColor, width: 1.5)
-              : null,
+          border:
+              isSelected ? Border.all(color: _selectedColor, width: 1.5) : null,
         ),
         child: Center(
           child: Text(emoji, style: TextStyle(fontSize: size * 0.55)),
@@ -768,6 +775,131 @@ class _SimpleHabitScreenState extends State<SimpleHabitScreen>
           ],
         );
       },
+    );
+  }
+
+  Widget _buildSectionHeader(String title, IconData icon) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return Row(
+      children: [
+        Icon(icon, color: _selectedColor, size: 20),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.3,
+            color: colorScheme.onSurface,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRhythmWindowSection(ThemeData theme, ColorScheme colorScheme) {
+    final l10n = AppLocalizations.of(context);
+    final isPremium = context.watch<PremiumProvider>().isPremium;
+
+    final List<(RhythmWindow, String, String, String)> windows = [
+      (
+        RhythmWindow.focus,
+        '🧠',
+        l10n.rhythmWindowFocus,
+        l10n.rhythmWindowFocusDesc,
+      ),
+      (
+        RhythmWindow.energy,
+        '⚡',
+        l10n.rhythmWindowEnergy,
+        l10n.rhythmWindowEnergyDesc,
+      ),
+      (
+        RhythmWindow.light,
+        '🌤️',
+        l10n.rhythmWindowLight,
+        l10n.rhythmWindowLightDesc,
+      ),
+      (
+        RhythmWindow.reflection,
+        '🌙',
+        l10n.rhythmWindowReflection,
+        l10n.rhythmWindowReflectionDesc,
+      ),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader(
+            l10n.rhythmWindowStepTitle, Icons.access_time_filled),
+        const SizedBox(height: 16),
+        ...windows.map((w) {
+          final isSelected = _selectedRhythmWindow == w.$1;
+          final color = _colors[0]; // Primer renk (Indigo/Blue)
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: InkWell(
+              onTap: () {
+                if (!isPremium) {
+                  requirePremium(context);
+                  return;
+                }
+                setState(() => _selectedRhythmWindow = w.$1);
+              },
+              borderRadius: BorderRadius.circular(16),
+              child: Opacity(
+                opacity: isPremium ? 1.0 : 0.6,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? color.withOpacity(0.1)
+                        : colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(16),
+                    border: isSelected
+                        ? Border.all(color: color, width: 2)
+                        : Border.all(color: Colors.transparent, width: 2),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(w.$2, style: const TextStyle(fontSize: 24)),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              w.$3,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: isSelected ? color : null,
+                              ),
+                            ),
+                            Text(
+                              w.$4,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (!isPremium)
+                        Icon(Icons.lock_outline,
+                            size: 20, color: colorScheme.outline)
+                      else if (isSelected)
+                        Icon(Icons.check_circle, color: color),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
+      ],
     );
   }
 
@@ -918,9 +1050,8 @@ class _SimpleHabitScreenState extends State<SimpleHabitScreen>
                     Text(
                       f.$2,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: isSelected
-                            ? FontWeight.w600
-                            : FontWeight.w500,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w500,
                         color: isSelected
                             ? _selectedColor
                             : colorScheme.onSurface.withOpacity(0.8),
@@ -1317,9 +1448,8 @@ class _SimpleHabitScreenState extends State<SimpleHabitScreen>
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 18),
         decoration: BoxDecoration(
-          color: canSave
-              ? _selectedColor
-              : colorScheme.outline.withOpacity(0.2),
+          color:
+              canSave ? _selectedColor : colorScheme.outline.withOpacity(0.2),
           borderRadius: BorderRadius.circular(16),
           boxShadow: canSave
               ? [
@@ -1613,6 +1743,7 @@ class _SimpleHabitScreenState extends State<SimpleHabitScreen>
       isCompleted: widget.existingHabit?.isCompleted ?? false,
       progressDate: startDateStr,
       startDate: startDateStr,
+      rhythmWindow: _selectedRhythmWindow,
       reminderEnabled: _reminderEnabled,
       reminderTime: _reminderEnabled ? _reminderTime : null,
     );
