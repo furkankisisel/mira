@@ -9,6 +9,57 @@ class AppLocalizationsHi extends AppLocalizations {
   AppLocalizationsHi([String locale = 'hi']) : super(locale);
 
   @override
+  String get weeklyReportsTitle => 'साप्ताहिक रिपोर्ट';
+
+  @override
+  String get noReportsYet => 'कोई रिपोर्ट नहीं';
+
+  @override
+  String get createFirstReportPrompt =>
+      'अपनी पहली साप्ताहिक रिपोर्ट बनाने के लिए + पर क्लिक करें';
+
+  @override
+  String get generating => 'उत्पन्न हो रहा है...';
+
+  @override
+  String get createReport => 'रिपोर्ट बनाएं';
+
+  @override
+  String costTokens(Object cost) {
+    return 'लागत: $cost टोकन';
+  }
+
+  @override
+  String balanceParenthesis(Object balance) {
+    return '(शेष: $balance)';
+  }
+
+  @override
+  String get watchAdForToken => 'विज्ञापन देखें (+1 टोकन)';
+
+  @override
+  String get selectReportType => 'रिपोर्ट प्रकार चुनें:';
+
+  @override
+  String generatedAtDate(Object date) {
+    return 'उत्पन्न: $date';
+  }
+
+  @override
+  String get insufficientTokensWatchAd =>
+      'अपर्याप्त टोकन! टोकन कमाने के लिए विज्ञापन देखें।';
+
+  @override
+  String get reportCreatedSuccess => 'रिपोर्ट बनाई गई! ✨';
+
+  @override
+  String get reportAlreadyExists =>
+      'इस सप्ताह के लिए रिपोर्ट पहले से मौजूद है।';
+
+  @override
+  String get tokenEarnedSuccess => '+1 टोकन अर्जित! 🎉';
+
+  @override
   String get about => 'बारे में';
 
   @override
@@ -1084,6 +1135,19 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get featureAdvancedHabits => 'Gelişmiş Alışkanlık Oluşturma';
+
+  @override
+  String get featureAiBioClock => 'AI Destekli Biyolojik Saat';
+
+  @override
+  String get featureAiBioClockDesc =>
+      'Biyolojik ritminize göre optimum zamanlama';
+
+  @override
+  String get featureAiWeeklyReport => 'AI Destekli Haftalık Rapor';
+
+  @override
+  String get featureAiWeeklyReportDesc => 'İlerlemenizin detaylı AI analizi';
 
   @override
   String get featureBackup => 'Yedekleme Özelliği';

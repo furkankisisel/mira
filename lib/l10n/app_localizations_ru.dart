@@ -9,6 +9,55 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get weeklyReportsTitle => 'Еженедельные отчеты';
+
+  @override
+  String get noReportsYet => 'Отчетов пока нет';
+
+  @override
+  String get createFirstReportPrompt => 'Нажмите +, чтобы создать первый отчет';
+
+  @override
+  String get generating => 'Создание...';
+
+  @override
+  String get createReport => 'Создать отчет';
+
+  @override
+  String costTokens(Object cost) {
+    return 'Цена: $cost жетонов';
+  }
+
+  @override
+  String balanceParenthesis(Object balance) {
+    return '(Баланс: $balance)';
+  }
+
+  @override
+  String get watchAdForToken => 'Смотреть рекламу (+1 жетон)';
+
+  @override
+  String get selectReportType => 'Тип отчета:';
+
+  @override
+  String generatedAtDate(Object date) {
+    return 'Создано: $date';
+  }
+
+  @override
+  String get insufficientTokensWatchAd =>
+      'Недостаточно жетонов! Посмотрите рекламу.';
+
+  @override
+  String get reportCreatedSuccess => 'Отчет создан! ✨';
+
+  @override
+  String get reportAlreadyExists => 'Отчет за эту неделю уже есть.';
+
+  @override
+  String get tokenEarnedSuccess => 'Получен +1 жетон! 🎉';
+
+  @override
   String get about => 'О приложении';
 
   @override
@@ -1088,6 +1137,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get featureAdvancedHabits => 'Gelişmiş Alışkanlık Oluşturma';
+
+  @override
+  String get featureAiBioClock => 'AI Destekli Biyolojik Saat';
+
+  @override
+  String get featureAiBioClockDesc =>
+      'Biyolojik ritminize göre optimum zamanlama';
+
+  @override
+  String get featureAiWeeklyReport => 'AI Destekli Haftalık Rapor';
+
+  @override
+  String get featureAiWeeklyReportDesc => 'İlerlemenizin detaylı AI analizi';
 
   @override
   String get featureBackup => 'Yedekleme Özelliği';

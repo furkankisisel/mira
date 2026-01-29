@@ -9,6 +9,54 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get weeklyReportsTitle => '周报';
+
+  @override
+  String get noReportsYet => '暂无报告';
+
+  @override
+  String get createFirstReportPrompt => '点击 + 创建您的第一份周报';
+
+  @override
+  String get generating => '生成中...';
+
+  @override
+  String get createReport => '创建报告';
+
+  @override
+  String costTokens(Object cost) {
+    return '消耗: $cost 代币';
+  }
+
+  @override
+  String balanceParenthesis(Object balance) {
+    return '(余额: $balance)';
+  }
+
+  @override
+  String get watchAdForToken => '观看广告 (+1 代币)';
+
+  @override
+  String get selectReportType => '选择报告类型:';
+
+  @override
+  String generatedAtDate(Object date) {
+    return '生成时间: $date';
+  }
+
+  @override
+  String get insufficientTokensWatchAd => '代币不足！观看广告获取代币。';
+
+  @override
+  String get reportCreatedSuccess => '报告已创建！ ✨';
+
+  @override
+  String get reportAlreadyExists => '本周报告已存在。';
+
+  @override
+  String get tokenEarnedSuccess => '获得 +1 代币！ 🎉';
+
+  @override
   String get about => '关于';
 
   @override
@@ -1080,6 +1128,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get featureAdvancedHabits => 'Gelişmiş Alışkanlık Oluşturma';
+
+  @override
+  String get featureAiBioClock => 'AI Destekli Biyolojik Saat';
+
+  @override
+  String get featureAiBioClockDesc =>
+      'Biyolojik ritminize göre optimum zamanlama';
+
+  @override
+  String get featureAiWeeklyReport => 'AI Destekli Haftalık Rapor';
+
+  @override
+  String get featureAiWeeklyReportDesc => 'İlerlemenizin detaylı AI analizi';
 
   @override
   String get featureBackup => 'Yedekleme Özelliği';

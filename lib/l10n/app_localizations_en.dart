@@ -9,6 +9,56 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get weeklyReportsTitle => 'Weekly Reports';
+
+  @override
+  String get noReportsYet => 'No reports yet';
+
+  @override
+  String get createFirstReportPrompt =>
+      'Click + to create your first weekly report';
+
+  @override
+  String get generating => 'Generating...';
+
+  @override
+  String get createReport => 'Create Report';
+
+  @override
+  String costTokens(Object cost) {
+    return 'Cost: $cost tokens';
+  }
+
+  @override
+  String balanceParenthesis(Object balance) {
+    return '(Balance: $balance)';
+  }
+
+  @override
+  String get watchAdForToken => 'Watch Ad (+1 Token)';
+
+  @override
+  String get selectReportType => 'Select Report Type:';
+
+  @override
+  String generatedAtDate(Object date) {
+    return 'Generated: $date';
+  }
+
+  @override
+  String get insufficientTokensWatchAd =>
+      'Insufficient tokens! Watch an ad to earn tokens.';
+
+  @override
+  String get reportCreatedSuccess => 'Report created! ✨';
+
+  @override
+  String get reportAlreadyExists => 'Report already exists for this week.';
+
+  @override
+  String get tokenEarnedSuccess => '+1 token earned! 🎉';
+
+  @override
   String get about => 'About';
 
   @override
@@ -1079,6 +1129,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get featureAdvancedHabits => 'Advanced Habit Creation';
+
+  @override
+  String get featureAiBioClock => 'AI Powered Biological Clock';
+
+  @override
+  String get featureAiBioClockDesc =>
+      'Optimal timing based on your biological rhythm';
+
+  @override
+  String get featureAiWeeklyReport => 'AI Powered Weekly Report';
+
+  @override
+  String get featureAiWeeklyReportDesc =>
+      'Detailed AI analysis of your progress';
 
   @override
   String get featureBackup => 'Backup Feature';

@@ -9,6 +9,57 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get weeklyReportsTitle => 'Wochenberichte';
+
+  @override
+  String get noReportsYet => 'Noch keine Berichte';
+
+  @override
+  String get createFirstReportPrompt =>
+      'Klicken Sie auf +, um Ihren ersten Wochenbericht zu erstellen';
+
+  @override
+  String get generating => 'Wird erstellt...';
+
+  @override
+  String get createReport => 'Bericht erstellen';
+
+  @override
+  String costTokens(Object cost) {
+    return 'Kosten: $cost Tokens';
+  }
+
+  @override
+  String balanceParenthesis(Object balance) {
+    return '(Guthaben: $balance)';
+  }
+
+  @override
+  String get watchAdForToken => 'Werbung ansehen (+1 Token)';
+
+  @override
+  String get selectReportType => 'Berichtstyp wählen:';
+
+  @override
+  String generatedAtDate(Object date) {
+    return 'Erstellt: $date';
+  }
+
+  @override
+  String get insufficientTokensWatchAd =>
+      'Nicht genügend Tokens! Sehen Sie sich Werbung an, um Tokens zu verdienen.';
+
+  @override
+  String get reportCreatedSuccess => 'Bericht erstellt! ✨';
+
+  @override
+  String get reportAlreadyExists =>
+      'Bericht für diese Woche existiert bereits.';
+
+  @override
+  String get tokenEarnedSuccess => '+1 Token verdient! 🎉';
+
+  @override
   String get about => 'Über';
 
   @override
@@ -1090,6 +1141,19 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get featureAdvancedHabits => 'Gelişmiş Alışkanlık Oluşturma';
+
+  @override
+  String get featureAiBioClock => 'AI Destekli Biyolojik Saat';
+
+  @override
+  String get featureAiBioClockDesc =>
+      'Biyolojik ritminize göre optimum zamanlama';
+
+  @override
+  String get featureAiWeeklyReport => 'AI Destekli Haftalık Rapor';
+
+  @override
+  String get featureAiWeeklyReportDesc => 'İlerlemenizin detaylı AI analizi';
 
   @override
   String get featureBackup => 'Yedekleme Özelliği';

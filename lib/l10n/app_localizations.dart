@@ -122,6 +122,90 @@ abstract class AppLocalizations {
     Locale('zh')
   ];
 
+  /// No description provided for @weeklyReportsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Haftalık Raporlar'**
+  String get weeklyReportsTitle;
+
+  /// No description provided for @noReportsYet.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz rapor yok'**
+  String get noReportsYet;
+
+  /// No description provided for @createFirstReportPrompt.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlk haftalık raporunuzu oluşturmak için + butonuna tıklayın'**
+  String get createFirstReportPrompt;
+
+  /// No description provided for @generating.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oluşturuluyor...'**
+  String get generating;
+
+  /// No description provided for @createReport.
+  ///
+  /// In tr, this message translates to:
+  /// **'Rapor Oluştur'**
+  String get createReport;
+
+  /// No description provided for @costTokens.
+  ///
+  /// In tr, this message translates to:
+  /// **'Maliyet: {cost} jeton'**
+  String costTokens(Object cost);
+
+  /// No description provided for @balanceParenthesis.
+  ///
+  /// In tr, this message translates to:
+  /// **'(Bakiye: {balance})'**
+  String balanceParenthesis(Object balance);
+
+  /// No description provided for @watchAdForToken.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reklam İzle (+1 Jeton)'**
+  String get watchAdForToken;
+
+  /// No description provided for @selectReportType.
+  ///
+  /// In tr, this message translates to:
+  /// **'Rapor Türü Seçin:'**
+  String get selectReportType;
+
+  /// No description provided for @generatedAtDate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oluşturulma: {date}'**
+  String generatedAtDate(Object date);
+
+  /// No description provided for @insufficientTokensWatchAd.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yetersiz jeton! Reklam izleyerek jeton kazanın.'**
+  String get insufficientTokensWatchAd;
+
+  /// No description provided for @reportCreatedSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Rapor oluşturuldu! ✨'**
+  String get reportCreatedSuccess;
+
+  /// No description provided for @reportAlreadyExists.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu hafta için rapor zaten mevcut.'**
+  String get reportAlreadyExists;
+
+  /// No description provided for @tokenEarnedSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'+1 jeton kazandınız! 🎉'**
+  String get tokenEarnedSuccess;
+
   /// No description provided for @about.
   ///
   /// In tr, this message translates to:
@@ -2143,6 +2227,30 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Gelişmiş Alışkanlık Oluşturma'**
   String get featureAdvancedHabits;
+
+  /// No description provided for @featureAiBioClock.
+  ///
+  /// In tr, this message translates to:
+  /// **'AI Destekli Biyolojik Saat'**
+  String get featureAiBioClock;
+
+  /// No description provided for @featureAiBioClockDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Biyolojik ritminize göre optimum zamanlama'**
+  String get featureAiBioClockDesc;
+
+  /// No description provided for @featureAiWeeklyReport.
+  ///
+  /// In tr, this message translates to:
+  /// **'AI Destekli Haftalık Rapor'**
+  String get featureAiWeeklyReport;
+
+  /// No description provided for @featureAiWeeklyReportDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlerlemenizin detaylı AI analizi'**
+  String get featureAiWeeklyReportDesc;
 
   /// No description provided for @featureBackup.
   ///

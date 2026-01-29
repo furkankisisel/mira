@@ -9,6 +9,54 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get weeklyReportsTitle => '주간 보고서';
+
+  @override
+  String get noReportsYet => '보고서 없음';
+
+  @override
+  String get createFirstReportPrompt => '+ 버튼을 눌러 첫 주간 보고서를 작성하세요';
+
+  @override
+  String get generating => '생성 중...';
+
+  @override
+  String get createReport => '보고서 작성';
+
+  @override
+  String costTokens(Object cost) {
+    return '비용: $cost 토큰';
+  }
+
+  @override
+  String balanceParenthesis(Object balance) {
+    return '(잔액: $balance)';
+  }
+
+  @override
+  String get watchAdForToken => '광고 보고 토큰 얻기 (+1)';
+
+  @override
+  String get selectReportType => '보고서 유형 선택:';
+
+  @override
+  String generatedAtDate(Object date) {
+    return '생성일: $date';
+  }
+
+  @override
+  String get insufficientTokensWatchAd => '토큰이 부족합니다! 광고를 보고 토큰을 얻으세요.';
+
+  @override
+  String get reportCreatedSuccess => '보고서가 생성되었습니다! ✨';
+
+  @override
+  String get reportAlreadyExists => '이번 주 보고서가 이미 존재합니다.';
+
+  @override
+  String get tokenEarnedSuccess => '+1 토큰 획득! 🎉';
+
+  @override
   String get about => '정보';
 
   @override
@@ -1081,6 +1129,19 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get featureAdvancedHabits => 'Gelişmiş Alışkanlık Oluşturma';
+
+  @override
+  String get featureAiBioClock => 'AI Destekli Biyolojik Saat';
+
+  @override
+  String get featureAiBioClockDesc =>
+      'Biyolojik ritminize göre optimum zamanlama';
+
+  @override
+  String get featureAiWeeklyReport => 'AI Destekli Haftalık Rapor';
+
+  @override
+  String get featureAiWeeklyReportDesc => 'İlerlemenizin detaylı AI analizi';
 
   @override
   String get featureBackup => 'Yedekleme Özelliği';

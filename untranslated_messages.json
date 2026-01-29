@@ -1,1 +1,85 @@
-{}
+{
+  "ar": [
+    "featureAiBioClock",
+    "featureAiBioClockDesc",
+    "featureAiWeeklyReport",
+    "featureAiWeeklyReportDesc"
+  ],
+
+  "de": [
+    "featureAiBioClock",
+    "featureAiBioClockDesc",
+    "featureAiWeeklyReport",
+    "featureAiWeeklyReportDesc"
+  ],
+
+  "es": [
+    "featureAiBioClock",
+    "featureAiBioClockDesc",
+    "featureAiWeeklyReport",
+    "featureAiWeeklyReportDesc"
+  ],
+
+  "fr": [
+    "featureAiBioClock",
+    "featureAiBioClockDesc",
+    "featureAiWeeklyReport",
+    "featureAiWeeklyReportDesc"
+  ],
+
+  "hi": [
+    "featureAiBioClock",
+    "featureAiBioClockDesc",
+    "featureAiWeeklyReport",
+    "featureAiWeeklyReportDesc"
+  ],
+
+  "it": [
+    "featureAiBioClock",
+    "featureAiBioClockDesc",
+    "featureAiWeeklyReport",
+    "featureAiWeeklyReportDesc"
+  ],
+
+  "ja": [
+    "featureAiBioClock",
+    "featureAiBioClockDesc",
+    "featureAiWeeklyReport",
+    "featureAiWeeklyReportDesc"
+  ],
+
+  "ko": [
+    "featureAiBioClock",
+    "featureAiBioClockDesc",
+    "featureAiWeeklyReport",
+    "featureAiWeeklyReportDesc"
+  ],
+
+  "nl": [
+    "featureAiBioClock",
+    "featureAiBioClockDesc",
+    "featureAiWeeklyReport",
+    "featureAiWeeklyReportDesc"
+  ],
+
+  "pt": [
+    "featureAiBioClock",
+    "featureAiBioClockDesc",
+    "featureAiWeeklyReport",
+    "featureAiWeeklyReportDesc"
+  ],
+
+  "ru": [
+    "featureAiBioClock",
+    "featureAiBioClockDesc",
+    "featureAiWeeklyReport",
+    "featureAiWeeklyReportDesc"
+  ],
+
+  "zh": [
+    "featureAiBioClock",
+    "featureAiBioClockDesc",
+    "featureAiWeeklyReport",
+    "featureAiWeeklyReportDesc"
+  ]
+}
