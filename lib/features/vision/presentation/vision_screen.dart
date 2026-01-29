@@ -10,6 +10,7 @@ import '../data/vision_model.dart';
 import '../../../design_system/theme/theme_variations.dart';
 import '../data/vision_repository.dart';
 import 'vision_wizard_screen.dart';
+import 'vision_edit_screen.dart';
 import '../../../l10n/app_localizations.dart';
 import '../data/freeform_text_repository.dart';
 import '../data/freeform_text_model.dart';
@@ -137,11 +138,11 @@ class _VisionScreenState extends State<VisionScreen> {
 
     return Theme(
       data: localTheme.copyWith(
-        floatingActionButtonTheme: localTheme.floatingActionButtonTheme
-            .copyWith(
-              backgroundColor: accent,
-              foregroundColor: localTheme.colorScheme.onPrimary,
-            ),
+        floatingActionButtonTheme:
+            localTheme.floatingActionButtonTheme.copyWith(
+          backgroundColor: accent,
+          foregroundColor: localTheme.colorScheme.onPrimary,
+        ),
       ),
       child: Scaffold(
         floatingActionButton: FloatingActionButton.extended(
@@ -178,25 +179,25 @@ class _VisionScreenState extends State<VisionScreen> {
                                 onLink: _pickHabits,
                                 onChanged: (id, x, y, scale) =>
                                     _repo.updateLayout(
-                                      id: id,
-                                      posX: x,
-                                      posY: y,
-                                      scale: scale,
-                                    ),
+                                  id: id,
+                                  posX: x,
+                                  posY: y,
+                                  scale: scale,
+                                ),
                                 onImageChanged: (id, x, y, scale) =>
                                     _imageRepo.updateLayout(
-                                      id: id,
-                                      posX: x,
-                                      posY: y,
-                                      scale: scale,
-                                    ),
+                                  id: id,
+                                  posX: x,
+                                  posY: y,
+                                  scale: scale,
+                                ),
                                 onTextChanged: (id, x, y, scale) =>
                                     _textRepo.updateLayout(
-                                      id: id,
-                                      posX: x,
-                                      posY: y,
-                                      scale: scale,
-                                    ),
+                                  id: id,
+                                  posX: x,
+                                  posY: y,
+                                  scale: scale,
+                                ),
                                 onTextMenu: _showTextBottomSheet,
                                 onImageMenu: _showImageBottomSheet,
                                 roundCorners: _roundCorners,
@@ -541,7 +542,8 @@ class _VisionScreenState extends State<VisionScreen> {
                           FilledButton(
                             onPressed: () async {
                               if (text.trim().isEmpty) return;
-                              final id = DateTime.now().microsecondsSinceEpoch
+                              final id = DateTime.now()
+                                  .microsecondsSinceEpoch
                                   .toString();
                               final sticker = FreeformText(
                                 id: id,
@@ -660,8 +662,7 @@ class _VisionScreenState extends State<VisionScreen> {
               onTap: () async {
                 Navigator.pop(ctx);
                 bool deleteHabits = false;
-                final ok =
-                    await showDialog<bool>(
+                final ok = await showDialog<bool>(
                       context: context,
                       builder: (dctx) => StatefulBuilder(
                         builder: (dctx, setState) => AlertDialog(
@@ -1165,10 +1166,10 @@ class _VisionScreenState extends State<VisionScreen> {
   Future<void> _editVision(Vision v) async {
     await Navigator.of(context).push<Vision>(
       MaterialPageRoute(
-        builder: (_) => VisionWizardScreen(repo: _repo, initialVision: v),
+        builder: (_) => VisionEditScreen(repo: _repo, vision: v),
       ),
     );
-    // Updates and pop are handled inside VisionCreateScreen.
+    // Updates and pop are handled inside VisionEditScreen.
   }
 
   Future<void> _pickHabits(Vision v) async {
@@ -1400,9 +1401,9 @@ class _FreeformBoard extends StatefulWidget {
   final void Function(Vision) onLink;
   final void Function(String id, double x, double y, double scale) onChanged;
   final void Function(String id, double x, double y, double scale)
-  onImageChanged;
+      onImageChanged;
   final void Function(String id, double x, double y, double scale)
-  onTextChanged;
+      onTextChanged;
   final void Function(FreeformText) onTextMenu;
   final void Function(FreeformImage) onImageMenu;
   final bool roundCorners;
@@ -1856,8 +1857,7 @@ class _DraggableImageStickerState extends State<_DraggableImageSticker> {
     final ah = (widget.size.height - height);
     final left = _x * (aw == 0 ? widget.size.width : aw);
     final top = _y * (ah == 0 ? widget.size.height : ah);
-    final isFile =
-        widget.image.path.startsWith('/') ||
+    final isFile = widget.image.path.startsWith('/') ||
         widget.image.path.contains('\\') ||
         widget.image.path.contains(':\\');
     final child = DecoratedBox(
@@ -1882,11 +1882,9 @@ class _DraggableImageStickerState extends State<_DraggableImageSticker> {
         onScaleUpdate: (d) {
           final start = _dragStart ?? d.focalPoint;
           final delta = d.focalPoint - start;
-          final nx =
-              (_baseX ?? _x) +
+          final nx = (_baseX ?? _x) +
               (widget.size.width > 0 ? delta.dx / widget.size.width : 0.0);
-          final ny =
-              (_baseY ?? _y) +
+          final ny = (_baseY ?? _y) +
               (widget.size.height > 0 ? delta.dy / widget.size.height : 0.0);
           setState(() {
             _x = nx;
@@ -1966,9 +1964,8 @@ class _DraggableTextStickerState extends State<_DraggableTextSticker> {
     final interactiveHeight = chipHeight + 24;
     final minInteractiveW = 80.0;
     final minInteractiveH = 60.0;
-    final iw = interactiveWidth < minInteractiveW
-        ? minInteractiveW
-        : interactiveWidth;
+    final iw =
+        interactiveWidth < minInteractiveW ? minInteractiveW : interactiveWidth;
     final ih = interactiveHeight < minInteractiveH
         ? minInteractiveH
         : interactiveHeight;
@@ -2216,6 +2213,72 @@ class _Board extends StatelessWidget {
                           ),
                         ),
 
+                        // Linked Habits Section
+                        if (v.linkedHabitIds.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: v.linkedHabitIds.map((hid) {
+                                  final habit = HabitRepository.instance.habits
+                                      .firstWhere(
+                                    (h) => h.id == hid,
+                                    orElse: () => Habit(
+                                      id: '',
+                                      title: '?',
+                                      description: '',
+                                      icon: Icons.help,
+                                      color: Colors.grey,
+                                      targetCount: 0,
+                                      habitType: HabitType.simple,
+                                      unit: '',
+                                      currentStreak: 0,
+                                      isCompleted: false,
+                                      progressDate: '',
+                                      startDate: '',
+                                    ),
+                                  );
+                                  if (habit.id.isEmpty) return const SizedBox();
+
+                                  return Container(
+                                    margin: const EdgeInsets.only(right: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color:
+                                            Colors.white.withValues(alpha: 0.1),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          habit.emoji ?? '⭐',
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          habit.title,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+
                         // Link Habit Button (Inline)
                         Container(
                           margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -2300,26 +2363,26 @@ class _Board extends StatelessWidget {
                                               child: Padding(
                                                 padding:
                                                     const EdgeInsets.symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 8,
-                                                    ),
+                                                  horizontal: 12,
+                                                  vertical: 8,
+                                                ),
                                                 child: Row(
                                                   children: [
                                                     Container(
                                                       decoration: BoxDecoration(
                                                         color: task.isCompleted
                                                             ? Colors.white
-                                                                  .withValues(
-                                                                    alpha: 0.9,
-                                                                  )
+                                                                .withValues(
+                                                                alpha: 0.9,
+                                                              )
                                                             : Colors
-                                                                  .transparent,
+                                                                .transparent,
                                                         shape: BoxShape.circle,
                                                         border: Border.all(
                                                           color: Colors.white
                                                               .withValues(
-                                                                alpha: 0.6,
-                                                              ),
+                                                            alpha: 0.6,
+                                                          ),
                                                           width: 2,
                                                         ),
                                                       ),
@@ -2340,24 +2403,24 @@ class _Board extends StatelessWidget {
                                                         style: TextStyle(
                                                           color: Colors.white
                                                               .withValues(
-                                                                alpha:
-                                                                    task.isCompleted
+                                                            alpha:
+                                                                task.isCompleted
                                                                     ? 0.5
                                                                     : 0.95,
-                                                              ),
+                                                          ),
                                                           fontSize: 15,
                                                           fontWeight:
                                                               FontWeight.w500,
-                                                          decoration:
-                                                              task.isCompleted
+                                                          decoration: task
+                                                                  .isCompleted
                                                               ? TextDecoration
-                                                                    .lineThrough
+                                                                  .lineThrough
                                                               : null,
                                                           decorationColor:
                                                               Colors.white
                                                                   .withValues(
-                                                                    alpha: 0.5,
-                                                                  ),
+                                                            alpha: 0.5,
+                                                          ),
                                                         ),
                                                       ),
                                                     ),

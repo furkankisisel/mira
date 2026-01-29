@@ -10,6 +10,7 @@ import 'data/finance_category.dart';
 import 'data/budget_repository.dart';
 
 import 'finance_wizard_screen.dart';
+import 'finance_edit_screen.dart';
 import '../../ui/premium_gate.dart';
 
 class FinanceScreen extends StatefulWidget {
@@ -85,19 +86,17 @@ class FinanceScreenState extends State<FinanceScreen>
         final genelTotalStr = _loading
             ? ''
             : _formatAmount(netTotal.abs(), netTotal >= 0, context);
-        final giderTotalStr = _loading
-            ? ''
-            : _formatAmount(expenseTotal, false, context);
-        final gelirTotalStr = _loading
-            ? ''
-            : _formatAmount(incomeTotal, true, context);
+        final giderTotalStr =
+            _loading ? '' : _formatAmount(expenseTotal, false, context);
+        final gelirTotalStr =
+            _loading ? '' : _formatAmount(incomeTotal, true, context);
         final genelColor = _loading
             ? scheme.onSurfaceVariant
             : netTotal > 0
-            ? Colors.green
-            : netTotal < 0
-            ? Colors.redAccent
-            : scheme.onSurfaceVariant;
+                ? Colors.green
+                : netTotal < 0
+                    ? Colors.redAccent
+                    : scheme.onSurfaceVariant;
 
         return DefaultTabController(
           length: 3,
@@ -150,8 +149,8 @@ class FinanceScreenState extends State<FinanceScreen>
                             : scheme.onSurface,
                         unselectedLabelColor:
                             theme.brightness == Brightness.light
-                            ? scheme.onSurfaceVariant
-                            : scheme.onSurfaceVariant.withOpacity(0.8),
+                                ? scheme.onSurfaceVariant
+                                : scheme.onSurfaceVariant.withOpacity(0.8),
                         indicator: BoxDecoration(
                           color: scheme.primaryContainer,
                           borderRadius: BorderRadius.circular(10),
@@ -232,19 +231,19 @@ class FinanceScreenState extends State<FinanceScreen>
                                 // If this is a generated recurring instance, edit the base series
                                 final baseId = tx.recurrenceId ?? tx.id;
                                 final base = _repo.all().firstWhere(
-                                  (e) => e.id == baseId,
-                                  orElse: () => tx,
-                                );
+                                      (e) => e.id == baseId,
+                                      orElse: () => tx,
+                                    );
                                 final res = await Navigator.of(context)
                                     .push<FinanceTransaction>(
-                                      MaterialPageRoute(
-                                        builder: (_) => FinanceWizardScreen(
-                                          repo: _repo,
-                                          catRepo: _catRepo,
-                                          existing: base,
-                                        ),
-                                      ),
-                                    );
+                                  MaterialPageRoute(
+                                    builder: (_) => FinanceEditScreen(
+                                      repo: _repo,
+                                      catRepo: _catRepo,
+                                      transaction: base,
+                                    ),
+                                  ),
+                                );
                                 if (res != null && mounted) setState(() {});
                               },
                               onDelete: (tx) async {
@@ -264,19 +263,19 @@ class FinanceScreenState extends State<FinanceScreen>
                               onEdit: (tx) async {
                                 final baseId = tx.recurrenceId ?? tx.id;
                                 final base = _repo.all().firstWhere(
-                                  (e) => e.id == baseId,
-                                  orElse: () => tx,
-                                );
+                                      (e) => e.id == baseId,
+                                      orElse: () => tx,
+                                    );
                                 final res = await Navigator.of(context)
                                     .push<FinanceTransaction>(
-                                      MaterialPageRoute(
-                                        builder: (_) => FinanceWizardScreen(
-                                          repo: _repo,
-                                          catRepo: _catRepo,
-                                          existing: base,
-                                        ),
-                                      ),
-                                    );
+                                  MaterialPageRoute(
+                                    builder: (_) => FinanceEditScreen(
+                                      repo: _repo,
+                                      catRepo: _catRepo,
+                                      transaction: base,
+                                    ),
+                                  ),
+                                );
                                 if (res != null && mounted) setState(() {});
                               },
                               onDelete: (tx) async {
@@ -296,19 +295,19 @@ class FinanceScreenState extends State<FinanceScreen>
                               onEdit: (tx) async {
                                 final baseId = tx.recurrenceId ?? tx.id;
                                 final base = _repo.all().firstWhere(
-                                  (e) => e.id == baseId,
-                                  orElse: () => tx,
-                                );
+                                      (e) => e.id == baseId,
+                                      orElse: () => tx,
+                                    );
                                 final res = await Navigator.of(context)
                                     .push<FinanceTransaction>(
-                                      MaterialPageRoute(
-                                        builder: (_) => FinanceWizardScreen(
-                                          repo: _repo,
-                                          catRepo: _catRepo,
-                                          existing: base,
-                                        ),
-                                      ),
-                                    );
+                                  MaterialPageRoute(
+                                    builder: (_) => FinanceEditScreen(
+                                      repo: _repo,
+                                      catRepo: _catRepo,
+                                      transaction: base,
+                                    ),
+                                  ),
+                                );
                                 if (res != null && mounted) setState(() {});
                               },
                               onDelete: (tx) async {
@@ -455,16 +454,15 @@ class FinanceScreenState extends State<FinanceScreen>
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              mainAxisSpacing: 8,
-                              crossAxisSpacing: 8,
-                              childAspectRatio: 2.2,
-                            ),
+                          crossAxisCount: 3,
+                          mainAxisSpacing: 8,
+                          crossAxisSpacing: 8,
+                          childAspectRatio: 2.2,
+                        ),
                         itemCount: 12,
                         itemBuilder: (context, index) {
                           final month = index + 1;
-                          final selected =
-                              pickerYear == _currentMonth.year &&
+                          final selected = pickerYear == _currentMonth.year &&
                               month == _currentMonth.month;
                           final label = DateFormat(
                             'MMMM',
@@ -516,8 +514,8 @@ class FinanceScreenState extends State<FinanceScreen>
                               ),
                             );
                             setState(() {
-                              _plannedMonthlySpend = _budgetRepo
-                                  .getBudgetForMonth(_currentMonth);
+                              _plannedMonthlySpend =
+                                  _budgetRepo.getBudgetForMonth(_currentMonth);
                             });
                             Navigator.pop(context);
                           },
@@ -563,8 +561,8 @@ class _DayDivider extends StatelessWidget {
     final totalColor = isPositive
         ? Colors.green.withValues(alpha: 0.85)
         : isNegative
-        ? Colors.redAccent.withValues(alpha: 0.85)
-        : scheme.onSurfaceVariant.withValues(alpha: 0.80);
+            ? Colors.redAccent.withValues(alpha: 0.85)
+            : scheme.onSurfaceVariant.withValues(alpha: 0.80);
     final totalStyle = baseStyle?.copyWith(color: totalColor);
     return Padding(
       padding: const EdgeInsets.only(top: 12, bottom: 6),
@@ -751,9 +749,9 @@ class _FinanceTile extends StatelessWidget {
           trailing: Text(
             trailing ?? '',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: trailingColor,
-            ),
+                  fontWeight: FontWeight.w600,
+                  color: trailingColor,
+                ),
             textAlign: TextAlign.right,
           ),
         ),
@@ -945,17 +943,17 @@ class _SpendingAdvisorCard extends StatelessWidget {
                   Text(
                     l10n.spendingAdvisorTitle,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: iconColor,
-                      fontWeight: FontWeight.bold,
-                    ),
+                          color: iconColor,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     message,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      fontWeight: FontWeight.w500,
-                    ),
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontWeight: FontWeight.w500,
+                        ),
                   ),
                 ],
               ),

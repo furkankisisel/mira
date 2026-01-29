@@ -44,7 +44,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
   int _recurringMonths = 12;
 
   // Total pages
-  static const int _totalPages = 6;
+  static const int _totalPages = 7;
 
   // Accent colors
   Color get _accentColor => _type == TransactionType.income
@@ -138,9 +138,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
       categoryId: _selectedCategory?.id,
       isRecurring: _isRecurring,
       recurringForever: _recurringForever,
-      recurringMonths: _isRecurring && !_recurringForever
-          ? _recurringMonths
-          : null,
+      recurringMonths:
+          _isRecurring && !_recurringForever ? _recurringMonths : null,
     );
 
     if (widget.existing != null) {
@@ -346,8 +345,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
               ),
               onTap: () async {
                 Navigator.pop(ctx);
-                final confirmed =
-                    await showDialog<bool>(
+                final confirmed = await showDialog<bool>(
                       context: context,
                       builder: (dctx) => AlertDialog(
                         title: Text(AppLocalizations.of(dctx).delete),
@@ -422,7 +420,6 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                     style: Theme.of(ctx).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 16),
-
                   Center(
                     child: Container(
                       width: 80,
@@ -463,7 +460,6 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 16),
                   TextField(
                     controller: nameCtrl,
@@ -476,7 +472,6 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                       filled: true,
                     ),
                   ),
-
                   const SizedBox(height: 16),
                   Text(
                     'Quick Suggestions',
@@ -496,7 +491,6 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -566,16 +560,19 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
           // 1: Kategori seçimi
           _buildCategoryPage(),
 
-          // 2: Tutar girişi
+          // 2: İsim girişi
+          _buildTitlePage(),
+
+          // 3: Tutar girişi
           _buildAmountPage(),
 
-          // 3: Tarih seçimi
+          // 4: Tarih seçimi
           _buildDatePage(),
 
-          // 4: Tekrarlama ayarları
+          // 5: Tekrarlama ayarları
           _buildRecurringPage(),
 
-          // 5: Önizleme
+          // 6: Önizleme
           _buildPreviewPage(),
         ],
       ),
@@ -778,11 +775,34 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTitlePage() {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+
+    return WizardPage(
+      emoji: '📝',
+      title: l10n.nameLabel,
+      subtitle: l10n.titleOptional,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        accentColor: _accentColor,
+      ),
+      child: Column(
+        children: [
           const SizedBox(height: 24),
-          // Optional title
           TextField(
             controller: _titleCtrl,
             textAlign: TextAlign.center,
+            autofocus: true,
+            textCapitalization: TextCapitalization.sentences,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
             decoration: InputDecoration(
               hintText: l10n.titleOptional,
               hintStyle: TextStyle(
@@ -797,10 +817,11 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                 0.3,
               ),
               contentPadding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 12,
+                horizontal: 24,
+                vertical: 20,
               ),
             ),
+            onSubmitted: (_) => _nextPage(),
           ),
         ],
       ),
@@ -832,8 +853,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
       child: Column(
         children: dateOptions.map((option) {
           final isCalendar = option.$2 == null;
-          final isSelected =
-              !isCalendar &&
+          final isSelected = !isCalendar &&
               _selectedDate.year == option.$2!.year &&
               _selectedDate.month == option.$2!.month &&
               _selectedDate.day == option.$2!.day;
@@ -880,9 +900,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                             ? '${option.$1}: ${DateFormat.yMMMd().format(_selectedDate)}'
                             : option.$1,
                         style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: isSelected
-                              ? FontWeight.w600
-                              : FontWeight.normal,
+                          fontWeight:
+                              isSelected ? FontWeight.w600 : FontWeight.normal,
                         ),
                       ),
                     ),
@@ -1052,9 +1071,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
     final currencyFmt = NumberFormat.simpleCurrency(locale: localeName);
 
     final formattedAmount = currencyFmt.format(_parsedAmount());
-    final typeText = _type == TransactionType.income
-        ? l10n.incomeLabel
-        : l10n.expenseLabel;
+    final typeText =
+        _type == TransactionType.income ? l10n.incomeLabel : l10n.expenseLabel;
 
     final tags = [
       typeText,
@@ -1241,8 +1259,8 @@ class _EmojiGrid extends StatelessWidget {
       builder: (context, constraints) {
         const tileSize = 44.0;
         const spacing = 8.0;
-        int cols = ((constraints.maxWidth + spacing) / (tileSize + spacing))
-            .floor();
+        int cols =
+            ((constraints.maxWidth + spacing) / (tileSize + spacing)).floor();
         cols = cols.clamp(4, 12);
         return Center(
           child: ConstrainedBox(
