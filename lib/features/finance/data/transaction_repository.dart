@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'transaction_model.dart';
 import '../../gamification/gamification_repository.dart';
+import '../../../services/home_widget_service.dart';
 
 class TransactionRepository {
   static const _storageKey = 'finance_transactions_v1';
@@ -65,9 +66,8 @@ class TransactionRepository {
         // We only need to consider occurrences that may fall into [start, end]
         // Compute the month difference between start month and base month
         final diffMonths = _monthDiff(base, start);
-        final beginIndex = diffMonths < 0
-            ? 0
-            : diffMonths; // first index >= start
+        final beginIndex =
+            diffMonths < 0 ? 0 : diffMonths; // first index >= start
         final lastIndex = _monthDiff(base, end);
         final endIndex = lastIndex < 0 ? -1 : lastIndex; // inclusive
         if (endIndex >= 0 && beginIndex <= endIndex) {
@@ -122,6 +122,8 @@ class TransactionRepository {
       FinanceTransaction.listToJsonString(_items),
     );
     _emit();
+    // Update widget
+    HomeWidgetService.instance.updateFinanceWidget();
   }
 
   void _emit() => _controller.add(List.unmodifiable(_items));

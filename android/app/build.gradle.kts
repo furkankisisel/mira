@@ -89,4 +89,17 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     // Google Play Billing library (required for Play Billing operations)
     implementation("com.android.billingclient:billing:6.0.1")
+    
+    // Jetpack Glance for home screen widgets
+    implementation("androidx.glance:glance:1.1.1")
+    implementation("androidx.glance:glance-appwidget:1.1.1")
+    implementation("androidx.glance:glance-material3:1.1.1")
+}
+
+configurations.all {
+    resolutionStrategy {
+        force("androidx.glance:glance:1.1.1")
+        force("androidx.glance:glance-appwidget:1.1.1")
+        force("androidx.glance:glance-material3:1.1.1")
+    }
 }

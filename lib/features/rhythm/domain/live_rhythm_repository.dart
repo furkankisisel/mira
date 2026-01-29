@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'live_rhythm_model.dart';
+import '../../../services/home_widget_service.dart';
 
 /// Repository for managing live rhythm profile and state
 class LiveRhythmRepository extends ChangeNotifier {
@@ -51,6 +52,8 @@ class LiveRhythmRepository extends ChangeNotifier {
     await _persist();
     notifyListeners();
     debugPrint('[LiveRhythm] Profile saved: ${profile.chronoType}');
+    // Update widget
+    HomeWidgetService.instance.updateRhythmWidget();
   }
 
   /// Clear the rhythm profile
@@ -175,6 +178,8 @@ class LiveRhythmRepository extends ChangeNotifier {
     await markEvolutionRan();
     notifyListeners();
     debugPrint('[LiveRhythm] Evolution suggestions applied');
+    // Update widget
+    HomeWidgetService.instance.updateRhythmWidget();
   }
 
   /// Mark that evolution has been run

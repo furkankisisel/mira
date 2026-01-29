@@ -92,6 +92,74 @@
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>
         </receiver>
+        
+        <!-- Home Screen Widgets -->
+        
+        <!-- Live Rhythm Widget -->
+        <receiver
+            android:name=".widgets.LiveRhythmWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_live_rhythm_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_live_rhythm_info" />
+        </receiver>
+        
+        <!-- Finance Widget -->
+        <receiver
+            android:name=".widgets.FinanceWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_finance_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_finance_info" />
+        </receiver>
+        
+        <!-- Mood Widget -->
+        <receiver
+            android:name=".widgets.MoodWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_mood_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_mood_info" />
+        </receiver>
+        
+        <!-- Single Streak Widget -->
+        <receiver
+            android:name=".widgets.SingleStreakWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_single_streak_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_single_streak_info" />
+        </receiver>
+        
+        <!-- All Streaks Widget -->
+        <receiver
+            android:name=".widgets.AllStreaksWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_all_streaks_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_all_streaks_info" />
+        </receiver>
+        
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

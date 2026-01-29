@@ -7,6 +7,7 @@ import 'habit_types.dart';
 import '../../../core/icons/icon_mapping.dart';
 import '../../gamification/gamification_repository.dart';
 import '../../notifications/services/notification_service.dart';
+import '../../../services/home_widget_service.dart';
 
 class HabitRepository extends ChangeNotifier {
   HabitRepository._();
@@ -164,8 +165,7 @@ class HabitRepository extends ChangeNotifier {
                 isCompleted: m['isCompleted'] as bool? ?? false,
                 progressDate:
                     m['progressDate']?.toString() ?? _dateStr(DateTime.now()),
-                startDate:
-                    (m['startDate']?.toString() ??
+                startDate: (m['startDate']?.toString() ??
                     (m['progressDate']?.toString() ??
                         _dateStr(DateTime.now()))),
                 dailyLog: (m['dailyLog'] is Map)
@@ -629,6 +629,9 @@ class HabitRepository extends ChangeNotifier {
   Future<void> _persistAndNotify() async {
     await _persist();
     notifyListeners();
+    // Update widgets
+    HomeWidgetService.instance.updateStreakWidgets();
+    HomeWidgetService.instance.updateRhythmWidget();
   }
 
   /// Centralized completion evaluation for a given habit and a specific progress value.

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Widget names -->
+    <string name="widget_live_rhythm_name">Canlı Ritim</string>
+    <string name="widget_finance_name">Bugünün Finansı</string>
+    <string name="widget_mood_name">Duygu Durumu</string>
+    <string name="widget_single_streak_name">Alışkanlık Streak</string>
+    <string name="widget_all_streaks_name">Tüm Streak\'ler</string>
+    
+    <!-- Widget descriptions -->
+    <string name="widget_rhythm_description">Canlı ritminizi ve odak alışkanlığınızı gösterir</string>
+    <string name="widget_finance_description">Bugünkü gelir ve giderlerinizi gösterir</string>
+    <string name="widget_mood_description">Bugünkü duygu durumunuzu gösterir</string>
+    <string name="widget_single_streak_description">Seçilen alışkanlığın streak\'ini gösterir</string>
+    <string name="widget_all_streaks_description">Tüm alışkanlıkların streak\'lerini gösterir</string>
+    
+    <!-- Common widget strings -->
+    <string name="widget_loading">Yükleniyor...</string>
+    <string name="widget_no_data">Veri yok</string>
+    <string name="widget_tap_to_open">Açmak için dokun</string>
+</resources>

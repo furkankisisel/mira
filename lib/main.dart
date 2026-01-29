@@ -43,6 +43,7 @@ import 'features/auth/test_choice_screen.dart';
 import 'services/premium_manager.dart';
 import 'services/iap_service.dart';
 import 'features/backup/auto_backup_service.dart';
+import 'services/home_widget_service.dart';
 import 'package:provider/provider.dart';
 import 'providers/premium_provider.dart';
 import 'features/reports/presentation/reports_screen.dart';
@@ -114,6 +115,10 @@ class _MiraAppState extends State<MiraApp> {
     // Auto Backup initialization
     // ignore: discarded_futures
     AutoBackupService.instance.initialize();
+
+    // Initialize Home Widget Service
+    // ignore: discarded_futures
+    HomeWidgetService.instance.initialize();
   }
 
   static const _prefThemeMode = 'pref_theme_mode_v1';
@@ -279,11 +284,15 @@ class _MiraAppState extends State<MiraApp> {
       _mode = _mode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
     });
     _persistTheme();
+    // Update widgets with new theme
+    HomeWidgetService.instance.updateThemeData(isDark: _mode == ThemeMode.dark);
   }
 
   void _changeThemeVariant(ThemeVariant variant) {
     setState(() => _variant = variant);
     _persistTheme();
+    // Update widgets with new theme
+    HomeWidgetService.instance.updateThemeData(isDark: _mode == ThemeMode.dark);
   }
 
   @override

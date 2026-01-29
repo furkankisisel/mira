@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'mood_entry.dart';
+import '../../../services/home_widget_service.dart';
 
 class MoodRepository {
   static const _storageKey = 'mood_entries_v1';
@@ -13,11 +14,10 @@ class MoodRepository {
     if (raw != null && raw.isNotEmpty) {
       _items = MoodEntry.listFromJsonString(raw);
     }
-    _items =
-        _items
-            .map((e) => MoodEntry(date: e.date, mood: e.mood, note: e.note))
-            .toList()
-          ..sort((a, b) => b.date.compareTo(a.date));
+    _items = _items
+        .map((e) => MoodEntry(date: e.date, mood: e.mood, note: e.note))
+        .toList()
+      ..sort((a, b) => b.date.compareTo(a.date));
   }
 
   List<MoodEntry> all() => List.unmodifiable(_items);
@@ -98,5 +98,7 @@ class MoodRepository {
   Future<void> _persist() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_storageKey, MoodEntry.listToJsonString(_items));
+    // Update widget
+    HomeWidgetService.instance.updateMoodWidget();
   }
 }
