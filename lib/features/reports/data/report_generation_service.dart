@@ -124,19 +124,37 @@ class ReportGenerationService {
             dayTotal > 0 ? (dayCompleted / dayTotal) * 100 : 0.0;
       }
 
-      // Identify top/struggling
+      // Identify top/struggling habits with full data
       final sorted = List<Habit>.from(habits)
         ..sort((a, b) => b.currentStreak.compareTo(a.currentStreak));
-      final top = sorted
+
+      final topHabits = sorted
           .where((h) => h.currentStreak > 0)
           .take(3)
-          .map((h) => h.id)
+          .map((h) => {
+                'id': h.id,
+                'title': h.title,
+                'emoji': h.emoji ?? '',
+                'streak': h.currentStreak,
+                'color': h.color.value.toString(),
+              })
           .toList();
-      final struggling = habits
+
+      final strugglingHabits = habits
           .where((h) => h.currentStreak == 0 && !h.isCompleted)
           .take(3)
-          .map((h) => h.id)
+          .map((h) => {
+                'id': h.id,
+                'title': h.title,
+                'emoji': h.emoji ?? '',
+                'streak': h.currentStreak,
+              })
           .toList();
+
+      // Find most productive hour (placeholder - would need completion timestamps)
+      // For now derive from daily patterns
+      final bestDay =
+          dailyRates.entries.reduce((a, b) => a.value > b.value ? a : b);
 
       data['habitStats'] = {
         'totalHabits': habits.length,
@@ -146,8 +164,10 @@ class ReportGenerationService {
             ? (totalCompletions / expectedCompletions * 100).round()
             : 0,
         'dailyRates': dailyRates,
-        'topHabits': top,
-        'strugglingHabits': struggling,
+        'topHabits': topHabits,
+        'strugglingHabits': strugglingHabits,
+        'bestDay': bestDay.key,
+        'bestDayRate': bestDay.value.round(),
       };
     }
 
@@ -204,12 +224,36 @@ class ReportGenerationService {
         }
       }
 
+      // Sort categories by spending
+      final sortedCategories = categoryExpenses.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
+
+      String? topCategory;
+      String? lowestCategory;
+      String? warningCategory;
+
+      if (sortedCategories.isNotEmpty) {
+        topCategory = sortedCategories.first.key;
+        lowestCategory = sortedCategories.last.key;
+        // Warning if any category exceeds 40% of total
+        final warningThreshold = expense * 0.4;
+        for (final entry in sortedCategories) {
+          if (entry.value >= warningThreshold) {
+            warningCategory = entry.key;
+            break;
+          }
+        }
+      }
+
       data['financeStats'] = {
         'income': income,
         'expense': expense,
         'savings': income - expense,
         'txCount': weekTx.length,
-        'topExpenseCategories': categoryExpenses, // ID -> Amount
+        'categoryBreakdown': categoryExpenses,
+        'topCategory': topCategory,
+        'lowestCategory': lowestCategory,
+        'warningCategory': warningCategory,
       };
     }
 
@@ -242,45 +286,80 @@ class ReportGenerationService {
   String _buildReportPrompt(Map<String, dynamic> data, ReportType type) {
     final sb = StringBuffer();
     sb.writeln(
-        'Haftalık ${type.displayName} için detaylı bir analiz ve öneriler hazırla.');
+        'Sen bir kişisel gelişim koçusun. Haftalık ${type.displayName} için analiz hazırla.');
     sb.writeln();
-    sb.writeln('VERİLER:');
+    sb.writeln('=== VERİLER ===');
 
     if (data.containsKey('habitStats')) {
       final stats = data['habitStats'] as Map<String, dynamic>;
+      final topHabits = stats['topHabits'] as List? ?? [];
+      final strugglingHabits = stats['strugglingHabits'] as List? ?? [];
+
       sb.writeln('ALIŞKANLIKLAR:');
-      sb.writeln('- Toplam: ${stats['totalHabits']}');
-      sb.writeln('- Tamamlanma: ${stats['completions']}/${stats['expected']}');
-      sb.writeln('- Oran: %${stats['rate']}');
+      sb.writeln('• Toplam: ${stats['totalHabits']} alışkanlık');
+      sb.writeln('• Tamamlanan: ${stats['completions']}/${stats['expected']}');
+      sb.writeln('• Başarı Oranı: %${stats['rate']}');
+      sb.writeln(
+          '• En Verimli Gün: ${stats['bestDay']} (%${stats['bestDayRate']})');
+      if (topHabits.isNotEmpty) {
+        sb.writeln(
+            '• En Başarılı: ${topHabits.map((h) => h['title']).join(', ')}');
+      }
+      if (strugglingHabits.isNotEmpty) {
+        sb.writeln(
+            '• Zorlananlar: ${strugglingHabits.map((h) => h['title']).join(', ')}');
+      }
     }
 
     if (data.containsKey('moodStats')) {
       final stats = data['moodStats'] as Map<String, dynamic>;
       sb.writeln('RUH HALİ:');
-      sb.writeln('- Kayıt Sayısı: ${stats['entries']}');
+      sb.writeln('• Kayıt: ${stats['entries']} adet');
       if (stats['avgScore'] != null)
-        sb.writeln('- Ort. Puan: ${stats['avgScore']}');
+        sb.writeln('• Ort. Puan: ${stats['avgScore']}');
       if (stats['mostCommon'] != null)
-        sb.writeln('- En Sık Hissedilen: ${stats['mostCommon']}');
+        sb.writeln('• Baskın Mod: ${stats['mostCommon']}');
     }
 
     if (data.containsKey('financeStats')) {
       final stats = data['financeStats'] as Map<String, dynamic>;
       sb.writeln('FİNANS:');
-      sb.writeln('- Gelir: ${stats['income']}');
-      sb.writeln('- Gider: ${stats['expense']}');
-      sb.writeln('- Birikim: ${stats['savings']}');
-      sb.writeln('- İşlem: ${stats['txCount']}');
+      sb.writeln('• Gelir: ${stats['income']}₺');
+      sb.writeln('• Gider: ${stats['expense']}₺');
+      sb.writeln('• Net: ${stats['savings']}₺');
+      if (stats['topCategory'] != null)
+        sb.writeln('• En Çok Harcanan: ${stats['topCategory']}');
+      if (stats['warningCategory'] != null)
+        sb.writeln('• Dikkat: ${stats['warningCategory']}');
     }
 
     sb.writeln();
-    sb.writeln('KURALLAR:');
-    sb.writeln('- Markdown kullan');
-    sb.writeln(
-        '- ${type == ReportType.combined ? "Her kategoriye değin" : "Derinlemesine analiz yap"}');
-    sb.writeln('- İçten, motive edici ve koçluk yapan bir ton kullan');
-    sb.writeln('- Sorun varsa çözüm öner, başarı varsa kutla');
-    sb.writeln('- Emoji kullan');
+    sb.writeln('=== ÇIKTI FORMATI ===');
+    sb.writeln('Aşağıdaki başlıkları AYNEN kullan ve her bölümü doldur:');
+    sb.writeln();
+    sb.writeln('## 📊 Genel Değerlendirme');
+    sb.writeln('(2-3 cümle özet)');
+    sb.writeln();
+    sb.writeln('## ✅ Başarılar');
+    sb.writeln('• (madde 1)');
+    sb.writeln('• (madde 2)');
+    sb.writeln();
+    sb.writeln('## ⚠️ Gelişim Alanları');
+    sb.writeln('• (madde 1)');
+    sb.writeln('• (madde 2)');
+    sb.writeln();
+    sb.writeln('## 💡 Öneriler');
+    sb.writeln('• (somut aksiyon 1)');
+    sb.writeln('• (somut aksiyon 2)');
+    sb.writeln();
+    sb.writeln('## 🎯 Haftalık Hedef');
+    sb.writeln('(tek cümle motivasyon)');
+    sb.writeln();
+    sb.writeln('=== KURALLAR ===');
+    sb.writeln('• Kısa ve net cümleler kullan');
+    sb.writeln('• Her madde tek satır olsun');
+    sb.writeln('• Emoji kullan ama abartma');
+    sb.writeln('• Türkçe yaz, samimi ve motive edici ol');
 
     return sb.toString();
   }
