@@ -203,7 +203,16 @@ class HabitScreenState extends State<HabitScreen>
     // Find habits assigned to this window
     final candidates =
         _repo.habits.where((h) => h.rhythmWindow == window).toList();
-    if (candidates.isEmpty) return;
+
+    // If no habits match the current rhythm window, clear the focus
+    if (candidates.isEmpty) {
+      final (currentFocus, _) = _findFocusedItem();
+      if (currentFocus != null) {
+        print('clearing focus: no habits assigned to ${window.name}');
+        await _clearFocus();
+      }
+      return;
+    }
 
     // Prefer incomplete habits
     final best = candidates.firstWhere((h) => !h.isCompleted,
