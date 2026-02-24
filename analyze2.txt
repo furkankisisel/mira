@@ -1,0 +1,11 @@
+﻿Analyzing simple_habit_wizard_screen.dart...                    
+
+  error - The method '_buildNamePage' isn't defined for the type '_SimpleHabitWizardScreenState' - lib\features\habit\presentation\simple_habit_wizard_screen.dart:454:11 - undefined_method
+  error - The method '_buildEmojiPage' isn't defined for the type '_SimpleHabitWizardScreenState' - lib\features\habit\presentation\simple_habit_wizard_screen.dart:457:11 - undefined_method
+  error - The method '_buildColorPage' isn't defined for the type '_SimpleHabitWizardScreenState' - lib\features\habit\presentation\simple_habit_wizard_screen.dart:460:11 - undefined_method
+  error - The method '_buildFrequencyPage' isn't defined for the type '_SimpleHabitWizardScreenState' - lib\features\habit\presentation\simple_habit_wizard_screen.dart:463:11 - undefined_method
+  error - The method '_buildDaysPage' isn't defined for the type '_SimpleHabitWizardScreenState' - lib\features\habit\presentation\simple_habit_wizard_screen.dart:466:11 - undefined_method
+  error - The method '_buildStartDatePage' isn't defined for the type '_SimpleHabitWizardScreenState' - lib\features\habit\presentation\simple_habit_wizard_screen.dart:469:11 - undefined_method
+  error - The method '_buildReminderPage' isn't defined for the type '_SimpleHabitWizardScreenState' - lib\features\habit\presentation\simple_habit_wizard_screen.dart:472:11 - undefined_method
+  error - The method '_buildRhythmWindowPage' isn't defined for the type '_SimpleHabitWizardScreenState' - lib\features\habit\presentation\simple_habit_wizard_screen.dart:475:11 - undefined_method
+

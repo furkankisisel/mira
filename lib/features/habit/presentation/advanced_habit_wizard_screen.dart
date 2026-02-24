@@ -7,8 +7,7 @@ import '../domain/habit_model.dart';
 import '../domain/habit_types.dart';
 import '../domain/subtask_model.dart';
 
-/// Gelişmiş alışkanlık oluşturma wizard'ı
-/// Kullanıcıyı adım adım yönlendiren, konuşma tarzı akış
+/// Gelişmiş alışkanlık oluşturma wizard'ı - 6 sayfalı kompakt akış
 class AdvancedHabitWizardScreen extends StatefulWidget {
   const AdvancedHabitWizardScreen({super.key});
 
@@ -39,64 +38,46 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
   bool _reminderEnabled = false;
   TimeOfDay _reminderTime = const TimeOfDay(hour: 9, minute: 0);
 
-  // Hedef tipi
   NumericalTargetType _numericalTargetType = NumericalTargetType.minimum;
   final TimerTargetType _timerTargetType = TimerTargetType.minimum;
   Duration _timerDuration = const Duration(minutes: 30);
 
-  // Subtasks
   final List<TextEditingController> _subtaskControllers = [];
 
-  // Page indices
-  static const int _frequencyPage = 5;
-  static const int _daysPage = 6;
+  // 6 sayfa:
+  // 0: Tip seçimi
+  // 1: İsim + Açıklama
+  // 2: Emoji + Renk (birleşik)
+  // 3: Hedef + Sıklık + Gün seçimi
+  // 4: Tarih aralığı + Hatırlatıcı
+  // 5: Önizleme
+  static const int _totalPages = 6;
 
-  // Renk paleti
-  // Pastel Renk paleti
-  // Renk paleti - Genişletilmiş
   static const List<Color> _colors = [
-    // Pastels
-    Color(0xFFEF9A9A), // Red 200
-    Color(0xFFF48FB1), // Pink 200
-    Color(0xFFCE93D8), // Purple 200
-    Color(0xFFB39DDB), // Deep Purple 200
-    Color(0xFF9FA8DA), // Indigo 200
-    Color(0xFF90CAF9), // Blue 200
-    Color(0xFF81D4FA), // Light Blue 200
-    Color(0xFF80CBC4), // Teal 200
-    Color(0xFFA5D6A7), // Green 200
-    Color(0xFFC5E1A5), // Light Green 200
-    Color(0xFFFFCC80), // Orange 200
-    Color(0xFFFFAB91), // Deep Orange 200
-    Color(0xFFBCAAA4), // Brown 200
-    Color(0xFFB0BEC5), // Blue Grey 200
-    // Vibrants
-    Color(0xFFEF4444), // Red 500
-    Color(0xFFEC4899), // Pink 500
-    Color(0xFFA855F7), // Purple 500
-    Color(0xFF6366F1), // Indigo 500
-    Color(0xFF3B82F6), // Blue 500
-    Color(0xFF0EA5E9), // Sky 500
-    Color(0xFF14B8A6), // Teal 500
-    Color(0xFF22C55E), // Green 500
-    Color(0xFFEAB308), // Yellow 500
-    Color(0xFFF97316), // Orange 500
-    Color(0xFFF43F5E), // Rose 500
-    Color(0xFF78716C), // Stone 500
-    // Deep/Dark
-    Color(0xFFB91C1C), // Red 700
-    Color(0xFFBE185D), // Pink 700
-    Color(0xFF7E22CE), // Purple 700
-    Color(0xFF4338CA), // Indigo 700
-    Color(0xFF1D4ED8), // Blue 700
-    Color(0xFF0F766E), // Teal 700
-    Color(0xFF15803D), // Green 700
-    Color(0xFFA16207), // Yellow 700
-    Color(0xFFC2410C), // Orange 700
-    Color(0xFF374151), // Gray 700
+    Color(0xFFEF9A9A),
+    Color(0xFFF48FB1),
+    Color(0xFFCE93D8),
+    Color(0xFFB39DDB),
+    Color(0xFF9FA8DA),
+    Color(0xFF90CAF9),
+    Color(0xFF81D4FA),
+    Color(0xFF80CBC4),
+    Color(0xFFA5D6A7),
+    Color(0xFFC5E1A5),
+    Color(0xFFFFCC80),
+    Color(0xFFFFAB91),
+    Color(0xFFEF4444),
+    Color(0xFFEC4899),
+    Color(0xFFA855F7),
+    Color(0xFF6366F1),
+    Color(0xFF3B82F6),
+    Color(0xFF14B8A6),
+    Color(0xFF22C55E),
+    Color(0xFFEAB308),
+    Color(0xFFF97316),
+    Color(0xFF374151),
   ];
 
-  // Emoji kategorileri
   static const List<String> _quickEmojis = [
     '🎯',
     '📊',
@@ -124,17 +105,9 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
     '💰',
   ];
 
-  int get _totalPages {
-    // Sıklığa göre gün seçimi sayfası logic ile atlanıyor ama
-    // PageView children sayısı sabittir. Navigation logic'i _nextPage içinde yönetildiği için
-    // burası toplam sayfa sayısını (children length) dönmelidir.
-    return 10;
-  }
-
   @override
   void initState() {
     super.initState();
-    // Varsayılan 1 subtask ekle
     _subtaskControllers.add(TextEditingController());
   }
 
@@ -153,15 +126,8 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
 
   void _nextPage() {
     if (_currentPage < _totalPages - 1) {
-      int nextPage = _currentPage + 1;
-
-      // Sıklık sayfasından çıkarken daily seçiliyse gün seçimi sayfasını atla
-      if (_currentPage == _frequencyPage && _selectedFrequency == 'daily') {
-        nextPage = _currentPage + 2;
-      }
-
       _pageController.animateToPage(
-        nextPage,
+        _currentPage + 1,
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
       );
@@ -170,15 +136,8 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
 
   void _previousPage() {
     if (_currentPage > 0) {
-      int prevPage = _currentPage - 1;
-
-      // Tarih sayfasından geriye giderken daily seçiliyse gün seçimi sayfasını atla
-      if (_currentPage == _daysPage + 1 && _selectedFrequency == 'daily') {
-        prevPage = _currentPage - 2;
-      }
-
       _pageController.animateToPage(
-        prevPage,
+        _currentPage - 1,
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
       );
@@ -192,17 +151,13 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
     final dateStr =
         '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
 
-    // Parse target
     int targetCount = 1;
     if (_habitType == HabitType.numerical) {
       targetCount = int.tryParse(_targetController.text) ?? 1;
     } else if (_habitType == HabitType.timer) {
       targetCount = _timerDuration.inMinutes;
-    } else if (_habitType == HabitType.simple) {
-      targetCount = 1;
     }
 
-    // Build subtasks if applicable
     List<Subtask>? subtasks;
     if (_habitType == HabitType.subtasks) {
       subtasks = _subtaskControllers
@@ -225,20 +180,17 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
       color: _selectedColor,
       habitType: _habitType,
       targetCount: targetCount,
-      unit: _habitType == HabitType.numerical
-          ? _unitController.text.trim()
-          : '',
+      unit:
+          _habitType == HabitType.numerical ? _unitController.text.trim() : '',
       currentStreak: 0,
       isCompleted: false,
       progressDate: dateStr,
       frequencyType: _selectedFrequency,
       frequency: _getFrequencyText(),
-      selectedWeekdays: _selectedFrequency == 'weekly'
-          ? _weeklyDays.toList()
-          : null,
-      selectedMonthDays: _selectedFrequency == 'monthly'
-          ? _monthDays.toList()
-          : null,
+      selectedWeekdays:
+          _selectedFrequency == 'weekly' ? _weeklyDays.toList() : null,
+      selectedMonthDays:
+          _selectedFrequency == 'monthly' ? _monthDays.toList() : null,
       periodicDays: _selectedFrequency == 'periodic' ? _periodicDays : null,
       startDate:
           '${_startDate.year}-${_startDate.month.toString().padLeft(2, '0')}-${_startDate.day.toString().padLeft(2, '0')}',
@@ -271,66 +223,57 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
     }
   }
 
+  bool get _isTargetFrequencyPageValid {
+    if (_habitType == HabitType.numerical) {
+      if ((int.tryParse(_targetController.text) ?? 0) <= 0) return false;
+    }
+    if (_habitType == HabitType.subtasks) {
+      if (!_subtaskControllers.any((c) => c.text.trim().isNotEmpty))
+        return false;
+    }
+    // gün seçimi validasyonu
+    if (_selectedFrequency == 'weekly') return _weeklyDays.isNotEmpty;
+    if (_selectedFrequency == 'monthly') return _monthDays.isNotEmpty;
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return WizardScaffold(
       currentStep: _currentPage,
       totalSteps: _totalPages,
-      showProgress: _currentPage > 0,
+      showProgress: true,
       onBack: _previousPage,
       onClose: () => Navigator.pop(context),
       child: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
         onPageChanged: (index) {
+          FocusManager.instance.primaryFocus?.unfocus();
           setState(() {
             _currentPage = index;
           });
         },
         children: [
-          // 0: Karşılama sayfası
-          _buildWelcomePage(),
-
-          // 1: Tip seçimi sayfası
+          // 0: Tip seçimi
           _buildTypePage(),
 
-          // 2: İsim sayfası
+          // 1: İsim + Açıklama
           _buildNamePage(),
 
-          // 3: Emoji sayfası
-          _buildEmojiPage(),
+          // 2: Emoji + Renk
+          _buildEmojiColorPage(),
 
-          // 4: Hedef ayarları sayfası (tipe göre değişir)
-          _buildTargetPage(),
+          // 3: Hedef + Sıklık + Gün seçimi
+          _buildTargetFrequencyPage(),
 
-          // 5: Sıklık sayfası
-          _buildFrequencyPage(),
+          // 4: Tarih aralığı + Hatırlatıcı
+          _buildSchedulePage(),
 
-          // 6: Gün seçimi sayfası (koşullu)
-          _buildDaysPage(),
-
-          // 7: Tarih aralığı sayfası
-          _buildDateRangePage(),
-
-          // 8: Hatırlatıcı sayfası
-          _buildReminderPage(),
-
-          // 9: Önizleme sayfası
+          // 5: Önizleme
           _buildPreviewPage(),
         ],
       ),
-    );
-  }
-
-  Widget _buildWelcomePage() {
-    final l10n = AppLocalizations.of(context);
-    return WizardWelcomePage(
-      emoji: '🚀',
-      title: l10n.advancedHabitTitle,
-      description: l10n.advancedAnalysisAndReports,
-      buttonText: l10n.letsStart,
-      onStart: _nextPage,
-      accentColor: _selectedColor,
     );
   }
 
@@ -487,7 +430,7 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
     );
   }
 
-  Widget _buildEmojiPage() {
+  Widget _buildEmojiColorPage() {
     final l10n = AppLocalizations.of(context);
 
     return WizardPage(
@@ -510,17 +453,16 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
                 return WizardSelectionCard(
                   isSelected: isSelected,
                   onTap: () => setState(() => _selectedEmoji = emoji),
-                  size: 56,
+                  size: 52,
                   borderRadius: 14,
                   selectedColor: _selectedColor,
-                  child: Text(emoji, style: const TextStyle(fontSize: 28)),
+                  child: Text(emoji, style: const TextStyle(fontSize: 26)),
                 );
               }),
-              // Özel emoji ekle butonu
               WizardSelectionCard(
                 isSelected: false,
                 onTap: _showCustomEmojiInput,
-                size: 56,
+                size: 52,
                 borderRadius: 14,
                 selectedColor: _selectedColor,
                 child: Icon(
@@ -531,7 +473,6 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
             ],
           ),
           const SizedBox(height: 24),
-          // Renk seçimi de burada gösterelim
           Text(
             l10n.simpleHabitColorTitle,
             style: Theme.of(
@@ -540,8 +481,8 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
           ),
           const SizedBox(height: 12),
           Wrap(
-            spacing: 12,
-            runSpacing: 12,
+            spacing: 10,
+            runSpacing: 10,
             alignment: WrapAlignment.center,
             children: _colors.map((color) {
               final isSelected = color.value == _selectedColor.value;
@@ -552,8 +493,8 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
                 },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  width: isSelected ? 44 : 36,
-                  height: isSelected ? 44 : 36,
+                  width: isSelected ? 42 : 34,
+                  height: isSelected ? 42 : 34,
                   decoration: BoxDecoration(
                     color: color,
                     shape: BoxShape.circle,
@@ -582,21 +523,129 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
     );
   }
 
-  Widget _buildTargetPage() {
+  Widget _buildTargetFrequencyPage() {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    Widget content;
-    String title;
-    String subtitle;
+    final frequencies = [
+      ('daily', l10n.daily, '📅', l10n.dailyDesc),
+      ('weekly', l10n.weekly, '📆', l10n.weeklyDesc),
+      ('monthly', l10n.monthly, '🗓️', l10n.monthlyDesc),
+      ('periodic', l10n.periodic, '🔄', l10n.periodicDesc),
+    ];
+
+    return WizardPage(
+      emoji: _habitType == HabitType.timer ? '⏱️' : '🎯',
+      title: l10n.simpleHabitFrequencyTitle,
+      subtitle: l10n.simpleHabitFrequencySubtitle,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        isNextEnabled: _isTargetFrequencyPageValid,
+        accentColor: _selectedColor,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ─── Hedef Bölümü ───
+          _buildTargetSection(),
+
+          const SizedBox(height: 20),
+
+          // ─── Sıklık Bölümü ───
+          Text(
+            l10n.simpleHabitFrequencyTitle,
+            style: theme.textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          ...frequencies.map((freq) {
+            final isSelected = _selectedFrequency == freq.$1;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: InkWell(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  setState(() => _selectedFrequency = freq.$1);
+                },
+                borderRadius: BorderRadius.circular(14),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? _selectedColor.withOpacity(0.1)
+                        : colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(14),
+                    border: isSelected
+                        ? Border.all(color: _selectedColor, width: 2)
+                        : null,
+                  ),
+                  child: Row(
+                    children: [
+                      Text(freq.$3, style: const TextStyle(fontSize: 22)),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              freq.$2,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              freq.$4,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurface.withOpacity(0.6),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (isSelected)
+                        Icon(Icons.check_circle,
+                            color: _selectedColor, size: 20),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+
+          // Gün seçimi animasyonlu
+          AnimatedSize(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            child: _selectedFrequency != 'daily'
+                ? Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: _buildDaysSection(),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTargetSection() {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     switch (_habitType) {
       case HabitType.numerical:
-        title = l10n.numericalGoalShort;
-        subtitle = l10n.enterValueTitle;
-        content = Column(
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(
+              l10n.numericalGoalShort,
+              style: theme.textTheme.titleSmall
+                  ?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
             Row(
               children: [
                 Expanded(
@@ -612,17 +661,18 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
                     decoration: InputDecoration(
                       hintText: '1',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(14),
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: colorScheme.surfaceContainerHighest
-                          .withOpacity(0.5),
+                      fillColor:
+                          colorScheme.surfaceContainerHighest.withOpacity(0.5),
                     ),
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    onChanged: (_) => setState(() {}),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
                 Expanded(
                   flex: 3,
                   child: TextField(
@@ -632,72 +682,63 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
                     decoration: InputDecoration(
                       hintText: l10n.customUnitHint,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(14),
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      fillColor: colorScheme.surfaceContainerHighest
-                          .withOpacity(0.5),
+                      fillColor:
+                          colorScheme.surfaceContainerHighest.withOpacity(0.5),
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 24),
-            // Hedef tipi seçimi
+            const SizedBox(height: 10),
+            // Hedef tipi
             _buildTargetTypeSelector(),
           ],
         );
-        break;
 
       case HabitType.timer:
-        title = l10n.duration;
-        subtitle = l10n.timerPendingLabel('');
-        content = Column(
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${_timerDuration.inMinutes} ${l10n.minLabel}',
-              style: theme.textTheme.displaySmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: _selectedColor,
-              ),
+              '${l10n.duration}: ${_timerDuration.inMinutes} ${l10n.minLabel}',
+              style: theme.textTheme.titleSmall
+                  ?.copyWith(fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 8),
             Container(
-              height: 200,
+              height: 150,
               decoration: BoxDecoration(
                 color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: CupertinoTimerPicker(
                 mode: CupertinoTimerPickerMode.hm,
                 initialTimerDuration: _timerDuration,
                 onTimerDurationChanged: (Duration newDuration) {
-                  // TimerPicker 0 seçilmesine izin veriyor ama habits için mantıksız olabilir,
-                  // fakat kullanıcı deneyimi için anlık tepki verelim, validasyon butonda yapılır.
                   setState(() => _timerDuration = newDuration);
                 },
               ),
             ),
-            const SizedBox(height: 16),
-            Text(
-              l10n.duration,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurface.withOpacity(0.6),
-              ),
-            ),
           ],
         );
-        break;
 
       case HabitType.subtasks:
-        title = l10n.subtasks;
-        subtitle = l10n.addSubtask;
-        content = Column(
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(
+              l10n.subtasks,
+              style: theme.textTheme.titleSmall
+                  ?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
             ...List.generate(_subtaskControllers.length, (index) {
               return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.only(bottom: 8),
                 child: Row(
                   children: [
                     Expanded(
@@ -713,18 +754,17 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
                           fillColor: colorScheme.surfaceContainerHighest
                               .withOpacity(0.5),
                           contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
+                            horizontal: 14,
+                            vertical: 10,
                           ),
                         ),
+                        onChanged: (_) => setState(() {}),
                       ),
                     ),
                     if (_subtaskControllers.length > 1)
                       IconButton(
-                        icon: Icon(
-                          Icons.remove_circle_outline,
-                          color: colorScheme.error,
-                        ),
+                        icon: Icon(Icons.remove_circle_outline,
+                            color: colorScheme.error),
                         onPressed: () {
                           setState(() {
                             _subtaskControllers[index].dispose();
@@ -743,57 +783,32 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
                 });
               },
               icon: Icon(Icons.add, color: _selectedColor),
-              label: Text(
-                l10n.addSubtask,
-                style: TextStyle(color: _selectedColor),
-              ),
+              label: Text(l10n.addSubtask,
+                  style: TextStyle(color: _selectedColor)),
             ),
           ],
         );
-        break;
 
-      default:
-        title = l10n.checkboxType;
-        subtitle = l10n.checkboxTypeDesc;
-        content = Container(
-          padding: const EdgeInsets.all(32),
+      default: // simple
+        return Container(
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: _selectedColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(14),
           ),
-          child: Column(
+          child: Row(
             children: [
-              Icon(Icons.check_circle, size: 64, color: _selectedColor),
-              const SizedBox(height: 16),
+              Icon(Icons.check_circle, size: 32, color: _selectedColor),
+              const SizedBox(width: 12),
               Text(
                 l10n.dailyCheck,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: theme.textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w600),
               ),
             ],
           ),
         );
     }
-
-    bool isValid = true;
-    if (_habitType == HabitType.numerical) {
-      isValid = (int.tryParse(_targetController.text) ?? 0) > 0;
-    } else if (_habitType == HabitType.subtasks) {
-      isValid = _subtaskControllers.any((c) => c.text.trim().isNotEmpty);
-    }
-
-    return WizardPage(
-      emoji: _habitType == HabitType.timer ? '⏱️' : '🎯',
-      title: title,
-      subtitle: subtitle,
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        isNextEnabled: isValid,
-        accentColor: _selectedColor,
-      ),
-      child: content,
-    );
   }
 
   Widget _buildTargetTypeSelector() {
@@ -812,24 +827,22 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
         final isSelected = _numericalTargetType == type.$1;
         return Expanded(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 3),
             child: InkWell(
               onTap: () {
                 HapticFeedback.lightImpact();
                 setState(() => _numericalTargetType = type.$1);
               },
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(10),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 8,
-                ),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? _selectedColor.withOpacity(0.1)
                       : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                   border: isSelected
                       ? Border.all(color: _selectedColor, width: 2)
                       : null,
@@ -841,14 +854,14 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
                       color: isSelected
                           ? _selectedColor
                           : colorScheme.onSurface.withOpacity(0.6),
+                      size: 18,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 3),
                     Text(
                       type.$2,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        fontWeight: isSelected
-                            ? FontWeight.w600
-                            : FontWeight.normal,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.normal,
                         color: isSelected
                             ? _selectedColor
                             : colorScheme.onSurface.withOpacity(0.6),
@@ -864,256 +877,162 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
     );
   }
 
-  Widget _buildFrequencyPage() {
+  Widget _buildDaysSection() {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final frequencies = [
-      ('daily', l10n.daily, '📅', l10n.dailyDesc),
-      ('weekly', l10n.weekly, '📆', l10n.weeklyDesc),
-      ('monthly', l10n.monthly, '🗓️', l10n.monthlyDesc),
-      ('periodic', l10n.periodic, '🔄', l10n.periodicDesc),
-    ];
-
-    return WizardPage(
-      emoji: '⏰',
-      title: l10n.simpleHabitFrequencyTitle,
-      subtitle: l10n.simpleHabitFrequencySubtitle,
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        accentColor: _selectedColor,
-      ),
-      child: Column(
-        children: frequencies.map((freq) {
-          final isSelected = _selectedFrequency == freq.$1;
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: InkWell(
-              onTap: () {
-                HapticFeedback.lightImpact();
-                setState(() => _selectedFrequency = freq.$1);
-              },
-              borderRadius: BorderRadius.circular(16),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? _selectedColor.withOpacity(0.1)
-                      : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(16),
-                  border: isSelected
-                      ? Border.all(color: _selectedColor, width: 2)
-                      : null,
-                ),
-                child: Row(
-                  children: [
-                    Text(freq.$3, style: const TextStyle(fontSize: 28)),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            freq.$2,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Text(
-                            freq.$4,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurface.withOpacity(0.6),
-                            ),
-                          ),
-                        ],
+    if (_selectedFrequency == 'weekly') {
+      final weekdays = [
+        l10n.mondayShort,
+        l10n.tuesdayShort,
+        l10n.wednesdayShort,
+        l10n.thursdayShort,
+        l10n.fridayShort,
+        l10n.saturdayShort,
+        l10n.sundayShort,
+      ];
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.simpleHabitWeekdaysTitle,
+            style: theme.textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            alignment: WrapAlignment.center,
+            children: List.generate(7, (index) {
+              final isSelected = _weeklyDays.contains(index);
+              return GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  setState(() {
+                    if (isSelected) {
+                      _weeklyDays.remove(index);
+                    } else {
+                      _weeklyDays.add(index);
+                    }
+                  });
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? _selectedColor
+                        : colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Text(
+                      weekdays[index],
+                      style: TextStyle(
+                        color:
+                            isSelected ? Colors.white : colorScheme.onSurface,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
                       ),
                     ),
-                    if (isSelected)
-                      Icon(Icons.check_circle, color: _selectedColor),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
+              );
+            }),
+          ),
+        ],
+      );
+    }
 
-  Widget _buildDaysPage() {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    Widget content;
-    String title;
-    String subtitle;
-
-    switch (_selectedFrequency) {
-      case 'weekly':
-        title = l10n.simpleHabitWeekdaysTitle;
-        subtitle = l10n.simpleHabitWeekdaysSubtitle;
-        final weekdays = [
-          l10n.mondayShort,
-          l10n.tuesdayShort,
-          l10n.wednesdayShort,
-          l10n.thursdayShort,
-          l10n.fridayShort,
-          l10n.saturdayShort,
-          l10n.sundayShort,
-        ];
-        content = Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          alignment: WrapAlignment.center,
-          children: List.generate(7, (index) {
-            final isSelected = _weeklyDays.contains(index);
-            return GestureDetector(
-              onTap: () {
-                HapticFeedback.lightImpact();
-                setState(() {
-                  if (isSelected) {
-                    _weeklyDays.remove(index);
-                  } else {
-                    _weeklyDays.add(index);
-                  }
-                });
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? _selectedColor
-                      : colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Center(
-                  child: Text(
-                    weekdays[index],
-                    style: TextStyle(
-                      color: isSelected ? Colors.white : colorScheme.onSurface,
-                      fontWeight: FontWeight.w600,
+    if (_selectedFrequency == 'monthly') {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.simpleHabitMonthDaysTitle,
+            style: theme.textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            alignment: WrapAlignment.center,
+            children: List.generate(31, (index) {
+              final day = index + 1;
+              final isSelected = _monthDays.contains(day);
+              return GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  setState(() {
+                    if (isSelected) {
+                      _monthDays.remove(day);
+                    } else {
+                      _monthDays.add(day);
+                    }
+                  });
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? _selectedColor
+                        : colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '$day',
+                      style: TextStyle(
+                        color:
+                            isSelected ? Colors.white : colorScheme.onSurface,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 11,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
-          }),
-        );
-        break;
-
-      case 'monthly':
-        title = l10n.simpleHabitMonthDaysTitle;
-        subtitle = l10n.simpleHabitMonthDaysSubtitle;
-        content = Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          alignment: WrapAlignment.center,
-          children: List.generate(31, (index) {
-            final day = index + 1;
-            final isSelected = _monthDays.contains(day);
-            return GestureDetector(
-              onTap: () {
-                HapticFeedback.lightImpact();
-                setState(() {
-                  if (isSelected) {
-                    _monthDays.remove(day);
-                  } else {
-                    _monthDays.add(day);
-                  }
-                });
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? _selectedColor
-                      : colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
-                  child: Text(
-                    '$day',
-                    style: TextStyle(
-                      color: isSelected ? Colors.white : colorScheme.onSurface,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }),
-        );
-        break;
-
-      case 'periodic':
-        title = l10n.simpleHabitPeriodicTitle;
-        subtitle = l10n.simpleHabitPeriodicSubtitle;
-        content = Column(
-          children: [
-            Text(
-              '$_periodicDays',
-              style: theme.textTheme.displayMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: _selectedColor,
-              ),
-            ),
-            Text(
-              l10n.days,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: colorScheme.onSurface.withOpacity(0.6),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Slider(
-              value: _periodicDays.toDouble(),
-              min: 2,
-              max: 30,
-              divisions: 28,
-              activeColor: _selectedColor,
-              onChanged: (value) {
-                HapticFeedback.selectionClick();
-                setState(() => _periodicDays = value.round());
-              },
-            ),
-          ],
-        );
-        break;
-
-      default:
-        title = '';
-        subtitle = '';
-        content = const SizedBox.shrink();
+              );
+            }),
+          ),
+        ],
+      );
     }
 
-    bool isValid = true;
-    if (_selectedFrequency == 'weekly') {
-      isValid = _weeklyDays.isNotEmpty;
-    } else if (_selectedFrequency == 'monthly') {
-      isValid = _monthDays.isNotEmpty;
+    if (_selectedFrequency == 'periodic') {
+      return Column(
+        children: [
+          Text(
+            '$_periodicDays ${l10n.days}',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: _selectedColor,
+                ),
+          ),
+          Slider(
+            value: _periodicDays.toDouble(),
+            min: 2,
+            max: 30,
+            divisions: 28,
+            activeColor: _selectedColor,
+            onChanged: (value) {
+              HapticFeedback.selectionClick();
+              setState(() => _periodicDays = value.round());
+            },
+          ),
+        ],
+      );
     }
 
-    return WizardPage(
-      emoji: '📅',
-      title: title,
-      subtitle: subtitle,
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        isNextEnabled: isValid,
-        accentColor: _selectedColor,
-      ),
-      child: content,
-    );
+    return const SizedBox.shrink();
   }
 
-  Widget _buildDateRangePage() {
+  Widget _buildSchedulePage() {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -1127,132 +1046,140 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
         accentColor: _selectedColor,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Başlangıç tarihi
-          ListTile(
-            leading: Icon(Icons.play_arrow, color: _selectedColor),
-            title: Text(l10n.startDate),
-            subtitle: Text(
-              '${_startDate.day}/${_startDate.month}/${_startDate.year}',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () async {
-              final picked = await showDatePicker(
-                context: context,
-                initialDate: _startDate,
-                firstDate: DateTime.now().subtract(const Duration(days: 30)),
-                lastDate: DateTime.now().add(const Duration(days: 365)),
-              );
-              if (picked != null) {
-                setState(() => _startDate = picked);
-              }
-            },
+          // ─── Tarih Aralığı ───
+          Text(
+            l10n.dateRangeLabel,
+            style: theme.textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w600),
           ),
-          const Divider(),
-          // Bitiş tarihi (isteğe bağlı)
-          ListTile(
-            leading: Icon(Icons.stop, color: colorScheme.error),
-            title: Text(l10n.endDate),
-            subtitle: Text(
-              _endDate != null
-                  ? '${_endDate!.day}/${_endDate!.month}/${_endDate!.year}'
-                  : l10n.durationIndefinite,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+          const SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest.withOpacity(0.4),
+              borderRadius: BorderRadius.circular(16),
             ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
+            child: Column(
               children: [
-                if (_endDate != null)
-                  IconButton(
-                    icon: Icon(Icons.clear, color: colorScheme.error),
-                    onPressed: () => setState(() => _endDate = null),
+                // Başlangıç tarihi
+                ListTile(
+                  leading: Icon(Icons.play_arrow, color: _selectedColor),
+                  title: Text(l10n.startDate),
+                  subtitle: Text(
+                    '${_startDate.day}/${_startDate.month}/${_startDate.year}',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: _selectedColor,
+                    ),
                   ),
-                const Icon(Icons.chevron_right),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () async {
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate: _startDate,
+                      firstDate:
+                          DateTime.now().subtract(const Duration(days: 30)),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                    );
+                    if (picked != null) setState(() => _startDate = picked);
+                  },
+                ),
+                Divider(height: 1, color: colorScheme.outline.withOpacity(0.2)),
+                // Bitiş tarihi
+                ListTile(
+                  leading: Icon(Icons.stop, color: colorScheme.error),
+                  title: Text(l10n.endDate),
+                  subtitle: Text(
+                    _endDate != null
+                        ? '${_endDate!.day}/${_endDate!.month}/${_endDate!.year}'
+                        : l10n.durationIndefinite,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: _endDate != null
+                          ? colorScheme.error
+                          : colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (_endDate != null)
+                        IconButton(
+                          icon: Icon(Icons.clear,
+                              color: colorScheme.error, size: 18),
+                          onPressed: () => setState(() => _endDate = null),
+                        ),
+                      const Icon(Icons.chevron_right),
+                    ],
+                  ),
+                  onTap: () async {
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate:
+                          _endDate ?? _startDate.add(const Duration(days: 30)),
+                      firstDate: _startDate,
+                      lastDate:
+                          DateTime.now().add(const Duration(days: 365 * 2)),
+                    );
+                    if (picked != null) setState(() => _endDate = picked);
+                  },
+                ),
               ],
             ),
-            onTap: () async {
-              final picked = await showDatePicker(
-                context: context,
-                initialDate:
-                    _endDate ?? _startDate.add(const Duration(days: 30)),
-                firstDate: _startDate,
-                lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
-              );
-              if (picked != null) {
-                setState(() => _endDate = picked);
-              }
-            },
           ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildReminderPage() {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+          const SizedBox(height: 24),
 
-    return WizardPage(
-      emoji: '🔔',
-      title: l10n.simpleHabitReminderTitle,
-      subtitle: l10n.simpleHabitReminderSubtitle,
-      isOptional: true,
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        onSkip: _nextPage,
-        showSkip: !_reminderEnabled,
-        accentColor: _selectedColor,
-      ),
-      child: Column(
-        children: [
+          // ─── Hatırlatıcı ───
+          Text(
+            l10n.simpleHabitReminderTitle,
+            style: theme.textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: _reminderEnabled
                   ? _selectedColor.withOpacity(0.1)
                   : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(14),
               border: _reminderEnabled
                   ? Border.all(color: _selectedColor, width: 2)
                   : null,
             ),
             child: Row(
               children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: _reminderEnabled
-                        ? _selectedColor.withOpacity(0.2)
-                        : colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Icon(
-                    _reminderEnabled
-                        ? Icons.notifications_active
-                        : Icons.notifications_off_outlined,
-                    color: _reminderEnabled
-                        ? _selectedColor
-                        : colorScheme.onSurface.withOpacity(0.5),
-                  ),
+                Icon(
+                  _reminderEnabled
+                      ? Icons.notifications_active
+                      : Icons.notifications_off_outlined,
+                  color: _reminderEnabled
+                      ? _selectedColor
+                      : colorScheme.onSurface.withOpacity(0.5),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    _reminderEnabled
-                        ? l10n.reminderEnabled
-                        : l10n.reminderDisabled,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  child: _reminderEnabled
+                      ? GestureDetector(
+                          onTap: () async {
+                            final picked = await showTimePicker(
+                              context: context,
+                              initialTime: _reminderTime,
+                            );
+                            if (picked != null)
+                              setState(() => _reminderTime = picked);
+                          },
+                          child: Text(
+                            _reminderTime.format(context),
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: _selectedColor,
+                            ),
+                          ),
+                        )
+                      : Text(l10n.reminderDisabled),
                 ),
                 Switch(
                   value: _reminderEnabled,
@@ -1265,45 +1192,6 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
               ],
             ),
           ),
-          if (_reminderEnabled) ...[
-            const SizedBox(height: 24),
-            InkWell(
-              onTap: () async {
-                final picked = await showTimePicker(
-                  context: context,
-                  initialTime: _reminderTime,
-                );
-                if (picked != null) {
-                  setState(() => _reminderTime = picked);
-                }
-              },
-              borderRadius: BorderRadius.circular(16),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 16,
-                ),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.access_time, color: _selectedColor),
-                    const SizedBox(width: 12),
-                    Text(
-                      _reminderTime.format(context),
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: _selectedColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
         ],
       ),
     );
@@ -1311,8 +1199,6 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
 
   Widget _buildPreviewPage() {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     String targetText = '';
     if (_habitType == HabitType.numerical) {
@@ -1321,13 +1207,11 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
     } else if (_habitType == HabitType.timer) {
       targetText = '${_timerDuration.inMinutes} ${l10n.minLabel}';
     } else if (_habitType == HabitType.subtasks) {
-      final count = _subtaskControllers
-          .where((c) => c.text.trim().isNotEmpty)
-          .length;
+      final count =
+          _subtaskControllers.where((c) => c.text.trim().isNotEmpty).length;
       targetText = '$count subtasks';
     }
 
-    // Build tags list
     final List<String> tags = [
       if (targetText.isNotEmpty) targetText,
       _getFrequencyText(),
@@ -1339,7 +1223,6 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
       emoji: '🎉',
       title: l10n.simpleHabitPreviewTitle,
       subtitle: l10n.simpleHabitPreviewSubtitle,
-
       bottomWidget: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: SizedBox(
@@ -1359,9 +1242,7 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
                 Text(
                   l10n.createHabit,
                   style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(width: 8),
                 const Icon(Icons.check, size: 20),
@@ -1397,7 +1278,6 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
           ),
           onChanged: (value) {
-            // Sadece ilk karakteri/emojiyi al
             if (value.characters.isNotEmpty) {
               customEmoji = value.characters.first;
             }

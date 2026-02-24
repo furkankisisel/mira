@@ -7,8 +7,7 @@ import '../../../ui/widgets/wizard_base_widgets.dart';
 import '../data/vision_model.dart';
 import '../data/vision_repository.dart';
 
-/// Vizyon oluşturma wizard'ı
-/// Kullanıcıyı adım adım yönlendiren, konuşma tarzı akış
+/// Vizyon oluşturma wizard'ı - 3 sayfalı kompakt akış
 class VisionWizardScreen extends StatefulWidget {
   const VisionWizardScreen({super.key, required this.repo, this.initialVision});
 
@@ -27,34 +26,33 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
   final _titleCtrl = TextEditingController();
   final _descriptionCtrl = TextEditingController();
 
-  // Style State
   String _selectedEmoji = '🎯';
   Color _selectedColor = const Color(0xFF8B5CF6);
   String? _imagePath;
   bool _useImage = false;
 
-  // Date State
   DateTime _startDate = DateTime.now();
   DateTime? _endDate;
 
-  // Total pages
-  static const int _totalPages = 5;
+  // 3 sayfa:
+  // 0: İsim + Açıklama
+  // 1: Görsel stil (emoji/renk/foto) + Tarih aralığı
+  // 2: Önizleme
+  static const int _totalPages = 3;
 
-  // Renk paleti
   static const List<Color> _colors = [
-    Color(0xFF8B5CF6), // Violet
-    Color(0xFF6366F1), // Indigo
-    Color(0xFFEC4899), // Pink
-    Color(0xFFEF4444), // Red
-    Color(0xFFF97316), // Orange
-    Color(0xFFEAB308), // Yellow
-    Color(0xFF22C55E), // Green
-    Color(0xFF14B8A6), // Teal
-    Color(0xFF06B6D4), // Cyan
-    Color(0xFF3B82F6), // Blue
+    Color(0xFF8B5CF6),
+    Color(0xFF6366F1),
+    Color(0xFFEC4899),
+    Color(0xFFEF4444),
+    Color(0xFFF97316),
+    Color(0xFFEAB308),
+    Color(0xFF22C55E),
+    Color(0xFF14B8A6),
+    Color(0xFF06B6D4),
+    Color(0xFF3B82F6),
   ];
 
-  // Emoji kategorileri
   static const List<String> _quickEmojis = [
     '🎯',
     '🚀',
@@ -121,8 +119,7 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
   }
 
   Future<void> _saveVision() async {
-    final id =
-        widget.initialVision?.id ??
+    final id = widget.initialVision?.id ??
         'vision_${DateTime.now().millisecondsSinceEpoch}';
 
     final vision = Vision(
@@ -151,52 +148,46 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
     }
   }
 
+  Future<void> _pickImage() async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        setState(() => _imagePath = image.path);
+      }
+    } catch (e) {
+      // Handle error
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return WizardScaffold(
       currentStep: _currentPage,
       totalSteps: _totalPages,
-      showProgress: _currentPage > 0,
+      showProgress: true,
       onBack: _previousPage,
       onClose: () => Navigator.pop(context),
       child: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
         onPageChanged: (index) {
+          FocusManager.instance.primaryFocus?.unfocus();
           setState(() {
             _currentPage = index;
           });
         },
         children: [
-          // 0: Karşılama
-          _buildWelcomePage(),
-
-          // 1: İsim ve açıklama
+          // 0: İsim + Açıklama
           _buildNamePage(),
 
-          // 2: Emoji ve renk
-          _buildStylePage(),
+          // 1: Görsel stil + Tarih aralığı
+          _buildStyleDatePage(),
 
-          // 3: Tarih aralığı
-          _buildDatePage(),
-
-          // 4: Önizleme
+          // 2: Önizleme
           _buildPreviewPage(),
         ],
       ),
-    );
-  }
-
-  Widget _buildWelcomePage() {
-    final l10n = AppLocalizations.of(context);
-
-    return WizardWelcomePage(
-      emoji: '🌟',
-      title: l10n.visionBoard,
-      description: l10n.visionBoardDesc,
-      buttonText: l10n.letsStart,
-      onStart: _nextPage,
-      accentColor: _selectedColor,
     );
   }
 
@@ -275,25 +266,24 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
     );
   }
 
-  Widget _buildStylePage() {
+  Widget _buildStyleDatePage() {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return WizardPage(
       emoji: _useImage ? '🖼️' : '🎨',
-      title: _useImage ? l10n.choosePhoto : l10n.simpleHabitEmojiTitle,
-      subtitle: _useImage
-          ? l10n.choosePhotoSubtitle
-          : l10n.simpleHabitEmojiSubtitle,
+      title: l10n.simpleHabitEmojiTitle,
+      subtitle: l10n.simpleHabitEmojiSubtitle,
       bottomWidget: WizardNavigationButtons(
         onNext: _nextPage,
         isNextEnabled: !_useImage || (_useImage && _imagePath != null),
         accentColor: _selectedColor,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Toggle between Style and Photo
+          // ─── Toggle: Emoji/Renk vs Fotoğraf ───
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
@@ -316,10 +306,9 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                         boxShadow: !_useImage
                             ? [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2))
                               ]
                             : null,
                       ),
@@ -353,10 +342,9 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                         boxShadow: _useImage
                             ? [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2))
                               ]
                             : null,
                       ),
@@ -364,9 +352,8 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                         child: Text(
                           l10n.photo,
                           style: TextStyle(
-                            fontWeight: _useImage
-                                ? FontWeight.w600
-                                : FontWeight.normal,
+                            fontWeight:
+                                _useImage ? FontWeight.w600 : FontWeight.normal,
                             color: _useImage
                                 ? colorScheme.onSurface
                                 : colorScheme.onSurfaceVariant,
@@ -379,14 +366,14 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
 
+          // ─── Seçilen görsel moda göre içerik ───
           if (_useImage) ...[
-            // Photo Picker UI
             GestureDetector(
               onTap: _pickImage,
               child: Container(
-                height: 200,
+                height: 160,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
@@ -407,19 +394,13 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                     ? Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.add_photo_alternate_outlined,
-                            size: 48,
-                            color: colorScheme.primary,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            l10n.tapToPickImage,
-                            style: TextStyle(
-                              color: colorScheme.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                          Icon(Icons.add_photo_alternate_outlined,
+                              size: 40, color: colorScheme.primary),
+                          const SizedBox(height: 8),
+                          Text(l10n.tapToPickImage,
+                              style: TextStyle(
+                                  color: colorScheme.primary,
+                                  fontWeight: FontWeight.w600)),
                         ],
                       )
                     : Stack(
@@ -428,9 +409,8 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                             top: 8,
                             right: 8,
                             child: IconButton.filled(
-                              onPressed: () {
-                                setState(() => _imagePath = null);
-                              },
+                              onPressed: () =>
+                                  setState(() => _imagePath = null),
                               icon: const Icon(Icons.close),
                               style: IconButton.styleFrom(
                                 backgroundColor: Colors.black54,
@@ -453,22 +433,21 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                 return WizardSelectionCard(
                   isSelected: isSelected,
                   onTap: () => setState(() => _selectedEmoji = emoji),
-                  size: 56,
+                  size: 52,
                   borderRadius: 14,
                   selectedColor: _selectedColor,
-                  child: Text(emoji, style: const TextStyle(fontSize: 28)),
+                  child: Text(emoji, style: const TextStyle(fontSize: 26)),
                 );
               }).toList(),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             // Renk seçimi
             Text(
               l10n.simpleHabitColorTitle,
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+              style: theme.textTheme.titleSmall
+                  ?.copyWith(fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             Wrap(
               spacing: 12,
               runSpacing: 12,
@@ -490,16 +469,14 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                       border: isSelected
                           ? Border.all(
                               color: Theme.of(context).colorScheme.surface,
-                              width: 3,
-                            )
+                              width: 3)
                           : null,
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
-                                color: color.withOpacity(0.4),
-                                blurRadius: 12,
-                                spreadRadius: 2,
-                              ),
+                                  color: color.withOpacity(0.4),
+                                  blurRadius: 12,
+                                  spreadRadius: 2)
                             ]
                           : null,
                     ),
@@ -508,127 +485,106 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
               }).toList(),
             ),
           ],
-        ],
-      ),
-    );
-  }
 
-  Future<void> _pickImage() async {
-    try {
-      final ImagePicker picker = ImagePicker();
-      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-      if (image != null) {
-        setState(() => _imagePath = image.path);
-      }
-    } catch (e) {
-      // Handle error
-    }
-  }
+          const SizedBox(height: 20),
 
-  Widget _buildDatePage() {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return WizardPage(
-      emoji: '📅',
-      title: l10n.dateRangeLabel,
-      subtitle: l10n.setVisionTimeline,
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        accentColor: _selectedColor,
-      ),
-      child: Column(
-        children: [
-          // Başlangıç tarihi
-          ListTile(
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
-            ),
-            leading: Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: _selectedColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(Icons.play_arrow, color: _selectedColor),
-            ),
-            title: Text(
-              l10n.startDate,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            subtitle: Text(
-              '${_startDate.day}/${_startDate.month}/${_startDate.year}',
-              style: theme.textTheme.bodyLarge?.copyWith(color: _selectedColor),
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () async {
-              final picked = await showDatePicker(
-                context: context,
-                initialDate: _startDate,
-                firstDate: DateTime.now().subtract(const Duration(days: 30)),
-                lastDate: DateTime.now().add(const Duration(days: 365)),
-              );
-              if (picked != null) {
-                setState(() => _startDate = picked);
-              }
-            },
+          // ─── Tarih Aralığı ───
+          Text(
+            l10n.dateRangeLabel,
+            style: theme.textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w600),
           ),
-          const Divider(),
-          // Bitiş tarihi (isteğe bağlı)
-          ListTile(
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
+          const SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest.withOpacity(0.4),
+              borderRadius: BorderRadius.circular(14),
             ),
-            leading: Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: colorScheme.error.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(Icons.flag, color: colorScheme.error),
-            ),
-            title: Text(
-              l10n.endDate,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            subtitle: Text(
-              _endDate != null
-                  ? '${_endDate!.day}/${_endDate!.month}/${_endDate!.year}'
-                  : l10n.durationIndefinite,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: _endDate != null
-                    ? colorScheme.error
-                    : colorScheme.onSurfaceVariant,
-              ),
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
+            child: Column(
               children: [
-                if (_endDate != null)
-                  IconButton(
-                    icon: Icon(Icons.clear, color: colorScheme.error),
-                    onPressed: () => setState(() => _endDate = null),
+                ListTile(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  leading: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: _selectedColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child:
+                        Icon(Icons.play_arrow, color: _selectedColor, size: 20),
                   ),
-                const Icon(Icons.chevron_right),
+                  title: Text(l10n.startDate,
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
+                  subtitle: Text(
+                    '${_startDate.day}/${_startDate.month}/${_startDate.year}',
+                    style: theme.textTheme.bodyMedium
+                        ?.copyWith(color: _selectedColor),
+                  ),
+                  trailing: const Icon(Icons.chevron_right, size: 18),
+                  onTap: () async {
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate: _startDate,
+                      firstDate:
+                          DateTime.now().subtract(const Duration(days: 30)),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                    );
+                    if (picked != null) setState(() => _startDate = picked);
+                  },
+                ),
+                Divider(height: 1, color: colorScheme.outline.withOpacity(0.2)),
+                ListTile(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  leading: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: colorScheme.error.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(Icons.flag, color: colorScheme.error, size: 20),
+                  ),
+                  title: Text(l10n.endDate,
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
+                  subtitle: Text(
+                    _endDate != null
+                        ? '${_endDate!.day}/${_endDate!.month}/${_endDate!.year}'
+                        : l10n.durationIndefinite,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: _endDate != null
+                          ? colorScheme.error
+                          : colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (_endDate != null)
+                        InkWell(
+                          onTap: () => setState(() => _endDate = null),
+                          child: Icon(Icons.clear,
+                              color: colorScheme.error, size: 16),
+                        ),
+                      const Icon(Icons.chevron_right, size: 18),
+                    ],
+                  ),
+                  onTap: () async {
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate:
+                          _endDate ?? _startDate.add(const Duration(days: 30)),
+                      firstDate: _startDate,
+                      lastDate:
+                          DateTime.now().add(const Duration(days: 365 * 2)),
+                    );
+                    if (picked != null) setState(() => _endDate = picked);
+                  },
+                ),
               ],
             ),
-            onTap: () async {
-              final picked = await showDatePicker(
-                context: context,
-                initialDate:
-                    _endDate ?? _startDate.add(const Duration(days: 30)),
-                firstDate: _startDate,
-                lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
-              );
-              if (picked != null) {
-                setState(() => _endDate = picked);
-              }
-            },
           ),
         ],
       ),
@@ -659,8 +615,7 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
               backgroundColor: _selectedColor,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
+                  borderRadius: BorderRadius.circular(16)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -668,9 +623,7 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                 Text(
                   l10n.createHabit,
                   style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(width: 8),
                 const Icon(Icons.check, size: 20),
@@ -681,7 +634,6 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
       ),
       child: Column(
         children: [
-          // Preview card
           WizardPreviewCard(
             emoji: _selectedEmoji,
             title: _titleCtrl.text.trim(),
@@ -691,11 +643,10 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
             color: _selectedColor,
             tags: tags,
           ),
-          const SizedBox(height: 24),
-          // Vision card preview
+          const SizedBox(height: 20),
           Container(
             width: double.infinity,
-            height: 220,
+            height: 200,
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               gradient: _useImage && _imagePath != null
@@ -713,9 +664,7 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                       image: FileImage(File(_imagePath!)),
                       fit: BoxFit.cover,
                       colorFilter: ColorFilter.mode(
-                        Colors.black.withOpacity(0.3),
-                        BlendMode.darken,
-                      ),
+                          Colors.black.withOpacity(0.3), BlendMode.darken),
                     )
                   : null,
               borderRadius: BorderRadius.circular(20),
@@ -735,10 +684,9 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                     shadows: _useImage
                         ? [
                             const Shadow(
-                              color: Colors.black45,
-                              blurRadius: 8,
-                              offset: Offset(0, 2),
-                            ),
+                                color: Colors.black45,
+                                blurRadius: 8,
+                                offset: Offset(0, 2))
                           ]
                         : null,
                   ),

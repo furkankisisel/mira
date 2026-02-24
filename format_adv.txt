@@ -1,0 +1,42 @@
+﻿dart : Could not format b
+ecause the source could n
+ot be parsed:
+At line:1 char:1
++ dart format lib/feature
+s/habit/presentation/adva
+nced_habit_wizard_scr ...
++ ~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo       
+       : NotSpecified:   
+  (Could not forma...    
+ not be parsed::Strin    
+g) [], RemoteExcepti    o
+n
+    + FullyQualifiedErro 
+   rId : NativeCommandE  
+  rror
+ 
+
+line 1108, column 1 of li
+b\features\habit\presenta
+tion\advanced_habit_wizar
+d_screen.dart: Expected a
+ class member.
+     ÔòÀ
+1108 Ôöé \n  Widget _buil
+dPreviewPage() {
+     Ôöé ^
+     ÔòÁ
+line 1108, column 5 of li
+b\features\habit\presenta
+tion\advanced_habit_wizar
+d_screen.dart: Expected t
+o find ';'.
+     ÔòÀ
+1108 Ôöé \n  Widget _buil
+dPreviewPage() {
+     Ôöé     ^^^^^^
+     ÔòÁ
+Formatted no files in 0.01 seconds.

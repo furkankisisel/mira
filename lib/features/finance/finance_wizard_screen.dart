@@ -9,8 +9,7 @@ import 'data/finance_category_repository.dart';
 import 'data/transaction_model.dart';
 import 'data/transaction_repository.dart';
 
-/// Finans işlemi oluşturma wizard'ı
-/// Kullanıcıyı adım adım yönlendiren, konuşma tarzı akış
+/// Finans işlemi oluşturma wizard'ı - 4 sayfalı kompakt akış
 class FinanceWizardScreen extends StatefulWidget {
   const FinanceWizardScreen({
     super.key,
@@ -43,13 +42,16 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
   bool _recurringForever = true;
   int _recurringMonths = 12;
 
-  // Total pages
-  static const int _totalPages = 7;
+  // 4 sayfa:
+  // 0: Tip + Kategori
+  // 1: İsim + Tutar
+  // 2: Tarih + Tekrarlama
+  // 3: Önizleme
+  static const int _totalPages = 4;
 
-  // Accent colors
   Color get _accentColor => _type == TransactionType.income
-      ? const Color(0xFF22C55E) // Green for income
-      : const Color(0xFFEF4444); // Red for expense
+      ? const Color(0xFF22C55E)
+      : const Color(0xFFEF4444);
 
   @override
   void initState() {
@@ -66,7 +68,6 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
       _recurringForever = tx.recurringForever;
       _recurringMonths = tx.recurringMonths ?? 12;
 
-      // Try to match category synchronously if possible
       try {
         final cats = widget.catRepo.byType(_type);
         if (cats.isNotEmpty && tx.categoryId != null) {
@@ -187,21 +188,19 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                     style: Theme.of(ctx).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 16),
-
-                  // Emoji Picker Section
                   Center(
                     child: Container(
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: Theme.of(
-                          ctx,
-                        ).colorScheme.surfaceContainerHighest,
+                        color:
+                            Theme.of(ctx).colorScheme.surfaceContainerHighest,
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: Theme.of(
-                            ctx,
-                          ).colorScheme.outline.withOpacity(0.2),
+                          color: Theme.of(ctx)
+                              .colorScheme
+                              .outline
+                              .withOpacity(0.2),
                         ),
                       ),
                       alignment: Alignment.center,
@@ -235,7 +234,6 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                       style: Theme.of(ctx).textTheme.bodySmall,
                     ),
                   ),
-
                   const SizedBox(height: 16),
                   TextField(
                     controller: nameCtrl,
@@ -248,7 +246,6 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                       filled: true,
                     ),
                   ),
-
                   const SizedBox(height: 16),
                   Text(
                     AppLocalizations.of(ctx).quickSuggestions,
@@ -267,7 +264,6 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -316,9 +312,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
   }
 
   Future<void> _showCategoryActions(
-    BuildContext context,
-    FinanceCategory cat,
-  ) async {
+      BuildContext context, FinanceCategory cat) async {
     await showModalBottomSheet(
       context: context,
       showDragHandle: true,
@@ -350,9 +344,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                       builder: (dctx) => AlertDialog(
                         title: Text(AppLocalizations.of(dctx).delete),
                         content: Text(
-                          AppLocalizations.of(
-                            dctx,
-                          ).deleteCategoryConfirmNamed(cat.name),
+                          AppLocalizations.of(dctx)
+                              .deleteCategoryConfirmNamed(cat.name),
                         ),
                         actions: [
                           TextButton(
@@ -425,14 +418,14 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: Theme.of(
-                          ctx,
-                        ).colorScheme.surfaceContainerHighest,
+                        color:
+                            Theme.of(ctx).colorScheme.surfaceContainerHighest,
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: Theme.of(
-                            ctx,
-                          ).colorScheme.outline.withOpacity(0.2),
+                          color: Theme.of(ctx)
+                              .colorScheme
+                              .outline
+                              .withOpacity(0.2),
                         ),
                       ),
                       alignment: Alignment.center,
@@ -473,10 +466,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    'Quick Suggestions',
-                    style: Theme.of(ctx).textTheme.labelLarge,
-                  ),
+                  Text('Quick Suggestions',
+                      style: Theme.of(ctx).textTheme.labelLarge),
                   const SizedBox(height: 8),
                   SizedBox(
                     height: 120,
@@ -502,9 +493,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                       const SizedBox(width: 8),
                       FilledButton(
                         onPressed: () {
-                          if (nameCtrl.text.trim().isEmpty) {
-                            return;
-                          }
+                          if (nameCtrl.text.trim().isEmpty) return;
                           Navigator.pop(ctx, true);
                         },
                         child: Text(AppLocalizations.of(ctx).update),
@@ -542,47 +531,41 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
     return WizardScaffold(
       currentStep: _currentPage,
       totalSteps: _totalPages,
-      showProgress: _currentPage > 0,
+      showProgress: true,
       onBack: _previousPage,
       onClose: () => Navigator.pop(context),
       child: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
         onPageChanged: (index) {
+          FocusManager.instance.primaryFocus?.unfocus();
           setState(() {
             _currentPage = index;
           });
         },
         children: [
-          // 0: Karşılama + Tip seçimi
-          _buildTypePage(),
+          // 0: Tip + Kategori
+          _buildTypeCategoryPage(),
 
-          // 1: Kategori seçimi
-          _buildCategoryPage(),
+          // 1: İsim + Tutar
+          _buildTitleAmountPage(),
 
-          // 2: İsim girişi
-          _buildTitlePage(),
+          // 2: Tarih + Tekrarlama
+          _buildDateRecurringPage(),
 
-          // 3: Tutar girişi
-          _buildAmountPage(),
-
-          // 4: Tarih seçimi
-          _buildDatePage(),
-
-          // 5: Tekrarlama ayarları
-          _buildRecurringPage(),
-
-          // 6: Önizleme
+          // 3: Önizleme
           _buildPreviewPage(),
         ],
       ),
     );
   }
 
-  Widget _buildTypePage() {
+  Widget _buildTypeCategoryPage() {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+
+    final categories = widget.catRepo.byType(_type);
 
     return WizardPage(
       emoji: '💰',
@@ -590,25 +573,60 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
       subtitle: l10n.category,
       bottomWidget: WizardNavigationButtons(
         onNext: _nextPage,
+        isNextEnabled: _selectedCategory != null,
         accentColor: _accentColor,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildTypeCard(
-            type: TransactionType.expense,
-            emoji: '💸',
-            title: l10n.expenseLabel,
-            description: l10n.trackSpending,
-            color: const Color(0xFFEF4444),
+          // ─── Tip Seçimi ───
+          Row(
+            children: [
+              Expanded(
+                child: _buildTypeCard(
+                  type: TransactionType.expense,
+                  emoji: '💸',
+                  title: l10n.expenseLabel,
+                  description: l10n.trackSpending,
+                  color: const Color(0xFFEF4444),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildTypeCard(
+                  type: TransactionType.income,
+                  emoji: '💵',
+                  title: l10n.incomeLabel,
+                  description: l10n.trackEarnings,
+                  color: const Color(0xFF22C55E),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          // Income option
-          _buildTypeCard(
-            type: TransactionType.income,
-            emoji: '💵',
-            title: l10n.incomeLabel,
-            description: l10n.trackEarnings,
-            color: const Color(0xFF22C55E),
+
+          const SizedBox(height: 20),
+
+          // ─── Kategori Seçimi ───
+          Text(
+            l10n.category,
+            style: theme.textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          _CategoryGrid(
+            categories: categories,
+            selected: _selectedCategory,
+            onSelect: (cat) {
+              HapticFeedback.lightImpact();
+              setState(() => _selectedCategory = cat);
+            },
+            onLongPress: (cat) => _showCategoryActions(context, cat),
+            onCreateNew: () async {
+              final newCat = await _createNewCategory(context, _type);
+              if (newCat != null) {
+                setState(() => _selectedCategory = newCat);
+              }
+            },
           ),
         ],
       ),
@@ -634,85 +652,40 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
           _selectedCategory = null;
         });
       },
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(14),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: isSelected
               ? color.withOpacity(0.1)
               : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(14),
           border: isSelected ? Border.all(color: color, width: 2) : null,
         ),
-        child: Row(
+        child: Column(
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 36)),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    description,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurface.withOpacity(0.6),
-                    ),
-                  ),
-                ],
-              ),
+            Text(emoji, style: const TextStyle(fontSize: 28)),
+            const SizedBox(height: 6),
+            Text(
+              title,
+              style: theme.textTheme.titleSmall
+                  ?.copyWith(fontWeight: FontWeight.w600),
             ),
-            if (isSelected) Icon(Icons.check_circle, color: color),
+            Text(
+              description,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurface.withOpacity(0.6),
+              ),
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildCategoryPage() {
-    final l10n = AppLocalizations.of(context);
-
-    final categories = widget.catRepo.byType(_type);
-
-    return WizardPage(
-      emoji: '🏷️',
-      title: l10n.category,
-      subtitle: l10n.selectCategory,
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        isNextEnabled: _selectedCategory != null,
-        accentColor: _accentColor,
-      ),
-      child: SizedBox(
-        height: 400,
-        child: SingleChildScrollView(
-          child: _CategoryGrid(
-            categories: categories,
-            selected: _selectedCategory,
-            onSelect: (cat) {
-              HapticFeedback.lightImpact();
-              setState(() => _selectedCategory = cat);
-            },
-            onLongPress: (cat) => _showCategoryActions(context, cat),
-            onCreateNew: () async {
-              final newCat = await _createNewCategory(context, _type);
-              if (newCat != null) {
-                setState(() => _selectedCategory = newCat);
-              }
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAmountPage() {
+  Widget _buildTitleAmountPage() {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final localeName = Localizations.localeOf(context).toString();
@@ -732,7 +705,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
       ),
       child: Column(
         children: [
-          // Amount input
+          // ─── Tutar Girişi ───
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             decoration: BoxDecoration(
@@ -753,9 +726,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                 Expanded(
                   child: TextField(
                     controller: _amountCtrl,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
+                    keyboardType:
+                        const TextInputType.numberWithOptions(decimal: true),
                     textAlign: TextAlign.center,
                     autofocus: true,
                     style: theme.textTheme.displaySmall?.copyWith(
@@ -775,34 +747,22 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildTitlePage() {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-
-    return WizardPage(
-      emoji: '📝',
-      title: l10n.nameLabel,
-      subtitle: l10n.titleOptional,
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        accentColor: _accentColor,
-      ),
-      child: Column(
-        children: [
           const SizedBox(height: 24),
+
+          // ─── İsim Girişi ───
+          Text(
+            l10n.nameLabel,
+            style: theme.textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 10),
           TextField(
             controller: _titleCtrl,
             textAlign: TextAlign.center,
-            autofocus: true,
             textCapitalization: TextCapitalization.sentences,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: theme.textTheme.headlineSmall
+                ?.copyWith(fontWeight: FontWeight.w600),
             decoration: InputDecoration(
               hintText: l10n.titleOptional,
               hintStyle: TextStyle(
@@ -813,13 +773,10 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                 borderSide: BorderSide.none,
               ),
               filled: true,
-              fillColor: theme.colorScheme.surfaceContainerHighest.withOpacity(
-                0.3,
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 20,
-              ),
+              fillColor:
+                  theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             ),
             onSubmitted: (_) => _nextPage(),
           ),
@@ -828,19 +785,13 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
     );
   }
 
-  Widget _buildDatePage() {
+  Widget _buildDateRecurringPage() {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     final today = DateTime.now();
     final yesterday = today.subtract(const Duration(days: 1));
-
-    final dateOptions = [
-      (l10n.today, today, Icons.today),
-      (l10n.yesterday, yesterday, Icons.history),
-      (l10n.pickFromCalendar, null, Icons.calendar_month),
-    ];
 
     return WizardPage(
       emoji: '📅',
@@ -851,128 +802,105 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
         accentColor: _accentColor,
       ),
       child: Column(
-        children: dateOptions.map((option) {
-          final isCalendar = option.$2 == null;
-          final isSelected = !isCalendar &&
-              _selectedDate.year == option.$2!.year &&
-              _selectedDate.month == option.$2!.month &&
-              _selectedDate.day == option.$2!.day;
-
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: InkWell(
-              onTap: () async {
-                HapticFeedback.lightImpact();
-                if (isCalendar) {
-                  final picked = await showDatePicker(
-                    context: context,
-                    initialDate: _selectedDate,
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime.now().add(const Duration(days: 3650)),
-                  );
-                  if (picked != null) {
-                    setState(() => _selectedDate = picked);
-                  }
-                } else {
-                  setState(() => _selectedDate = option.$2!);
-                }
-              },
-              borderRadius: BorderRadius.circular(16),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? _accentColor.withOpacity(0.1)
-                      : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(16),
-                  border: isSelected
-                      ? Border.all(color: _accentColor, width: 2)
-                      : null,
-                ),
-                child: Row(
-                  children: [
-                    Icon(option.$3, color: isSelected ? _accentColor : null),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Text(
-                        isCalendar
-                            ? '${option.$1}: ${DateFormat.yMMMd().format(_selectedDate)}'
-                            : option.$1,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight:
-                              isSelected ? FontWeight.w600 : FontWeight.normal,
-                        ),
-                      ),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ─── Tarih Seçimi ───
+          Text(
+            l10n.date,
+            style: theme.textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              _buildDateChip(
+                label: l10n.today,
+                date: today,
+                icon: Icons.today,
+              ),
+              const SizedBox(width: 8),
+              _buildDateChip(
+                label: l10n.yesterday,
+                date: yesterday,
+                icon: Icons.history,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: InkWell(
+                  onTap: () async {
+                    HapticFeedback.lightImpact();
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate: _selectedDate,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime.now().add(const Duration(days: 3650)),
+                    );
+                    if (picked != null) setState(() => _selectedDate = picked);
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 10),
+                    decoration: BoxDecoration(
+                      color:
+                          colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    if (isSelected)
-                      Icon(Icons.check_circle, color: _accentColor),
-                  ],
+                    child: Column(
+                      children: [
+                        Icon(Icons.calendar_month,
+                            size: 20, color: colorScheme.primary),
+                        const SizedBox(height: 2),
+                        Text(
+                          DateFormat.MMMd().format(_selectedDate),
+                          style:
+                              theme.textTheme.bodySmall?.copyWith(fontSize: 10),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
+            ],
+          ),
 
-  Widget _buildRecurringPage() {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+          const SizedBox(height: 24),
 
-    return WizardPage(
-      emoji: '🔄',
-      title: 'Recurring',
-      subtitle: 'Make this a monthly transaction',
-      isOptional: true,
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        onSkip: _nextPage,
-        showSkip: !_isRecurring,
-        accentColor: _accentColor,
-      ),
-      child: Column(
-        children: [
-          // Recurring toggle
+          // ─── Tekrarlama ───
+          Text(
+            'Tekrarlama',
+            style: theme.textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: _isRecurring
                   ? _accentColor.withOpacity(0.1)
                   : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(14),
               border: _isRecurring
                   ? Border.all(color: _accentColor, width: 2)
                   : null,
             ),
             child: Row(
               children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: _isRecurring
-                        ? _accentColor.withOpacity(0.2)
-                        : colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Icon(
-                    _isRecurring ? Icons.repeat : Icons.repeat_outlined,
-                    color: _isRecurring
-                        ? _accentColor
-                        : colorScheme.onSurface.withOpacity(0.5),
-                  ),
+                Icon(
+                  _isRecurring ? Icons.repeat : Icons.repeat_outlined,
+                  color: _isRecurring
+                      ? _accentColor
+                      : colorScheme.onSurface.withOpacity(0.5),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    _isRecurring ? 'Recurring enabled' : 'One-time transaction',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                    _isRecurring ? 'Tekrarlayan işlem' : 'Tek seferlik işlem',
+                    style: theme.textTheme.titleSmall
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                 ),
                 Switch(
@@ -987,8 +915,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
             ),
           ),
           if (_isRecurring) ...[
-            const SizedBox(height: 24),
-            // Duration options
+            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
@@ -998,7 +925,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                     onTap: () => setState(() => _recurringForever = true),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
                 Expanded(
                   child: _buildDurationOption(
                     title: l10n.durationMonths(_recurringMonths),
@@ -1009,7 +936,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
               ],
             ),
             if (!_recurringForever) ...[
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               Slider(
                 value: _recurringMonths.toDouble(),
                 min: 1,
@@ -1024,6 +951,50 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
             ],
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildDateChip(
+      {required String label, required DateTime date, required IconData icon}) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isSelected = _selectedDate.year == date.year &&
+        _selectedDate.month == date.month &&
+        _selectedDate.day == date.day;
+
+    return Expanded(
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          setState(() => _selectedDate = date);
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? _accentColor.withOpacity(0.1)
+                : colorScheme.surfaceContainerHighest.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(12),
+            border:
+                isSelected ? Border.all(color: _accentColor, width: 2) : null,
+          ),
+          child: Column(
+            children: [
+              Icon(icon, size: 20, color: isSelected ? _accentColor : null),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontWeight: isSelected ? FontWeight.w600 : null,
+                  color: isSelected ? _accentColor : null,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -1094,19 +1065,14 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
               backgroundColor: _accentColor,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
+                  borderRadius: BorderRadius.circular(16)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  l10n.save,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text(l10n.save,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold)),
                 const SizedBox(width: 8),
                 const Icon(Icons.check, size: 20),
               ],
@@ -1116,7 +1082,6 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
       ),
       child: Column(
         children: [
-          // Preview card
           WizardPreviewCard(
             emoji: _selectedCategory?.emoji ?? '💰',
             title: _titleCtrl.text.trim().isNotEmpty
@@ -1127,7 +1092,6 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
             tags: tags,
           ),
           const SizedBox(height: 24),
-          // Amount highlight
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
@@ -1202,8 +1166,6 @@ class _CategoryGrid extends StatelessWidget {
               onSelected: (_) => onSelect(c),
             ),
           ),
-
-        // Prominent "New Category" Button
         Padding(
           padding: const EdgeInsets.only(left: 4),
           child: InkWell(
@@ -1223,11 +1185,8 @@ class _CategoryGrid extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.add_circle_outline,
-                    size: 18,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                  Icon(Icons.add_circle_outline,
+                      size: 18, color: Theme.of(context).colorScheme.primary),
                   const SizedBox(width: 6),
                   Text(
                     AppLocalizations.of(context).newCategory,
@@ -1265,8 +1224,7 @@ class _EmojiGrid extends StatelessWidget {
         return Center(
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              maxWidth: cols * tileSize + (cols - 1) * spacing,
-            ),
+                maxWidth: cols * tileSize + (cols - 1) * spacing),
             child: GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),

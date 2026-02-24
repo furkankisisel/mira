@@ -88,16 +88,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         backgroundColor: Theme.of(
                           ctx,
                         ).colorScheme.surfaceContainerHighest,
-                        backgroundImage:
-                            (profile.avatarPath != null &&
+                        backgroundImage: (profile.avatarPath != null &&
                                 profile.avatarPath!.isNotEmpty)
                             ? FileImage(io.File(profile.avatarPath!))
                             : (profile.avatarUrl != null &&
-                                  profile.avatarUrl!.isNotEmpty)
-                            ? NetworkImage(profile.avatarUrl!) as ImageProvider
-                            : null,
-                        child:
-                            (profile.avatarPath == null ||
+                                    profile.avatarUrl!.isNotEmpty)
+                                ? NetworkImage(profile.avatarUrl!)
+                                    as ImageProvider
+                                : null,
+                        child: (profile.avatarPath == null ||
                                     profile.avatarPath!.isEmpty) &&
                                 (profile.avatarUrl == null ||
                                     profile.avatarUrl!.isEmpty)
@@ -369,17 +368,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: CircleAvatar(
                           radius: 56,
                           backgroundColor: scheme.surfaceContainerHighest,
-                          backgroundImage:
-                              (profile.avatarPath != null &&
+                          backgroundImage: (profile.avatarPath != null &&
                                   profile.avatarPath!.isNotEmpty)
                               ? FileImage(io.File(profile.avatarPath!))
                               : (profile.avatarUrl != null &&
-                                    profile.avatarUrl!.isNotEmpty)
-                              ? NetworkImage(profile.avatarUrl!)
-                                    as ImageProvider
-                              : null,
-                          child:
-                              (profile.avatarPath == null ||
+                                      profile.avatarUrl!.isNotEmpty)
+                                  ? NetworkImage(profile.avatarUrl!)
+                                      as ImageProvider
+                                  : null,
+                          child: (profile.avatarPath == null ||
                                       profile.avatarPath!.isEmpty) &&
                                   (profile.avatarUrl == null ||
                                       profile.avatarUrl!.isEmpty)
@@ -426,9 +423,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   (profile.name.isNotEmpty) ? profile.name : l10n.profile,
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
-                  ),
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
@@ -555,9 +552,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text(
                     entry.key,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
                   ),
                 ],
               ),
@@ -748,9 +745,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 11,
-                      fontWeight: isUnlocked
-                          ? FontWeight.w600
-                          : FontWeight.w500,
+                      fontWeight:
+                          isUnlocked ? FontWeight.w600 : FontWeight.w500,
                       color: isUnlocked
                           ? scheme.onSurface
                           : scheme.onSurfaceVariant.withValues(alpha: 0.7),

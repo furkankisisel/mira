@@ -10,8 +10,7 @@ import '../domain/habit_types.dart';
 import '../../rhythm/domain/live_rhythm_model.dart';
 import '../../rhythm/domain/live_rhythm_repository.dart';
 
-/// Basit alışkanlık oluşturma wizard'ı
-/// Kullanıcıyı adım adım yönlendiren, konuşma tarzı akış
+/// Basit alışkanlık oluşturma wizard'ı - 5 sayfalı kompakt akış
 class SimpleHabitWizardScreen extends StatefulWidget {
   const SimpleHabitWizardScreen({super.key});
 
@@ -38,33 +37,28 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
   TimeOfDay _reminderTime = const TimeOfDay(hour: 9, minute: 0);
   RhythmWindow? _selectedRhythmWindow;
 
-  // Page indices
-  static const int _frequencyPage = 4;
-  static const int _startDatePage = 6;
-
-  // Total pages (dinamik olarak hesaplanacak)
-  int get _totalPages {
-    // PageView'da her zaman 10 sayfa var (0-9)
-    // Gün seçimi sayfası atlanıyor olsa bile sayfa indeksleri değişmiyor
-    return 10;
-  }
+  // 5 sayfa:
+  // 0: İsim + Açıklama
+  // 1: Emoji + Renk
+  // 2: Sıklık + Gün seçimi (conditional)
+  // 3: Tarih + Hatırlatıcı + Ritim
+  // 4: Önizleme
+  static const int _totalPages = 5;
 
   // Renk paleti
-  // Pastel Renk paleti
   static const List<Color> _colors = [
-    Color(0xFF90CAF9), // Pastel Blue
-    Color(0xFFB39DDB), // Pastel Indigo
-    Color(0xFFF48FB1), // Pastel Pink
-    Color(0xFFFFCC80), // Pastel Orange
-    Color(0xFFFFF59D), // Pastel Yellow
-    Color(0xFFA5D6A7), // Pastel Green
-    Color(0xFF80CBC4), // Pastel Teal
-    Color(0xFFEF9A9A), // Pastel Red
-    Color(0xFFBCAAA4), // Pastel Brown
-    Color(0xFF9FA8DA), // Pastel Periwinkle
+    Color(0xFF90CAF9),
+    Color(0xFFB39DDB),
+    Color(0xFFF48FB1),
+    Color(0xFFFFCC80),
+    Color(0xFFFFF59D),
+    Color(0xFFA5D6A7),
+    Color(0xFF80CBC4),
+    Color(0xFFEF9A9A),
+    Color(0xFFBCAAA4),
+    Color(0xFF9FA8DA),
   ];
 
-  // Emoji kategorileri
   static const List<String> _quickEmojis = [
     '✅',
     '⭐',
@@ -102,28 +96,20 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
 
   void _nextPage() async {
     if (_currentPage < _totalPages - 1) {
-      int nextPage = _currentPage + 1;
-
-      // Sıklık sayfasındayken (page 4) ve günlük seçiliyse gün seçimi sayfasını (page 5) atla
-      if (_currentPage == _frequencyPage && _selectedFrequency == 'daily') {
-        nextPage = _currentPage + 2; // page 5'i atlayıp page 6'ya git
-      }
-
-      // Premium kullanıcı için: Start date sayfasından (6) reminder sayfasına (7) geçerken AI analizi yap
+      // Premium kullanıcı için: Schedule sayfasından (3) preview'e geçerken AI analizi yap
       final isPremium = context.read<PremiumProvider>().isPremium;
-      if (isPremium && _currentPage == _startDatePage) {
+      if (isPremium && _currentPage == 2) {
         await _showAiAnalysisDialog();
       }
 
       _pageController.animateToPage(
-        nextPage,
+        _currentPage + 1,
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
       );
     }
   }
 
-  /// AI analiz dialog'u - uzun süreli, değişen metinlerle
   Future<void> _showAiAnalysisDialog() async {
     final statusTexts = [
       '🔍 Alışkanlığınız analiz ediliyor...',
@@ -142,7 +128,6 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
         canPop: false,
         child: StatefulBuilder(
           builder: (context, setDialogState) {
-            // Her 1.2 saniyede metin değiştir
             Future.delayed(const Duration(milliseconds: 1200), () {
               if (dialogActive && currentStatus < statusTexts.length - 1) {
                 setDialogState(() => currentStatus++);
@@ -167,7 +152,6 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Animated gradient circle
                     Container(
                       width: 64,
                       height: 64,
@@ -217,7 +201,6 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 20),
-                    // Progress dots
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: List.generate(
@@ -246,36 +229,25 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
       ),
     );
 
-    // Total ~5 seconds
     await Future.delayed(const Duration(milliseconds: 5000));
     dialogActive = false;
 
-    // AI determines values
     final aiRhythmWindow = _determineOptimalRhythmWindow();
     final aiReminderTime = _determineOptimalReminderTime(aiRhythmWindow);
 
-    // Set values so user can see and modify on next pages
     setState(() {
       _selectedRhythmWindow = aiRhythmWindow;
       _reminderEnabled = true;
       _reminderTime = aiReminderTime;
     });
 
-    // Dismiss dialog
     if (mounted) Navigator.of(context).pop();
   }
 
   void _previousPage() {
     if (_currentPage > 0) {
-      int prevPage = _currentPage - 1;
-
-      // Günlük seçiliyse gün seçimi sayfasını atla (geri giderken)
-      if (_currentPage == _startDatePage && _selectedFrequency == 'daily') {
-        prevPage = _currentPage - 2;
-      }
-
       _pageController.animateToPage(
-        prevPage,
+        _currentPage - 1,
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
       );
@@ -284,20 +256,8 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
     }
   }
 
-  void _goToPage(int page) {
-    _pageController.animateToPage(
-      page,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOut,
-    );
-  }
-
   void _saveHabit() async {
-    debugPrint('DEBUG: _saveHabit started');
     if (!mounted) return;
-
-    // AI analizi zaten _nextPage'de yapıldı (premium için)
-    // Burada sadece state'deki değerleri kullanarak kaydet
     await _createAndSaveHabit(
       rhythmWindow: _selectedRhythmWindow,
       reminderEnabled: _reminderEnabled,
@@ -308,7 +268,6 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
   RhythmWindow _determineOptimalRhythmWindow() {
     final title = _nameController.text.toLowerCase();
 
-    // Simple keyword-based analysis
     if (title.contains('medita') ||
         title.contains('yat') ||
         title.contains('günlük') ||
@@ -333,7 +292,6 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
         title.contains('program')) {
       return RhythmWindow.focus;
     }
-    // Default to light for simple habits
     return RhythmWindow.light;
   }
 
@@ -430,66 +388,46 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
     }
   }
 
+  bool get _isFrequencyPageValid {
+    if (_selectedFrequency == 'weekly') return _weeklyDays.isNotEmpty;
+    if (_selectedFrequency == 'monthly') return _monthDays.isNotEmpty;
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return WizardScaffold(
       currentStep: _currentPage,
       totalSteps: _totalPages,
-      showProgress: _currentPage > 0,
+      showProgress: true,
       onBack: _previousPage,
       onClose: () => Navigator.pop(context),
       child: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
         onPageChanged: (index) {
+          FocusManager.instance.primaryFocus?.unfocus();
           setState(() {
             _currentPage = index;
           });
         },
         children: [
-          // 0: Karşılama sayfası
-          _buildWelcomePage(),
-
-          // 1: İsim sayfası
+          // 0: İsim + Açıklama
           _buildNamePage(),
 
-          // 2: Emoji sayfası
-          _buildEmojiPage(),
+          // 1: Emoji + Renk
+          _buildEmojiColorPage(),
 
-          // 3: Renk sayfası
-          _buildColorPage(),
+          // 2: Sıklık + Gün seçimi
+          _buildFrequencyDaysPage(),
 
-          // 4: Sıklık sayfası
-          _buildFrequencyPage(),
+          // 3: Tarih + Hatırlatıcı + Ritim
+          _buildSchedulePage(),
 
-          // 5: Gün seçimi sayfası (koşullu)
-          _buildDaysPage(),
-
-          // 6: Başlangıç tarihi sayfası
-          _buildStartDatePage(),
-
-          // 7: Hatırlatıcı sayfası
-          _buildReminderPage(),
-
-          // 8: Ritim penceresi sayfası
-          _buildRhythmWindowPage(),
-
-          // 9: Önizleme sayfası
+          // 4: Önizleme
           _buildPreviewPage(),
         ],
       ),
-    );
-  }
-
-  Widget _buildWelcomePage() {
-    final l10n = AppLocalizations.of(context);
-    return WizardWelcomePage(
-      emoji: '🌟',
-      title: l10n.simpleHabitWizardTitle,
-      description: l10n.simpleHabitWizardDesc,
-      buttonText: l10n.letsStart,
-      onStart: _nextPage,
-      accentColor: _selectedColor,
     );
   }
 
@@ -539,7 +477,6 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
             },
           ),
           const SizedBox(height: 16),
-          // Açıklama (isteğe bağlı)
           TextField(
             controller: _descriptionController,
             textAlign: TextAlign.center,
@@ -569,9 +506,8 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
     );
   }
 
-  Widget _buildEmojiPage() {
+  Widget _buildEmojiColorPage() {
     final l10n = AppLocalizations.of(context);
-    final colorScheme = Theme.of(context).colorScheme;
 
     return WizardPage(
       emoji: '🎨',
@@ -581,92 +517,91 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
         onNext: _nextPage,
         accentColor: _selectedColor,
       ),
-      child: Wrap(
-        spacing: 12,
-        runSpacing: 12,
-        alignment: WrapAlignment.center,
+      child: Column(
         children: [
-          ..._quickEmojis.map((emoji) {
-            final isSelected = emoji == _selectedEmoji;
-            return WizardSelectionCard(
-              isSelected: isSelected,
-              onTap: () => setState(() => _selectedEmoji = emoji),
-              size: 56,
-              borderRadius: 14,
-              selectedColor: _selectedColor,
-              child: Text(emoji, style: const TextStyle(fontSize: 28)),
-            );
-          }),
-          // Özel emoji ekle butonu
-          WizardSelectionCard(
-            isSelected: false,
-            onTap: _showCustomEmojiInput,
-            size: 56,
-            borderRadius: 14,
-            selectedColor: _selectedColor,
-            child: Icon(
-              Icons.add_reaction_outlined,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+          // Emoji seçimi
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            alignment: WrapAlignment.center,
+            children: [
+              ..._quickEmojis.map((emoji) {
+                final isSelected = emoji == _selectedEmoji;
+                return WizardSelectionCard(
+                  isSelected: isSelected,
+                  onTap: () => setState(() => _selectedEmoji = emoji),
+                  size: 52,
+                  borderRadius: 14,
+                  selectedColor: _selectedColor,
+                  child: Text(emoji, style: const TextStyle(fontSize: 26)),
+                );
+              }),
+              WizardSelectionCard(
+                isSelected: false,
+                onTap: _showCustomEmojiInput,
+                size: 52,
+                borderRadius: 14,
+                selectedColor: _selectedColor,
+                child: Icon(
+                  Icons.add_reaction_outlined,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          // Renk seçimi
+          Text(
+            l10n.simpleHabitColorTitle,
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 14,
+            runSpacing: 14,
+            alignment: WrapAlignment.center,
+            children: _colors.map((color) {
+              final isSelected = color.value == _selectedColor.value;
+              return GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  setState(() => _selectedColor = color);
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: isSelected ? 52 : 44,
+                  height: isSelected ? 52 : 44,
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                    border: isSelected
+                        ? Border.all(
+                            color: Theme.of(context).colorScheme.surface,
+                            width: 4,
+                          )
+                        : null,
+                    boxShadow: isSelected
+                        ? [
+                            BoxShadow(
+                              color: color.withOpacity(0.4),
+                              blurRadius: 16,
+                              spreadRadius: 2,
+                            ),
+                          ]
+                        : null,
+                  ),
+                ),
+              );
+            }).toList(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildColorPage() {
-    final l10n = AppLocalizations.of(context);
-
-    return WizardPage(
-      emoji: '🌈',
-      title: l10n.simpleHabitColorTitle,
-      subtitle: l10n.simpleHabitColorSubtitle,
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        accentColor: _selectedColor,
-      ),
-      child: Wrap(
-        spacing: 16,
-        runSpacing: 16,
-        alignment: WrapAlignment.center,
-        children: _colors.map((color) {
-          final isSelected = color.value == _selectedColor.value;
-          return GestureDetector(
-            onTap: () {
-              HapticFeedback.lightImpact();
-              setState(() => _selectedColor = color);
-            },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              width: isSelected ? 56 : 48,
-              height: isSelected ? 56 : 48,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-                border: isSelected
-                    ? Border.all(
-                        color: Theme.of(context).colorScheme.surface,
-                        width: 4,
-                      )
-                    : null,
-                boxShadow: isSelected
-                    ? [
-                        BoxShadow(
-                          color: color.withOpacity(0.4),
-                          blurRadius: 16,
-                          spreadRadius: 2,
-                        ),
-                      ]
-                    : null,
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildFrequencyPage() {
+  Widget _buildFrequencyDaysPage() {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -684,238 +619,240 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
       subtitle: l10n.simpleHabitFrequencySubtitle,
       bottomWidget: WizardNavigationButtons(
         onNext: _nextPage,
+        isNextEnabled: _isFrequencyPageValid,
         accentColor: _selectedColor,
       ),
       child: Column(
-        children: frequencies.map((freq) {
-          final isSelected = _selectedFrequency == freq.$1;
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: InkWell(
-              onTap: () {
-                HapticFeedback.lightImpact();
-                setState(() => _selectedFrequency = freq.$1);
-              },
-              borderRadius: BorderRadius.circular(16),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? _selectedColor.withOpacity(0.1)
-                      : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(16),
-                  border: isSelected
-                      ? Border.all(color: _selectedColor, width: 2)
-                      : null,
-                ),
-                child: Row(
-                  children: [
-                    Text(freq.$3, style: const TextStyle(fontSize: 28)),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            freq.$2,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Sıklık seçimi
+          ...frequencies.map((freq) {
+            final isSelected = _selectedFrequency == freq.$1;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: InkWell(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  setState(() => _selectedFrequency = freq.$1);
+                },
+                borderRadius: BorderRadius.circular(14),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? _selectedColor.withOpacity(0.1)
+                        : colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(14),
+                    border: isSelected
+                        ? Border.all(color: _selectedColor, width: 2)
+                        : null,
+                  ),
+                  child: Row(
+                    children: [
+                      Text(freq.$3, style: const TextStyle(fontSize: 24)),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              freq.$2,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                          Text(
-                            freq.$4,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurface.withOpacity(0.6),
+                            Text(
+                              freq.$4,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurface.withOpacity(0.6),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    if (isSelected)
-                      Icon(Icons.check_circle, color: _selectedColor),
-                  ],
+                      if (isSelected)
+                        Icon(Icons.check_circle,
+                            color: _selectedColor, size: 20),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
-        }).toList(),
+            );
+          }),
+
+          // Dinamik gün seçimi — sıklığa göre animasyonla açılır
+          AnimatedSize(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            child: _selectedFrequency != 'daily'
+                ? Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: _buildDaysSection(),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildDaysPage() {
+  Widget _buildDaysSection() {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    Widget content;
-    String title;
-    String subtitle;
-
-    switch (_selectedFrequency) {
-      case 'weekly':
-        title = l10n.simpleHabitWeekdaysTitle;
-        subtitle = l10n.simpleHabitWeekdaysSubtitle;
-        final weekdays = [
-          l10n.mondayShort,
-          l10n.tuesdayShort,
-          l10n.wednesdayShort,
-          l10n.thursdayShort,
-          l10n.fridayShort,
-          l10n.saturdayShort,
-          l10n.sundayShort,
-        ];
-        content = Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          alignment: WrapAlignment.center,
-          children: List.generate(7, (index) {
-            final isSelected = _weeklyDays.contains(index);
-            return GestureDetector(
-              onTap: () {
-                HapticFeedback.lightImpact();
-                setState(() {
-                  if (isSelected) {
-                    _weeklyDays.remove(index);
-                  } else {
-                    _weeklyDays.add(index);
-                  }
-                });
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? _selectedColor
-                      : colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Center(
-                  child: Text(
-                    weekdays[index],
-                    style: TextStyle(
-                      color: isSelected ? Colors.white : colorScheme.onSurface,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }),
-        );
-        break;
-
-      case 'monthly':
-        title = l10n.simpleHabitMonthDaysTitle;
-        subtitle = l10n.simpleHabitMonthDaysSubtitle;
-        content = Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          alignment: WrapAlignment.center,
-          children: List.generate(31, (index) {
-            final day = index + 1;
-            final isSelected = _monthDays.contains(day);
-            return GestureDetector(
-              onTap: () {
-                HapticFeedback.lightImpact();
-                setState(() {
-                  if (isSelected) {
-                    _monthDays.remove(day);
-                  } else {
-                    _monthDays.add(day);
-                  }
-                });
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? _selectedColor
-                      : colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
-                  child: Text(
-                    '$day',
-                    style: TextStyle(
-                      color: isSelected ? Colors.white : colorScheme.onSurface,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }),
-        );
-        break;
-
-      case 'periodic':
-        title = l10n.simpleHabitPeriodicTitle;
-        subtitle = l10n.simpleHabitPeriodicSubtitle;
-        content = Column(
-          children: [
-            Text(
-              '$_periodicDays',
-              style: theme.textTheme.displayMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: _selectedColor,
-              ),
-            ),
-            Text(
-              l10n.days,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: colorScheme.onSurface.withOpacity(0.6),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Slider(
-              value: _periodicDays.toDouble(),
-              min: 2,
-              max: 30,
-              divisions: 28,
-              activeColor: _selectedColor,
-              onChanged: (value) {
-                HapticFeedback.selectionClick();
-                setState(() => _periodicDays = value.round());
-              },
-            ),
-          ],
-        );
-        break;
-
-      default:
-        title = '';
-        subtitle = '';
-        content = const SizedBox.shrink();
-    }
-
-    bool isValid = true;
     if (_selectedFrequency == 'weekly') {
-      isValid = _weeklyDays.isNotEmpty;
-    } else if (_selectedFrequency == 'monthly') {
-      isValid = _monthDays.isNotEmpty;
+      final weekdays = [
+        l10n.mondayShort,
+        l10n.tuesdayShort,
+        l10n.wednesdayShort,
+        l10n.thursdayShort,
+        l10n.fridayShort,
+        l10n.saturdayShort,
+        l10n.sundayShort,
+      ];
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.simpleHabitWeekdaysTitle,
+            style: theme.textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            alignment: WrapAlignment.center,
+            children: List.generate(7, (index) {
+              final isSelected = _weeklyDays.contains(index);
+              return GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  setState(() {
+                    if (isSelected) {
+                      _weeklyDays.remove(index);
+                    } else {
+                      _weeklyDays.add(index);
+                    }
+                  });
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? _selectedColor
+                        : colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Text(
+                      weekdays[index],
+                      style: TextStyle(
+                        color:
+                            isSelected ? Colors.white : colorScheme.onSurface,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ],
+      );
     }
 
-    return WizardPage(
-      emoji: '📅',
-      title: title,
-      subtitle: subtitle,
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        isNextEnabled: isValid,
-        accentColor: _selectedColor,
-      ),
-      child: content,
-    );
+    if (_selectedFrequency == 'monthly') {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.simpleHabitMonthDaysTitle,
+            style: theme.textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            alignment: WrapAlignment.center,
+            children: List.generate(31, (index) {
+              final day = index + 1;
+              final isSelected = _monthDays.contains(day);
+              return GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  setState(() {
+                    if (isSelected) {
+                      _monthDays.remove(day);
+                    } else {
+                      _monthDays.add(day);
+                    }
+                  });
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? _selectedColor
+                        : colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(9),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '$day',
+                      style: TextStyle(
+                        color:
+                            isSelected ? Colors.white : colorScheme.onSurface,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ],
+      );
+    }
+
+    if (_selectedFrequency == 'periodic') {
+      return Column(
+        children: [
+          Text(
+            '$_periodicDays ${l10n.days}',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: _selectedColor,
+                ),
+          ),
+          Slider(
+            value: _periodicDays.toDouble(),
+            min: 2,
+            max: 30,
+            divisions: 28,
+            activeColor: _selectedColor,
+            onChanged: (value) {
+              HapticFeedback.selectionClick();
+              setState(() => _periodicDays = value.round());
+            },
+          ),
+        ],
+      );
+    }
+
+    return const SizedBox.shrink();
   }
 
-  Widget _buildStartDatePage() {
+  Widget _buildSchedulePage() {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -924,223 +861,15 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
     final tomorrow = today.add(const Duration(days: 1));
     final nextWeek = today.add(const Duration(days: 7));
 
+    bool isSameDay(DateTime a, DateTime b) =>
+        a.year == b.year && a.month == b.month && a.day == b.day;
+
     final quickDates = [
       (today, l10n.today, '📍'),
       (tomorrow, l10n.tomorrow, '➡️'),
       (nextWeek, l10n.nextWeek, '📆'),
     ];
 
-    bool isSameDay(DateTime a, DateTime b) {
-      return a.year == b.year && a.month == b.month && a.day == b.day;
-    }
-
-    return WizardPage(
-      emoji: '🚀',
-      title: l10n.simpleHabitStartDateTitle,
-      subtitle: l10n.simpleHabitStartDateSubtitle,
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        accentColor: _selectedColor,
-      ),
-      child: Column(
-        children: [
-          // Hızlı seçenekler
-          ...quickDates.map((qd) {
-            final isSelected = isSameDay(_startDate, qd.$1);
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: InkWell(
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  setState(() => _startDate = qd.$1);
-                },
-                borderRadius: BorderRadius.circular(16),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? _selectedColor.withOpacity(0.1)
-                        : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(16),
-                    border: isSelected
-                        ? Border.all(color: _selectedColor, width: 2)
-                        : null,
-                  ),
-                  child: Row(
-                    children: [
-                      Text(qd.$3, style: const TextStyle(fontSize: 24)),
-                      const SizedBox(width: 16),
-                      Text(
-                        qd.$2,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const Spacer(),
-                      if (isSelected)
-                        Icon(Icons.check_circle, color: _selectedColor),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }),
-
-          const SizedBox(height: 8),
-
-          // Takvimden seç butonu
-          OutlinedButton.icon(
-            onPressed: () async {
-              final picked = await showDatePicker(
-                context: context,
-                initialDate: _startDate,
-                firstDate: DateTime.now(),
-                lastDate: DateTime.now().add(const Duration(days: 365)),
-              );
-              if (picked != null) {
-                setState(() => _startDate = picked);
-              }
-            },
-            icon: const Icon(Icons.calendar_today),
-            label: Text(l10n.pickFromCalendar),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildReminderPage() {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return WizardPage(
-      emoji: '🔔',
-      title: l10n.simpleHabitReminderTitle,
-      subtitle: l10n.simpleHabitReminderSubtitle,
-      isOptional: true,
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        onSkip: _nextPage,
-        showSkip: !_reminderEnabled,
-        accentColor: _selectedColor,
-      ),
-      child: Column(
-        children: [
-          // Toggle
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: _reminderEnabled
-                  ? _selectedColor.withOpacity(0.1)
-                  : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(20),
-              border: _reminderEnabled
-                  ? Border.all(color: _selectedColor, width: 2)
-                  : null,
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: _reminderEnabled
-                        ? _selectedColor.withOpacity(0.2)
-                        : colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Icon(
-                    _reminderEnabled
-                        ? Icons.notifications_active
-                        : Icons.notifications_off_outlined,
-                    color: _reminderEnabled
-                        ? _selectedColor
-                        : colorScheme.onSurface.withOpacity(0.5),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    _reminderEnabled
-                        ? l10n.reminderEnabled
-                        : l10n.reminderDisabled,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                Switch.adaptive(
-                  value: _reminderEnabled,
-                  onChanged: (value) {
-                    HapticFeedback.lightImpact();
-                    setState(() => _reminderEnabled = value);
-                  },
-                  activeColor: _selectedColor,
-                ),
-              ],
-            ),
-          ),
-
-          // Saat seçici
-          if (_reminderEnabled) ...[
-            const SizedBox(height: 20),
-            InkWell(
-              onTap: () async {
-                final picked = await showTimePicker(
-                  context: context,
-                  initialTime: _reminderTime,
-                );
-                if (picked != null) {
-                  setState(() => _reminderTime = picked);
-                }
-              },
-              borderRadius: BorderRadius.circular(16),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 20,
-                ),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.access_time, color: _selectedColor),
-                    const SizedBox(width: 12),
-                    Text(
-                      _reminderTime.format(context),
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: _selectedColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRhythmWindowPage() {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    // Check if user has rhythm profile
     final hasProfile = LiveRhythmRepository.instance.hasProfile;
 
     final windows = [
@@ -1171,30 +900,186 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
     ];
 
     return WizardPage(
-      emoji: '⏰',
-      title: l10n.rhythmWindowStepTitle,
-      subtitle: l10n.rhythmWindowStepSubtitle,
-      isOptional: true,
+      emoji: '🚀',
+      title: l10n.simpleHabitStartDateTitle,
+      subtitle: l10n.simpleHabitStartDateSubtitle,
       bottomWidget: WizardNavigationButtons(
         onNext: _nextPage,
-        onSkip: _nextPage,
-        showSkip: _selectedRhythmWindow == null,
         accentColor: _selectedColor,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // ─── Başlangıç Tarihi ───
+          Text(
+            l10n.startDate,
+            style: theme.textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              ...quickDates.map((qd) {
+                final isSelected = isSameDay(_startDate, qd.$1);
+                return Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: GestureDetector(
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        setState(() => _startDate = qd.$1);
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? _selectedColor.withOpacity(0.15)
+                              : colorScheme.surfaceContainerHighest
+                                  .withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(12),
+                          border: isSelected
+                              ? Border.all(color: _selectedColor, width: 2)
+                              : null,
+                        ),
+                        child: Column(
+                          children: [
+                            Text(qd.$3, style: const TextStyle(fontSize: 18)),
+                            const SizedBox(height: 2),
+                            Text(
+                              qd.$2,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                fontWeight: isSelected ? FontWeight.w600 : null,
+                                color: isSelected ? _selectedColor : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }),
+              GestureDetector(
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: _startDate,
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                  );
+                  if (picked != null) setState(() => _startDate = picked);
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(Icons.calendar_today,
+                      color: colorScheme.primary, size: 20),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          // ─── Hatırlatıcı ───
+          Text(
+            l10n.simpleHabitReminderTitle,
+            style: theme.textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: _reminderEnabled
+                  ? _selectedColor.withOpacity(0.1)
+                  : colorScheme.surfaceContainerHighest.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(14),
+              border: _reminderEnabled
+                  ? Border.all(color: _selectedColor, width: 2)
+                  : null,
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  _reminderEnabled
+                      ? Icons.notifications_active
+                      : Icons.notifications_off_outlined,
+                  color: _reminderEnabled
+                      ? _selectedColor
+                      : colorScheme.onSurface.withOpacity(0.5),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _reminderEnabled
+                      ? GestureDetector(
+                          onTap: () async {
+                            final picked = await showTimePicker(
+                              context: context,
+                              initialTime: _reminderTime,
+                            );
+                            if (picked != null)
+                              setState(() => _reminderTime = picked);
+                          },
+                          child: Text(
+                            _reminderTime.format(context),
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: _selectedColor,
+                            ),
+                          ),
+                        )
+                      : Text(
+                          l10n.reminderDisabled,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                ),
+                Switch.adaptive(
+                  value: _reminderEnabled,
+                  onChanged: (value) {
+                    HapticFeedback.lightImpact();
+                    setState(() => _reminderEnabled = value);
+                  },
+                  activeColor: _selectedColor,
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // ─── Ritim Penceresi ─── (Premium)
+          Text(
+            l10n.rhythmWindowStepTitle,
+            style: theme.textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            l10n.rhythmWindowStepSubtitle,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurface.withOpacity(0.6),
+            ),
+          ),
+          const SizedBox(height: 8),
           if (!hasProfile)
             Container(
-              margin: const EdgeInsets.only(bottom: 16),
-              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: colorScheme.tertiaryContainer.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
                 children: [
-                  const Text('💡', style: TextStyle(fontSize: 20)),
-                  const SizedBox(width: 10),
+                  const Text('💡', style: TextStyle(fontSize: 16)),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       l10n.rhythmWindowNoProfileHint,
@@ -1206,74 +1091,63 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
                 ],
               ),
             ),
-          ...windows.map((w) {
-            final isSelected = _selectedRhythmWindow == w.$1;
-            final isPremium = context.read<PremiumProvider>().isPremium;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: InkWell(
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: windows.map((w) {
+              final isSelected = _selectedRhythmWindow == w.$1;
+              final isPremium = context.read<PremiumProvider>().isPremium;
+              return GestureDetector(
                 onTap: () async {
                   if (!isPremium) {
                     await requirePremium(context);
                     return;
                   }
                   HapticFeedback.lightImpact();
-                  setState(() => _selectedRhythmWindow = w.$1);
+                  setState(
+                      () => _selectedRhythmWindow = isSelected ? null : w.$1);
                 },
-                borderRadius: BorderRadius.circular(14),
                 child: Opacity(
                   opacity: isPremium ? 1.0 : 0.6,
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.all(14),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? _selectedColor.withOpacity(0.12)
+                          ? _selectedColor.withOpacity(0.15)
                           : colorScheme.surfaceContainerHighest
                               .withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(12),
                       border: isSelected
                           ? Border.all(color: _selectedColor, width: 2)
                           : null,
                     ),
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(w.$2, style: const TextStyle(fontSize: 26)),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                w.$3,
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              Text(
-                                w.$4,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.onSurface.withOpacity(0.6),
-                                ),
-                              ),
-                            ],
+                        Text(w.$2, style: const TextStyle(fontSize: 18)),
+                        const SizedBox(width: 6),
+                        Text(
+                          w.$3,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontWeight: isSelected ? FontWeight.w600 : null,
+                            color: isSelected ? _selectedColor : null,
                           ),
                         ),
-                        if (!isPremium)
-                          Icon(
-                            Icons.lock_outline,
-                            color: colorScheme.onSurface.withOpacity(0.5),
-                            size: 20,
-                          )
-                        else if (isSelected)
-                          Icon(Icons.check_circle, color: _selectedColor),
+                        if (!isPremium) ...[
+                          const SizedBox(width: 4),
+                          Icon(Icons.lock_outline,
+                              size: 14,
+                              color: colorScheme.onSurface.withOpacity(0.5)),
+                        ],
                       ],
                     ),
                   ),
                 ),
-              ),
-            );
-          }),
+              );
+            }).toList(),
+          ),
         ],
       ),
     );
@@ -1293,17 +1167,13 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
       title: l10n.simpleHabitPreviewTitle,
       subtitle: l10n.simpleHabitPreviewSubtitle,
       bottomWidget: WizardNavigationButtons(
-        onNext: () {
-          debugPrint('DEBUG: Preview Page Next Button Clicked');
-          _saveHabit();
-        },
+        onNext: () => _saveHabit(),
         nextLabel: l10n.createHabit,
         isLastStep: true,
         accentColor: _selectedColor,
       ),
       child: Column(
         children: [
-          // Önizleme kartı
           WizardPreviewCard(
             emoji: _selectedEmoji,
             title: habitName,
@@ -1316,10 +1186,7 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
               if (_reminderEnabled) '🔔 ${_reminderTime.format(context)}',
             ],
           ),
-
-          const SizedBox(height: 24),
-
-          // Detaylar
+          const SizedBox(height: 20),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -1338,6 +1205,12 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
                     Icons.notifications,
                     l10n.reminder,
                     _reminderTime.format(context),
+                  ),
+                if (_selectedRhythmWindow != null)
+                  _buildDetailRow(
+                    Icons.schedule,
+                    l10n.rhythmWindowStepTitle,
+                    _selectedRhythmWindow!.name,
                   ),
               ],
             ),

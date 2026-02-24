@@ -1,0 +1,46 @@
+﻿Analyzing advanced_habit_wizard_screen.dart...                  
+
+   info - The private field _numericalTargetType could be 'final' - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:43:23 - prefer_final_fields
+  error - Widget isn't a type - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:275:3 - not_a_type
+  error - '_AdvancedHabitWizardScreenState.build' ('dynamic Function(BuildContext)') isn't a valid override of 'State.build' ('Widget Function(BuildContext)') - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:275:10 - invalid_override
+  error - The method '_buildTypePage' isn't defined for the type '_AdvancedHabitWizardScreenState' - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:295:11 - undefined_method
+  error - The method '_buildNamePage' isn't defined for the type '_AdvancedHabitWizardScreenState' - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:298:11 - undefined_method
+  error - The method '_buildEmojiPage' isn't defined for the type '_AdvancedHabitWizardScreenState' - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:301:11 - undefined_method
+  error - The method '_buildTargetPage' isn't defined for the type '_AdvancedHabitWizardScreenState' - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:304:11 - undefined_method
+  error - The method '_buildFrequencyPage' isn't defined for the type '_AdvancedHabitWizardScreenState' - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:307:11 - undefined_method
+  error - The method '_buildDaysPage' isn't defined for the type '_AdvancedHabitWizardScreenState' - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:310:11 - undefined_method
+  error - The method '_buildDateRangePage' isn't defined for the type '_AdvancedHabitWizardScreenState' - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:313:11 - undefined_method
+  error - The method '_buildReminderPage' isn't defined for the type '_AdvancedHabitWizardScreenState' - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:316:11 - undefined_method
+  error - Widget isn't a type - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:325:3 - not_a_type
+  error - Widget isn't a type - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:337:1 - not_a_type
+  error - Widget isn't a type - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:349:3 - not_a_type
+  error - The method '_buildTargetTypeSelector' isn't defined for the type '_AdvancedHabitWizardScreenState' - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:400:11 - undefined_method
+  error - Widget isn't a type - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:573:1 - not_a_type
+  error - The getter '_colors' isn't defined for the type 'AdvancedHabitWizardScreen' - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:682:47 - undefined_getter
+  error - Widget isn't a type - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:718:1 - not_a_type
+  error - Widget isn't a type - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:748:3 - not_a_type
+  error - The getter 'endDateOptional' isn't defined for the type 'AppLocalizations' - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:975:19 - undefined_getter
+  error - Expected a class member - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:1108:1 - expected_class_member
+  error - Undefined class 'n' - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:1108:2 - undefined_class
+   info - The variable name 'Widget' isn't a lowerCamelCase identifier - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:1108:5 - non_constant_identifier_names
+  error - Expected to find ';' - lib\features\habit\presentation\advanced_habit_wizard_screen.dart:1108:5 - expected_token
+
+flutter : 24 issues found
+. (ran in 0.9s)
+At line:1 char:126
++ ... at_adv.txt; flutter
+ analyze lib/features/hab
+it/presentation/advanced_
+ ...
++                 ~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo       
+       : NotSpecified:   
+  (24 issues found. (r   
+ an in 0.9s):String)     
+[], RemoteException
+    + FullyQualifiedErro 
+   rId : NativeCommandE  
+  rror
+ 
