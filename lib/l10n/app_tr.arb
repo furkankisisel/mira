@@ -950,6 +950,7 @@
     "selectCategory": "Kategori Seç",
     "selectDate": "Tarih Seç",
     "selectDuration": "Süre Seç",
+    "selectAtLeastOneDay": "Lütfen en az bir gün seçin",
     "selectEmoji": "Emoji seç",
     "selectEndDate": "Bitiş tarihini seç",
     "selectFrequency": "Sıklık Seç",
@@ -1402,5 +1403,18 @@
     "retakeRhythmTestDesc": "Biyolojik saatini tekrar belirle",
     "rhythmWindowStepTitle": "En Uygun Zaman Dilimi",
     "rhythmWindowStepSubtitle": "Bu alışkanlığı hangi zaman diliminde yapmak istersin?",
-    "rhythmWindowNoProfileHint": "Ritim testini tamamlayarak kişiselleştirilmiş öneriler alabilirsin"
+    "rhythmWindowNoProfileHint": "Ritim testini tamamlayarak kişiselleştirilmiş öneriler alabilirsin",
+    "weeklySchedule": "Haftalık",
+    "addEvent": "Etkinlik Ekle",
+    "eventTitle": "Etkinlik Başlığı",
+    "eventDescription": "Açıklama",
+    "startTime": "Başlangıç Saati",
+    "endTime": "Bitiş Saati",
+    "selectDay": "Gün Seçin",
+    "eventDetails": "Etkinlik Detayı",
+    "deleteEvent": "Etkinliği Sil",
+    "editEvent": "Etkinliği Düzenle",
+    "noEvents": "Henüz etkinlik yok",
+    "habitBlock": "Alışkanlık",
+    "customEvent": "Özel Etkinlik"
 }

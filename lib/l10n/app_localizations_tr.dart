@@ -2667,6 +2667,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get selectDuration => 'Süre Seç';
 
   @override
+  String get selectAtLeastOneDay => 'Lütfen en az bir gün seçin';
+
+  @override
   String get selectEmoji => 'Emoji seç';
 
   @override
@@ -4096,4 +4099,43 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get rhythmWindowNoProfileHint =>
       'Ritim testini tamamlayarak kişiselleştirilmiş öneriler alabilirsin';
+
+  @override
+  String get weeklySchedule => 'Haftalık';
+
+  @override
+  String get addEvent => 'Etkinlik Ekle';
+
+  @override
+  String get eventTitle => 'Etkinlik Başlığı';
+
+  @override
+  String get eventDescription => 'Açıklama';
+
+  @override
+  String get startTime => 'Başlangıç Saati';
+
+  @override
+  String get endTime => 'Bitiş Saati';
+
+  @override
+  String get selectDay => 'Gün Seçin';
+
+  @override
+  String get eventDetails => 'Etkinlik Detayı';
+
+  @override
+  String get deleteEvent => 'Etkinliği Sil';
+
+  @override
+  String get editEvent => 'Etkinliği Düzenle';
+
+  @override
+  String get noEvents => 'Henüz etkinlik yok';
+
+  @override
+  String get habitBlock => 'Alışkanlık';
+
+  @override
+  String get customEvent => 'Özel Etkinlik';
 }

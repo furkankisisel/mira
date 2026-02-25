@@ -5054,6 +5054,12 @@ abstract class AppLocalizations {
   /// **'Süre Seç'**
   String get selectDuration;
 
+  /// No description provided for @selectAtLeastOneDay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Lütfen en az bir gün seçin'**
+  String get selectAtLeastOneDay;
+
   /// No description provided for @selectEmoji.
   ///
   /// In tr, this message translates to:
@@ -7765,6 +7771,84 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Ritim testini tamamlayarak kişiselleştirilmiş öneriler alabilirsin'**
   String get rhythmWindowNoProfileHint;
+
+  /// No description provided for @weeklySchedule.
+  ///
+  /// In tr, this message translates to:
+  /// **'Haftalık'**
+  String get weeklySchedule;
+
+  /// No description provided for @addEvent.
+  ///
+  /// In tr, this message translates to:
+  /// **'Etkinlik Ekle'**
+  String get addEvent;
+
+  /// No description provided for @eventTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Etkinlik Başlığı'**
+  String get eventTitle;
+
+  /// No description provided for @eventDescription.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açıklama'**
+  String get eventDescription;
+
+  /// No description provided for @startTime.
+  ///
+  /// In tr, this message translates to:
+  /// **'Başlangıç Saati'**
+  String get startTime;
+
+  /// No description provided for @endTime.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bitiş Saati'**
+  String get endTime;
+
+  /// No description provided for @selectDay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gün Seçin'**
+  String get selectDay;
+
+  /// No description provided for @eventDetails.
+  ///
+  /// In tr, this message translates to:
+  /// **'Etkinlik Detayı'**
+  String get eventDetails;
+
+  /// No description provided for @deleteEvent.
+  ///
+  /// In tr, this message translates to:
+  /// **'Etkinliği Sil'**
+  String get deleteEvent;
+
+  /// No description provided for @editEvent.
+  ///
+  /// In tr, this message translates to:
+  /// **'Etkinliği Düzenle'**
+  String get editEvent;
+
+  /// No description provided for @noEvents.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz etkinlik yok'**
+  String get noEvents;
+
+  /// No description provided for @habitBlock.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alışkanlık'**
+  String get habitBlock;
+
+  /// No description provided for @customEvent.
+  ///
+  /// In tr, this message translates to:
+  /// **'Özel Etkinlik'**
+  String get customEvent;
 }
 
 class _AppLocalizationsDelegate

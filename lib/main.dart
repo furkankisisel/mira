@@ -20,7 +20,7 @@ import 'features/finance/finance_screen.dart';
 import 'features/finance/finance_analysis_screen.dart';
 import 'features/vision/presentation/vision_screen.dart';
 import 'features/profile/profile_screen.dart';
-import 'features/assistant/presentation/mira_assistant_screen.dart';
+import 'features/schedule/presentation/weekly_schedule_screen.dart';
 
 import 'features/profile/settings_screen.dart';
 // Removed Decision Egg feature
@@ -502,9 +502,8 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
             showProgressNotifier: _visionShowProgress,
             boardBoundaryKey: _visionBoardKey,
           ),
-        2 => MiraAssistantScreen(
+        2 => WeeklyScheduleScreen(
             variant: widget.currentVariant,
-            onNavigationCommand: _handleAssistantNavigation,
           ),
         3 => FinanceScreen(key: _financeKey, variant: widget.currentVariant),
         4 => const ProfileScreen(),
@@ -525,7 +524,7 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
   String _titleFor(int i, AppLocalizations l10n) => switch (i) {
         0 => l10n.habits,
         1 => l10n.vision,
-        2 => l10n.aiAssistantTitle,
+        2 => l10n.weeklySchedule,
         3 => l10n.finance,
         4 => l10n.profile,
         _ => '',
@@ -561,17 +560,7 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
               icon: const Icon(Icons.mood_outlined),
               onPressed: () => _habitKey.currentState?.openMoodScreen(),
             ),
-          // Report icon for Mira Assistant screen
-          if (_currentIndex == 2)
-            IconButton(
-              tooltip: 'Raporlar',
-              icon: const Icon(Icons.analytics_outlined),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const ReportsScreen()),
-                );
-              },
-            ),
+          // Weekly Schedule screen has no extra AppBar actions
           // Vision actions (when showing Vision on combined tab)
           // Vision actions (index 1)
           if (_currentIndex == 1)
@@ -670,9 +659,9 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
             label: l10n.vision,
           ),
           CottonDestination(
-            icon: Icons.auto_awesome_outlined,
-            selectedIcon: Icons.auto_awesome,
-            label: l10n.aiAssistantTitle,
+            icon: Icons.calendar_view_week_outlined,
+            selectedIcon: Icons.calendar_view_week,
+            label: l10n.weeklySchedule,
           ),
           CottonDestination(
             icon: Icons.water_drop_outlined,

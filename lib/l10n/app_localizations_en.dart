@@ -2656,6 +2656,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectDuration => 'Select Duration';
 
   @override
+  String get selectAtLeastOneDay => 'Please select at least one day';
+
+  @override
   String get selectEmoji => 'Select Emoji';
 
   @override
@@ -4077,4 +4080,43 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get rhythmWindowNoProfileHint =>
       'Complete the rhythm test to get personalized suggestions';
+
+  @override
+  String get weeklySchedule => 'Weekly';
+
+  @override
+  String get addEvent => 'Add Event';
+
+  @override
+  String get eventTitle => 'Event Title';
+
+  @override
+  String get eventDescription => 'Description';
+
+  @override
+  String get startTime => 'Start Time';
+
+  @override
+  String get endTime => 'End Time';
+
+  @override
+  String get selectDay => 'Select Day';
+
+  @override
+  String get eventDetails => 'Event Details';
+
+  @override
+  String get deleteEvent => 'Delete Event';
+
+  @override
+  String get editEvent => 'Edit Event';
+
+  @override
+  String get noEvents => 'No events yet';
+
+  @override
+  String get habitBlock => 'Habit';
+
+  @override
+  String get customEvent => 'Custom Event';
 }

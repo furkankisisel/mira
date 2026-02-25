@@ -1055,6 +1055,8 @@
     "seconds": "Seconds",
     "seeFullSubscriptionInfo": "See full subscription info",
     "select": "Select",
+    "selectAmount": "Select amount",
+    "selectAtLeastOneDay": "Please select at least one day",
     "selectAll": "Select All",
     "selectCategory": "Select Category",
     "selectDate": "Select Date",
@@ -1599,5 +1601,18 @@
     "retakeRhythmTestDesc": "Reconfigure your biological clock",
     "rhythmWindowStepTitle": "Best Time Window",
     "rhythmWindowStepSubtitle": "When would you like to do this habit?",
-    "rhythmWindowNoProfileHint": "Complete the rhythm test to get personalized suggestions"
+    "rhythmWindowNoProfileHint": "Complete the rhythm test to get personalized suggestions",
+    "weeklySchedule": "Weekly",
+    "addEvent": "Add Event",
+    "eventTitle": "Event Title",
+    "eventDescription": "Description",
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "selectDay": "Select Day",
+    "eventDetails": "Event Details",
+    "deleteEvent": "Delete Event",
+    "editEvent": "Edit Event",
+    "noEvents": "No events yet",
+    "habitBlock": "Habit",
+    "customEvent": "Custom Event"
 }

@@ -1,0 +1,7 @@
+﻿Analyzing mira...                                               
+
+   info - The import of 'package:characters/characters.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' - lib\features\finance\finance_edit_screen.dart:10:8 - unnecessary_import
+   info - The imported package 'characters' isn't a dependency of the importing package - lib\features\finance\finance_edit_screen.dart:10:8 - depend_on_referenced_packages
+  error - The getter 'selectAtLeastOneDay' isn't defined for the type 'AppLocalizations' - lib\features\schedule\presentation\weekly_schedule_screen.dart:1003:55 - undefined_getter
+warning - Unused import: 'features/reports/presentation/reports_screen.dart' - lib\main.dart:49:8 - unused_import
+
