@@ -560,8 +560,19 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
               icon: const Icon(Icons.mood_outlined),
               onPressed: () => _habitKey.currentState?.openMoodScreen(),
             ),
-          // Weekly Schedule screen has no extra AppBar actions
-          // Vision actions (when showing Vision on combined tab)
+          // Weekly Schedule screen actions (index 2)
+          if (_currentIndex == 2)
+            IconButton(
+              tooltip: l10n.weeklyReportsTitle,
+              icon: const Icon(Icons.analytics_outlined),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const ReportsScreen(),
+                  ),
+                );
+              },
+            ),
           // Vision actions (index 1)
           if (_currentIndex == 1)
             ValueListenableBuilder<bool>(

@@ -5,6 +5,9 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io' as io;
 import 'profile_repository.dart';
 import 'dart:ui'; // for ImageFilter
+import '../habit/domain/habit_repository.dart';
+import '../habit/domain/habit_model.dart';
+import '../habit/presentation/habit_analysis_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -24,14 +27,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     ProfileRepository.instance.addListener(_onProfileChange);
     GamificationRepository.instance.initialize();
     GamificationRepository.instance.addListener(_onGamificationChange);
+    HabitRepository.instance.initialize();
+    HabitRepository.instance.addListener(_onHabitChange);
   }
 
   @override
   void dispose() {
     ProfileRepository.instance.removeListener(_onProfileChange);
     GamificationRepository.instance.removeListener(_onGamificationChange);
+    HabitRepository.instance.removeListener(_onHabitChange);
     _nameCtrl.dispose();
     super.dispose();
+  }
+
+  void _onHabitChange() {
+    if (mounted) setState(() {});
   }
 
   void _onProfileChange() {
@@ -533,6 +543,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         const SliverToBoxAdapter(child: SizedBox(height: 32)),
 
+        // 2.5. Streak Tracker (Habits 7-Day History)
+        if (HabitRepository.instance.habits.isNotEmpty) ...[
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 12),
+            sliver: SliverToBoxAdapter(
+              child: Row(
+                children: [
+                  Container(
+                    width: 4,
+                    height: 18,
+                    decoration: BoxDecoration(
+                      color: scheme.primary,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    l10n.habits,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 100, // Fixed height for streak cards row
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                scrollDirection: Axis.horizontal,
+                itemCount: HabitRepository.instance.habits.length,
+                itemBuilder: (context, index) {
+                  final habit = HabitRepository.instance.habits[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: _buildStreakCard(context, habit, scheme),
+                  );
+                },
+              ),
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 32)),
+        ],
+
         // 3. Badges Grid
         for (final entry in groups.entries) ...[
           SliverPadding(
@@ -618,6 +675,115 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildStreakCard(
+      BuildContext context, Habit habit, ColorScheme scheme) {
+    // Determine last 7 days keys
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final List<bool> last7Days = [];
+
+    for (int i = 6; i >= 0; i--) {
+      final date = today.subtract(Duration(days: i));
+      final dateKey =
+          '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+
+      bool completed = false;
+      if (i == 0) {
+        // Today => check immediate property
+        completed = habit.isCompleted;
+      } else {
+        // Past day
+        completed = HabitRepository.evaluateCompletionFromLog(habit, dateKey);
+      }
+      last7Days.add(completed);
+    }
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (ctx) => HabitAnalysisScreen(
+              habitTitle: habit.title,
+              habitDescription: habit.description,
+              habitIcon: habit.icon,
+              habitColor: habit.color,
+              currentStreak: habit.currentStreak,
+              targetCount: habit.targetCount,
+              unit: habit.unit,
+              habitId: habit.id,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        width: 140,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: scheme.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: scheme.outlineVariant.withValues(alpha: 0.4),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Icon & Title
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: habit.color.withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: habit.emoji != null && habit.emoji!.isNotEmpty
+                      ? Text(habit.emoji!, style: const TextStyle(fontSize: 14))
+                      : Icon(habit.icon, size: 14, color: habit.color),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    habit.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const Spacer(),
+            // 7 Days Dots
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: last7Days.map((isDone) {
+                return Container(
+                  width: 12,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    color:
+                        isDone ? habit.color : scheme.surfaceContainerHighest,
+                    shape: BoxShape.circle,
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
