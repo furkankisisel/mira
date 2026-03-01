@@ -77,6 +77,7 @@ dependencies:
   google_mobile_ads: ^7.0.0
   # Home screen widgets for iOS and Android
   home_widget: ^0.6.0
+  flutter_staggered_animations: ^1.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

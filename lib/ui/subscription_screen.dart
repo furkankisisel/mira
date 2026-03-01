@@ -5,6 +5,7 @@ import '../config/constants.dart'; // constants.dart dosyasının güncel olduğ
 import '../models/mira_plan.dart';
 import '../services/iap_service.dart';
 import '../services/premium_manager.dart';
+import '../design_system/components/primary_gradient_button.dart';
 
 /// Premium subscription plans screen.
 class SubscriptionScreen extends StatefulWidget {
@@ -68,9 +69,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       // --- GÜNCELLENEN KISIM BİTİŞ ---
 
       // Varsayılan seçimi ayarla
-      _selectedPlanIndex = (_monthlyPlan != null)
-          ? 0
-          : ((_yearlyPlan != null) ? 0 : -1);
+      _selectedPlanIndex =
+          (_monthlyPlan != null) ? 0 : ((_yearlyPlan != null) ? 0 : -1);
 
       if (mounted) {
         setState(() {
@@ -214,13 +214,13 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(_error!, textAlign: TextAlign.center),
-              ),
-            )
-          : _buildPlansView(),
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(_error!, textAlign: TextAlign.center),
+                  ),
+                )
+              : _buildPlansView(),
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -356,9 +356,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: isSelected
-                          ? theme.colorScheme.primary
-                          : Colors.grey,
+                      color:
+                          isSelected ? theme.colorScheme.primary : Colors.grey,
                       width: 2,
                     ),
                   ),
@@ -430,17 +429,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
-                child: FilledButton(
+                child: PrimaryGradientButton(
                   onPressed: onBuy,
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  borderRadius: 10,
                   child: Text(
                     AppLocalizations.of(context).continueButton,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -579,30 +573,16 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
-              child: FilledButton.icon(
+              child: PrimaryGradientButton(
                 onPressed: _isApplyingPromoCode ? null : _applyPromoCode,
-                icon: _isApplyingPromoCode
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white,
-                          ),
-                        ),
-                      )
-                    : const Icon(Icons.redeem_rounded),
-                label: Text(
+                icon: Icons.redeem_rounded,
+                isLoading: _isApplyingPromoCode,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                borderRadius: 12,
+                child: Text(
                   _isApplyingPromoCode
                       ? AppLocalizations.of(context).applying
                       : AppLocalizations.of(context).applyCode,
-                ),
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
                 ),
               ),
             ),

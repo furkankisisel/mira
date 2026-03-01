@@ -146,200 +146,211 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.settings), centerTitle: true),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        children: [
-          const SizedBox(height: 12),
-          _SettingsSection(
-            title: l10n.appearance,
-            children: [
-              AnimatedBuilder(
-                animation: SettingsRepository.instance,
-                builder: (context, _) => SwitchListTile(
-                  secondary: const Icon(Icons.local_fire_department_outlined),
-                  title: Text(l10n.streakIndicator),
-                  subtitle: Text(l10n.streakIndicatorDesc),
-                  value: SettingsRepository.instance.showStreakIndicators,
-                  onChanged: (v) =>
-                      SettingsRepository.instance.setShowStreakIndicators(v),
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.language),
-                title: Text(l10n.language),
-                subtitle: Text(
-                  '${_languageManager.currentLanguage.flag} ${_languageManager.currentLanguage.displayName}',
-                ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => _showLanguageSelector(context),
-              ),
-              ListTile(
-                leading: const Icon(Icons.color_lens_outlined),
-                title: Text(l10n.theme),
-                subtitle: Text(_getThemeText(context)),
-                trailing: Switch(
-                  value: widget.themeMode == ThemeMode.dark,
-                  onChanged: widget.onToggleTheme != null
-                      ? (_) => widget.onToggleTheme!()
-                      : null,
-                ),
-                onTap: widget.onToggleTheme,
-              ),
-              if (widget.currentVariant != null &&
-                  widget.onVariantChanged != null)
-                ListTile(
-                  leading: const Icon(Icons.palette_outlined),
-                  title: Text(l10n.colorTheme),
-                  subtitle: Text(
-                    widget.currentVariant?.getDisplayName(context) ?? '',
-                  ),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showThemeVariantSheet(context),
-                ),
-            ],
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar.large(
+            title: Text(l10n.settings),
+            centerTitle: true,
           ),
-          const SizedBox(height: 12),
-          _SettingsSection(
-            title: l10n.notifications,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.notifications_outlined),
-                title: Text(l10n.notificationSettings),
-                subtitle: Text(l10n.notificationSettingsSubtitle),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => NotificationSettingsScreen(
-                        variant: widget.currentVariant,
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                const SizedBox(height: 12),
+                _SettingsSection(
+                  title: l10n.appearance,
+                  children: [
+                    AnimatedBuilder(
+                      animation: SettingsRepository.instance,
+                      builder: (context, _) => SwitchListTile(
+                        secondary:
+                            const Icon(Icons.local_fire_department_outlined),
+                        title: Text(l10n.streakIndicator),
+                        subtitle: Text(l10n.streakIndicatorDesc),
+                        value: SettingsRepository.instance.showStreakIndicators,
+                        onChanged: (v) => SettingsRepository.instance
+                            .setShowStreakIndicators(v),
                       ),
                     ),
-                  );
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _SettingsSection(
-            title: l10n.backupRestore,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.backup_outlined),
-                title: Text(l10n.backupRestore),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(builder: (_) => const BackupPage()),
-                  );
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _SettingsSection(
-            title: l10n.subscription,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.workspace_premium_outlined),
-                title: Text(l10n.manageSubscription),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const ManageSubscriptionScreen(),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _SettingsSection(
-            title: l10n.testsSection,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.psychology_outlined),
-                title: Text(l10n.retakePersonalityTest),
-                subtitle: Text(l10n.retakePersonalityTestDesc),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const OnboardingScreen(
-                        isRetake: true,
+                    ListTile(
+                      leading: const Icon(Icons.language),
+                      title: Text(l10n.language),
+                      subtitle: Text(
+                        '${_languageManager.currentLanguage.flag} ${_languageManager.currentLanguage.displayName}',
                       ),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => _showLanguageSelector(context),
                     ),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.schedule_outlined),
-                title: Text(l10n.retakeRhythmTest),
-                subtitle: Text(l10n.retakeRhythmTestDesc),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () async {
-                  if (await requirePremium(context)) {
-                    if (context.mounted) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const RhythmOnboardingScreen(),
+                    ListTile(
+                      leading: const Icon(Icons.color_lens_outlined),
+                      title: Text(l10n.theme),
+                      subtitle: Text(_getThemeText(context)),
+                      trailing: Switch(
+                        value: widget.themeMode == ThemeMode.dark,
+                        onChanged: widget.onToggleTheme != null
+                            ? (_) => widget.onToggleTheme!()
+                            : null,
+                      ),
+                      onTap: widget.onToggleTheme,
+                    ),
+                    if (widget.currentVariant != null &&
+                        widget.onVariantChanged != null)
+                      ListTile(
+                        leading: const Icon(Icons.palette_outlined),
+                        title: Text(l10n.colorTheme),
+                        subtitle: Text(
+                          widget.currentVariant?.getDisplayName(context) ?? '',
                         ),
-                      );
-                    }
-                  }
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _SettingsSection(
-            title: l10n.privacySecurity,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.privacy_tip_outlined),
-                title: Text(l10n.privacySecurity),
-                subtitle: Text(l10n.privacySecuritySubtitle),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const PrivacySecurityScreen(),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _SettingsSection(
-            title: l10n.account,
-            children: [
-              if (AuthRepository.instance.account == null)
-                ListTile(
-                  leading: const Icon(
-                    Icons.login,
-                    color: Colors.blue,
-                  ), // Use app primary color locally or explicit color
-                  title: Text(l10n.signInToSaveData),
-                  subtitle: Text(l10n.guestAccount),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () async {
-                    await AuthRepository.instance.signIn();
-                  },
-                )
-              else
-                ListTile(
-                  leading: const Icon(Icons.logout, color: Colors.red),
-                  title: Text(
-                    l10n.signOut,
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                  onTap: () => _handleSignOut(context),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _showThemeVariantSheet(context),
+                      ),
+                  ],
                 ),
-            ],
+                const SizedBox(height: 12),
+                _SettingsSection(
+                  title: l10n.notifications,
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.notifications_outlined),
+                      title: Text(l10n.notificationSettings),
+                      subtitle: Text(l10n.notificationSettingsSubtitle),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => NotificationSettingsScreen(
+                              variant: widget.currentVariant,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                _SettingsSection(
+                  title: l10n.backupRestore,
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.backup_outlined),
+                      title: Text(l10n.backupRestore),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                              builder: (_) => const BackupPage()),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                _SettingsSection(
+                  title: l10n.subscription,
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.workspace_premium_outlined),
+                      title: Text(l10n.manageSubscription),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const ManageSubscriptionScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                _SettingsSection(
+                  title: l10n.testsSection,
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.psychology_outlined),
+                      title: Text(l10n.retakePersonalityTest),
+                      subtitle: Text(l10n.retakePersonalityTestDesc),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const OnboardingScreen(
+                              isRetake: true,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.schedule_outlined),
+                      title: Text(l10n.retakeRhythmTest),
+                      subtitle: Text(l10n.retakeRhythmTestDesc),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () async {
+                        if (await requirePremium(context)) {
+                          if (context.mounted) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const RhythmOnboardingScreen(),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                _SettingsSection(
+                  title: l10n.privacySecurity,
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.privacy_tip_outlined),
+                      title: Text(l10n.privacySecurity),
+                      subtitle: Text(l10n.privacySecuritySubtitle),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const PrivacySecurityScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                _SettingsSection(
+                  title: l10n.account,
+                  children: [
+                    if (AuthRepository.instance.account == null)
+                      ListTile(
+                        leading: const Icon(
+                          Icons.login,
+                          color: Colors.blue,
+                        ), // Use app primary color locally or explicit color
+                        title: Text(l10n.signInToSaveData),
+                        subtitle: Text(l10n.guestAccount),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () async {
+                          await AuthRepository.instance.signIn();
+                        },
+                      )
+                    else
+                      ListTile(
+                        leading: const Icon(Icons.logout, color: Colors.red),
+                        title: Text(
+                          l10n.signOut,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                        onTap: () => _handleSignOut(context),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+              ]),
+            ),
           ),
-          const SizedBox(height: 24),
         ],
       ),
     );

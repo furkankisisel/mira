@@ -32,9 +32,29 @@ enum MoodToken { awful, ok, good, great }
 
 extension MoodTokenColor on MoodToken {
   Color get color => switch (this) {
-    MoodToken.awful => AppColors.accentClay,
-    MoodToken.ok => AppColors.accentSand,
-    MoodToken.good => AppColors.accentBlue,
-    MoodToken.great => AppColors.accentGold,
-  };
+        MoodToken.awful => AppColors.accentClay,
+        MoodToken.ok => AppColors.accentSand,
+        MoodToken.good => AppColors.accentBlue,
+        MoodToken.great => AppColors.accentGold,
+      };
+}
+
+/// Extension to easily generate a slightly tilted, harmonious gradient from a single base color.
+extension GradientExtension on Color {
+  LinearGradient get toGradient {
+    final hsl = HSLColor.fromColor(this);
+    // Shift hue slightly (+15 degrees) and make it slightly lighter for a modern, energetic gradient
+    final hslLight = hsl
+        .withHue((hsl.hue + 15) % 360)
+        .withLightness((hsl.lightness + 0.08).clamp(0.0, 1.0));
+
+    return LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [
+        this,
+        hslLight.toColor(),
+      ],
+    );
+  }
 }

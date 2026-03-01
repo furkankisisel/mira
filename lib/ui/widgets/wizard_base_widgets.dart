@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../design_system/components/primary_gradient_button.dart';
 
 /// Tüm wizard ekranları için ortak scaffold yapısı
 class WizardScaffold extends StatelessWidget {
@@ -321,30 +322,20 @@ class WizardNavigationButtons extends StatelessWidget {
         // Main action button
         SizedBox(
           width: double.infinity,
-          child: FilledButton(
+          child: PrimaryGradientButton(
             onPressed: isNextEnabled
                 ? () {
                     HapticFeedback.lightImpact();
                     onNext();
                   }
                 : null,
-            style: FilledButton.styleFrom(
-              backgroundColor: buttonColor,
-              disabledBackgroundColor: colorScheme.surfaceContainerHighest,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
+            color: buttonColor,
+            elevation: 4,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   nextLabel ?? (isLastStep ? 'Tamamla' : 'Devam'),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
                 ),
                 if (!isLastStep) ...[
                   const SizedBox(width: 8),
@@ -502,28 +493,18 @@ class WizardWelcomePage extends StatelessWidget {
             },
             child: SizedBox(
               width: double.infinity,
-              child: FilledButton(
+              child: PrimaryGradientButton(
                 onPressed: () {
                   HapticFeedback.lightImpact();
                   onStart();
                 },
-                style: FilledButton.styleFrom(
-                  backgroundColor: color,
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
+                color: color,
+                elevation: 4,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       buttonText,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
-                      ),
                     ),
                     const SizedBox(width: 8),
                     const Icon(Icons.arrow_forward_rounded, size: 20),

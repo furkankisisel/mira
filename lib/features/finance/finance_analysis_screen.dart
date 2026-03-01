@@ -65,7 +65,7 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
   // We keep the original constructor param `month` as the initial selected period.
   late PeriodMode _mode;
   late DateTime
-  _selectedPeriod; // if month -> year+month used; if year -> year used (month=1)
+      _selectedPeriod; // if month -> year+month used; if year -> year used (month=1)
   late final TransactionRepository _repo;
   late final FinanceCategoryRepository _catRepo;
   late final BudgetRepository _budgetRepo;
@@ -112,18 +112,18 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
     final incomes = _loading
         ? const <FinanceTransaction>[]
         : (_mode == PeriodMode.month
-              ? _repo.incomesForMonth(_selectedPeriod)
-              : _aggregateIncomesForYear(_selectedPeriod.year));
+            ? _repo.incomesForMonth(_selectedPeriod)
+            : _aggregateIncomesForYear(_selectedPeriod.year));
     final expenses = _loading
         ? const <FinanceTransaction>[]
         : (_mode == PeriodMode.month
-              ? _repo.expensesForMonth(_selectedPeriod)
-              : _aggregateExpensesForYear(_selectedPeriod.year));
+            ? _repo.expensesForMonth(_selectedPeriod)
+            : _aggregateExpensesForYear(_selectedPeriod.year));
     final allTx = _loading
         ? const <FinanceTransaction>[]
         : (_mode == PeriodMode.month
-              ? _repo.forMonth(_selectedPeriod)
-              : _aggregateForYear(_selectedPeriod.year));
+            ? _repo.forMonth(_selectedPeriod)
+            : _aggregateForYear(_selectedPeriod.year));
 
     final incomeTotal = incomes.fold<double>(0, (s, e) => s + e.amount);
     final expenseTotal = expenses.fold<double>(0, (s, e) => s + e.amount);
@@ -134,114 +134,120 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
 
     final content = Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        surfaceTintColor: Colors.transparent,
-        title: Text(
-          AppLocalizations.of(context).financeAnalysisTitle(titleStr),
-        ),
-      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : Container(
-              color: Theme.of(context).colorScheme.surface,
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  _FinancialSummaryCard(
-                    income: incomeTotal,
-                    expense: expenseTotal,
-                    net: net,
+          : CustomScrollView(
+              slivers: [
+                SliverAppBar.large(
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                  surfaceTintColor: Colors.transparent,
+                  title: Text(
+                    AppLocalizations.of(context).financeAnalysisTitle(titleStr),
                   ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.all(16),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      _FinancialSummaryCard(
+                        income: incomeTotal,
+                        expense: expenseTotal,
+                        net: net,
+                      ),
 
-                  const SizedBox(height: 24),
-                  // Mode selector + period chooser
-                  _ModeAndPeriodSelector(
-                    mode: _mode,
-                    selected: _selectedPeriod,
-                    onModeChanged: (m) => setState(() => _mode = m),
-                    onPeriodChanged: (d) {
-                      setState(() => _selectedPeriod = d);
-                      if (_mode == PeriodMode.month) {
-                        setState(() {
-                          _plannedMonthlySpend = _budgetRepo.getBudgetForMonth(
-                            DateTime(d.year, d.month, 1),
-                          );
-                        });
-                      }
-                    },
+                      const SizedBox(height: 24),
+                      // Mode selector + period chooser
+                      _ModeAndPeriodSelector(
+                        mode: _mode,
+                        selected: _selectedPeriod,
+                        onModeChanged: (m) => setState(() => _mode = m),
+                        onPeriodChanged: (d) {
+                          setState(() => _selectedPeriod = d);
+                          if (_mode == PeriodMode.month) {
+                            setState(() {
+                              _plannedMonthlySpend =
+                                  _budgetRepo.getBudgetForMonth(
+                                DateTime(d.year, d.month, 1),
+                              );
+                            });
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      // Top KPIs
+                      if (_mode == PeriodMode.month) ...[
+                        _BudgetPlanner(
+                          month: _selectedPeriod,
+                          plannedMonthlySpend: _plannedMonthlySpend,
+                          currentSpend: expenseTotal,
+                          onSave: (v) async {
+                            await _budgetRepo.setBudgetForMonth(
+                              DateTime(
+                                _selectedPeriod.year,
+                                _selectedPeriod.month,
+                                1,
+                              ),
+                              v,
+                            );
+                            if (mounted)
+                              setState(() => _plannedMonthlySpend = v);
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+                      const SizedBox(height: 16),
+                      // Removed delta chips (income/expense changes) as requested
+                      Text(
+                        _mode == PeriodMode.month
+                            ? AppLocalizations.of(context).monthlyTrend
+                            : AppLocalizations.of(context).yearlyProgress,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 8),
+                      if (_mode == PeriodMode.month)
+                        _MonthlyTrendChart(
+                          month: _selectedPeriod,
+                          transactions: allTx,
+                        )
+                      else
+                        _YearlyTrendChart(
+                          year: _selectedPeriod.year,
+                          transactions: allTx,
+                        ),
+                      const SizedBox(height: 16),
+                      Text(
+                        AppLocalizations.of(context).expenseDistributionPie,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 8),
+                      _ExpensePieChart(
+                        month: _selectedPeriod,
+                        repo: _repo,
+                        catRepo: _catRepo,
+                        transactions: expenses,
+                        // Grafik dilimlerine tıklayınca açılmasın
+                        onSelect: null,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        AppLocalizations.of(context).breakdownByCategory,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 8),
+                      _CategoryBreakdown(
+                        month: _selectedPeriod,
+                        transactions: allTx,
+                        repo: _repo,
+                        catRepo: _catRepo,
+                        onSelect: (catId) =>
+                            _showCategoryDetails(context, catId),
+                      ),
+                    ]),
                   ),
-                  const SizedBox(height: 12),
-                  // Top KPIs
-                  if (_mode == PeriodMode.month) ...[
-                    _BudgetPlanner(
-                      month: _selectedPeriod,
-                      plannedMonthlySpend: _plannedMonthlySpend,
-                      currentSpend: expenseTotal,
-                      onSave: (v) async {
-                        await _budgetRepo.setBudgetForMonth(
-                          DateTime(
-                            _selectedPeriod.year,
-                            _selectedPeriod.month,
-                            1,
-                          ),
-                          v,
-                        );
-                        if (mounted) setState(() => _plannedMonthlySpend = v);
-                      },
-                    ),
-                    const SizedBox(height: 24),
-                  ],
-                  const SizedBox(height: 16),
-                  // Removed delta chips (income/expense changes) as requested
-                  Text(
-                    _mode == PeriodMode.month
-                        ? AppLocalizations.of(context).monthlyTrend
-                        : AppLocalizations.of(context).yearlyProgress,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  if (_mode == PeriodMode.month)
-                    _MonthlyTrendChart(
-                      month: _selectedPeriod,
-                      transactions: allTx,
-                    )
-                  else
-                    _YearlyTrendChart(
-                      year: _selectedPeriod.year,
-                      transactions: allTx,
-                    ),
-                  const SizedBox(height: 16),
-                  Text(
-                    AppLocalizations.of(context).expenseDistributionPie,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  _ExpensePieChart(
-                    month: _selectedPeriod,
-                    repo: _repo,
-                    catRepo: _catRepo,
-                    transactions: expenses,
-                    // Grafik dilimlerine tıklayınca açılmasın
-                    onSelect: null,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    AppLocalizations.of(context).breakdownByCategory,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  _CategoryBreakdown(
-                    month: _selectedPeriod,
-                    transactions: allTx,
-                    repo: _repo,
-                    catRepo: _catRepo,
-                    onSelect: (catId) => _showCategoryDetails(context, catId),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
     );
 
@@ -262,12 +268,11 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
         ? scheme.primary
         : _colorForEmoji(cats[categoryId]?.emoji, cats[categoryId]?.type);
     // Respect currently selected period
-    final txs =
-        (_mode == PeriodMode.month
-                ? _repo.expensesForMonth(_selectedPeriod)
-                : _aggregateExpensesForYear(_selectedPeriod.year))
-            .where((e) => (e.categoryId ?? '_none') == (categoryId ?? '_none'))
-            .toList();
+    final txs = (_mode == PeriodMode.month
+            ? _repo.expensesForMonth(_selectedPeriod)
+            : _aggregateExpensesForYear(_selectedPeriod.year))
+        .where((e) => (e.categoryId ?? '_none') == (categoryId ?? '_none'))
+        .toList();
 
     showModalBottomSheet(
       context: context,
@@ -329,7 +334,9 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
                                 ),
                                 trailing: Text(
                                   nf.format(t.amount),
-                                  style: Theme.of(ctx).textTheme.bodyMedium
+                                  style: Theme.of(ctx)
+                                      .textTheme
+                                      .bodyMedium
                                       ?.copyWith(
                                         color: Colors.redAccent,
                                         fontWeight: FontWeight.w600,
@@ -629,16 +636,16 @@ class _CategoryRow extends StatelessWidget {
                   child: Text(
                     name,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
+                          fontWeight: FontWeight.w500,
+                        ),
                   ),
                 ),
                 Text(
                   nf.format(value),
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: value >= 0 ? Colors.green : Colors.redAccent,
-                    fontWeight: FontWeight.w700,
-                  ),
+                        color: value >= 0 ? Colors.green : Colors.redAccent,
+                        fontWeight: FontWeight.w700,
+                      ),
                 ),
                 const SizedBox(width: 8),
                 Icon(
@@ -676,9 +683,8 @@ class _MonthlyTrendChart extends StatelessWidget {
     final totals = List<double>.generate(days, (_) => 0.0);
     for (final tx in transactions) {
       final dayIdx = tx.date.day - 1;
-      totals[dayIdx] += tx.type == TransactionType.expense
-          ? -tx.amount
-          : tx.amount;
+      totals[dayIdx] +=
+          tx.type == TransactionType.expense ? -tx.amount : tx.amount;
     }
 
     final groups = <BarChartGroupData>[];
@@ -746,8 +752,10 @@ class _MonthlyTrendChart extends StatelessWidget {
                       child: Text(
                         '$d',
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                            ),
                       ),
                     );
                   }
@@ -798,9 +806,8 @@ class _YearlyTrendChart extends StatelessWidget {
     for (final tx in transactions) {
       if (tx.date.year != year) continue;
       final idx = tx.date.month - 1;
-      months[idx] += tx.type == TransactionType.expense
-          ? -tx.amount
-          : tx.amount;
+      months[idx] +=
+          tx.type == TransactionType.expense ? -tx.amount : tx.amount;
     }
 
     final groups = <BarChartGroupData>[];
@@ -870,8 +877,9 @@ class _YearlyTrendChart extends StatelessWidget {
                     child: Text(
                       label[0], // Only first letter for compactness
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
                     ),
                   );
                 },
@@ -930,9 +938,8 @@ class _ExpensePieChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cats = {for (final c in catRepo.all()) c.id: c};
-    final expenses = transactions
-        .where((t) => t.type == TransactionType.expense)
-        .toList();
+    final expenses =
+        transactions.where((t) => t.type == TransactionType.expense).toList();
     if (expenses.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(24),
@@ -944,8 +951,8 @@ class _ExpensePieChart extends StatelessWidget {
         child: Text(
           AppLocalizations.of(context).noExpenses,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
         ),
       );
     }
@@ -1011,8 +1018,8 @@ class _ExpensePieChart extends StatelessWidget {
           next = fallbackPalette[palIdx % fallbackPalette.length];
           palIdx++;
           attempts++;
-        } while (used.contains(next.value) &&
-            attempts < fallbackPalette.length * 2);
+        } while (
+            used.contains(next.value) && attempts < fallbackPalette.length * 2);
         chosen = next;
       }
       colorMap[id] = chosen;
@@ -1098,8 +1105,8 @@ class _ExpensePieChart extends StatelessWidget {
                     Text(
                       '${percent.toStringAsFixed(1)}%',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ],
                 ),
@@ -1332,10 +1339,10 @@ Future<DateTime?> showCustomMonthPicker({
                       child: Text(
                         label,
                         style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
-                          color: selected
-                              ? Theme.of(ctx).colorScheme.onPrimary
-                              : null,
-                        ),
+                              color: selected
+                                  ? Theme.of(ctx).colorScheme.onPrimary
+                                  : null,
+                            ),
                       ),
                     ),
                   );
@@ -1438,10 +1445,10 @@ Future<int?> showCustomYearPicker({
                           child: Text(
                             y.toString(),
                             style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
-                              color: selected
-                                  ? Theme.of(ctx).colorScheme.onPrimary
-                                  : null,
-                            ),
+                                  color: selected
+                                      ? Theme.of(ctx).colorScheme.onPrimary
+                                      : null,
+                                ),
                           ),
                         ),
                       );
@@ -1575,8 +1582,8 @@ class _BudgetPlannerState extends State<_BudgetPlanner> {
                   Text(
                     l10n.savingsBudgetPlan,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                 ],
               ),
@@ -1643,9 +1650,9 @@ class _BudgetPlannerState extends State<_BudgetPlanner> {
                     Text(
                       nf.format(spent),
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
                     ),
                   ],
                 ),
@@ -1659,9 +1666,9 @@ class _BudgetPlannerState extends State<_BudgetPlanner> {
                     Text(
                       nf.format(target),
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
                     ),
                   ],
                 ),

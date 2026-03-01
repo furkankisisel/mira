@@ -21,6 +21,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import '../data/vision_template_repository.dart';
 import '../../../ui/premium_gate.dart';
+import '../../../design_system/components/primary_gradient_button.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:flutter/services.dart';
 
 class VisionScreen extends StatefulWidget {
   const VisionScreen({
@@ -260,7 +263,7 @@ class _VisionScreenState extends State<VisionScreen> {
             onPressed: () => Navigator.pop(ctx),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
+          PrimaryGradientButton(
             onPressed: () async {
               if (taskCtrl.text.trim().isNotEmpty) {
                 await _repo.addTask(v.id, taskCtrl.text.trim());
@@ -539,7 +542,7 @@ class _VisionScreenState extends State<VisionScreen> {
                             child: Text(AppLocalizations.of(context).cancel),
                           ),
                           const SizedBox(width: 8),
-                          FilledButton(
+                          PrimaryGradientButton(
                             onPressed: () async {
                               if (text.trim().isEmpty) return;
                               final id = DateTime.now()
@@ -697,10 +700,8 @@ class _VisionScreenState extends State<VisionScreen> {
                               onPressed: () => Navigator.pop(dctx, false),
                               child: Text(AppLocalizations.of(context).cancel),
                             ),
-                            FilledButton(
-                              style: FilledButton.styleFrom(
-                                backgroundColor: Colors.red[600],
-                              ),
+                            PrimaryGradientButton(
+                              color: Colors.red[600],
                               onPressed: () => Navigator.pop(dctx, true),
                               child: Text(AppLocalizations.of(context).delete),
                             ),
@@ -834,7 +835,7 @@ class _VisionScreenState extends State<VisionScreen> {
               ),
             ),
             actions: [
-              FilledButton(
+              PrimaryGradientButton(
                 onPressed: () => Navigator.pop(ctx),
                 child: Text(l10n.close),
               ),
@@ -1131,7 +1132,7 @@ class _VisionScreenState extends State<VisionScreen> {
                             child: Text(AppLocalizations.of(context).cancel),
                           ),
                           const SizedBox(width: 8),
-                          FilledButton(
+                          PrimaryGradientButton(
                             onPressed: () async {
                               if (text.trim().isEmpty) return;
                               await _textRepo.update(
@@ -1340,7 +1341,7 @@ class _VisionScreenState extends State<VisionScreen> {
                         ),
                         const SizedBox(width: 16),
                         Expanded(
-                          child: FilledButton(
+                          child: PrimaryGradientButton(
                             onPressed: () {
                               final updated = v.copyWith(
                                 linkedHabitIds: selected.toList(),
@@ -1348,12 +1349,8 @@ class _VisionScreenState extends State<VisionScreen> {
                               VisionRepository.instance.update(updated);
                               Navigator.pop(ctx);
                             },
-                            style: FilledButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            borderRadius: 12.0,
                             child: Text(AppLocalizations.of(context).save),
                           ),
                         ),
@@ -2132,359 +2129,407 @@ class _Board extends StatelessWidget {
 
     return Container(
       color: theme.scaffoldBackgroundColor,
-      child: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: visions.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (_, i) {
-          final v = visions[i];
-          final color = Color(v.colorValue);
-          final tasks = v.tasks;
+      child: AnimationLimiter(
+        child: ListView.separated(
+          padding: const EdgeInsets.all(16),
+          itemCount: visions.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          itemBuilder: (_, i) {
+            final v = visions[i];
+            final color = Color(v.colorValue);
+            final tasks = v.tasks;
 
-          return GestureDetector(
-            onTap: () => onTap(v),
-            onLongPress: () => onMenu(v),
-            child: Container(
-              margin: const EdgeInsets.only(
-                bottom: 4,
-              ), // Slight spacing for shadow visibility
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20), // Softer corners
-                boxShadow: [
-                  BoxShadow(
-                    color: color.withValues(alpha: 0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    color,
-                    Color.lerp(color, Colors.black, 0.2)!, // Richer gradient
-                  ],
-                ),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Column(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Header Area
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.2),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Text(
-                                  v.emoji ?? '🎯',
-                                  style: const TextStyle(fontSize: 32),
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      v.title,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w800,
-                                        letterSpacing: -0.5,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    _CompactProgressBar(vision: v),
-                                  ],
-                                ),
-                              ),
-                            ],
+            return AnimationConfiguration.staggeredList(
+              position: i,
+              duration: const Duration(milliseconds: 375),
+              child: SlideAnimation(
+                verticalOffset: 50.0,
+                child: FadeInAnimation(
+                  child: _AnimatedScaleButton(
+                    onTap: () => onTap(v),
+                    onLongPress: () => onMenu(v),
+                    child: Container(
+                      margin: const EdgeInsets.only(
+                        bottom: 4,
+                      ), // Slight spacing for shadow visibility
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            BorderRadius.circular(20), // Softer corners
+                        boxShadow: [
+                          BoxShadow(
+                            color: color.withValues(alpha: 0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
                           ),
+                        ],
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color.lerp(color, Colors.white, 0.3) ?? color,
+                            Color.lerp(color, Colors.black, 0.2) ?? color,
+                          ],
                         ),
-
-                        // Linked Habits Section
-                        if (v.linkedHabitIds.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: v.linkedHabitIds.map((hid) {
-                                  final habit = HabitRepository.instance.habits
-                                      .firstWhere(
-                                    (h) => h.id == hid,
-                                    orElse: () => Habit(
-                                      id: '',
-                                      title: '?',
-                                      description: '',
-                                      icon: Icons.help,
-                                      color: Colors.grey,
-                                      targetCount: 0,
-                                      habitType: HabitType.simple,
-                                      unit: '',
-                                      currentStreak: 0,
-                                      isCompleted: false,
-                                      progressDate: '',
-                                      startDate: '',
-                                    ),
-                                  );
-                                  if (habit.id.isEmpty) return const SizedBox();
-
-                                  return Container(
-                                    margin: const EdgeInsets.only(right: 8),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 6,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color:
-                                          Colors.white.withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color:
-                                            Colors.white.withValues(alpha: 0.1),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          habit.emoji ?? '⭐',
-                                          style: const TextStyle(fontSize: 14),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Text(
-                                          habit.title,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
-                            ),
-                          ),
-
-                        // Link Habit Button (Inline)
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.1),
-                              width: 1,
-                            ),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: GestureDetector(
-                              onTap: () => onLink(v),
-                              child: InkWell(
-                                onTap: () => onLink(v),
-                                borderRadius: BorderRadius.circular(16),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 12,
-                                  ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Column(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                // Header Area
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(20, 20, 20, 12),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Icon(
-                                        Icons.link,
-                                        color: Colors.white.withValues(
-                                          alpha: 0.8,
+                                      Container(
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white
+                                              .withValues(alpha: 0.2),
+                                          shape: BoxShape.circle,
                                         ),
-                                        size: 18,
+                                        child: Text(
+                                          v.emoji ?? '🎯',
+                                          style: const TextStyle(fontSize: 32),
+                                        ),
                                       ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        l10n.linkHabits,
-                                        style: TextStyle(
-                                          color: Colors.white.withValues(
-                                            alpha: 0.9,
-                                          ),
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
+                                      const SizedBox(width: 16),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              v.title,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.w800,
+                                                letterSpacing: -0.5,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            _CompactProgressBar(vision: v),
+                                          ],
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              ),
-                            ),
-                          ),
-                        ),
 
-                        // Tasks Section (Card-in-Card look)
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.1),
-                              width: 1,
-                            ),
-                          ),
-                          child: Column(
-                            children: [
-                              if (tasks.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: 8,
-                                    bottom: 4,
-                                  ),
-                                  child: Column(
-                                    children: tasks
-                                        .map(
-                                          (task) => Material(
-                                            color: Colors.transparent,
-                                            child: InkWell(
-                                              onTap: () =>
-                                                  onToggleTask(v, task.id),
+                                // Linked Habits Section
+                                if (v.linkedHabitIds.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        16, 0, 16, 12),
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                        children: v.linkedHabitIds.map((hid) {
+                                          final habit = HabitRepository
+                                              .instance.habits
+                                              .firstWhere(
+                                            (h) => h.id == hid,
+                                            orElse: () => Habit(
+                                              id: '',
+                                              title: '?',
+                                              description: '',
+                                              icon: Icons.help,
+                                              color: Colors.grey,
+                                              targetCount: 0,
+                                              habitType: HabitType.simple,
+                                              unit: '',
+                                              currentStreak: 0,
+                                              isCompleted: false,
+                                              progressDate: '',
+                                              startDate: '',
+                                            ),
+                                          );
+                                          if (habit.id.isEmpty)
+                                            return const SizedBox();
+
+                                          return Container(
+                                            margin:
+                                                const EdgeInsets.only(right: 8),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 6,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white
+                                                  .withValues(alpha: 0.15),
                                               borderRadius:
-                                                  BorderRadius.circular(8),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  horizontal: 12,
-                                                  vertical: 8,
-                                                ),
-                                                child: Row(
-                                                  children: [
-                                                    Container(
-                                                      decoration: BoxDecoration(
-                                                        color: task.isCompleted
-                                                            ? Colors.white
-                                                                .withValues(
-                                                                alpha: 0.9,
-                                                              )
-                                                            : Colors
-                                                                .transparent,
-                                                        shape: BoxShape.circle,
-                                                        border: Border.all(
-                                                          color: Colors.white
-                                                              .withValues(
-                                                            alpha: 0.6,
-                                                          ),
-                                                          width: 2,
-                                                        ),
-                                                      ),
-                                                      width: 20,
-                                                      height: 20,
-                                                      child: task.isCompleted
-                                                          ? Icon(
-                                                              Icons.check,
-                                                              size: 14,
-                                                              color: color,
-                                                            )
-                                                          : null,
-                                                    ),
-                                                    const SizedBox(width: 12),
-                                                    Expanded(
-                                                      child: Text(
-                                                        task.title,
-                                                        style: TextStyle(
-                                                          color: Colors.white
-                                                              .withValues(
-                                                            alpha:
-                                                                task.isCompleted
-                                                                    ? 0.5
-                                                                    : 0.95,
-                                                          ),
-                                                          fontSize: 15,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          decoration: task
-                                                                  .isCompleted
-                                                              ? TextDecoration
-                                                                  .lineThrough
-                                                              : null,
-                                                          decorationColor:
-                                                              Colors.white
-                                                                  .withValues(
-                                                            alpha: 0.5,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
+                                                  BorderRadius.circular(12),
+                                              border: Border.all(
+                                                color: Colors.white
+                                                    .withValues(alpha: 0.1),
                                               ),
                                             ),
-                                          ),
-                                        )
-                                        .toList(),
-                                  ),
-                                ),
-
-                              // Add Task Button (always visible footer of the list)
-                              Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () => onAddTask(v),
-                                  borderRadius: BorderRadius.vertical(
-                                    top: tasks.isEmpty
-                                        ? const Radius.circular(16)
-                                        : Radius.zero,
-                                    bottom: const Radius.circular(16),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.add_circle_outline_rounded,
-                                          color: Colors.white.withValues(
-                                            alpha: 0.8,
-                                          ),
-                                          size: 18,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          l10n.addTask,
-                                          style: TextStyle(
-                                            color: Colors.white.withValues(
-                                              alpha: 0.9,
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  habit.emoji ?? '⭐',
+                                                  style: const TextStyle(
+                                                      fontSize: 14),
+                                                ),
+                                                const SizedBox(width: 6),
+                                                Text(
+                                                  habit.title,
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ),
+
+                                // Link Habit Button (Inline)
+                                Container(
+                                  margin:
+                                      const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: 0.15),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.1),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: GestureDetector(
+                                      onTap: () => onLink(v),
+                                      child: InkWell(
+                                        onTap: () => onLink(v),
+                                        borderRadius: BorderRadius.circular(16),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 12,
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.link,
+                                                color: Colors.white.withValues(
+                                                  alpha: 0.8,
+                                                ),
+                                                size: 18,
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Text(
+                                                l10n.linkHabits,
+                                                style: TextStyle(
+                                                  color:
+                                                      Colors.white.withValues(
+                                                    alpha: 0.9,
+                                                  ),
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                      ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
+
+                                // Tasks Section (Card-in-Card look)
+                                Container(
+                                  margin:
+                                      const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: 0.15),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.1),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      if (tasks.isNotEmpty)
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            top: 8,
+                                            bottom: 4,
+                                          ),
+                                          child: Column(
+                                            children: tasks
+                                                .map(
+                                                  (task) => Material(
+                                                    color: Colors.transparent,
+                                                    child: InkWell(
+                                                      onTap: () => onToggleTask(
+                                                          v, task.id),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                          horizontal: 12,
+                                                          vertical: 8,
+                                                        ),
+                                                        child: Row(
+                                                          children: [
+                                                            Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: task
+                                                                        .isCompleted
+                                                                    ? Colors
+                                                                        .white
+                                                                        .withValues(
+                                                                        alpha:
+                                                                            0.9,
+                                                                      )
+                                                                    : Colors
+                                                                        .transparent,
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                                border:
+                                                                    Border.all(
+                                                                  color: Colors
+                                                                      .white
+                                                                      .withValues(
+                                                                    alpha: 0.6,
+                                                                  ),
+                                                                  width: 2,
+                                                                ),
+                                                              ),
+                                                              width: 20,
+                                                              height: 20,
+                                                              child: task
+                                                                      .isCompleted
+                                                                  ? Icon(
+                                                                      Icons
+                                                                          .check,
+                                                                      size: 14,
+                                                                      color:
+                                                                          color,
+                                                                    )
+                                                                  : null,
+                                                            ),
+                                                            const SizedBox(
+                                                                width: 12),
+                                                            Expanded(
+                                                              child: Text(
+                                                                task.title,
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                      .white
+                                                                      .withValues(
+                                                                    alpha: task
+                                                                            .isCompleted
+                                                                        ? 0.5
+                                                                        : 0.95,
+                                                                  ),
+                                                                  fontSize: 15,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  decoration: task
+                                                                          .isCompleted
+                                                                      ? TextDecoration
+                                                                          .lineThrough
+                                                                      : null,
+                                                                  decorationColor:
+                                                                      Colors
+                                                                          .white
+                                                                          .withValues(
+                                                                    alpha: 0.5,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                                .toList(),
+                                          ),
+                                        ),
+
+                                      // Add Task Button (always visible footer of the list)
+                                      Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () => onAddTask(v),
+                                          borderRadius: BorderRadius.vertical(
+                                            top: tasks.isEmpty
+                                                ? const Radius.circular(16)
+                                                : Radius.zero,
+                                            bottom: const Radius.circular(16),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(12),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons
+                                                      .add_circle_outline_rounded,
+                                                  color:
+                                                      Colors.white.withValues(
+                                                    alpha: 0.8,
+                                                  ),
+                                                  size: 18,
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Text(
+                                                  l10n.addTask,
+                                                  style: TextStyle(
+                                                    color:
+                                                        Colors.white.withValues(
+                                                      alpha: 0.9,
+                                                    ),
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -2579,5 +2624,74 @@ class _CoverImage extends StatelessWidget {
         ? Image.file(io.File(path), fit: BoxFit.cover)
         : Image.asset(path, fit: BoxFit.cover);
     return img;
+  }
+}
+
+class _AnimatedScaleButton extends StatefulWidget {
+  final Widget child;
+  final VoidCallback onTap;
+  final VoidCallback onLongPress;
+
+  const _AnimatedScaleButton({
+    required this.child,
+    required this.onTap,
+    required this.onLongPress,
+  });
+
+  @override
+  State<_AnimatedScaleButton> createState() => _AnimatedScaleButtonState();
+}
+
+class _AnimatedScaleButtonState extends State<_AnimatedScaleButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 120),
+        reverseDuration: const Duration(milliseconds: 150));
+    _scale = Tween<double>(begin: 1.0, end: 0.90).animate(
+        CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTapDown(TapDownDetails details) {
+    HapticFeedback.selectionClick();
+    _controller.forward();
+  }
+
+  void _handleTapUp(TapUpDetails details) async {
+    HapticFeedback.lightImpact();
+    await Future.delayed(const Duration(milliseconds: 60));
+    if (mounted) {
+      _controller.reverse();
+    }
+    widget.onTap();
+  }
+
+  void _handleTapCancel() => _controller.reverse();
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: _handleTapDown,
+      onTapUp: _handleTapUp,
+      onTapCancel: _handleTapCancel,
+      onLongPress: widget.onLongPress,
+      behavior: HitTestBehavior.translucent,
+      child: ScaleTransition(
+        scale: _scale,
+        child: widget.child,
+      ),
+    );
   }
 }

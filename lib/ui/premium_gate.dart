@@ -3,6 +3,8 @@ import 'package:mira/l10n/app_localizations.dart';
 
 import '../services/premium_manager.dart';
 import 'subscription_screen.dart';
+import '../design_system/components/primary_gradient_button.dart';
+import '../design_system/components/gradient_background.dart';
 
 /// Widgets to gate premium-only features.
 /// Displays the child if the user is premium, otherwise shows an upsell dialog/UI.
@@ -56,33 +58,37 @@ class _DefaultPremiumUpsell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return Container(
+    return GradientBackground(
+      baseColor: scheme.primary,
+      opacity: 0.15,
+      borderRadius: BorderRadius.circular(12),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: scheme.outlineVariant),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.workspace_premium, size: 32),
-          const SizedBox(height: 12),
-          Text(
-            AppLocalizations.of(context).thisFeatureIsPremium,
-            style: Theme.of(context).textTheme.titleMedium,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 12),
-          FilledButton(
-            onPressed: onTapped ??
-                () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (_) => const SubscriptionScreen()),
-                    ),
-            child: Text(AppLocalizations.of(context).becomePremium),
-          ),
-        ],
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: scheme.outlineVariant.withOpacity(0.5)),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.workspace_premium, size: 32),
+            const SizedBox(height: 12),
+            Text(
+              AppLocalizations.of(context).thisFeatureIsPremium,
+              style: Theme.of(context).textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            PrimaryGradientButton(
+              onPressed: onTapped ??
+                  () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => const SubscriptionScreen()),
+                      ),
+              child: Text(AppLocalizations.of(context).becomePremium),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -122,7 +128,7 @@ Future<void> showPremiumDialog(
             onPressed: () => Navigator.of(ctx).pop(),
             child: Text(AppLocalizations.of(context).later),
           ),
-          FilledButton(
+          PrimaryGradientButton(
             onPressed: () {
               Navigator.of(ctx).pop();
               if (onUpgradeTapped != null) {

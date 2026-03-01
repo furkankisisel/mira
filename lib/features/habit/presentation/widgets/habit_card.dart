@@ -5,6 +5,7 @@ import '../../domain/subtask_model.dart';
 import '../../../../core/settings/settings_repository.dart' as app_settings;
 import '../../../../l10n/app_localizations.dart';
 import '../../../timer/timer_screen.dart';
+import 'package:flutter/services.dart';
 
 class HabitCard extends StatefulWidget {
   final String title;
@@ -97,13 +98,13 @@ class _HabitCardState extends State<HabitCard>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 90),
-      reverseDuration: const Duration(milliseconds: 110),
+      duration: const Duration(milliseconds: 120),
+      reverseDuration: const Duration(milliseconds: 150),
     );
     _scale = Tween<double>(
       begin: 1.0,
-      end: 0.96,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+      end: 0.90,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
   }
 
   @override
@@ -169,11 +170,15 @@ class _HabitCardState extends State<HabitCard>
   }
 
   void _handleTapDown(TapDownDetails d) {
-    if (!widget.readOnly) _controller.forward();
+    if (!widget.readOnly) {
+      HapticFeedback.selectionClick();
+      _controller.forward();
+    }
   }
 
-  void _handleTapUp(TapUpDetails d) {
+  void _handleTapUp(TapUpDetails d) async {
     if (!widget.readOnly) {
+      HapticFeedback.lightImpact();
       // Simple ve checkbox: doğrudan toggle
       if (widget.habitType == HabitType.simple ||
           widget.habitType == HabitType.checkbox) {
@@ -202,7 +207,11 @@ class _HabitCardState extends State<HabitCard>
         _showManualValueDialog();
       }
     }
-    _controller.reverse();
+    // A little delay guarantees the card visibly squishes even on very quick taps
+    await Future.delayed(const Duration(milliseconds: 60));
+    if (mounted) {
+      _controller.reverse();
+    }
   }
 
   void _handleTapCancel() {
@@ -714,18 +723,33 @@ class _HabitCardState extends State<HabitCard>
               scale: _scale,
               child: Stack(
                 children: [
-                  // Base card (no external margin here anymore)
                   Container(
                     padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
                     decoration: BoxDecoration(
-                      color: widget.isMuted
-                          ? Colors.transparent
-                          : (done
-                              ? completedBg
-                              : Color.alphaBlend(
-                                  widget.color.withValues(alpha: 0.06),
-                                  cs.surfaceContainerHighest,
-                                )),
+                      color: widget.isMuted ? Colors.transparent : null,
+                      gradient: widget.isMuted
+                          ? null
+                          : LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: done
+                                  ? [
+                                      Color.lerp(
+                                              completedBg, Colors.white, 0.3) ??
+                                          completedBg,
+                                      Color.lerp(
+                                              completedBg, Colors.black, 0.2) ??
+                                          completedBg,
+                                    ]
+                                  : [
+                                      Color.alphaBlend(
+                                          widget.color.withValues(alpha: 0.25),
+                                          cs.surfaceContainerHighest),
+                                      Color.alphaBlend(
+                                          widget.color.withValues(alpha: 0.05),
+                                          cs.surfaceContainerHighest),
+                                    ],
+                            ),
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: (done && !widget.isMuted)
                           ? [
@@ -743,22 +767,25 @@ class _HabitCardState extends State<HabitCard>
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            SizedBox(
-                              width: 44,
-                              height: 44,
-                              child: Center(
-                                child: (widget.emoji != null &&
-                                        widget.emoji!.isNotEmpty)
-                                    ? Text(
-                                        widget.emoji!,
-                                        style: const TextStyle(fontSize: 24),
-                                      )
-                                    : Icon(
-                                        widget.icon,
-                                        color:
-                                            done ? onCompleted : widget.color,
-                                        size: 24,
-                                      ),
+                            Hero(
+                              tag: 'habit_icon_${widget.title}',
+                              child: SizedBox(
+                                width: 44,
+                                height: 44,
+                                child: Center(
+                                  child: (widget.emoji != null &&
+                                          widget.emoji!.isNotEmpty)
+                                      ? Text(
+                                          widget.emoji!,
+                                          style: const TextStyle(fontSize: 24),
+                                        )
+                                      : Icon(
+                                          widget.icon,
+                                          color:
+                                              done ? onCompleted : widget.color,
+                                          size: 24,
+                                        ),
+                                ),
                               ),
                             ),
                             const SizedBox(width: 12),

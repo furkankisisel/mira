@@ -45,6 +45,13 @@ class ThemeVariations {
       colorScheme: scheme,
       scaffoldBackgroundColor: config.lightBackground,
       textTheme: AppTypography.build(base.textTheme),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: ZoomPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
       // Make popups/sheets match page background
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: config.lightBackground,
@@ -173,6 +180,13 @@ class ThemeVariations {
           bodyColor: scheme.onSurface,
           displayColor: scheme.onSurface,
         ),
+      ),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: ZoomPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+        },
       ),
       // Make popups/sheets match page background
       bottomSheetTheme: BottomSheetThemeData(
@@ -363,120 +377,120 @@ enum ThemeVariant {
 /// Extension to get theme configuration for each variant
 extension ThemeVariantConfig on ThemeVariant {
   ThemeConfig get config => switch (this) {
-    ThemeVariant.cotton => ThemeConfig(
-      primary: AppColors.seed,
-      lightBackground: const Color(0xFFFAFAFA),
-      lightSurface: const Color(0xFFFFFFFF),
-      darkBackground: const Color(0xFF121212),
-      darkSurface: const Color(0xFF1E1E1E),
-    ),
-    ThemeVariant.matcha => ThemeConfig(
-      primary: AppColors.accentMatcha,
-      lightBackground: const Color(0xFFFAFAFA),
-      lightSurface: const Color(0xFFFFFFFF),
-      darkBackground: const Color(0xFF121212),
-      darkSurface: const Color(0xFF1E1E1E),
-    ),
-    ThemeVariant.lavender => ThemeConfig(
-      primary: AppColors.accentLavender,
-      lightBackground: const Color(0xFFFAFAFA),
-      lightSurface: const Color(0xFFFFFFFF),
-      darkBackground: const Color(0xFF121212),
-      darkSurface: const Color(0xFF1E1E1E),
-    ),
-    ThemeVariant.sky => ThemeConfig(
-      primary: AppColors.accentSky,
-      lightBackground: const Color(0xFFFAFAFA),
-      lightSurface: const Color(0xFFFFFFFF),
-      darkBackground: const Color(0xFF121212),
-      darkSurface: const Color(0xFF1E1E1E),
-    ),
-    ThemeVariant.rose => ThemeConfig(
-      primary: AppColors.accentRose,
-      lightBackground: const Color(0xFFFAFAFA),
-      lightSurface: const Color(0xFFFFFFFF),
-      darkBackground: const Color(0xFF121212),
-      darkSurface: const Color(0xFF1E1E1E),
-    ),
-    ThemeVariant.slate => ThemeConfig(
-      primary: AppColors.accentSlate,
-      lightBackground: const Color(0xFFFAFAFA),
-      lightSurface: const Color(0xFFFFFFFF),
-      darkBackground: const Color(0xFF121212),
-      darkSurface: const Color(0xFF1E1E1E),
-    ),
-    ThemeVariant.ocean => ThemeConfig(
-      primary: AppColors.accentOcean,
-      lightBackground: const Color(0xFFFAFAFA),
-      lightSurface: const Color(0xFFFFFFFF),
-      darkBackground: const Color(0xFF121212),
-      darkSurface: const Color(0xFF1E1E1E),
-    ),
-    ThemeVariant.sunset => ThemeConfig(
-      primary: AppColors.accentSunset,
-      lightBackground: const Color(0xFFFAFAFA),
-      lightSurface: const Color(0xFFFFFFFF),
-      darkBackground: const Color(0xFF121212),
-      darkSurface: const Color(0xFF1E1E1E),
-    ),
-    ThemeVariant.forest => ThemeConfig(
-      primary: AppColors.accentForest,
-      lightBackground: const Color(0xFFFAFAFA),
-      lightSurface: const Color(0xFFFFFFFF),
-      darkBackground: const Color(0xFF121212),
-      darkSurface: const Color(0xFF1E1E1E),
-    ),
-    // New themes based on user's hex colors - keeping standard backgrounds
-    ThemeVariant.cream => ThemeConfig(
-      primary: const Color(0xFFefe1ad), // #efe1ad - Warm cream/beige
-      lightBackground: const Color(0xFFFAFAFA),
-      lightSurface: const Color(0xFFFFFFFF),
-      darkBackground: const Color(0xFF121212),
-      darkSurface: const Color(0xFF1E1E1E),
-    ),
-    ThemeVariant.midnight => ThemeConfig(
-      primary: const Color(0xFF22243b), // #22243b - Dark navy
-      lightBackground: const Color(0xFFFAFAFA),
-      lightSurface: const Color(0xFFFFFFFF),
-      darkBackground: const Color(0xFF121212),
-      darkSurface: const Color(0xFF1E1E1E),
-    ),
-    ThemeVariant.mauve => ThemeConfig(
-      primary: const Color(0xFFaa93ad), // #aa93ad - Lavender mauve
-      lightBackground: const Color(0xFFFAFAFA),
-      lightSurface: const Color(0xFFFFFFFF),
-      darkBackground: const Color(0xFF121212),
-      darkSurface: const Color(0xFF1E1E1E),
-    ),
-    ThemeVariant.blush => ThemeConfig(
-      primary: const Color(0xFFeed0c8), // #eed0c8 - Soft peach/blush
-      lightBackground: const Color(0xFFFAFAFA),
-      lightSurface: const Color(0xFFFFFFFF),
-      darkBackground: const Color(0xFF121212),
-      darkSurface: const Color(0xFF1E1E1E),
-    ),
-    ThemeVariant.crimson => ThemeConfig(
-      primary: const Color(0xFFD7263D), // #D7263D - Bold crimson red
-      lightBackground: const Color(0xFFFAFAFA),
-      lightSurface: const Color(0xFFFFFFFF),
-      darkBackground: const Color(0xFF121212),
-      darkSurface: const Color(0xFF1E1E1E),
-    ),
-    ThemeVariant.abyss => ThemeConfig(
-      primary: const Color(0xFF02182B), // #02182B - Deep navy abyss
-      lightBackground: const Color(0xFFFAFAFA),
-      lightSurface: const Color(0xFFFFFFFF),
-      darkBackground: const Color(0xFF121212),
-      darkSurface: const Color(0xFF1E1E1E),
-    ),
-    ThemeVariant.vintageRed => ThemeConfig(
-      primary: const Color(0xFFb43a38), // #b43a38 - Vintage Red
-      lightBackground: const Color(0xFFFAFAFA),
-      lightSurface: const Color(0xFFFFFFFF),
-      darkBackground: const Color(0xFF121212),
-      darkSurface: const Color(0xFF1E1E1E),
-    ),
-  };
+        ThemeVariant.cotton => ThemeConfig(
+            primary: AppColors.seed,
+            lightBackground: const Color(0xFFFAFAFA),
+            lightSurface: const Color(0xFFFFFFFF),
+            darkBackground: const Color(0xFF121212),
+            darkSurface: const Color(0xFF1E1E1E),
+          ),
+        ThemeVariant.matcha => ThemeConfig(
+            primary: AppColors.accentMatcha,
+            lightBackground: const Color(0xFFFAFAFA),
+            lightSurface: const Color(0xFFFFFFFF),
+            darkBackground: const Color(0xFF121212),
+            darkSurface: const Color(0xFF1E1E1E),
+          ),
+        ThemeVariant.lavender => ThemeConfig(
+            primary: AppColors.accentLavender,
+            lightBackground: const Color(0xFFFAFAFA),
+            lightSurface: const Color(0xFFFFFFFF),
+            darkBackground: const Color(0xFF121212),
+            darkSurface: const Color(0xFF1E1E1E),
+          ),
+        ThemeVariant.sky => ThemeConfig(
+            primary: AppColors.accentSky,
+            lightBackground: const Color(0xFFFAFAFA),
+            lightSurface: const Color(0xFFFFFFFF),
+            darkBackground: const Color(0xFF121212),
+            darkSurface: const Color(0xFF1E1E1E),
+          ),
+        ThemeVariant.rose => ThemeConfig(
+            primary: AppColors.accentRose,
+            lightBackground: const Color(0xFFFAFAFA),
+            lightSurface: const Color(0xFFFFFFFF),
+            darkBackground: const Color(0xFF121212),
+            darkSurface: const Color(0xFF1E1E1E),
+          ),
+        ThemeVariant.slate => ThemeConfig(
+            primary: AppColors.accentSlate,
+            lightBackground: const Color(0xFFFAFAFA),
+            lightSurface: const Color(0xFFFFFFFF),
+            darkBackground: const Color(0xFF121212),
+            darkSurface: const Color(0xFF1E1E1E),
+          ),
+        ThemeVariant.ocean => ThemeConfig(
+            primary: AppColors.accentOcean,
+            lightBackground: const Color(0xFFFAFAFA),
+            lightSurface: const Color(0xFFFFFFFF),
+            darkBackground: const Color(0xFF121212),
+            darkSurface: const Color(0xFF1E1E1E),
+          ),
+        ThemeVariant.sunset => ThemeConfig(
+            primary: AppColors.accentSunset,
+            lightBackground: const Color(0xFFFAFAFA),
+            lightSurface: const Color(0xFFFFFFFF),
+            darkBackground: const Color(0xFF121212),
+            darkSurface: const Color(0xFF1E1E1E),
+          ),
+        ThemeVariant.forest => ThemeConfig(
+            primary: AppColors.accentForest,
+            lightBackground: const Color(0xFFFAFAFA),
+            lightSurface: const Color(0xFFFFFFFF),
+            darkBackground: const Color(0xFF121212),
+            darkSurface: const Color(0xFF1E1E1E),
+          ),
+        // New themes based on user's hex colors - keeping standard backgrounds
+        ThemeVariant.cream => ThemeConfig(
+            primary: const Color(0xFFefe1ad), // #efe1ad - Warm cream/beige
+            lightBackground: const Color(0xFFFAFAFA),
+            lightSurface: const Color(0xFFFFFFFF),
+            darkBackground: const Color(0xFF121212),
+            darkSurface: const Color(0xFF1E1E1E),
+          ),
+        ThemeVariant.midnight => ThemeConfig(
+            primary: const Color(0xFF22243b), // #22243b - Dark navy
+            lightBackground: const Color(0xFFFAFAFA),
+            lightSurface: const Color(0xFFFFFFFF),
+            darkBackground: const Color(0xFF121212),
+            darkSurface: const Color(0xFF1E1E1E),
+          ),
+        ThemeVariant.mauve => ThemeConfig(
+            primary: const Color(0xFFaa93ad), // #aa93ad - Lavender mauve
+            lightBackground: const Color(0xFFFAFAFA),
+            lightSurface: const Color(0xFFFFFFFF),
+            darkBackground: const Color(0xFF121212),
+            darkSurface: const Color(0xFF1E1E1E),
+          ),
+        ThemeVariant.blush => ThemeConfig(
+            primary: const Color(0xFFeed0c8), // #eed0c8 - Soft peach/blush
+            lightBackground: const Color(0xFFFAFAFA),
+            lightSurface: const Color(0xFFFFFFFF),
+            darkBackground: const Color(0xFF121212),
+            darkSurface: const Color(0xFF1E1E1E),
+          ),
+        ThemeVariant.crimson => ThemeConfig(
+            primary: const Color(0xFFD7263D), // #D7263D - Bold crimson red
+            lightBackground: const Color(0xFFFAFAFA),
+            lightSurface: const Color(0xFFFFFFFF),
+            darkBackground: const Color(0xFF121212),
+            darkSurface: const Color(0xFF1E1E1E),
+          ),
+        ThemeVariant.abyss => ThemeConfig(
+            primary: const Color(0xFF02182B), // #02182B - Deep navy abyss
+            lightBackground: const Color(0xFFFAFAFA),
+            lightSurface: const Color(0xFFFFFFFF),
+            darkBackground: const Color(0xFF121212),
+            darkSurface: const Color(0xFF1E1E1E),
+          ),
+        ThemeVariant.vintageRed => ThemeConfig(
+            primary: const Color(0xFFb43a38), // #b43a38 - Vintage Red
+            lightBackground: const Color(0xFFFAFAFA),
+            lightSurface: const Color(0xFFFFFFFF),
+            darkBackground: const Color(0xFF121212),
+            darkSurface: const Color(0xFF1E1E1E),
+          ),
+      };
 }
 
 /// Theme configuration class

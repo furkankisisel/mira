@@ -7,7 +7,6 @@ import 'data/finance_category_repository.dart';
 import 'data/transaction_model.dart';
 import 'data/transaction_repository.dart';
 import '../../core/utils/emoji_presets.dart';
-import 'package:characters/characters.dart';
 
 /// Finans işlemi düzenleme ekranı - Tek sayfa düzeni
 class FinanceEditScreen extends StatefulWidget {
@@ -277,396 +276,408 @@ class _FinanceEditScreenState extends State<FinanceEditScreen> {
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
-      appBar: AppBar(
-        title: Text(l10n.edit),
-        centerTitle: true,
-        actions: [
-          TextButton(
-            onPressed: _saveTransaction,
-            child: Text(
-              l10n.save,
-              style: TextStyle(
-                color: _accentColor,
-                fontWeight: FontWeight.bold,
+      body: CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          SliverAppBar.large(
+            title: Text(l10n.edit),
+            centerTitle: true,
+            actions: [
+              TextButton(
+                onPressed: _saveTransaction,
+                child: Text(
+                  l10n.save,
+                  style: TextStyle(
+                    color: _accentColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
+            ],
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.all(20),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                // Type Section
+                _buildSection(
+                  title: l10n.category,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _buildTypeOption(
+                          type: TransactionType.expense,
+                          emoji: '💸',
+                          title: l10n.expenseLabel,
+                          color: const Color(0xFFEF4444),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildTypeOption(
+                          type: TransactionType.income,
+                          emoji: '💵',
+                          title: l10n.incomeLabel,
+                          color: const Color(0xFF22C55E),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Amount Section
+                _buildSection(
+                  title: l10n.amountLabel,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 16),
+                    decoration: BoxDecoration(
+                      color:
+                          colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          currencySymbol,
+                          style: theme.textTheme.headlineMedium?.copyWith(
+                            color: _accentColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: TextField(
+                            controller: _amountCtrl,
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.displaySmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: _accentColor,
+                            ),
+                            decoration: InputDecoration(
+                              hintText: '0',
+                              hintStyle: theme.textTheme.displaySmall?.copyWith(
+                                color: colorScheme.onSurface.withOpacity(0.2),
+                              ),
+                              border: InputBorder.none,
+                            ),
+                            onChanged: (_) => setState(() {}),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Title (optional)
+                TextField(
+                  controller: _titleCtrl,
+                  textAlign: TextAlign.center,
+                  decoration: InputDecoration(
+                    hintText: l10n.titleOptional,
+                    hintStyle: TextStyle(
+                      color: colorScheme.onSurface.withOpacity(0.3),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor:
+                        colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Category Section
+                _buildSection(
+                  title: l10n.category,
+                  child: SizedBox(
+                    height: 200,
+                    child: StreamBuilder<List<FinanceCategory>>(
+                      stream: widget.catRepo.stream,
+                      initialData: widget.catRepo.all(),
+                      builder: (context, snapshot) {
+                        final categories = snapshot.data
+                                ?.where((c) => c.type == _type)
+                                .toList() ??
+                            [];
+                        return SingleChildScrollView(
+                          child: Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: [
+                              ...categories.map((cat) {
+                                final isSelected =
+                                    _selectedCategory?.id == cat.id;
+                                return GestureDetector(
+                                  onTap: () {
+                                    HapticFeedback.lightImpact();
+                                    setState(() => _selectedCategory = cat);
+                                  },
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 12,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? _accentColor.withOpacity(0.15)
+                                          : colorScheme.surfaceContainerHighest,
+                                      borderRadius: BorderRadius.circular(14),
+                                      border: isSelected
+                                          ? Border.all(
+                                              color: _accentColor,
+                                              width: 2,
+                                            )
+                                          : null,
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        if (cat.emoji != null &&
+                                            cat.emoji!.isNotEmpty)
+                                          Text(cat.emoji!,
+                                              style:
+                                                  const TextStyle(fontSize: 20))
+                                        else
+                                          Icon(cat.icon,
+                                              size: 20,
+                                              color: Color(cat.colorValue)),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          cat.name,
+                                          style: TextStyle(
+                                            fontWeight: isSelected
+                                                ? FontWeight.w600
+                                                : FontWeight.normal,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }),
+                              // Add Category Button
+                              GestureDetector(
+                                onTap: _createNewCategory,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.primary.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                      color:
+                                          colorScheme.primary.withOpacity(0.3),
+                                      style: BorderStyle.solid,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.add,
+                                          size: 20, color: colorScheme.primary),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        l10n.add,
+                                        style: TextStyle(
+                                          color: colorScheme.primary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Date Section
+                _buildSection(
+                  title: l10n.date,
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    leading: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: _accentColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(Icons.calendar_today, color: _accentColor),
+                    ),
+                    title: Text(
+                      DateFormat.yMMMd(localeName).format(_selectedDate),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: _accentColor,
+                      ),
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: _selectedDate,
+                        firstDate: DateTime(2000),
+                        lastDate:
+                            DateTime.now().add(const Duration(days: 3650)),
+                      );
+                      if (picked != null) {
+                        setState(() => _selectedDate = picked);
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Recurring Section
+                _buildSection(
+                  title: 'Recurring',
+                  child: Column(
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: _isRecurring
+                              ? _accentColor.withOpacity(0.1)
+                              : colorScheme.surfaceContainerHighest
+                                  .withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(16),
+                          border: _isRecurring
+                              ? Border.all(color: _accentColor, width: 2)
+                              : null,
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              _isRecurring
+                                  ? Icons.repeat
+                                  : Icons.repeat_outlined,
+                              color: _isRecurring
+                                  ? _accentColor
+                                  : colorScheme.onSurface.withOpacity(0.5),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Text(
+                                _isRecurring
+                                    ? 'Recurring enabled'
+                                    : 'One-time transaction',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            Switch(
+                              value: _isRecurring,
+                              activeColor: _accentColor,
+                              onChanged: (value) {
+                                HapticFeedback.lightImpact();
+                                setState(() => _isRecurring = value);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (_isRecurring) ...[
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildDurationOption(
+                                title: l10n.durationIndefinite,
+                                isSelected: _recurringForever,
+                                onTap: () =>
+                                    setState(() => _recurringForever = true),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildDurationOption(
+                                title: l10n.durationMonths(_recurringMonths),
+                                isSelected: !_recurringForever,
+                                onTap: () =>
+                                    setState(() => _recurringForever = false),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (!_recurringForever) ...[
+                          const SizedBox(height: 16),
+                          Slider(
+                            value: _recurringMonths.toDouble(),
+                            min: 1,
+                            max: 24,
+                            divisions: 23,
+                            activeColor: _accentColor,
+                            onChanged: (value) {
+                              HapticFeedback.lightImpact();
+                              setState(() => _recurringMonths = value.toInt());
+                            },
+                          ),
+                        ],
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
+
+                // Save Button
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: _saveTransaction,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: _accentColor,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          l10n.save,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Icon(Icons.check, size: 20),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+              ]),
             ),
           ),
         ],
-      ),
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Type Section
-            _buildSection(
-              title: l10n.category,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _buildTypeOption(
-                      type: TransactionType.expense,
-                      emoji: '💸',
-                      title: l10n.expenseLabel,
-                      color: const Color(0xFFEF4444),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _buildTypeOption(
-                      type: TransactionType.income,
-                      emoji: '💵',
-                      title: l10n.incomeLabel,
-                      color: const Color(0xFF22C55E),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Amount Section
-            _buildSection(
-              title: l10n.amountLabel,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      currencySymbol,
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        color: _accentColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: TextField(
-                        controller: _amountCtrl,
-                        keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true),
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.displaySmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: _accentColor,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: '0',
-                          hintStyle: theme.textTheme.displaySmall?.copyWith(
-                            color: colorScheme.onSurface.withOpacity(0.2),
-                          ),
-                          border: InputBorder.none,
-                        ),
-                        onChanged: (_) => setState(() {}),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Title (optional)
-            TextField(
-              controller: _titleCtrl,
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                hintText: l10n.titleOptional,
-                hintStyle: TextStyle(
-                  color: colorScheme.onSurface.withOpacity(0.3),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Category Section
-            _buildSection(
-              title: l10n.category,
-              child: SizedBox(
-                height: 200,
-                child: StreamBuilder<List<FinanceCategory>>(
-                  stream: widget.catRepo.stream,
-                  initialData: widget.catRepo.all(),
-                  builder: (context, snapshot) {
-                    final categories =
-                        snapshot.data?.where((c) => c.type == _type).toList() ??
-                            [];
-                    return SingleChildScrollView(
-                      child: Wrap(
-                        spacing: 10,
-                        runSpacing: 10,
-                        children: [
-                          ...categories.map((cat) {
-                            final isSelected = _selectedCategory?.id == cat.id;
-                            return GestureDetector(
-                              onTap: () {
-                                HapticFeedback.lightImpact();
-                                setState(() => _selectedCategory = cat);
-                              },
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? _accentColor.withOpacity(0.15)
-                                      : colorScheme.surfaceContainerHighest,
-                                  borderRadius: BorderRadius.circular(14),
-                                  border: isSelected
-                                      ? Border.all(
-                                          color: _accentColor,
-                                          width: 2,
-                                        )
-                                      : null,
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    if (cat.emoji != null &&
-                                        cat.emoji!.isNotEmpty)
-                                      Text(cat.emoji!,
-                                          style: const TextStyle(fontSize: 20))
-                                    else
-                                      Icon(cat.icon,
-                                          size: 20,
-                                          color: Color(cat.colorValue)),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      cat.name,
-                                      style: TextStyle(
-                                        fontWeight: isSelected
-                                            ? FontWeight.w600
-                                            : FontWeight.normal,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }),
-                          // Add Category Button
-                          GestureDetector(
-                            onTap: _createNewCategory,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colorScheme.primary.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(
-                                  color: colorScheme.primary.withOpacity(0.3),
-                                  style: BorderStyle.solid,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.add,
-                                      size: 20, color: colorScheme.primary),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    l10n.add,
-                                    style: TextStyle(
-                                      color: colorScheme.primary,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Date Section
-            _buildSection(
-              title: l10n.date,
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                leading: Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: _accentColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(Icons.calendar_today, color: _accentColor),
-                ),
-                title: Text(
-                  DateFormat.yMMMd(localeName).format(_selectedDate),
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: _accentColor,
-                  ),
-                ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () async {
-                  final picked = await showDatePicker(
-                    context: context,
-                    initialDate: _selectedDate,
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime.now().add(const Duration(days: 3650)),
-                  );
-                  if (picked != null) {
-                    setState(() => _selectedDate = picked);
-                  }
-                },
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Recurring Section
-            _buildSection(
-              title: 'Recurring',
-              child: Column(
-                children: [
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: _isRecurring
-                          ? _accentColor.withOpacity(0.1)
-                          : colorScheme.surfaceContainerHighest
-                              .withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(16),
-                      border: _isRecurring
-                          ? Border.all(color: _accentColor, width: 2)
-                          : null,
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          _isRecurring ? Icons.repeat : Icons.repeat_outlined,
-                          color: _isRecurring
-                              ? _accentColor
-                              : colorScheme.onSurface.withOpacity(0.5),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Text(
-                            _isRecurring
-                                ? 'Recurring enabled'
-                                : 'One-time transaction',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        Switch(
-                          value: _isRecurring,
-                          activeColor: _accentColor,
-                          onChanged: (value) {
-                            HapticFeedback.lightImpact();
-                            setState(() => _isRecurring = value);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (_isRecurring) ...[
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildDurationOption(
-                            title: l10n.durationIndefinite,
-                            isSelected: _recurringForever,
-                            onTap: () =>
-                                setState(() => _recurringForever = true),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildDurationOption(
-                            title: l10n.durationMonths(_recurringMonths),
-                            isSelected: !_recurringForever,
-                            onTap: () =>
-                                setState(() => _recurringForever = false),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (!_recurringForever) ...[
-                      const SizedBox(height: 16),
-                      Slider(
-                        value: _recurringMonths.toDouble(),
-                        min: 1,
-                        max: 24,
-                        divisions: 23,
-                        activeColor: _accentColor,
-                        onChanged: (value) {
-                          HapticFeedback.lightImpact();
-                          setState(() => _recurringMonths = value.toInt());
-                        },
-                      ),
-                    ],
-                  ],
-                ],
-              ),
-            ),
-            const SizedBox(height: 32),
-
-            // Save Button
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: _saveTransaction,
-                style: FilledButton.styleFrom(
-                  backgroundColor: _accentColor,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      l10n.save,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(Icons.check, size: 20),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 32),
-          ],
-        ),
       ),
     );
   }

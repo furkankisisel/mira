@@ -39,6 +39,8 @@ import 'dart:async';
 import '../../../providers/premium_provider.dart';
 // removed unused imports
 
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+
 /// Represents a grouped item for the habit/task list view
 sealed class _GroupedItem {}
 
@@ -2824,637 +2826,707 @@ class HabitScreenState extends State<HabitScreen>
                           itemsToShow.length +
                           actionCardCount;
 
-                      return ListView.builder(
-                        padding: EdgeInsets.only(bottom: bottomReserve),
-                        itemCount: totalCount,
-                        itemBuilder: (context, index) {
-                          // 0. Show rhythm header first (premium only)
-                          if (isPremium && index == 0) {
-                            return LiveRhythmHeader(
-                              aiMessage: _focusAiMessage,
-                              isLoadingAiMessage: _isLoadingFocusAi,
-                              onAiMessageTap: () =>
-                                  _loadFocusAiMessage(forceRefresh: true),
+                      return AnimationLimiter(
+                        child: ListView.builder(
+                          padding: EdgeInsets.only(bottom: bottomReserve),
+                          itemCount: totalCount,
+                          itemBuilder: (context, index) {
+                            Widget childWidget;
+                            // 0. Show rhythm header first (premium only)
+                            if (isPremium && index == 0) {
+                              childWidget = LiveRhythmHeader(
+                                aiMessage: _focusAiMessage,
+                                isLoadingAiMessage: _isLoadingFocusAi,
+                                onAiMessageTap: () =>
+                                    _loadFocusAiMessage(forceRefresh: true),
+                              );
+                            } else if (isFocusActive && index == 1) {
+                              // 1. Show focus card after rhythm header
+                              childWidget = focusWidget;
+                            } else if (isFocusActive && index == 2) {
+                              // 2. Show toggle button after focus card
+                              childWidget =
+                                  _buildOtherItemsToggle(groupedItems.length);
+                            } else {
+                              // 3. Show items if expanded or if no focus
+                              final adjustedIndex = index -
+                                  rhythmHeaderCount -
+                                  focusItemCount -
+                                  toggleButtonCount;
+
+                              // 4. Show inline action card at the end (when items are shown)
+                              if (shouldShowOtherItems &&
+                                  adjustedIndex == itemsToShow.length) {
+                                childWidget = _buildInlineActionCard();
+                              } else if (adjustedIndex < 0 ||
+                                  adjustedIndex >= itemsToShow.length) {
+                                childWidget = const SizedBox.shrink();
+                              } else {
+                                final item = itemsToShow[adjustedIndex];
+                                childWidget = switch (item) {
+                                  _ListHeader() => _buildListHeaderWidget(item),
+                                  _TaskItem() =>
+                                    _buildTaskCardWidget(item.task),
+                                  _HabitItem() =>
+                                    _buildHabitCardWidget(item.habit),
+                                };
+                              }
+                            }
+
+                            return AnimationConfiguration.staggeredList(
+                              position: index,
+                              duration: const Duration(milliseconds: 375),
+                              child: SlideAnimation(
+                                verticalOffset: 50.0,
+                                child: FadeInAnimation(
+                                  child: childWidget,
+                                ),
+                              ),
                             );
-                          }
-
-                          // 1. Show focus card after rhythm header
-                          if (isFocusActive && index == 1) {
-                            return focusWidget;
-                          }
-
-                          // 2. Show toggle button after focus card
-                          if (isFocusActive && index == 2) {
-                            return _buildOtherItemsToggle(groupedItems.length);
-                          }
-
-                          // 3. Show items if expanded or if no focus
-
-                          final adjustedIndex = index -
-                              rhythmHeaderCount -
-                              focusItemCount -
-                              toggleButtonCount;
-
-                          // 4. Show inline action card at the end (when items are shown)
-                          if (shouldShowOtherItems &&
-                              adjustedIndex == itemsToShow.length) {
-                            return _buildInlineActionCard();
-                          }
-
-                          if (adjustedIndex < 0 ||
-                              adjustedIndex >= itemsToShow.length) {
-                            return const SizedBox.shrink();
-                          }
-                          final item = itemsToShow[adjustedIndex];
-                          return switch (item) {
-                            _ListHeader() => _buildListHeaderWidget(item),
-                            _TaskItem() => _buildTaskCardWidget(item.task),
-                            _HabitItem() => _buildHabitCardWidget(item.habit),
-                          };
-                        },
+                          },
+                        ),
                       );
                     }
 
                     // Otherwise show flat list (existing behavior when a list is selected)
 
-                    return ListView.builder(
-                      padding: EdgeInsets.only(bottom: bottomReserve),
-                      itemCount: (tasks.isNotEmpty ? (1 + tasks.length) : 0) +
-                          (habits.isNotEmpty ? (1 + habits.length) : 0),
-                      itemBuilder: (context, index) {
-                        int cursor = 0;
-                        // Tasks section
-                        if (tasks.isNotEmpty) {
-                          if (index == cursor) {
-                            return Padding(
-                              padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-                              child: Text(
-                                AppLocalizations.of(context).dailyTasksSection,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .labelLarge
-                                    ?.copyWith(fontWeight: FontWeight.w600),
-                              ),
-                            );
-                          }
-                          cursor += 1;
-                          if (index < cursor + tasks.length) {
-                            final task = tasks[index - cursor];
-                            final isMuted = false;
-                            // Swipe-to-dismiss removed: present task card directly.
-                            return _TaskCard(
-                              title: task.title,
-                              description: task.description,
-                              isDone: task.isDone,
-                              isMuted: isMuted,
-                              listName: task.listId == null
-                                  ? null
-                                  : _listRepo.lists
-                                      .firstWhere(
-                                        (l) => l.id == task.listId,
-                                        orElse: () =>
-                                            AppList(id: '', title: ''),
-                                      )
-                                      .title,
-                              onToggleDone: (value) {
-                                setState(() {
-                                  task.isDone = value;
-                                });
-                                // Persist in background to avoid UI lag
-                                _taskRepo.updateTask(task);
-                              },
-                              onAssignToList: () =>
-                                  _assignTaskToListDialog(task),
-                              onSetAsFocus: () {
-                                _setAsFocus(task.id, isHabit: false);
-                              },
-                              onEdit: () async {
-                                // Prefill edit dialog using same DailyTaskDialog
-                                final res =
-                                    await showDialog<Map<String, dynamic>>(
-                                  context: context,
-                                  builder: (ctx) => DailyTaskDialog(),
-                                );
-                                if (res != null) {
-                                  final newTitle =
-                                      (res['title'] as String?)?.trim() ??
-                                          task.title;
-                                  final newDescription =
-                                      (res['description'] as String?)?.trim() ??
-                                          task.description;
-                                  task.title = newTitle;
-                                  task.description = newDescription;
-                                  await _taskRepo.updateTask(task);
-                                }
-                              },
-                              onDelete: () async {
-                                final confirmed = await _confirmDelete(
-                                  title: AppLocalizations.of(context).delete,
-                                  // use the message variant from generated localizations;
-                                  // interpolate the task title into the message where helpful
-                                  message:
-                                      '${AppLocalizations.of(context).deleteTaskConfirmTitle}\n\n${AppLocalizations.of(context).deleteTaskConfirmMessage}',
-                                  confirmText: AppLocalizations.of(
-                                    context,
-                                  ).delete,
-                                  cancelText: AppLocalizations.of(
-                                    context,
-                                  ).cancel,
-                                );
-                                if (confirmed) {
-                                  await _taskRepo.removeTask(task.id);
-                                }
-                              },
-                            );
-                          }
-                          cursor += tasks.length;
-                        }
-
-                        // Habits section header
-                        if (habits.isNotEmpty) {
-                          if (index == cursor) {
-                            return Padding(
-                              padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-                              child: Text(
-                                AppLocalizations.of(context).habitsSection,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .labelLarge
-                                    ?.copyWith(fontWeight: FontWeight.w600),
-                              ),
-                            );
-                          }
-                          cursor += 1;
-                          if (index < cursor + habits.length) {
-                            final habit = habits[index - cursor];
-                            final String dayKey =
-                                '${_selected.year}-${_selected.month.toString().padLeft(2, '0')}-${_selected.day.toString().padLeft(2, '0')}';
-                            final now = DateTime.now();
-                            final todayDate = DateTime(
-                              now.year,
-                              now.month,
-                              now.day,
-                            );
-                            final selectedDate = DateTime(
-                              _selected.year,
-                              _selected.month,
-                              _selected.day,
-                            );
-                            final bool isToday = _isSameDay(
-                              selectedDate,
-                              todayDate,
-                            );
-                            final bool isFuture = selectedDate.isAfter(
-                              todayDate,
-                            );
-                            // Başlangıç tarihinden önce düzenlemeyi engelle
-                            final String startDateStr = habit.startDate;
-                            final DateTime startDate = DateTime(
-                              int.parse(startDateStr.substring(0, 4)),
-                              int.parse(startDateStr.substring(5, 7)),
-                              int.parse(startDateStr.substring(8, 10)),
-                            );
-                            final bool isBeforeStart = selectedDate.isBefore(
-                              DateTime(
-                                startDate.year,
-                                startDate.month,
-                                startDate.day,
-                              ),
-                            );
-                            // Progress value to display on the card
-                            final int dayProgress = isToday
-                                ? habit.currentStreak
-                                : (habit.dailyLog[dayKey] ?? 0);
-                            final bool dayCompleted = isToday
-                                ? (habit.isCompleted ||
-                                    HabitRepository.evaluateCompletionFromLog(
-                                      habit,
-                                      dayKey,
-                                    ))
-                                : HabitRepository.evaluateCompletionFromLog(
-                                    habit,
-                                    dayKey,
-                                  );
-                            // Ice mechanic: number of missed days prior to selected
-                            final int missedBefore =
-                                _consecutiveMissedDaysBefore(
-                              habit,
-                              selectedDate,
-                              cap: 7,
-                            );
-                            final isMuted = false;
-                            // Swipe-to-dismiss removed: present HabitCard directly.
-                            return HabitCard(
-                              title: habit.title,
-                              description: _buildHabitSubtitle(habit),
-                              isMuted: isMuted,
-                              icon: habit.icon,
-                              emoji: habit.emoji,
-                              categoryName: habit.categoryName,
-                              color: habit.color,
-                              currentStreak: dayProgress,
-                              streakCount:
-                                  HabitRepository.instance.consecutiveStreak(
-                                habit.id,
-                                upTo: selectedDate,
-                              ),
-                              targetCount: habit.targetCount,
-                              isCompleted: dayCompleted,
-                              habitType: habit.habitType,
-                              numericalTargetType:
-                                  habit.habitType == HabitType.numerical
-                                      ? habit.numericalTargetType
-                                      : null,
-                              timerTargetType:
-                                  habit.habitType == HabitType.timer
-                                      ? habit.timerTargetType
-                                      : null,
-                              unit: habit.unit,
-                              readOnly: isFuture ||
-                                  isBeforeStart, // gelecek veya başlangıçtan önce günler kilitli
-                              iceEnabled: !isFuture &&
-                                  !isBeforeStart &&
-                                  habit.habitType == HabitType.simple,
-                              requiredBreakTaps: missedBefore,
-                              onTap: () {
-                                if (isFuture || isBeforeStart) return;
-                                if (habit.habitType == HabitType.simple) {
-                                  if (isToday) {
-                                    _repo.toggleSimple(habit.id);
-                                  } else {
-                                    _repo.toggleSimpleForDate(
-                                      habit.id,
-                                      _selected,
+                    return AnimationLimiter(
+                      child: ListView.builder(
+                        padding: EdgeInsets.only(bottom: bottomReserve),
+                        itemCount: (tasks.isNotEmpty ? (1 + tasks.length) : 0) +
+                            (habits.isNotEmpty ? (1 + habits.length) : 0),
+                        itemBuilder: (context, index) {
+                          Widget childWidget = const SizedBox.shrink();
+                          int cursor = 0;
+                          // Tasks section
+                          if (tasks.isNotEmpty) {
+                            if (index == cursor) {
+                              childWidget = Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(12, 8, 12, 4),
+                                child: Text(
+                                  AppLocalizations.of(context)
+                                      .dailyTasksSection,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge
+                                      ?.copyWith(fontWeight: FontWeight.w600),
+                                ),
+                              );
+                            } else {
+                              cursor += 1;
+                              if (index < cursor + tasks.length) {
+                                final task = tasks[index - cursor];
+                                final isMuted = false;
+                                // Swipe-to-dismiss removed: present task card directly.
+                                childWidget = _TaskCard(
+                                  title: task.title,
+                                  description: task.description,
+                                  isDone: task.isDone,
+                                  isMuted: isMuted,
+                                  listName: task.listId == null
+                                      ? null
+                                      : _listRepo.lists
+                                          .firstWhere(
+                                            (l) => l.id == task.listId,
+                                            orElse: () =>
+                                                AppList(id: '', title: ''),
+                                          )
+                                          .title,
+                                  onToggleDone: (value) {
+                                    setState(() {
+                                      task.isDone = value;
+                                    });
+                                    // Persist in background to avoid UI lag
+                                    _taskRepo.updateTask(task);
+                                  },
+                                  onAssignToList: () =>
+                                      _assignTaskToListDialog(task),
+                                  onSetAsFocus: () {
+                                    _setAsFocus(task.id, isHabit: false);
+                                  },
+                                  onEdit: () async {
+                                    // Prefill edit dialog using same DailyTaskDialog
+                                    final res =
+                                        await showDialog<Map<String, dynamic>>(
+                                      context: context,
+                                      builder: (ctx) => DailyTaskDialog(),
                                     );
-                                  }
-                                }
-                              },
-                              onAssignToList: () =>
-                                  _assignHabitToListDialog(habit),
-                              showStreakIndicator:
-                                  _repo.getShowStreakIndicatorFor(habit.id),
-                              onToggleStreakIndicator: (v) async {
-                                await _repo.setShowStreakIndicatorFor(
-                                  habit.id,
-                                  v,
-                                );
-                              },
-                              onSetAsFocus: isToday
-                                  ? () {
-                                      _setAsFocus(habit.id);
+                                    if (res != null) {
+                                      final newTitle =
+                                          (res['title'] as String?)?.trim() ??
+                                              task.title;
+                                      final newDescription =
+                                          (res['description'] as String?)
+                                                  ?.trim() ??
+                                              task.description;
+                                      task.title = newTitle;
+                                      task.description = newDescription;
+                                      await _taskRepo.updateTask(task);
                                     }
-                                  : null,
-                              onValueUpdate: (newValue) {
-                                if (isFuture || isBeforeStart) return;
-                                if (habit.habitType == HabitType.numerical ||
-                                    habit.habitType == HabitType.timer) {
-                                  if (isToday) {
-                                    _repo.setManualProgress(habit.id, newValue);
-                                  } else {
-                                    _repo.setManualProgressForDate(
-                                      habit.id,
-                                      _selected,
-                                      newValue,
+                                  },
+                                  onDelete: () async {
+                                    final confirmed = await _confirmDelete(
+                                      title:
+                                          AppLocalizations.of(context).delete,
+                                      // use the message variant from generated localizations;
+                                      // interpolate the task title into the message where helpful
+                                      message:
+                                          '${AppLocalizations.of(context).deleteTaskConfirmTitle}\n\n${AppLocalizations.of(context).deleteTaskConfirmMessage}',
+                                      confirmText: AppLocalizations.of(
+                                        context,
+                                      ).delete,
+                                      cancelText: AppLocalizations.of(
+                                        context,
+                                      ).cancel,
                                     );
-                                  }
-                                }
-                              },
-                              onAnalyze: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => HabitAnalysisScreen(
-                                      habitTitle: habit.title,
-                                      habitDescription: habit.description,
-                                      habitIcon: habit.icon,
-                                      habitColor: habit.color,
-                                      currentStreak: habit.currentStreak,
-                                      targetCount: habit.targetCount,
-                                      unit: habit.unit,
-                                      habitId: habit.id,
-                                    ),
+                                    if (confirmed) {
+                                      await _taskRepo.removeTask(task.id);
+                                    }
+                                  },
+                                );
+                              }
+                              cursor += tasks.length;
+                            }
+                          }
+
+                          // Habits section header
+                          if (habits.isNotEmpty && childWidget is SizedBox) {
+                            if (index == cursor) {
+                              childWidget = Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(12, 8, 12, 4),
+                                child: Text(
+                                  AppLocalizations.of(context).habitsSection,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge
+                                      ?.copyWith(fontWeight: FontWeight.w600),
+                                ),
+                              );
+                            } else {
+                              cursor += 1;
+                              if (index < cursor + habits.length) {
+                                final habit = habits[index - cursor];
+                                final String dayKey =
+                                    '${_selected.year}-${_selected.month.toString().padLeft(2, '0')}-${_selected.day.toString().padLeft(2, '0')}';
+                                final now = DateTime.now();
+                                final todayDate = DateTime(
+                                  now.year,
+                                  now.month,
+                                  now.day,
+                                );
+                                final selectedDate = DateTime(
+                                  _selected.year,
+                                  _selected.month,
+                                  _selected.day,
+                                );
+                                final bool isToday = _isSameDay(
+                                  selectedDate,
+                                  todayDate,
+                                );
+                                final bool isFuture = selectedDate.isAfter(
+                                  todayDate,
+                                );
+                                // Başlangıç tarihinden önce düzenlemeyi engelle
+                                final String startDateStr = habit.startDate;
+                                final DateTime startDate = DateTime(
+                                  int.parse(startDateStr.substring(0, 4)),
+                                  int.parse(startDateStr.substring(5, 7)),
+                                  int.parse(startDateStr.substring(8, 10)),
+                                );
+                                final bool isBeforeStart =
+                                    selectedDate.isBefore(
+                                  DateTime(
+                                    startDate.year,
+                                    startDate.month,
+                                    startDate.day,
                                   ),
                                 );
-                              },
-                              onEdit: () async {
-                                print(
-                                  '🎯 [HabitScreen] onEdit called for: ${habit.title}',
+                                // Progress value to display on the card
+                                final int dayProgress = isToday
+                                    ? habit.currentStreak
+                                    : (habit.dailyLog[dayKey] ?? 0);
+                                final bool dayCompleted = isToday
+                                    ? (habit.isCompleted ||
+                                        HabitRepository
+                                            .evaluateCompletionFromLog(
+                                          habit,
+                                          dayKey,
+                                        ))
+                                    : HabitRepository.evaluateCompletionFromLog(
+                                        habit,
+                                        dayKey,
+                                      );
+                                // Ice mechanic: number of missed days prior to selected
+                                final int missedBefore =
+                                    _consecutiveMissedDaysBefore(
+                                  habit,
+                                  selectedDate,
+                                  cap: 7,
                                 );
-                                print('   habitType: ${habit.habitType}');
-                                print('   isAdvanced: ${habit.isAdvanced}');
-                                print(
-                                  '   linkedVisionId: ${habit.linkedVisionId}',
-                                );
+                                final isMuted = false;
+                                // Swipe-to-dismiss removed: present HabitCard directly.
+                                childWidget = HabitCard(
+                                  title: habit.title,
+                                  description: _buildHabitSubtitle(habit),
+                                  isMuted: isMuted,
+                                  icon: habit.icon,
+                                  emoji: habit.emoji,
+                                  categoryName: habit.categoryName,
+                                  color: habit.color,
+                                  currentStreak: dayProgress,
+                                  streakCount: HabitRepository.instance
+                                      .consecutiveStreak(
+                                    habit.id,
+                                    upTo: selectedDate,
+                                  ),
+                                  targetCount: habit.targetCount,
+                                  isCompleted: dayCompleted,
+                                  habitType: habit.habitType,
+                                  numericalTargetType:
+                                      habit.habitType == HabitType.numerical
+                                          ? habit.numericalTargetType
+                                          : null,
+                                  timerTargetType:
+                                      habit.habitType == HabitType.timer
+                                          ? habit.timerTargetType
+                                          : null,
+                                  unit: habit.unit,
+                                  readOnly: isFuture ||
+                                      isBeforeStart, // gelecek veya başlangıçtan önce günler kilitli
+                                  iceEnabled: !isFuture &&
+                                      !isBeforeStart &&
+                                      habit.habitType == HabitType.simple,
+                                  requiredBreakTaps: missedBefore,
+                                  onTap: () {
+                                    if (isFuture || isBeforeStart) return;
+                                    if (habit.habitType == HabitType.simple) {
+                                      if (isToday) {
+                                        _repo.toggleSimple(habit.id);
+                                      } else {
+                                        _repo.toggleSimpleForDate(
+                                          habit.id,
+                                          _selected,
+                                        );
+                                      }
+                                    }
+                                  },
+                                  onAssignToList: () =>
+                                      _assignHabitToListDialog(habit),
+                                  showStreakIndicator:
+                                      _repo.getShowStreakIndicatorFor(habit.id),
+                                  onToggleStreakIndicator: (v) async {
+                                    await _repo.setShowStreakIndicatorFor(
+                                      habit.id,
+                                      v,
+                                    );
+                                  },
+                                  onSetAsFocus: isToday
+                                      ? () {
+                                          _setAsFocus(habit.id);
+                                        }
+                                      : null,
+                                  onValueUpdate: (newValue) {
+                                    if (isFuture || isBeforeStart) return;
+                                    if (habit.habitType ==
+                                            HabitType.numerical ||
+                                        habit.habitType == HabitType.timer) {
+                                      if (isToday) {
+                                        _repo.setManualProgress(
+                                            habit.id, newValue);
+                                      } else {
+                                        _repo.setManualProgressForDate(
+                                          habit.id,
+                                          _selected,
+                                          newValue,
+                                        );
+                                      }
+                                    }
+                                  },
+                                  onAnalyze: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            HabitAnalysisScreen(
+                                          habitTitle: habit.title,
+                                          habitDescription: habit.description,
+                                          habitIcon: habit.icon,
+                                          habitColor: habit.color,
+                                          currentStreak: habit.currentStreak,
+                                          targetCount: habit.targetCount,
+                                          unit: habit.unit,
+                                          habitId: habit.id,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  onEdit: () async {
+                                    print(
+                                      '🎯 [HabitScreen] onEdit called for: ${habit.title}',
+                                    );
+                                    print('   habitType: ${habit.habitType}');
+                                    print('   isAdvanced: ${habit.isAdvanced}');
+                                    print(
+                                      '   linkedVisionId: ${habit.linkedVisionId}',
+                                    );
 
-                                // Vision habits: edit with AdvancedHabitScreen (vision context)
-                                if (habit.linkedVisionId != null) {
-                                  print(
-                                    '🔍 [HabitScreen] Editing vision habit: ${habit.title}',
-                                  );
-                                  print(
-                                    '   linkedVisionId: ${habit.linkedVisionId}',
-                                  );
+                                    // Vision habits: edit with AdvancedHabitScreen (vision context)
+                                    if (habit.linkedVisionId != null) {
+                                      print(
+                                        '🔍 [HabitScreen] Editing vision habit: ${habit.title}',
+                                      );
+                                      print(
+                                        '   linkedVisionId: ${habit.linkedVisionId}',
+                                      );
 
-                                  final visionRepo = VisionRepository.instance;
-                                  // Ensure repository is initialized
-                                  await visionRepo.initialize();
+                                      final visionRepo =
+                                          VisionRepository.instance;
+                                      // Ensure repository is initialized
+                                      await visionRepo.initialize();
 
-                                  // Find vision from stream
-                                  final visions = await visionRepo.stream.first;
-                                  print(
-                                    '   Available visions: ${visions.length}',
-                                  );
-                                  for (final v in visions) {
-                                    print('     - ${v.title} (${v.id})');
-                                  }
+                                      // Find vision from stream
+                                      final visions =
+                                          await visionRepo.stream.first;
+                                      print(
+                                        '   Available visions: ${visions.length}',
+                                      );
+                                      for (final v in visions) {
+                                        print('     - ${v.title} (${v.id})');
+                                      }
 
-                                  final vision =
-                                      visions.cast<Vision?>().firstWhere(
+                                      final vision = visions
+                                          .cast<Vision?>()
+                                          .firstWhere(
                                             (v) =>
                                                 v?.id == habit.linkedVisionId,
                                             orElse: () => null,
                                           );
 
-                                  if (vision != null) {
-                                    print('   ✅ Vision found: ${vision.title}');
-                                    // Prepare editing map for AdvancedHabitScreen
-                                    final result = await Navigator.of(context)
-                                        .push<Map<String, dynamic>>(
+                                      if (vision != null) {
+                                        print(
+                                            '   ✅ Vision found: ${vision.title}');
+                                        // Prepare editing map for AdvancedHabitScreen
+                                        final result =
+                                            await Navigator.of(context)
+                                                .push<Map<String, dynamic>>(
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                AdvancedHabitScreen(
+                                              useVisionDayOffsets: true,
+                                              returnAsMap: true,
+                                              editingHabitMap: {
+                                                'id': habit.id,
+                                                'title': habit.title,
+                                                'description':
+                                                    habit.description,
+                                                'icon': habit.icon,
+                                                'color': habit.color,
+                                                'targetCount':
+                                                    habit.targetCount,
+                                                'habitType': habit.habitType,
+                                                'unit': habit.unit,
+                                                'currentStreak':
+                                                    habit.currentStreak,
+                                                'isCompleted':
+                                                    habit.isCompleted,
+                                                'startDate': habit.startDate,
+                                                'endDate': habit.endDate,
+                                                if (habit.scheduledDates !=
+                                                    null)
+                                                  'scheduledDates':
+                                                      habit.scheduledDates,
+                                                'numericalTargetType':
+                                                    habit.numericalTargetType,
+                                                'timerTargetType':
+                                                    habit.timerTargetType,
+                                                if (habit.emoji != null)
+                                                  'emoji': habit.emoji,
+                                                if (habit.frequency != null)
+                                                  'frequency': habit.frequency,
+                                                if (habit.frequencyType != null)
+                                                  'frequencyType':
+                                                      habit.frequencyType,
+                                                if (habit.selectedWeekdays !=
+                                                    null)
+                                                  'selectedWeekdays':
+                                                      habit.selectedWeekdays,
+                                                if (habit.selectedMonthDays !=
+                                                    null)
+                                                  'selectedMonthDays':
+                                                      habit.selectedMonthDays,
+                                                if (habit.selectedYearDays !=
+                                                    null)
+                                                  'selectedYearDays':
+                                                      habit.selectedYearDays,
+                                                if (habit.periodicDays != null)
+                                                  'periodicDays':
+                                                      habit.periodicDays,
+                                                'reminderEnabled':
+                                                    habit.reminderEnabled,
+                                                if (habit.reminderTime != null)
+                                                  'reminderTime': {
+                                                    'hour': habit
+                                                        .reminderTime!.hour,
+                                                    'minute': habit
+                                                        .reminderTime!.minute,
+                                                  },
+                                                // Vision-specific context
+                                                'visionId': vision.id,
+                                                'visionStartDate':
+                                                    vision.startDate,
+                                                'visionEndDate': vision.endDate,
+                                              },
+                                            ),
+                                          ),
+                                        );
+
+                                        if (result != null) {
+                                          // Apply updates to habit
+                                          habit.title = (result['title'] ??
+                                              habit.title) as String;
+                                          habit.description =
+                                              (result['description'] ??
+                                                  habit.description) as String;
+                                          if (result['color'] is int) {
+                                            habit.color = Color(
+                                              result['color'] as int,
+                                            );
+                                          } else if (result['color'] is Color) {
+                                            habit.color =
+                                                result['color'] as Color;
+                                          }
+                                          if (result['emoji'] is String &&
+                                              (result['emoji'] as String)
+                                                  .trim()
+                                                  .isNotEmpty) {
+                                            habit.emoji =
+                                                (result['emoji'] as String)
+                                                    .trim();
+                                          }
+                                          if (result['frequency'] is String) {
+                                            final f =
+                                                (result['frequency'] as String)
+                                                    .trim();
+                                            habit.frequency =
+                                                f.isEmpty ? null : f;
+                                          }
+                                          if (result['frequencyType'] != null) {
+                                            habit.frequencyType =
+                                                result['frequencyType']
+                                                    ?.toString();
+                                          }
+                                          if (result['selectedWeekdays']
+                                              is List) {
+                                            habit.selectedWeekdays =
+                                                (result['selectedWeekdays']
+                                                        as List)
+                                                    .whereType<num>()
+                                                    .map((e) => e.toInt())
+                                                    .toList();
+                                          }
+                                          if (result['selectedMonthDays']
+                                              is List) {
+                                            habit.selectedMonthDays =
+                                                (result['selectedMonthDays']
+                                                        as List)
+                                                    .whereType<num>()
+                                                    .map((e) => e.toInt())
+                                                    .toList();
+                                          }
+                                          if (result['selectedYearDays']
+                                              is List) {
+                                            habit.selectedYearDays =
+                                                (result['selectedYearDays']
+                                                        as List)
+                                                    .map(
+                                                      (e) => e
+                                                          .toString()
+                                                          .split('T')
+                                                          .first,
+                                                    )
+                                                    .toList();
+                                          }
+                                          if (result['periodicDays'] != null) {
+                                            habit.periodicDays =
+                                                (result['periodicDays'] as num?)
+                                                    ?.toInt();
+                                          }
+                                          if (result['scheduledDates']
+                                              is List) {
+                                            habit.scheduledDates =
+                                                (result['scheduledDates']
+                                                        as List)
+                                                    .map(
+                                                      (e) => e
+                                                          .toString()
+                                                          .split('T')
+                                                          .first,
+                                                    )
+                                                    .toList();
+                                          }
+                                          // Update reminder settings
+                                          if (result.containsKey(
+                                            'reminderEnabled',
+                                          )) {
+                                            habit.reminderEnabled =
+                                                (result['reminderEnabled']
+                                                        as bool?) ??
+                                                    false;
+                                          }
+                                          if (result['reminderTime'] is Map) {
+                                            final rt =
+                                                result['reminderTime'] as Map;
+                                            final hour = rt['hour'] as int?;
+                                            final minute = rt['minute'] as int?;
+                                            if (hour != null &&
+                                                minute != null) {
+                                              habit.reminderTime = TimeOfDay(
+                                                hour: hour,
+                                                minute: minute,
+                                              );
+                                            }
+                                          } else if (result['reminderTime'] ==
+                                              null) {
+                                            habit.reminderTime = null;
+                                          }
+                                          await _ensureRhythmListAndAssign(
+                                              habit);
+                                          await _repo.updateHabit(habit);
+                                        }
+                                        return;
+                                      } else {
+                                        print(
+                                          '   ❌ Vision not found for ID: ${habit.linkedVisionId}',
+                                        );
+                                        // Vision bulunamadı, normal düzenlemeye geç
+                                      }
+                                    }
+
+                                    // If it's a simple non-advanced habit, edit in basic screen
+                                    if (habit.habitType == HabitType.simple &&
+                                        !habit.isAdvanced) {
+                                      final editedHabit =
+                                          await Navigator.of(context)
+                                              .push<Habit>(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              SimpleHabitScreen(
+                                            existingHabit: habit,
+                                          ),
+                                        ),
+                                      );
+                                      if (editedHabit != null) {
+                                        // SimpleHabitScreen döndürdüğü Habit'ten değerleri kopyala
+                                        habit.title = editedHabit.title;
+                                        habit.description =
+                                            editedHabit.description;
+                                        habit.emoji = editedHabit.emoji;
+                                        habit.color = editedHabit.color;
+                                        habit.frequency = editedHabit.frequency;
+                                        habit.frequencyType =
+                                            editedHabit.frequencyType;
+                                        habit.selectedWeekdays =
+                                            editedHabit.selectedWeekdays;
+                                        habit.selectedMonthDays =
+                                            editedHabit.selectedMonthDays;
+                                        habit.selectedYearDays =
+                                            editedHabit.selectedYearDays;
+                                        habit.periodicDays =
+                                            editedHabit.periodicDays;
+                                        habit.scheduledDates =
+                                            editedHabit.scheduledDates;
+                                        habit.reminderEnabled =
+                                            editedHabit.reminderEnabled;
+                                        habit.reminderTime =
+                                            editedHabit.reminderTime;
+                                        await _ensureRhythmListAndAssign(habit);
+                                        await _repo.updateHabit(habit);
+                                      }
+                                      return;
+                                    }
+                                    // Otherwise use advanced habit screen
+                                    final editedHabit =
+                                        await Navigator.of(context).push<Habit>(
                                       MaterialPageRoute(
                                         builder: (context) =>
                                             AdvancedHabitScreen(
-                                          useVisionDayOffsets: true,
-                                          returnAsMap: true,
-                                          editingHabitMap: {
-                                            'id': habit.id,
-                                            'title': habit.title,
-                                            'description': habit.description,
-                                            'icon': habit.icon,
-                                            'color': habit.color,
-                                            'targetCount': habit.targetCount,
-                                            'habitType': habit.habitType,
-                                            'unit': habit.unit,
-                                            'currentStreak':
-                                                habit.currentStreak,
-                                            'isCompleted': habit.isCompleted,
-                                            'startDate': habit.startDate,
-                                            'endDate': habit.endDate,
-                                            if (habit.scheduledDates != null)
-                                              'scheduledDates':
-                                                  habit.scheduledDates,
-                                            'numericalTargetType':
-                                                habit.numericalTargetType,
-                                            'timerTargetType':
-                                                habit.timerTargetType,
-                                            if (habit.emoji != null)
-                                              'emoji': habit.emoji,
-                                            if (habit.frequency != null)
-                                              'frequency': habit.frequency,
-                                            if (habit.frequencyType != null)
-                                              'frequencyType':
-                                                  habit.frequencyType,
-                                            if (habit.selectedWeekdays != null)
-                                              'selectedWeekdays':
-                                                  habit.selectedWeekdays,
-                                            if (habit.selectedMonthDays != null)
-                                              'selectedMonthDays':
-                                                  habit.selectedMonthDays,
-                                            if (habit.selectedYearDays != null)
-                                              'selectedYearDays':
-                                                  habit.selectedYearDays,
-                                            if (habit.periodicDays != null)
-                                              'periodicDays':
-                                                  habit.periodicDays,
-                                            'reminderEnabled':
-                                                habit.reminderEnabled,
-                                            if (habit.reminderTime != null)
-                                              'reminderTime': {
-                                                'hour':
-                                                    habit.reminderTime!.hour,
-                                                'minute':
-                                                    habit.reminderTime!.minute,
-                                              },
-                                            // Vision-specific context
-                                            'visionId': vision.id,
-                                            'visionStartDate': vision.startDate,
-                                            'visionEndDate': vision.endDate,
+                                          existingHabit: habit,
+                                        ),
+                                      ),
+                                    );
+                                    if (editedHabit != null) {
+                                      habit.title = editedHabit.title;
+                                      habit.description =
+                                          editedHabit.description;
+                                      habit.color = editedHabit.color;
+                                      habit.emoji = editedHabit.emoji;
+                                      habit.habitType = editedHabit.habitType;
+                                      habit.targetCount =
+                                          editedHabit.targetCount;
+                                      habit.unit = editedHabit.unit;
+                                      habit.numericalTargetType =
+                                          editedHabit.numericalTargetType;
+                                      habit.timerTargetType =
+                                          editedHabit.timerTargetType;
+                                      habit.frequency = editedHabit.frequency;
+                                      habit.frequencyType =
+                                          editedHabit.frequencyType;
+                                      habit.selectedWeekdays =
+                                          editedHabit.selectedWeekdays;
+                                      habit.selectedMonthDays =
+                                          editedHabit.selectedMonthDays;
+                                      habit.selectedYearDays =
+                                          editedHabit.selectedYearDays;
+                                      habit.periodicDays =
+                                          editedHabit.periodicDays;
+                                      habit.scheduledDates =
+                                          editedHabit.scheduledDates;
+                                      habit.reminderEnabled =
+                                          editedHabit.reminderEnabled;
+                                      habit.reminderTime =
+                                          editedHabit.reminderTime;
+                                      await _ensureRhythmListAndAssign(habit);
+                                      await _repo.updateHabit(habit);
+                                    }
+                                  },
+                                  onDelete: () {
+                                    final removed = habit;
+                                    _repo.removeHabit(habit.id);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          AppLocalizations.of(
+                                            context,
+                                          ).habitDeletedMessage(habit.title),
+                                        ),
+                                        action: SnackBarAction(
+                                          label:
+                                              AppLocalizations.of(context).undo,
+                                          onPressed: () {
+                                            _repo.insertHabit(index, removed);
                                           },
                                         ),
                                       ),
                                     );
-
-                                    if (result != null) {
-                                      // Apply updates to habit
-                                      habit.title = (result['title'] ??
-                                          habit.title) as String;
-                                      habit.description =
-                                          (result['description'] ??
-                                              habit.description) as String;
-                                      if (result['color'] is int) {
-                                        habit.color = Color(
-                                          result['color'] as int,
-                                        );
-                                      } else if (result['color'] is Color) {
-                                        habit.color = result['color'] as Color;
-                                      }
-                                      if (result['emoji'] is String &&
-                                          (result['emoji'] as String)
-                                              .trim()
-                                              .isNotEmpty) {
-                                        habit.emoji =
-                                            (result['emoji'] as String).trim();
-                                      }
-                                      if (result['frequency'] is String) {
-                                        final f =
-                                            (result['frequency'] as String)
-                                                .trim();
-                                        habit.frequency = f.isEmpty ? null : f;
-                                      }
-                                      if (result['frequencyType'] != null) {
-                                        habit.frequencyType =
-                                            result['frequencyType']?.toString();
-                                      }
-                                      if (result['selectedWeekdays'] is List) {
-                                        habit.selectedWeekdays =
-                                            (result['selectedWeekdays'] as List)
-                                                .whereType<num>()
-                                                .map((e) => e.toInt())
-                                                .toList();
-                                      }
-                                      if (result['selectedMonthDays'] is List) {
-                                        habit.selectedMonthDays =
-                                            (result['selectedMonthDays']
-                                                    as List)
-                                                .whereType<num>()
-                                                .map((e) => e.toInt())
-                                                .toList();
-                                      }
-                                      if (result['selectedYearDays'] is List) {
-                                        habit.selectedYearDays =
-                                            (result['selectedYearDays'] as List)
-                                                .map(
-                                                  (e) => e
-                                                      .toString()
-                                                      .split('T')
-                                                      .first,
-                                                )
-                                                .toList();
-                                      }
-                                      if (result['periodicDays'] != null) {
-                                        habit.periodicDays =
-                                            (result['periodicDays'] as num?)
-                                                ?.toInt();
-                                      }
-                                      if (result['scheduledDates'] is List) {
-                                        habit.scheduledDates =
-                                            (result['scheduledDates'] as List)
-                                                .map(
-                                                  (e) => e
-                                                      .toString()
-                                                      .split('T')
-                                                      .first,
-                                                )
-                                                .toList();
-                                      }
-                                      // Update reminder settings
-                                      if (result.containsKey(
-                                        'reminderEnabled',
-                                      )) {
-                                        habit.reminderEnabled =
-                                            (result['reminderEnabled']
-                                                    as bool?) ??
-                                                false;
-                                      }
-                                      if (result['reminderTime'] is Map) {
-                                        final rt =
-                                            result['reminderTime'] as Map;
-                                        final hour = rt['hour'] as int?;
-                                        final minute = rt['minute'] as int?;
-                                        if (hour != null && minute != null) {
-                                          habit.reminderTime = TimeOfDay(
-                                            hour: hour,
-                                            minute: minute,
-                                          );
-                                        }
-                                      } else if (result['reminderTime'] ==
-                                          null) {
-                                        habit.reminderTime = null;
-                                      }
-                                      await _ensureRhythmListAndAssign(habit);
-                                      await _repo.updateHabit(habit);
-                                    }
-                                    return;
-                                  } else {
-                                    print(
-                                      '   ❌ Vision not found for ID: ${habit.linkedVisionId}',
-                                    );
-                                    // Vision bulunamadı, normal düzenlemeye geç
-                                  }
-                                }
-
-                                // If it's a simple non-advanced habit, edit in basic screen
-                                if (habit.habitType == HabitType.simple &&
-                                    !habit.isAdvanced) {
-                                  final editedHabit =
-                                      await Navigator.of(context).push<Habit>(
-                                    MaterialPageRoute(
-                                      builder: (context) => SimpleHabitScreen(
-                                        existingHabit: habit,
-                                      ),
-                                    ),
-                                  );
-                                  if (editedHabit != null) {
-                                    // SimpleHabitScreen döndürdüğü Habit'ten değerleri kopyala
-                                    habit.title = editedHabit.title;
-                                    habit.description = editedHabit.description;
-                                    habit.emoji = editedHabit.emoji;
-                                    habit.color = editedHabit.color;
-                                    habit.frequency = editedHabit.frequency;
-                                    habit.frequencyType =
-                                        editedHabit.frequencyType;
-                                    habit.selectedWeekdays =
-                                        editedHabit.selectedWeekdays;
-                                    habit.selectedMonthDays =
-                                        editedHabit.selectedMonthDays;
-                                    habit.selectedYearDays =
-                                        editedHabit.selectedYearDays;
-                                    habit.periodicDays =
-                                        editedHabit.periodicDays;
-                                    habit.scheduledDates =
-                                        editedHabit.scheduledDates;
-                                    habit.reminderEnabled =
-                                        editedHabit.reminderEnabled;
-                                    habit.reminderTime =
-                                        editedHabit.reminderTime;
-                                    await _ensureRhythmListAndAssign(habit);
-                                    await _repo.updateHabit(habit);
-                                  }
-                                  return;
-                                }
-                                // Otherwise use advanced habit screen
-                                final editedHabit =
-                                    await Navigator.of(context).push<Habit>(
-                                  MaterialPageRoute(
-                                    builder: (context) => AdvancedHabitScreen(
-                                      existingHabit: habit,
-                                    ),
-                                  ),
+                                  },
                                 );
-                                if (editedHabit != null) {
-                                  habit.title = editedHabit.title;
-                                  habit.description = editedHabit.description;
-                                  habit.color = editedHabit.color;
-                                  habit.emoji = editedHabit.emoji;
-                                  habit.habitType = editedHabit.habitType;
-                                  habit.targetCount = editedHabit.targetCount;
-                                  habit.unit = editedHabit.unit;
-                                  habit.numericalTargetType =
-                                      editedHabit.numericalTargetType;
-                                  habit.timerTargetType =
-                                      editedHabit.timerTargetType;
-                                  habit.frequency = editedHabit.frequency;
-                                  habit.frequencyType =
-                                      editedHabit.frequencyType;
-                                  habit.selectedWeekdays =
-                                      editedHabit.selectedWeekdays;
-                                  habit.selectedMonthDays =
-                                      editedHabit.selectedMonthDays;
-                                  habit.selectedYearDays =
-                                      editedHabit.selectedYearDays;
-                                  habit.periodicDays = editedHabit.periodicDays;
-                                  habit.scheduledDates =
-                                      editedHabit.scheduledDates;
-                                  habit.reminderEnabled =
-                                      editedHabit.reminderEnabled;
-                                  habit.reminderTime = editedHabit.reminderTime;
-                                  await _ensureRhythmListAndAssign(habit);
-                                  await _repo.updateHabit(habit);
-                                }
-                              },
-                              onDelete: () {
-                                final removed = habit;
-                                _repo.removeHabit(habit.id);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      AppLocalizations.of(
-                                        context,
-                                      ).habitDeletedMessage(habit.title),
-                                    ),
-                                    action: SnackBarAction(
-                                      label: AppLocalizations.of(context).undo,
-                                      onPressed: () {
-                                        _repo.insertHabit(index, removed);
-                                      },
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
+                              }
+                            }
                           }
-                        }
-                        // Fallback (should not hit)
-                        return const SizedBox.shrink();
-                      },
+
+                          return AnimationConfiguration.staggeredList(
+                            position: index,
+                            duration: const Duration(milliseconds: 375),
+                            child: SlideAnimation(
+                              verticalOffset: 50.0,
+                              child: FadeInAnimation(
+                                child: childWidget,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     );
                   },
                 ),

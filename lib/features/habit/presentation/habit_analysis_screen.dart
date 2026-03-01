@@ -121,7 +121,8 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
               decoration: BoxDecoration(
                 // Use a stronger surfaceVariant in dark mode so the card separates
                 color: Theme.of(context).brightness == Brightness.dark
-                    ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.18)
+                    ? colorScheme.surfaceContainerHighest
+                        .withValues(alpha: 0.18)
                     : widget.habitColor.withValues(alpha: 0.10),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
@@ -133,19 +134,22 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
               ),
               child: Column(
                 children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? widget.habitColor.withValues(alpha: 0.30)
-                          : widget.habitColor.withValues(alpha: 0.20),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Icon(
-                      widget.habitIcon,
-                      color: widget.habitColor,
-                      size: 30,
+                  Hero(
+                    tag: 'habit_icon_${widget.habitTitle}',
+                    child: Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? widget.habitColor.withValues(alpha: 0.30)
+                            : widget.habitColor.withValues(alpha: 0.20),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Icon(
+                        widget.habitIcon,
+                        color: widget.habitColor,
+                        size: 30,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -262,7 +266,8 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Theme.of(context).brightness == Brightness.dark
-                    ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.06)
+                    ? colorScheme.surfaceContainerHighest
+                        .withValues(alpha: 0.06)
                     : colorScheme.surface,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
@@ -287,10 +292,10 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
                     _selectedPeriod == 0
                         ? l10n.weeklyProgress
                         : _selectedPeriod == 1
-                        ? l10n.monthlyProgress
-                        : _selectedPeriod == 2
-                        ? l10n.yearlyProgress
-                        : l10n.overallProgress,
+                            ? l10n.monthlyProgress
+                            : _selectedPeriod == 2
+                                ? l10n.yearlyProgress
+                                : l10n.overallProgress,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -316,7 +321,8 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
                 gradient: Theme.of(context).brightness == Brightness.dark
                     ? LinearGradient(
                         colors: [
-                          colorScheme.surfaceContainerHighest.withValues(alpha: 0.12),
+                          colorScheme.surfaceContainerHighest
+                              .withValues(alpha: 0.12),
                           colorScheme.surface.withValues(alpha: 0.04),
                         ],
                         begin: Alignment.topLeft,
@@ -408,9 +414,9 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
                 Text(
                   subtitle,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: color,
-                    fontWeight: FontWeight.bold,
-                  ),
+                        color: color,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
             ],
           ),
@@ -418,8 +424,8 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
           Text(
             title,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -453,11 +459,11 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
           text,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
-            color: isSelected
-                ? Theme.of(context).colorScheme.onPrimary
-                : Theme.of(context).colorScheme.onSurfaceVariant,
-            fontWeight: FontWeight.w600,
-          ),
+                color: isSelected
+                    ? Theme.of(context).colorScheme.onPrimary
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              ),
         ),
       ),
     );
@@ -533,15 +539,14 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
       );
     } else {
       // Aylık / Yıllık / Genel -> sütun (bar) grafik
-      final bars =
-          (_selectedPeriod == 1
-                  ? _computedMonthly
-                  : _selectedPeriod == 2
+      final bars = (_selectedPeriod == 1
+              ? _computedMonthly
+              : _selectedPeriod == 2
                   ? _computedYearly
                   : _computedGeneral)
-              .asMap()
-              .entries
-              .toList();
+          .asMap()
+          .entries
+          .toList();
 
       final count = bars.length;
       // adapt bar width: many bars -> narrow, few bars -> thicker
@@ -689,9 +694,8 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
     final DateTime firstOfMonth = DateTime(year, month, 1);
     final int firstWeekday = firstOfMonth.weekday; // 1=Mon..7=Sun
     final DateTime startDate = _parseIsoDate(habit.startDate);
-    final DateTime? endDate = habit.endDate != null
-        ? _parseIsoDate(habit.endDate!)
-        : null;
+    final DateTime? endDate =
+        habit.endDate != null ? _parseIsoDate(habit.endDate!) : null;
     final DateTime today = DateTime(now.year, now.month, now.day);
 
     Color dayBg({
@@ -719,8 +723,7 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
     Widget buildDayCell(int dayNumber) {
       final DateTime date = DateTime(year, month, dayNumber);
       final String dateKey = _dateKey(date);
-      final bool isToday =
-          date.year == today.year &&
+      final bool isToday = date.year == today.year &&
           date.month == today.month &&
           date.day == today.day;
       final bool beforeStart = date.isBefore(startDate);
@@ -733,8 +736,7 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
         progress = habit.currentStreak;
       }
       final bool considered = hasEntry || (isToday && habit.isCompleted);
-      final bool success =
-          !disabled &&
+      final bool success = !disabled &&
           considered &&
           HabitRepository.evaluateCompletionForProgress(habit, progress);
       final bool partial = !success && considered && progress > 0;
@@ -751,10 +753,10 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
       final Color borderColor = disabled
           ? colorScheme.outline.withValues(alpha: 0.12)
           : success
-          ? widget.habitColor
-          : partial
-          ? widget.habitColor.withValues(alpha: 0.40)
-          : colorScheme.outline.withValues(alpha: 0.20);
+              ? widget.habitColor
+              : partial
+                  ? widget.habitColor.withValues(alpha: 0.40)
+                  : colorScheme.outline.withValues(alpha: 0.20);
 
       Widget cell = Container(
         alignment: Alignment.center,
@@ -951,8 +953,7 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
     }
     final DateTime now = DateTime.now();
     final DateTime todayDate = DateTime(now.year, now.month, now.day);
-    final bool isToday =
-        date.year == todayDate.year &&
+    final bool isToday = date.year == todayDate.year &&
         date.month == todayDate.month &&
         date.day == todayDate.day;
 
@@ -995,10 +996,10 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
     final formattedDate = DateFormat.yMMMMd(localeName).format(date);
     final String effectiveUnitLabel =
         habit.unit != null && habit.unit!.trim().isNotEmpty
-        ? habit.unit!.trim()
-        : (habit.habitType == HabitType.timer
-              ? l10n.minutes.toLowerCase()
-              : '');
+            ? habit.unit!.trim()
+            : (habit.habitType == HabitType.timer
+                ? l10n.minutes.toLowerCase()
+                : '');
     final String targetText = effectiveUnitLabel.isNotEmpty
         ? '${habit.targetCount} $effectiveUnitLabel'
         : '${habit.targetCount}';
@@ -1273,8 +1274,8 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
               Text(
                 AppLocalizations.of(context).success,
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
+                      color: colorScheme.onSurfaceVariant,
+                    ),
               ),
             ],
           ),
@@ -1407,9 +1408,8 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
       return DateTimeRange(start: startOfYear, end: endOfYear);
     } else {
       // Overall
-      final start = _liveHabit != null
-          ? _parseIsoDate(_liveHabit!.startDate)
-          : today;
+      final start =
+          _liveHabit != null ? _parseIsoDate(_liveHabit!.startDate) : today;
       return DateTimeRange(start: start, end: today);
     }
   }
@@ -1608,11 +1608,9 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
     int count = 0;
     final habit = _liveHabit!;
 
-    for (
-      var d = range.start;
-      !d.isAfter(range.end);
-      d = d.add(const Duration(days: 1))
-    ) {
+    for (var d = range.start;
+        !d.isAfter(range.end);
+        d = d.add(const Duration(days: 1))) {
       if (!_isEffectiveDay(d, habit)) continue;
       final key = _dateKey(d);
       if (HabitRepository.evaluateCompletionFromLog(habit, key)) count++;
@@ -1628,11 +1626,9 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
-    for (
-      var d = range.start;
-      !d.isAfter(range.end);
-      d = d.add(const Duration(days: 1))
-    ) {
+    for (var d = range.start;
+        !d.isAfter(range.end);
+        d = d.add(const Duration(days: 1))) {
       if (!_isEffectiveDay(d, habit)) continue;
       // Don't count future days as unsuccessful
       if (d.isAfter(today)) continue;
@@ -1655,11 +1651,9 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
     int sum = 0;
     final habit = _liveHabit!;
 
-    for (
-      var d = range.start;
-      !d.isAfter(range.end);
-      d = d.add(const Duration(days: 1))
-    ) {
+    for (var d = range.start;
+        !d.isAfter(range.end);
+        d = d.add(const Duration(days: 1))) {
       final key = _dateKey(d);
       sum += habit.dailyLog[key] ?? 0;
     }
@@ -1673,11 +1667,9 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
     int sum = 0;
     final habit = _liveHabit!;
 
-    for (
-      var d = range.start;
-      !d.isAfter(range.end);
-      d = d.add(const Duration(days: 1))
-    ) {
+    for (var d = range.start;
+        !d.isAfter(range.end);
+        d = d.add(const Duration(days: 1))) {
       final key = _dateKey(d);
       sum += habit.dailyLog[key] ?? 0;
     }
@@ -1710,11 +1702,9 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
       final range = _getDateRange(0);
       double sum = 0;
       int eff = 0;
-      for (
-        var d = range.start;
-        !d.isAfter(range.end);
-        d = d.add(const Duration(days: 1))
-      ) {
+      for (var d = range.start;
+          !d.isAfter(range.end);
+          d = d.add(const Duration(days: 1))) {
         if (!_isEffectiveDay(d, habit)) continue;
         final key = _dateKey(d);
         final raw = habit.dailyLog[key] ?? 0;
@@ -1726,11 +1716,9 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
       final range = _getDateRange(1);
       double sum = 0;
       int eff = 0;
-      for (
-        var d = range.start;
-        !d.isAfter(range.end);
-        d = d.add(const Duration(days: 1))
-      ) {
+      for (var d = range.start;
+          !d.isAfter(range.end);
+          d = d.add(const Duration(days: 1))) {
         if (!_isEffectiveDay(d, habit)) continue;
         final key = _dateKey(d);
         final raw = habit.dailyLog[key] ?? 0;

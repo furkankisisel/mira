@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 
 import '../tokens/radii.dart';
 import '../theme/theme_variations.dart';
+import 'pressable_scale.dart';
 
 class CottonBottomBar extends StatelessWidget {
   const CottonBottomBar({
@@ -22,54 +24,65 @@ class CottonBottomBar extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
 
-    // Use theme surface color to match AppBar
-    final bgColor = scheme.surface;
+    // Use theme surface color to match AppBar with transparency for glassmorphism
+    final bgColor = scheme.surface.withValues(alpha: 0.85);
 
     return RepaintBoundary(
       child: Container(
         decoration: BoxDecoration(
-          color: bgColor,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           boxShadow: [
             // Deep ambient shadow for lift
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 20,
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 24,
               offset: const Offset(0, -4),
             ),
             // Sharp detail shadow
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 4,
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
               offset: const Offset(0, -1),
             ),
           ],
         ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(destinations.length, (index) {
-                final item = destinations[index];
-                final isSelected = selectedIndex == index;
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 16.0, sigmaY: 16.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: bgColor,
+              ),
+              child: SafeArea(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(destinations.length, (index) {
+                      final item = destinations[index];
+                      final isSelected = selectedIndex == index;
 
-                // Decide active color
-                // If globally World theme, we might want specific colors per tab,
-                // otherwise use primary.
-                // For simplicity in this reusable component, we use the item's color if provided,
-                // or fall back to scheme.primary.
-                final activeColor = item.color ?? scheme.primary;
+                      // Decide active color
+                      // If globally World theme, we might want specific colors per tab,
+                      // otherwise use primary.
+                      // For simplicity in this reusable component, we use the item's color if provided,
+                      // or fall back to scheme.primary.
+                      final activeColor = item.color ?? scheme.primary;
 
-                return _CottonNavItem(
-                  icon: item.icon,
-                  selectedIcon: item.selectedIcon,
-                  label: item.label,
-                  isSelected: isSelected,
-                  activeColor: activeColor,
-                  onTap: () => onDestinationSelected(index),
-                );
-              }),
+                      return _CottonNavItem(
+                        icon: item.icon,
+                        selectedIcon: item.selectedIcon,
+                        label: item.label,
+                        isSelected: isSelected,
+                        activeColor: activeColor,
+                        onTap: () => onDestinationSelected(index),
+                      );
+                    }),
+                  ),
+                ),
+              ),
             ),
           ),
         ),
@@ -118,13 +131,12 @@ class _CottonNavItem extends StatelessWidget {
         : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6);
 
     // Background for the selected pill
-    final pillColor = isSelected
-        ? activeColor.withValues(alpha: 0.12)
-        : Colors.transparent;
+    final pillColor =
+        isSelected ? activeColor.withValues(alpha: 0.12) : Colors.transparent;
 
-    return GestureDetector(
+    return PressableScale(
       onTap: onTap,
-      behavior: HitTestBehavior.opaque,
+      scale: 0.9,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOutCubic,

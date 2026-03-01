@@ -42,43 +42,48 @@ class _ReportsScreenState extends State<ReportsScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.weeklyReportsTitle),
-        centerTitle: true,
-        actions: [
-          // Token balance for non-premium
-          if (!context.watch<PremiumProvider>().isPremium)
-            ListenableBuilder(
-              listenable: TokenRepository.instance,
-              builder: (context, _) => Container(
-                margin: const EdgeInsets.only(right: 8),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.toll, size: 18, color: colorScheme.primary),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${TokenRepository.instance.balance}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.primary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-        ],
-      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : _buildBody(context),
+          : CustomScrollView(
+              slivers: [
+                SliverAppBar.large(
+                  title: Text(l10n.weeklyReportsTitle),
+                  centerTitle: true,
+                  actions: [
+                    // Token balance for non-premium
+                    if (!context.watch<PremiumProvider>().isPremium)
+                      ListenableBuilder(
+                        listenable: TokenRepository.instance,
+                        builder: (context, _) => Container(
+                          margin: const EdgeInsets.only(right: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.toll,
+                                  size: 18, color: colorScheme.primary),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${TokenRepository.instance.balance}',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                _buildBody(context),
+              ],
+            ),
       floatingActionButton: _isLoading ? null : _buildFab(context),
     );
   }
@@ -90,13 +95,19 @@ class _ReportsScreenState extends State<ReportsScreen> {
         final reports = ReportRepository.instance.reports;
 
         if (reports.isEmpty) {
-          return _buildEmptyState(context);
+          return SliverFillRemaining(
+            child: _buildEmptyState(context),
+          );
         }
 
-        return ListView.builder(
+        return SliverPadding(
           padding: const EdgeInsets.all(16),
-          itemCount: reports.length,
-          itemBuilder: (context, index) => _buildReportCard(reports[index]),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => _buildReportCard(reports[index]),
+              childCount: reports.length,
+            ),
+          ),
         );
       },
     );
