@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../mood/data/detailed_mood_repository.dart';
 import '../../mood/data/mood_models.dart';
-import '../../mood/presentation/mood_selection_screen.dart';
+import '../../mood/mood_screen.dart';
 import '../../../design_system/theme/theme_variations.dart';
 import '../../../design_system/tokens/colors.dart';
 import 'widgets/daily_task_dialog.dart';
@@ -60,22 +60,20 @@ class _HabitItem extends _GroupedItem {
   _HabitItem(this.habit);
 }
 
-enum Mood { terrible, bad, ok, good, great }
-
-IconData _iconFor(Mood m) => switch (m) {
-      Mood.terrible => Icons.sentiment_very_dissatisfied,
-      Mood.bad => Icons.sentiment_dissatisfied,
-      Mood.ok => Icons.sentiment_neutral,
-      Mood.good => Icons.sentiment_satisfied,
-      Mood.great => Icons.sentiment_very_satisfied,
+IconData _iconFor(MoodLevel m) => switch (m) {
+      MoodLevel.terrible => Icons.sentiment_very_dissatisfied,
+      MoodLevel.bad => Icons.sentiment_dissatisfied,
+      MoodLevel.neutral => Icons.sentiment_neutral,
+      MoodLevel.good => Icons.sentiment_satisfied,
+      MoodLevel.excellent => Icons.sentiment_very_satisfied,
     };
 
-Color _colorFor(Mood m) => switch (m) {
-      Mood.terrible => Colors.redAccent,
-      Mood.bad => Colors.deepOrange,
-      Mood.ok => AppColors.accentSand,
-      Mood.good => AppColors.accentBlue,
-      Mood.great => AppColors.accentGold,
+Color _colorFor(MoodLevel m) => switch (m) {
+      MoodLevel.terrible => Colors.redAccent,
+      MoodLevel.bad => Colors.deepOrange,
+      MoodLevel.neutral => AppColors.accentSand,
+      MoodLevel.good => AppColors.accentBlue,
+      MoodLevel.excellent => AppColors.accentGold,
     };
 
 class HabitScreen extends StatefulWidget {
@@ -91,7 +89,7 @@ class HabitScreenState extends State<HabitScreen>
   bool get wantKeepAlive => true;
 
   final _moodRepo = DetailedMoodRepository();
-  Mood? _currentMood;
+  MoodLevel? _currentMood;
 
   DateTime _selected = DateTime(
     DateTime.now().year,
@@ -107,8 +105,7 @@ class HabitScreenState extends State<HabitScreen>
     try {
       final latest = await _moodRepo.getLatestMoodEntry();
       if (latest != null) {
-        if (mounted)
-          setState(() => _currentMood = _toDashboardMood(latest.mood));
+        if (mounted) setState(() => _currentMood = latest.mood);
       }
     } catch (_) {}
   }
@@ -2680,6 +2677,96 @@ class HabitScreenState extends State<HabitScreen>
     );
   }
 
+  Widget _buildFilterRow(
+    BuildContext context,
+    ThemeData theme,
+    ColorScheme colorScheme,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      child: Row(
+        children: [
+          // Filter action button
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: showFilterSheet,
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.5,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: colorScheme.outlineVariant.withValues(
+                      alpha: 0.5,
+                    ),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.filter_list_rounded,
+                      size: 16,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      AppLocalizations.of(context).filterTitle,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    // Show indicator if filters are active
+                    if (_selectedTypes.length < 5 ||
+                        _completionFilter != CompletionFilter.all ||
+                        _selectedListId != null) ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          // Show current list name if selected
+          if (_selectedListId != null)
+            Expanded(
+              child: Text(
+                _listRepo.lists
+                    .firstWhere(
+                      (l) => l.id == _selectedListId,
+                      orElse: () => AppList(id: '', title: ''),
+                    )
+                    .title,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: colorScheme.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildEmptyState(BuildContext context, AppLocalizations l10n) {
     return Center(
       child: Padding(
@@ -2751,31 +2838,6 @@ class HabitScreenState extends State<HabitScreen>
                       : const SizedBox.shrink(),
                 ),
               ),
-              const SizedBox(height: 0),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 16.0, top: 4.0),
-                  child: TextButton(
-                    onPressed: showFilterSheet,
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Text(
-                      AppLocalizations.of(context).filterTitle,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: colorScheme.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
               Expanded(
                 child: Builder(
                   builder: (context) {
@@ -2783,9 +2845,15 @@ class HabitScreenState extends State<HabitScreen>
                     final habits = _filteredHabits();
                     if (tasks.isEmpty && habits.isEmpty) {
                       // Show a unified empty state when nothing matches
-                      return _buildEmptyState(
-                        context,
-                        AppLocalizations.of(context),
+                      return ListView(
+                        padding: EdgeInsets.zero,
+                        children: [
+                          _buildFilterRow(context, theme, colorScheme),
+                          _buildEmptyState(
+                            context,
+                            AppLocalizations.of(context),
+                          ),
+                        ],
                       );
                     }
                     // Reserve space at the bottom so the last card is not obscured by the FAB.
@@ -2817,10 +2885,12 @@ class HabitScreenState extends State<HabitScreen>
                       final isPremium =
                           context.watch<PremiumProvider>().isPremium;
                       final int rhythmHeaderCount = isPremium ? 1 : 0;
+                      final int filterRowCount = 1;
                       final int focusItemCount = isFocusActive ? 1 : 0;
                       final int toggleButtonCount = isFocusActive ? 1 : 0;
                       final int actionCardCount = shouldShowOtherItems ? 1 : 0;
                       final int totalCount = rhythmHeaderCount +
+                          filterRowCount +
                           focusItemCount +
                           toggleButtonCount +
                           itemsToShow.length +
@@ -2840,17 +2910,25 @@ class HabitScreenState extends State<HabitScreen>
                                 onAiMessageTap: () =>
                                     _loadFocusAiMessage(forceRefresh: true),
                               );
-                            } else if (isFocusActive && index == 1) {
-                              // 1. Show focus card after rhythm header
+                            } else if (index == rhythmHeaderCount) {
+                              // Show filter row after header
+                              childWidget =
+                                  _buildFilterRow(context, theme, colorScheme);
+                            } else if (isFocusActive &&
+                                index == rhythmHeaderCount + filterRowCount) {
+                              // Show focus card
                               childWidget = focusWidget;
-                            } else if (isFocusActive && index == 2) {
-                              // 2. Show toggle button after focus card
+                            } else if (isFocusActive &&
+                                index ==
+                                    rhythmHeaderCount + filterRowCount + 1) {
+                              // Show toggle button after focus card
                               childWidget =
                                   _buildOtherItemsToggle(groupedItems.length);
                             } else {
-                              // 3. Show items if expanded or if no focus
+                              // Show items if expanded or if no focus
                               final adjustedIndex = index -
                                   rhythmHeaderCount -
+                                  filterRowCount -
                                   focusItemCount -
                                   toggleButtonCount;
 
@@ -2893,9 +2971,24 @@ class HabitScreenState extends State<HabitScreen>
                     return AnimationLimiter(
                       child: ListView.builder(
                         padding: EdgeInsets.only(bottom: bottomReserve),
-                        itemCount: (tasks.isNotEmpty ? (1 + tasks.length) : 0) +
+                        itemCount: 1 +
+                            (tasks.isNotEmpty ? (1 + tasks.length) : 0) +
                             (habits.isNotEmpty ? (1 + habits.length) : 0),
                         itemBuilder: (context, index) {
+                          if (index == 0) {
+                            return AnimationConfiguration.staggeredList(
+                              position: index,
+                              duration: const Duration(milliseconds: 375),
+                              child: SlideAnimation(
+                                verticalOffset: 50.0,
+                                child: FadeInAnimation(
+                                  child: _buildFilterRow(
+                                      context, theme, colorScheme),
+                                ),
+                              ),
+                            );
+                          }
+                          index -= 1; // Adjust index for the rest of the items
                           Widget childWidget = const SizedBox.shrink();
                           int cursor = 0;
                           // Tasks section
@@ -3539,29 +3632,11 @@ class HabitScreenState extends State<HabitScreen>
     );
   }
 
-  Mood _toDashboardMood(MoodLevel v) {
-    switch (v) {
-      case MoodLevel.terrible:
-        return Mood.terrible;
-      case MoodLevel.bad:
-        return Mood.bad;
-      case MoodLevel.neutral:
-        return Mood.ok;
-      case MoodLevel.good:
-        return Mood.good;
-      case MoodLevel.excellent:
-        return Mood.great;
-    }
-  }
-
   // Exposed for AppBar action in main.dart
   void openMoodScreen() async {
     await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => ChangeNotifierProvider(
-          create: (_) => MoodFlowState(),
-          child: MoodSelectionScreen(variant: widget.variant),
-        ),
+        builder: (_) => MoodScreen(variant: widget.variant),
       ),
     );
     // Refresh mood after return

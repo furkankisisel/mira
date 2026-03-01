@@ -1963,6 +1963,54 @@ class AppLocalizationsEn extends AppLocalizations {
   String get multipleSubItemsDesc => 'Multiple sub-items';
 
   @override
+  String get emotionOverwhelmed => 'Overwhelmed';
+
+  @override
+  String get emotionLonely => 'Lonely';
+
+  @override
+  String get emotionRegretful => 'Regretful';
+
+  @override
+  String get emotionInsecure => 'Insecure';
+
+  @override
+  String get emotionGuilty => 'Guilty';
+
+  @override
+  String get emotionBored => 'Bored';
+
+  @override
+  String get emotionNumb => 'Numb';
+
+  @override
+  String get emotionConfused => 'Confused';
+
+  @override
+  String get emotionDistracted => 'Distracted';
+
+  @override
+  String get emotionProud => 'Proud';
+
+  @override
+  String get emotionConfident => 'Confident';
+
+  @override
+  String get emotionHopeful => 'Hopeful';
+
+  @override
+  String get emotionEuphoric => 'Euphoric';
+
+  @override
+  String get emotionBlessed => 'Blessed';
+
+  @override
+  String get emotionUnstoppable => 'Unstoppable';
+
+  @override
+  String get reasonTitle => 'Reason';
+
+  @override
   String get mustBePremiumToUse =>
       'You must be a Premium subscriber to use this feature.';
 

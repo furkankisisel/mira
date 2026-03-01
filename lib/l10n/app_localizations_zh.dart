@@ -1959,6 +1959,54 @@ class AppLocalizationsZh extends AppLocalizations {
   String get multipleSubItemsDesc => 'Çoklu alt öğeler';
 
   @override
+  String get emotionOverwhelmed => 'Bunalmış';
+
+  @override
+  String get emotionLonely => 'Yalnız';
+
+  @override
+  String get emotionRegretful => 'Pişman';
+
+  @override
+  String get emotionInsecure => 'Güvensiz';
+
+  @override
+  String get emotionGuilty => 'Suçlu';
+
+  @override
+  String get emotionBored => 'Sıkılmış';
+
+  @override
+  String get emotionNumb => 'Hissiz';
+
+  @override
+  String get emotionConfused => 'Kafası Karışık';
+
+  @override
+  String get emotionDistracted => 'Dikkati Dağınık';
+
+  @override
+  String get emotionProud => 'Gururlu';
+
+  @override
+  String get emotionConfident => 'Kendinden Emin';
+
+  @override
+  String get emotionHopeful => 'Umutlu';
+
+  @override
+  String get emotionEuphoric => 'Coşkulu';
+
+  @override
+  String get emotionBlessed => 'Şanslı/Kutsanmış';
+
+  @override
+  String get emotionUnstoppable => 'Durdurulamaz';
+
+  @override
+  String get reasonTitle => 'Neden';
+
+  @override
   String get mustBePremiumToUse =>
       'You must be a Premium subscriber to use this feature.';
 

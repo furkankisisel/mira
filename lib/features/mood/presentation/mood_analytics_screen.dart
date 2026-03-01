@@ -57,22 +57,41 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
-    final Color accent = theme.colorScheme.primary;
-
-    final themed = theme.copyWith(
-      colorScheme: theme.colorScheme.copyWith(primary: accent),
-      appBarTheme: theme.appBarTheme.copyWith(foregroundColor: accent),
-      iconTheme: theme.iconTheme.copyWith(color: accent),
-    );
+    // Apply exact same colors as mood_screen.dart
+    final Color bgColor = theme.scaffoldBackgroundColor;
+    final Color cardColor = theme.colorScheme.surface;
+    final Color primaryColor = theme.colorScheme.primary;
+    final Color textColor = theme.colorScheme.onSurface;
+    final bool isDark = theme.brightness == Brightness.dark;
+    final Color chipColor = isDark
+        ? Colors.white.withOpacity(0.08)
+        : Colors.black.withOpacity(0.05);
 
     return Theme(
-      data: themed,
+      data: theme,
       child: Scaffold(
+        backgroundColor: bgColor,
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: false,
+          iconTheme: IconThemeData(color: textColor),
+          titleTextStyle: TextStyle(
+            color: textColor,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Outfit',
+          ),
           title: Text(l10n.moodAnalytics),
-          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
           bottom: TabBar(
             controller: _tabController,
+            indicatorColor: primaryColor,
+            labelColor: primaryColor,
+            unselectedLabelColor: textColor.withOpacity(0.5),
             tabs: [
               Tab(text: l10n.overview),
               Tab(text: l10n.history),
@@ -80,33 +99,36 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
           ),
         ),
         body: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? Center(child: CircularProgressIndicator(color: primaryColor))
             : TabBarView(
                 controller: _tabController,
                 children: [
-                  // Use the themed ThemeData so widgets inside pick up the world accent when active
-                  _buildOverviewTab(themed, l10n),
-                  _buildHistoryTab(themed, l10n),
+                  _buildOverviewTab(theme, l10n, cardColor, chipColor,
+                      primaryColor, textColor),
+                  _buildHistoryTab(theme, l10n, cardColor, chipColor,
+                      primaryColor, textColor),
                 ],
               ),
       ),
     );
   }
 
-  Widget _buildOverviewTab(ThemeData theme, AppLocalizations l10n) {
+  Widget _buildOverviewTab(ThemeData theme, AppLocalizations l10n,
+      Color cardColor, Color chipColor, Color primaryColor, Color textColor) {
     if (_statistics == null) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.mood, size: 64, color: theme.colorScheme.outline),
+            Icon(Icons.mood, size: 64, color: textColor.withOpacity(0.3)),
             const SizedBox(height: 16),
-            Text(l10n.noMoodData, style: theme.textTheme.titleMedium),
+            Text(l10n.noMoodData,
+                style: theme.textTheme.titleMedium?.copyWith(color: textColor)),
             const SizedBox(height: 8),
             Text(
               l10n.startTrackingMood,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                color: textColor.withOpacity(0.7),
               ),
             ),
           ],
@@ -116,69 +138,88 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Summary Cards
-          Row(
-            children: [
-              Expanded(
-                child: _buildSummaryCard(
-                  title: l10n.totalEntries,
-                  value: _statistics!.totalEntries.toString(),
-                  icon: Icons.event_note,
-                  color: Colors.blue,
-                  theme: theme,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(32),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Summary Cards
+            Row(
+              children: [
+                Expanded(
+                  child: _buildSummaryCard(
+                    title: l10n.totalEntries,
+                    value: _statistics!.totalEntries.toString(),
+                    icon: Icons.event_note,
+                    color: Colors.blue,
+                    chipColor: chipColor,
+                    textColor: textColor,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildSummaryCard(
-                  title: l10n.averageMood,
-                  value: _statistics!.averageMoodScore.toStringAsFixed(1),
-                  icon: Icons.trending_up,
-                  color: _getMoodColor(_statistics!.averageMoodScore),
-                  theme: theme,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildSummaryCard(
+                    title: l10n.averageMood,
+                    value: _statistics!.averageMoodScore.toStringAsFixed(1),
+                    icon: Icons.trending_up,
+                    color: _getMoodColor(_statistics!.averageMoodScore),
+                    chipColor: chipColor,
+                    textColor: textColor,
+                  ),
                 ),
+              ],
+            ),
+            const SizedBox(height: 32),
+
+            // Mood Distribution
+            Text(
+              l10n.moodDistribution,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
               ),
-            ],
-          ),
-          const SizedBox(height: 24),
-
-          // Mood Distribution
-          Text(
-            l10n.moodDistribution,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w600,
             ),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(height: 200, child: _buildMoodDistributionChart(theme)),
-          const SizedBox(height: 24),
+            const SizedBox(height: 24),
+            SizedBox(
+                height: 200,
+                child: _buildMoodDistributionChart(theme, textColor)),
+            const SizedBox(height: 32),
 
-          // Top Categories
-          Text(
-            l10n.topCategories,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w600,
+            // Top Categories
+            Text(
+              l10n.topCategories,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-          _buildTopCategoriesCard(theme, l10n),
-        ],
+            const SizedBox(height: 24),
+            _buildTopCategoriesCard(
+                theme, l10n, chipColor, textColor, primaryColor),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildHistoryTab(ThemeData theme, AppLocalizations l10n) {
+  Widget _buildHistoryTab(ThemeData theme, AppLocalizations l10n,
+      Color cardColor, Color chipColor, Color primaryColor, Color textColor) {
     if (_recentEntries.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.history, size: 64, color: theme.colorScheme.outline),
+            Icon(Icons.history, size: 64, color: textColor.withOpacity(0.3)),
             const SizedBox(height: 16),
-            Text(l10n.noHistory, style: theme.textTheme.titleMedium),
+            Text(l10n.noHistory,
+                style: theme.textTheme.titleMedium?.copyWith(color: textColor)),
           ],
         ),
       );
@@ -190,7 +231,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
       separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
         final entry = _recentEntries[index];
-        return _buildHistoryCard(entry, theme, l10n);
+        return _buildHistoryCard(
+            entry, theme, l10n, cardColor, chipColor, primaryColor, textColor);
       },
     );
   }
@@ -200,36 +242,38 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
     required String value,
     required IconData icon,
     required Color color,
-    required ThemeData theme,
+    required Color chipColor,
+    required Color textColor,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
+        color: chipColor,
+        borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
+              color: color.withOpacity(0.2),
+              shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: color, size: 24),
+            child: Icon(icon, color: color, size: 28),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             value,
-            style: theme.textTheme.headlineSmall?.copyWith(
+            style: TextStyle(
+              fontSize: 28,
               fontWeight: FontWeight.bold,
               color: color,
             ),
           ),
+          const SizedBox(height: 4),
           Text(
             title,
-            style: theme.textTheme.bodySmall,
+            style: TextStyle(color: textColor.withOpacity(0.7), fontSize: 13),
             textAlign: TextAlign.center,
           ),
         ],
@@ -237,10 +281,11 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
     );
   }
 
-  Widget _buildMoodDistributionChart(ThemeData theme) {
+  Widget _buildMoodDistributionChart(ThemeData theme, Color textColor) {
     final l10n = AppLocalizations.of(context);
     if (_statistics == null || _statistics!.moodDistribution.isEmpty) {
-      return Center(child: Text(l10n.noMoodData));
+      return Center(
+          child: Text(l10n.noMoodData, style: TextStyle(color: textColor)));
     }
 
     final sections = _statistics!.moodDistribution.entries.map((entry) {
@@ -254,7 +299,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
         title: '${percentage.toStringAsFixed(1)}%',
         radius: 60,
         titleStyle: const TextStyle(
-          fontSize: 12,
+          fontSize: 14,
           fontWeight: FontWeight.bold,
           color: Colors.white,
         ),
@@ -262,19 +307,19 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
     }).toList();
 
     return PieChart(
-      PieChartData(sections: sections, centerSpaceRadius: 40, sectionsSpace: 2),
+      PieChartData(sections: sections, centerSpaceRadius: 40, sectionsSpace: 4),
     );
   }
 
-  Widget _buildTopCategoriesCard(ThemeData theme, AppLocalizations l10n) {
+  Widget _buildTopCategoriesCard(ThemeData theme, AppLocalizations l10n,
+      Color chipColor, Color textColor, Color primaryColor) {
     if (_statistics == null) return const SizedBox.shrink();
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
+        color: chipColor,
+        borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,23 +329,29 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
             _getMoodTitle(_statistics!.mostCommonMood, l10n),
             _getMoodIcon(_statistics!.mostCommonMood),
             _getMoodColor(_statistics!.mostCommonMood.index + 1.0),
-            theme,
+            textColor,
           ),
-          const Divider(),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Divider(color: textColor.withOpacity(0.1), height: 1),
+          ),
           _buildCategoryRow(
             l10n.mostCommonEmotion,
             _getSubEmotionTitle(_statistics!.mostCommonSubEmotion, l10n),
             _getSubEmotionIcon(_statistics!.mostCommonSubEmotion),
-            theme.colorScheme.primary,
-            theme,
+            primaryColor,
+            textColor,
           ),
-          const Divider(),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Divider(color: textColor.withOpacity(0.1), height: 1),
+          ),
           _buildCategoryRow(
             l10n.mostCommonReason,
             _getReasonTitle(_statistics!.mostCommonReason, l10n),
             _getReasonIcon(_statistics!.mostCommonReason),
             theme.colorScheme.secondary,
-            theme,
+            textColor,
           ),
         ],
       ),
@@ -323,6 +374,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
         return Theme(
           data: themed,
           child: AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
             title: Text(l10n.delete),
             content: Text(l10n.deleteEntryConfirm),
             actions: [
@@ -376,6 +429,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
         return Theme(
           data: themed,
           child: AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
             title: Text(l10n.edit),
             content: SingleChildScrollView(
               child: Column(
@@ -396,28 +451,6 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                       if (v != null) selectedMood = v;
                     },
                   ),
-                  const SizedBox(height: 8),
-                  // Sub-emotion editing temporarily disabled for multi-select support
-                  // TODO: Implement multi-select sub-emotion picker
-                  /*
-                  DropdownButtonFormField<SubEmotion>(
-                    initialValue: selectedSubEmotion,
-                    decoration: InputDecoration(
-                      labelText: l10n.selectSubEmotion,
-                    ),
-                    items: SubEmotion.values
-                        .map(
-                          (s) => DropdownMenuItem(
-                            value: s,
-                            child: Text(_getSubEmotionTitle(s, l10n)),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (v) {
-                      if (v != null) selectedSubEmotion = v;
-                    },
-                  ),
-                  */
                   const SizedBox(height: 8),
                   DropdownButtonFormField<ReasonCategory>(
                     initialValue: selectedReason,
@@ -478,34 +511,38 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
     String value,
     IconData icon,
     Color color,
-    ThemeData theme,
+    Color textColor,
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
+              color: color.withOpacity(0.2),
+              shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: color, size: 20),
+            child: Icon(icon, color: color, size: 24),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.7),
+                  style: TextStyle(
+                    color: textColor.withOpacity(0.5),
+                    fontSize: 13,
                   ),
                 ),
+                const SizedBox(height: 4),
                 Text(
                   value,
-                  style: theme.textTheme.titleSmall?.copyWith(
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -521,15 +558,19 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
     MoodEntry entry,
     ThemeData theme,
     AppLocalizations l10n,
+    Color cardColor,
+    Color chipColor,
+    Color primaryColor,
+    Color textColor,
   ) {
     return InkWell(
       onLongPress: () => _showHistoryEntryActions(entry),
+      borderRadius: BorderRadius.circular(32),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: theme.colorScheme.outline.withOpacity(0.2)),
+          color: cardColor,
+          borderRadius: BorderRadius.circular(32),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -537,34 +578,37 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: _getMoodColor(
-                      entry.mood.index + 1.0,
-                    ).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    color:
+                        _getMoodColor(entry.mood.index + 1.0).withOpacity(0.2),
+                    shape: BoxShape.circle,
                   ),
                   child: Icon(
                     _getMoodIcon(entry.mood),
                     color: _getMoodColor(entry.mood.index + 1.0),
-                    size: 20,
+                    size: 24,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         _getMoodTitle(entry.mood, l10n),
-                        style: theme.textTheme.titleSmall?.copyWith(
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: 18,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
+                      const SizedBox(height: 4),
                       Text(
                         _formatDateTime(entry.timestamp),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withOpacity(0.7),
+                        style: TextStyle(
+                          color: textColor.withOpacity(0.5),
+                          fontSize: 13,
                         ),
                       ),
                     ],
@@ -573,23 +617,31 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
               ],
             ),
             if (entry.journalText.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Text(
-                entry.journalText,
-                style: theme.textTheme.bodyMedium,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
+              const SizedBox(height: 20),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: chipColor,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  entry.journalText,
+                  style: TextStyle(color: textColor, height: 1.4),
+                ),
               ),
             ],
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
             Wrap(
               spacing: 8,
-              runSpacing: 4,
+              runSpacing: 8,
               children: [
                 ...entry.subEmotions.map(
-                  (s) => _buildTag(_getSubEmotionTitle(s, l10n), theme),
+                  (s) => _buildTag(
+                      _getSubEmotionTitle(s, l10n), chipColor, textColor),
                 ),
-                _buildTag(_getReasonTitle(entry.reason, l10n), theme),
+                _buildTag(
+                    _getReasonTitle(entry.reason, l10n), chipColor, textColor),
               ],
             ),
           ],
@@ -598,17 +650,19 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
     );
   }
 
-  Widget _buildTag(String text, ThemeData theme) {
+  Widget _buildTag(String text, Color chipColor, Color textColor) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primary.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        color: chipColor,
+        borderRadius: BorderRadius.circular(24),
       ),
       child: Text(
         text,
-        style: theme.textTheme.bodySmall?.copyWith(
-          color: theme.colorScheme.primary,
+        style: TextStyle(
+          color: textColor.withOpacity(0.8),
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );

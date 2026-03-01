@@ -3743,20 +3743,116 @@ abstract class AppLocalizations {
   /// No description provided for @multiple.
   ///
   /// In tr, this message translates to:
-  /// **'Çoklu'**
+  /// **'Birden fazla'**
   String get multiple;
 
   /// No description provided for @multipleSubItems.
   ///
   /// In tr, this message translates to:
-  /// **'Çoklu alt maddeler'**
+  /// **'Birden fazla alt öğe'**
   String get multipleSubItems;
 
   /// No description provided for @multipleSubItemsDesc.
   ///
   /// In tr, this message translates to:
-  /// **'Çoklu alt öğeler'**
+  /// **'Birden fazla alt öğe'**
   String get multipleSubItemsDesc;
+
+  /// No description provided for @emotionOverwhelmed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bunalmış'**
+  String get emotionOverwhelmed;
+
+  /// No description provided for @emotionLonely.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yalnız'**
+  String get emotionLonely;
+
+  /// No description provided for @emotionRegretful.
+  ///
+  /// In tr, this message translates to:
+  /// **'Pişman'**
+  String get emotionRegretful;
+
+  /// No description provided for @emotionInsecure.
+  ///
+  /// In tr, this message translates to:
+  /// **'Güvensiz'**
+  String get emotionInsecure;
+
+  /// No description provided for @emotionGuilty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Suçlu'**
+  String get emotionGuilty;
+
+  /// No description provided for @emotionBored.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sıkılmış'**
+  String get emotionBored;
+
+  /// No description provided for @emotionNumb.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hissiz'**
+  String get emotionNumb;
+
+  /// No description provided for @emotionConfused.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kafası Karışık'**
+  String get emotionConfused;
+
+  /// No description provided for @emotionDistracted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dikkati Dağınık'**
+  String get emotionDistracted;
+
+  /// No description provided for @emotionProud.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gururlu'**
+  String get emotionProud;
+
+  /// No description provided for @emotionConfident.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kendinden Emin'**
+  String get emotionConfident;
+
+  /// No description provided for @emotionHopeful.
+  ///
+  /// In tr, this message translates to:
+  /// **'Umutlu'**
+  String get emotionHopeful;
+
+  /// No description provided for @emotionEuphoric.
+  ///
+  /// In tr, this message translates to:
+  /// **'Coşkulu'**
+  String get emotionEuphoric;
+
+  /// No description provided for @emotionBlessed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şanslı/Kutsanmış'**
+  String get emotionBlessed;
+
+  /// No description provided for @emotionUnstoppable.
+  ///
+  /// In tr, this message translates to:
+  /// **'Durdurulamaz'**
+  String get emotionUnstoppable;
+
+  /// No description provided for @reasonTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Neden'**
+  String get reasonTitle;
 
   /// No description provided for @mustBePremiumToUse.
   ///

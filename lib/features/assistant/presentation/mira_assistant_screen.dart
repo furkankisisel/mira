@@ -5,11 +5,9 @@ import '../../../design_system/theme/theme_variations.dart';
 import '../data/mira_assistant_service.dart';
 import '../../habit/presentation/simple_habit_screen.dart';
 import '../../timer/timer_screen.dart';
-import '../../mood/presentation/mood_selection_screen.dart';
+import '../../mood/mood_screen.dart';
 import '../../games/presentation/games_screen.dart';
-import 'package:provider/provider.dart';
 import '../../habit/domain/habit_repository.dart';
-import '../../mood/data/mood_models.dart';
 import '../../habit/domain/habit_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../reports/domain/report_model.dart';
@@ -234,10 +232,8 @@ class _MiraAssistantScreenState extends State<MiraAssistantScreen> {
       case 'mood':
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => ChangeNotifierProvider(
-              create: (_) => MoodFlowState(),
-              child: const MoodSelectionScreen(),
-            ),
+            builder: (_) => const MoodScreen(
+                variant: ThemeVariant.cotton), // Assuming a default variant
           ),
         );
         break;
