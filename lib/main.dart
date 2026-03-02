@@ -480,7 +480,12 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
     );
   }
 
-  void _onPageChanged(int i) => setState(() => _currentIndex = i);
+  void _onPageChanged(int i) {
+    if (i == 0 && _currentIndex != 0) {
+      _habitKey.currentState?.reanimate();
+    }
+    setState(() => _currentIndex = i);
+  }
 
   void _handleAssistantNavigation(String command) {
     if (command == 'habits') {

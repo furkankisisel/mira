@@ -98,6 +98,16 @@ class HabitScreenState extends State<HabitScreen>
   );
   bool _isHeaderExpanded = false;
   final ScrollController _dateScrollController = ScrollController();
+  Key _listAnimationKey = UniqueKey();
+
+  void reanimate() {
+    if (mounted) {
+      setState(() {
+        _listAnimationKey = UniqueKey();
+      });
+    }
+  }
+
   // Bugünden 20 gün önce ve 20 gün sonrasını göster (toplam 41 gün)
   static const int _dateRangeDays = 20;
 
@@ -1611,30 +1621,25 @@ class HabitScreenState extends State<HabitScreen>
     final isUnlisted = header.listId == null;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 16, 12, 8),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: isUnlisted
-                  ? colorScheme.outline.withOpacity(0.1)
-                  : colorScheme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              isUnlisted ? Icons.inbox_outlined : Icons.folder_outlined,
-              size: 18,
-              color: isUnlisted ? colorScheme.outline : colorScheme.primary,
-            ),
+          Icon(
+            isUnlisted ? Icons.inbox_outlined : Icons.folder_outlined,
+            size: 14,
+            color:
+                isUnlisted ? colorScheme.outline : colorScheme.onSurfaceVariant,
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
-              header.title,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: isUnlisted ? colorScheme.outline : colorScheme.onSurface,
+              header.title.toUpperCase(),
+              style: theme.textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
+                color: isUnlisted
+                    ? colorScheme.outline
+                    : colorScheme.onSurfaceVariant,
               ),
             ),
           ),
@@ -2683,30 +2688,19 @@ class HabitScreenState extends State<HabitScreen>
     ColorScheme colorScheme,
   ) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
       child: Row(
         children: [
-          // Filter action button
+          // Filter action text button instead of bulky container
           Material(
             color: Colors.transparent,
             child: InkWell(
               onTap: showFilterSheet,
-              borderRadius: BorderRadius.circular(20),
-              child: Container(
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.withValues(
-                    alpha: 0.5,
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: colorScheme.outlineVariant.withValues(
-                      alpha: 0.5,
-                    ),
-                  ),
+                  vertical: 8,
+                  horizontal: 4,
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -2716,7 +2710,7 @@ class HabitScreenState extends State<HabitScreen>
                       size: 16,
                       color: colorScheme.onSurfaceVariant,
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 4),
                     Text(
                       AppLocalizations.of(context).filterTitle,
                       style: theme.textTheme.labelMedium?.copyWith(
@@ -2728,7 +2722,7 @@ class HabitScreenState extends State<HabitScreen>
                     if (_selectedTypes.length < 5 ||
                         _completionFilter != CompletionFilter.all ||
                         _selectedListId != null) ...[
-                      const SizedBox(width: 6),
+                      const SizedBox(width: 4),
                       Container(
                         width: 6,
                         height: 6,
@@ -2743,24 +2737,22 @@ class HabitScreenState extends State<HabitScreen>
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          const Spacer(),
           // Show current list name if selected
           if (_selectedListId != null)
-            Expanded(
-              child: Text(
-                _listRepo.lists
-                    .firstWhere(
-                      (l) => l.id == _selectedListId,
-                      orElse: () => AppList(id: '', title: ''),
-                    )
-                    .title,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+            Text(
+              _listRepo.lists
+                  .firstWhere(
+                    (l) => l.id == _selectedListId,
+                    orElse: () => AppList(id: '', title: ''),
+                  )
+                  .title,
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: colorScheme.primary,
+                fontWeight: FontWeight.w600,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
         ],
       ),
@@ -2897,6 +2889,7 @@ class HabitScreenState extends State<HabitScreen>
                           actionCardCount;
 
                       return AnimationLimiter(
+                        key: _listAnimationKey,
                         child: ListView.builder(
                           padding: EdgeInsets.only(bottom: bottomReserve),
                           itemCount: totalCount,
@@ -2969,6 +2962,7 @@ class HabitScreenState extends State<HabitScreen>
                     // Otherwise show flat list (existing behavior when a list is selected)
 
                     return AnimationLimiter(
+                      key: _listAnimationKey,
                       child: ListView.builder(
                         padding: EdgeInsets.only(bottom: bottomReserve),
                         itemCount: 1 +
