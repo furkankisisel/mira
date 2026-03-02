@@ -2946,12 +2946,10 @@ class HabitScreenState extends State<HabitScreen>
 
                             return AnimationConfiguration.staggeredList(
                               position: index,
-                              duration: const Duration(milliseconds: 375),
+                              duration: const Duration(milliseconds: 250),
                               child: SlideAnimation(
-                                verticalOffset: 50.0,
-                                child: FadeInAnimation(
-                                  child: childWidget,
-                                ),
+                                verticalOffset: 30.0,
+                                child: childWidget,
                               ),
                             );
                           },
@@ -2972,13 +2970,11 @@ class HabitScreenState extends State<HabitScreen>
                           if (index == 0) {
                             return AnimationConfiguration.staggeredList(
                               position: index,
-                              duration: const Duration(milliseconds: 375),
+                              duration: const Duration(milliseconds: 250),
                               child: SlideAnimation(
-                                verticalOffset: 50.0,
-                                child: FadeInAnimation(
-                                  child: _buildFilterRow(
-                                      context, theme, colorScheme),
-                                ),
+                                verticalOffset: 30.0,
+                                child: _buildFilterRow(
+                                    context, theme, colorScheme),
                               ),
                             );
                           }
@@ -3604,12 +3600,10 @@ class HabitScreenState extends State<HabitScreen>
 
                           return AnimationConfiguration.staggeredList(
                             position: index,
-                            duration: const Duration(milliseconds: 375),
+                            duration: const Duration(milliseconds: 250),
                             child: SlideAnimation(
-                              verticalOffset: 50.0,
-                              child: FadeInAnimation(
-                                child: childWidget,
-                              ),
+                              verticalOffset: 30.0,
+                              child: childWidget,
                             ),
                           );
                         },
