@@ -7,8 +7,10 @@ import '../domain/habit_model.dart';
 import '../domain/habit_types.dart';
 import '../domain/subtask_model.dart';
 import 'package:provider/provider.dart';
+import '../../../ui/premium_gate.dart';
 import '../../../providers/premium_provider.dart';
 import '../../rhythm/domain/live_rhythm_model.dart';
+import '../../rhythm/domain/live_rhythm_repository.dart';
 
 /// Gelişmiş alışkanlık oluşturma wizard'ı - 6 sayfalı kompakt akış
 class AdvancedHabitWizardScreen extends StatefulWidget {
@@ -1226,6 +1228,35 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
+    final hasProfile = LiveRhythmRepository.instance.hasProfile;
+
+    final windows = [
+      (
+        RhythmWindow.focus,
+        '🧠',
+        l10n.rhythmWindowFocus,
+        l10n.rhythmWindowFocusDesc
+      ),
+      (
+        RhythmWindow.energy,
+        '⚡',
+        l10n.rhythmWindowEnergy,
+        l10n.rhythmWindowEnergyDesc
+      ),
+      (
+        RhythmWindow.light,
+        '🌤️',
+        l10n.rhythmWindowLight,
+        l10n.rhythmWindowLightDesc
+      ),
+      (
+        RhythmWindow.reflection,
+        '🌙',
+        l10n.rhythmWindowReflection,
+        l10n.rhythmWindowReflectionDesc
+      ),
+    ];
+
     return WizardPage(
       emoji: '📆',
       title: l10n.dateRangeLabel,
@@ -1381,6 +1412,103 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
               ],
             ),
           ),
+
+          const SizedBox(height: 20),
+
+          // ─── Ritim Penceresi ─── (Premium)
+          Text(
+            l10n.rhythmWindowStepTitle,
+            style: theme.textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            l10n.rhythmWindowStepSubtitle,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurface.withOpacity(0.6),
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (!hasProfile)
+            Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: colorScheme.tertiaryContainer.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  const Text('💡', style: TextStyle(fontSize: 16)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      l10n.rhythmWindowNoProfileHint,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurface.withOpacity(0.7),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: windows.map((w) {
+              final isSelected = _selectedRhythmWindow == w.$1;
+              final isPremium = context.read<PremiumProvider>().isPremium;
+              return GestureDetector(
+                onTap: () async {
+                  if (!isPremium) {
+                    await requirePremium(context);
+                    return;
+                  }
+                  HapticFeedback.lightImpact();
+                  setState(
+                      () => _selectedRhythmWindow = isSelected ? null : w.$1);
+                },
+                child: Opacity(
+                  opacity: isPremium ? 1.0 : 0.6,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? _selectedColor.withOpacity(0.15)
+                          : colorScheme.surfaceContainerHighest
+                              .withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(12),
+                      border: isSelected
+                          ? Border.all(color: _selectedColor, width: 2)
+                          : null,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(w.$2, style: const TextStyle(fontSize: 18)),
+                        const SizedBox(width: 6),
+                        Text(
+                          w.$3,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontWeight: isSelected ? FontWeight.w600 : null,
+                            color: isSelected ? _selectedColor : null,
+                          ),
+                        ),
+                        if (!isPremium) ...[
+                          const SizedBox(width: 4),
+                          Icon(Icons.lock_outline,
+                              size: 14,
+                              color: colorScheme.onSurface.withOpacity(0.5)),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
         ],
       ),
     );
@@ -1388,6 +1516,8 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
 
   Widget _buildPreviewPage() {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     String targetText = '';
     if (_habitType == HabitType.numerical) {
@@ -1401,11 +1531,14 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
       targetText = '$count subtasks';
     }
 
+    final habitName = _nameController.text.trim().isEmpty
+        ? l10n.habitNamePlaceholder
+        : _nameController.text.trim();
+
     final List<String> tags = [
       if (targetText.isNotEmpty) targetText,
       _getFrequencyText(),
-      '${l10n.startsOn}: ${_startDate.day}/${_startDate.month}/${_startDate.year}',
-      if (_reminderEnabled) _reminderTime.format(context),
+      if (_reminderEnabled) '🔔 ${_reminderTime.format(context)}',
     ];
 
     return WizardPage(
@@ -1440,14 +1573,75 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
           ),
         ),
       ),
-      child: WizardPreviewCard(
-        emoji: _selectedEmoji,
-        title: _nameController.text.trim(),
-        subtitle: _descriptionController.text.trim().isNotEmpty
-            ? _descriptionController.text.trim()
-            : null,
-        color: _selectedColor,
-        tags: tags,
+      child: Column(
+        children: [
+          WizardPreviewCard(
+            emoji: _selectedEmoji,
+            title: habitName,
+            subtitle: _descriptionController.text.trim().isNotEmpty
+                ? _descriptionController.text.trim()
+                : null,
+            color: _selectedColor,
+            tags: tags,
+          ),
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                _buildDetailRow(
+                  Icons.calendar_today,
+                  l10n.startsOn,
+                  '${_startDate.day}/${_startDate.month}/${_startDate.year}',
+                ),
+                if (_reminderEnabled)
+                  _buildDetailRow(
+                    Icons.notifications,
+                    l10n.reminder,
+                    _reminderTime.format(context),
+                  ),
+                if (_selectedRhythmWindow != null)
+                  _buildDetailRow(
+                    Icons.schedule,
+                    l10n.rhythmWindowStepTitle,
+                    _selectedRhythmWindow!.name,
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(IconData icon, String label, String value) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: colorScheme.onSurface.withOpacity(0.6)),
+          const SizedBox(width: 12),
+          Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurface.withOpacity(0.6),
+            ),
+          ),
+          const Spacer(),
+          Text(
+            value,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }
