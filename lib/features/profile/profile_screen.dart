@@ -3,6 +3,7 @@ import '../../l10n/app_localizations.dart';
 import '../gamification/gamification_repository.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io' as io;
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'profile_repository.dart';
 import 'dart:ui'; // for ImageFilter
 import '../habit/domain/habit_repository.dart';
@@ -341,302 +342,344 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final totalHabits = repo.totalHabitCompletions;
     final totalBadges = unlocked.length;
 
-    return CustomScrollView(
-      slivers: [
-        // 1. Immersive Header
-        SliverToBoxAdapter(
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  scheme.primaryContainer.withValues(alpha: 0.6),
-                  scheme.surface,
-                ],
-              ),
-            ),
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 16,
-                ), // Adjusted for safe area implies AppBar is present
-                GestureDetector(
-                  onTap: _showEditProfileSheet,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: scheme.primary.withValues(alpha: 0.2),
-                            width: 4,
-                          ),
-                        ),
-                        child: CircleAvatar(
-                          radius: 56,
-                          backgroundColor: scheme.surfaceContainerHighest,
-                          backgroundImage: (profile.avatarPath != null &&
-                                  profile.avatarPath!.isNotEmpty)
-                              ? FileImage(io.File(profile.avatarPath!))
-                              : (profile.avatarUrl != null &&
-                                      profile.avatarUrl!.isNotEmpty)
-                                  ? NetworkImage(profile.avatarUrl!)
-                                      as ImageProvider
-                                  : null,
-                          child: (profile.avatarPath == null ||
-                                      profile.avatarPath!.isEmpty) &&
-                                  (profile.avatarUrl == null ||
-                                      profile.avatarUrl!.isEmpty)
-                              ? Icon(
-                                  Icons.person,
-                                  size: 56,
-                                  color: scheme.onSurfaceVariant,
-                                )
-                              : null,
-                        ),
+    return AnimationLimiter(
+      child: CustomScrollView(
+        slivers: [
+          // 1. Immersive Header
+          SliverToBoxAdapter(
+            child: AnimationConfiguration.staggeredList(
+              position: 0,
+              duration: const Duration(milliseconds: 375),
+              child: SlideAnimation(
+                verticalOffset: 50.0,
+                child: FadeInAnimation(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          scheme.primaryContainer.withValues(alpha: 0.6),
+                          scheme.surface,
+                        ],
                       ),
-                      Positioned(
-                        bottom: 0,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: scheme.primary,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: scheme.primary.withValues(alpha: 0.4),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
+                    ),
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 16,
+                        ), // Adjusted for safe area implies AppBar is present
+                        GestureDetector(
+                          onTap: _showEditProfileSheet,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color:
+                                        scheme.primary.withValues(alpha: 0.2),
+                                    width: 4,
+                                  ),
+                                ),
+                                child: CircleAvatar(
+                                  radius: 56,
+                                  backgroundColor:
+                                      scheme.surfaceContainerHighest,
+                                  backgroundImage: (profile.avatarPath !=
+                                              null &&
+                                          profile.avatarPath!.isNotEmpty)
+                                      ? FileImage(io.File(profile.avatarPath!))
+                                      : (profile.avatarUrl != null &&
+                                              profile.avatarUrl!.isNotEmpty)
+                                          ? NetworkImage(profile.avatarUrl!)
+                                              as ImageProvider
+                                          : null,
+                                  child: (profile.avatarPath == null ||
+                                              profile.avatarPath!.isEmpty) &&
+                                          (profile.avatarUrl == null ||
+                                              profile.avatarUrl!.isEmpty)
+                                      ? Icon(
+                                          Icons.person,
+                                          size: 56,
+                                          color: scheme.onSurfaceVariant,
+                                        )
+                                      : null,
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: scheme.primary,
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: scheme.primary
+                                            .withValues(alpha: 0.4),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    l10n.levelShort(repo.level),
+                                    style: TextStyle(
+                                      color: scheme.onPrimary,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
-                          child: Text(
-                            l10n.levelShort(repo.level),
-                            style: TextStyle(
-                              color: scheme.onPrimary,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          (profile.name.isNotEmpty)
+                              ? profile.name
+                              : l10n.profile,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.5,
+                              ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 48),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    '${repo.xpIntoLevel} XP',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: scheme.primary,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${repo.xpToNextLevel} ${l10n.xpToNextLevel}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: scheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: LinearProgressIndicator(
+                                  value: (repo.xpIntoLevel / repo.xpPerLevel)
+                                      .clamp(
+                                    0.0,
+                                    1.0,
+                                  ),
+                                  minHeight: 12,
+                                  backgroundColor:
+                                      scheme.surfaceContainerHighest,
+                                  color: scheme.primary,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  (profile.name.isNotEmpty) ? profile.name : l10n.profile,
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.5,
-                      ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 48),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            '${repo.xpIntoLevel} XP',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: scheme.primary,
-                            ),
-                          ),
-                          Text(
-                            '${repo.xpToNextLevel} ${l10n.xpToNextLevel}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: scheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: LinearProgressIndicator(
-                          value: (repo.xpIntoLevel / repo.xpPerLevel).clamp(
-                            0.0,
-                            1.0,
-                          ),
-                          minHeight: 12,
-                          backgroundColor: scheme.surfaceContainerHighest,
-                          color: scheme.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 32),
-              ],
-            ),
-          ),
-        ),
-
-        // 2. Stats Highlights Row
-        SliverToBoxAdapter(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            decoration: BoxDecoration(
-              color: scheme.surface,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: scheme.outlineVariant.withValues(alpha: 0.4),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(
-                  child: _buildStatItem(
-                    context,
-                    activeDays.toString(),
-                    l10n.statsActiveDays,
-                    Icons.local_fire_department,
-                    Colors.orange,
-                  ),
-                ),
-                Container(width: 1, height: 40, color: scheme.outlineVariant),
-                Expanded(
-                  child: _buildStatItem(
-                    context,
-                    totalHabits.toString(),
-                    l10n.habits,
-                    Icons.check_circle,
-                    Colors.green,
-                  ),
-                ),
-                Container(width: 1, height: 40, color: scheme.outlineVariant),
-                Expanded(
-                  child: _buildStatItem(
-                    context,
-                    totalBadges.toString(),
-                    l10n.achievements,
-                    Icons.emoji_events,
-                    Colors.amber,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        const SliverToBoxAdapter(child: SizedBox(height: 32)),
-
-        // 2.5. Streak Tracker (Habits 7-Day History)
-        if (HabitRepository.instance.habits.isNotEmpty) ...[
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 12),
-            sliver: SliverToBoxAdapter(
-              child: Row(
-                children: [
-                  Container(
-                    width: 4,
-                    height: 18,
-                    decoration: BoxDecoration(
-                      color: scheme.primary,
-                      borderRadius: BorderRadius.circular(2),
+                        const SizedBox(height: 32),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    l10n.habits,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
+          ), // 2. Stats Highlights Row
           SliverToBoxAdapter(
-            child: SizedBox(
-              height: 100, // Fixed height for streak cards row
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                scrollDirection: Axis.horizontal,
-                itemCount: HabitRepository.instance.habits.length,
-                itemBuilder: (context, index) {
-                  final habit = HabitRepository.instance.habits[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: _buildStreakCard(context, habit, scheme),
-                  );
-                },
-              ),
-            ),
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 32)),
-        ],
-
-        // 3. Badges Grid
-        for (final entry in groups.entries) ...[
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 12),
-            sliver: SliverToBoxAdapter(
-              child: Row(
-                children: [
-                  Container(
-                    width: 4,
-                    height: 18,
+            child: AnimationConfiguration.staggeredList(
+              position: 1,
+              duration: const Duration(milliseconds: 375),
+              child: SlideAnimation(
+                verticalOffset: 50.0,
+                child: FadeInAnimation(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 20),
                     decoration: BoxDecoration(
-                      color: scheme.primary,
-                      borderRadius: BorderRadius.circular(2),
+                      color: scheme.surface,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: scheme.outlineVariant.withValues(alpha: 0.4),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 16,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: _buildStatItem(
+                            context,
+                            activeDays.toString(),
+                            l10n.statsActiveDays,
+                            Icons.local_fire_department,
+                            Colors.orange,
+                          ),
+                        ),
+                        Container(
+                            width: 1, height: 40, color: scheme.outlineVariant),
+                        Expanded(
+                          child: _buildStatItem(
+                            context,
+                            totalHabits.toString(),
+                            l10n.habits,
+                            Icons.check_circle,
+                            Colors.green,
+                          ),
+                        ),
+                        Container(
+                            width: 1, height: 40, color: scheme.outlineVariant),
+                        Expanded(
+                          child: _buildStatItem(
+                            context,
+                            totalBadges.toString(),
+                            l10n.achievements,
+                            Icons.emoji_events,
+                            Colors.amber,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    entry.key,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                childAspectRatio: 0.75, // More compact badges
+
+          const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+          // 2.5. Streak Tracker (Habits 7-Day History)
+          if (HabitRepository.instance.habits.isNotEmpty) ...[
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 12),
+              sliver: SliverToBoxAdapter(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 4,
+                      height: 18,
+                      decoration: BoxDecoration(
+                        color: scheme.primary,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n.habits,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                    ),
+                  ],
+                ),
               ),
-              delegate: SliverChildBuilderDelegate((context, i) {
-                final b = entry.value[i];
-                final isUnlocked = unlocked.contains(b.id);
-                return _buildBadgeCard(context, b, isUnlocked, scheme);
-              }, childCount: entry.value.length),
             ),
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: 100, // Fixed height for streak cards row
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: HabitRepository.instance.habits.length,
+                  itemBuilder: (context, index) {
+                    final habit = HabitRepository.instance.habits[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: _buildStreakCard(context, habit, scheme),
+                    );
+                  },
+                ),
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+          ],
+
+          // 3. Badges Grid
+          for (final entry in groups.entries) ...[
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 12),
+              sliver: SliverToBoxAdapter(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 4,
+                      height: 18,
+                      decoration: BoxDecoration(
+                        color: scheme.primary,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      entry.key,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
+                  childAspectRatio: 0.75, // More compact badges
+                ),
+                delegate: SliverChildBuilderDelegate((context, i) {
+                  final b = entry.value[i];
+                  final isUnlocked = unlocked.contains(b.id);
+                  return AnimationConfiguration.staggeredGrid(
+                    position: i,
+                    columnCount: 3,
+                    duration: const Duration(milliseconds: 375),
+                    child: SlideAnimation(
+                      verticalOffset: 50.0,
+                      child: FadeInAnimation(
+                        child: _buildBadgeCard(context, b, isUnlocked, scheme),
+                      ),
+                    ),
+                  );
+                }, childCount: entry.value.length),
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+          ],
+          const SliverToBoxAdapter(child: SizedBox(height: 40)),
         ],
-        const SliverToBoxAdapter(child: SizedBox(height: 40)),
-      ],
+      ),
     );
   }
 

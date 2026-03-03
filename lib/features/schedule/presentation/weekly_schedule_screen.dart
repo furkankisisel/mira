@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math' show max;
 
 import '../../../design_system/theme/theme_variations.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../../../l10n/app_localizations.dart';
 import '../domain/schedule_event.dart';
 import '../domain/weekly_schedule_repository.dart';
@@ -136,17 +137,19 @@ class _WeeklyScheduleScreenState extends State<WeeklyScheduleScreen> {
                               onAcceptWithDetails: (details) =>
                                   _onEventDropped(details, dayWidth),
                               builder: (context, candidateData, rejectedData) =>
-                                  Stack(
-                                key: _gridKey,
-                                children: [
-                                  // Grid lines
-                                  _buildGridLines(theme, dayWidth),
-                                  // Current time indicator
-                                  _buildCurrentTimeIndicator(
-                                      now, dayWidth, todayDow),
-                                  // Event blocks
-                                  ..._buildEventBlocks(dayWidth, theme),
-                                ],
+                                  AnimationLimiter(
+                                child: Stack(
+                                  key: _gridKey,
+                                  children: [
+                                    // Grid lines
+                                    _buildGridLines(theme, dayWidth),
+                                    // Current time indicator
+                                    _buildCurrentTimeIndicator(
+                                        now, dayWidth, todayDow),
+                                    // Event blocks
+                                    ..._buildEventBlocks(dayWidth, theme),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -456,57 +459,66 @@ class _WeeklyScheduleScreenState extends State<WeeklyScheduleScreen> {
           left: left,
           width: dayWidth - 2,
           height: height,
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: LongPressDraggable<ScheduleEvent>(
-                  data: event,
-                  feedback: Material(
-                    type: MaterialType.transparency,
-                    child: SizedBox(
-                      width: dayWidth - 2,
-                      height: height,
-                      child: Opacity(
-                        opacity: 0.8,
-                        child: blockWidget,
+          child: AnimationConfiguration.staggeredList(
+            position: widgets.length,
+            duration: const Duration(milliseconds: 375),
+            child: SlideAnimation(
+              verticalOffset: 20.0,
+              child: FadeInAnimation(
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: LongPressDraggable<ScheduleEvent>(
+                        data: event,
+                        feedback: Material(
+                          type: MaterialType.transparency,
+                          child: SizedBox(
+                            width: dayWidth - 2,
+                            height: height,
+                            child: Opacity(
+                              opacity: 0.8,
+                              child: blockWidget,
+                            ),
+                          ),
+                        ),
+                        childWhenDragging: Opacity(
+                          opacity: 0.3,
+                          child: blockWidget,
+                        ),
+                        child: GestureDetector(
+                          onTap: () => _showEventDetailDialog(event),
+                          child: blockWidget,
+                        ),
                       ),
                     ),
-                  ),
-                  childWhenDragging: Opacity(
-                    opacity: 0.3,
-                    child: blockWidget,
-                  ),
-                  child: GestureDetector(
-                    onTap: () => _showEventDetailDialog(event),
-                    child: blockWidget,
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                height: 12,
-                child: GestureDetector(
-                  onVerticalDragUpdate: (details) =>
-                      _onEventResizeUpdate(details, event),
-                  onVerticalDragEnd: (_) => _repo.updateEvent(event),
-                  child: Container(
-                    color: Colors.transparent,
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      width: 24,
-                      height: 4,
-                      margin: const EdgeInsets.only(bottom: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.white54,
-                        borderRadius: BorderRadius.circular(2),
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: 12,
+                      child: GestureDetector(
+                        onVerticalDragUpdate: (details) =>
+                            _onEventResizeUpdate(details, event),
+                        onVerticalDragEnd: (_) => _repo.updateEvent(event),
+                        child: Container(
+                          color: Colors.transparent,
+                          alignment: Alignment.bottomCenter,
+                          child: Container(
+                            width: 24,
+                            height: 4,
+                            margin: const EdgeInsets.only(bottom: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.white54,
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
       );

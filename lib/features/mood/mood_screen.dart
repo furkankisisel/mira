@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../design_system/theme/theme_variations.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'data/detailed_mood_repository.dart';
 import 'data/mood_models.dart';
 import 'presentation/mood_analytics_screen.dart';
@@ -217,198 +218,213 @@ class _MoodScreenState extends State<MoodScreen> {
                 color: cardColor,
                 borderRadius: BorderRadius.circular(32),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Nasıl hissediyorsunuz?",
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+              child: AnimationLimiter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "Nasıl hissediyorsunuz?",
+                      style: TextStyle(
+                        color: textColor,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  ...MoodLevel.values.reversed.map((m) {
-                    final isSelected = _selectedMood == m;
-                    return Column(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              _selectedMood = m;
-                              _selectedSubEmotions.clear();
-                            });
-                          },
-                          borderRadius: BorderRadius.circular(16),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            child: Row(
-                              children: [
-                                // Custom Radio natively styled
-                                Container(
-                                  width: 24,
-                                  height: 24,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color:
-                                          isSelected ? primaryColor : hintColor,
-                                      width: 2,
+                    const SizedBox(height: 24),
+                    ...MoodLevel.values.reversed.map((m) {
+                      final isSelected = _selectedMood == m;
+                      return Column(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                _selectedMood = m;
+                                _selectedSubEmotions.clear();
+                              });
+                            },
+                            borderRadius: BorderRadius.circular(16),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              child: Row(
+                                children: [
+                                  // Custom Radio natively styled
+                                  Container(
+                                    width: 24,
+                                    height: 24,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? primaryColor
+                                            : hintColor,
+                                        width: 2,
+                                      ),
+                                      color: isSelected
+                                          ? primaryColor.withOpacity(0.2)
+                                          : Colors.transparent,
                                     ),
-                                    color: isSelected
-                                        ? primaryColor.withOpacity(0.2)
-                                        : Colors.transparent,
+                                    child: isSelected
+                                        ? Center(
+                                            child: Icon(Icons.check,
+                                                size: 16, color: primaryColor))
+                                        : null,
                                   ),
-                                  child: isSelected
-                                      ? Center(
-                                          child: Icon(Icons.check,
-                                              size: 16, color: primaryColor))
-                                      : null,
-                                ),
-                                const SizedBox(width: 16),
-                                _getMoodFace(m),
-                                const SizedBox(width: 16),
-                                Text(
-                                  _getMoodTitle(m),
-                                  style: TextStyle(
-                                    color: textColor,
-                                    fontSize: 18,
-                                    fontWeight: isSelected
-                                        ? FontWeight.w600
-                                        : FontWeight.w400,
+                                  const SizedBox(width: 16),
+                                  _getMoodFace(m),
+                                  const SizedBox(width: 16),
+                                  Text(
+                                    _getMoodTitle(m),
+                                    style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 18,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.w400,
+                                    ),
                                   ),
-                                ),
-                                const Spacer(),
-                                if (isSelected && m == MoodLevel.terrible)
-                                  const Icon(Icons.favorite,
-                                      color: Colors.redAccent, size: 16),
-                              ],
+                                  const Spacer(),
+                                  if (isSelected && m == MoodLevel.terrible)
+                                    const Icon(Icons.favorite,
+                                        color: Colors.redAccent, size: 16),
+                                ],
+                              ),
                             ),
                           ),
+                          if (m != MoodLevel.values.first)
+                            Divider(
+                                color: textColor.withOpacity(0.1), height: 1),
+                        ],
+                      );
+                    }).toList(),
+                    const SizedBox(height: 24),
+                    Text(
+                      "Ruh hali, uzun süreli genel duygu durumudur.",
+                      style: TextStyle(color: hintColor, fontSize: 13),
+                    ),
+                    if (_selectedMood != null) ...[
+                      const SizedBox(height: 40),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "Hangi duygular hislerinizi\nen iyi şekilde ifade ediyor?",
+                              style: TextStyle(
+                                color: textColor,
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                height: 1.2,
+                              ),
+                            ),
+                          ),
+                          Icon(Icons.keyboard_arrow_down_rounded,
+                              color: hintColor),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 12,
+                        children: availableSubEmotions.map((sub) {
+                          final isSelected = _selectedSubEmotions.contains(sub);
+                          return _buildCustomChip(
+                            label: _getSubEmotionLabel(sub),
+                            isSelected: isSelected,
+                            primaryColor: primaryColor,
+                            chipColor: chipColor,
+                            textColor: textColor,
+                            onTap: () {
+                              setState(() {
+                                if (isSelected) {
+                                  _selectedSubEmotions.remove(sub);
+                                } else {
+                                  _selectedSubEmotions.add(sub);
+                                }
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        "Duygu, bir olay veya anlamlı deneyim nedeniyle\noluşan mutluluk, sinir veya mutsuzluk gibi kısa\nsüreli tepkidir.",
+                        style: TextStyle(
+                            color: hintColor, fontSize: 13, height: 1.4),
+                      ),
+                      const SizedBox(height: 48),
+                      Text(
+                        "Bu şekilde hissetmenizin nedeni\nnedir?",
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          height: 1.2,
                         ),
-                        if (m != MoodLevel.values.first)
-                          Divider(color: textColor.withOpacity(0.1), height: 1),
-                      ],
+                      ),
+                      const SizedBox(height: 24),
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 12,
+                        children: ReasonCategory.values.map((reason) {
+                          final isSelected = _selectedReason == reason;
+                          return _buildCustomChip(
+                            label: _getReasonLabel(reason),
+                            isSelected: isSelected,
+                            primaryColor: primaryColor,
+                            chipColor: chipColor,
+                            textColor: textColor,
+                            onTap: () {
+                              setState(() {
+                                _selectedReason = isSelected ? null : reason;
+                              });
+                            },
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 48),
+                      Text(
+                        "Ekleyecek başka bir şeyiniz var\nmı?",
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          height: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: chipColor,
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: TextField(
+                          controller: _noteCtrl,
+                          maxLines: 4,
+                          style: TextStyle(color: textColor),
+                          decoration: InputDecoration(
+                            hintText:
+                                "Bu hissi veya anı hatırlamanıza\nyardımcı olacak bir not ekleyin",
+                            hintStyle: TextStyle(color: hintColor, height: 1.4),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.all(24),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ].asMap().entries.map((e) {
+                    return AnimationConfiguration.staggeredList(
+                      position: e.key,
+                      duration: const Duration(milliseconds: 375),
+                      child: SlideAnimation(
+                        verticalOffset: 50.0,
+                        child: FadeInAnimation(
+                          child: e.value,
+                        ),
+                      ),
                     );
                   }).toList(),
-                  const SizedBox(height: 24),
-                  Text(
-                    "Ruh hali, uzun süreli genel duygu durumudur.",
-                    style: TextStyle(color: hintColor, fontSize: 13),
-                  ),
-                  if (_selectedMood != null) ...[
-                    const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            "Hangi duygular hislerinizi\nen iyi şekilde ifade ediyor?",
-                            style: TextStyle(
-                              color: textColor,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              height: 1.2,
-                            ),
-                          ),
-                        ),
-                        Icon(Icons.keyboard_arrow_down_rounded,
-                            color: hintColor),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
-                      children: availableSubEmotions.map((sub) {
-                        final isSelected = _selectedSubEmotions.contains(sub);
-                        return _buildCustomChip(
-                          label: _getSubEmotionLabel(sub),
-                          isSelected: isSelected,
-                          primaryColor: primaryColor,
-                          chipColor: chipColor,
-                          textColor: textColor,
-                          onTap: () {
-                            setState(() {
-                              if (isSelected) {
-                                _selectedSubEmotions.remove(sub);
-                              } else {
-                                _selectedSubEmotions.add(sub);
-                              }
-                            });
-                          },
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      "Duygu, bir olay veya anlamlı deneyim nedeniyle\noluşan mutluluk, sinir veya mutsuzluk gibi kısa\nsüreli tepkidir.",
-                      style: TextStyle(
-                          color: hintColor, fontSize: 13, height: 1.4),
-                    ),
-                    const SizedBox(height: 48),
-                    Text(
-                      "Bu şekilde hissetmenizin nedeni\nnedir?",
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        height: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
-                      children: ReasonCategory.values.map((reason) {
-                        final isSelected = _selectedReason == reason;
-                        return _buildCustomChip(
-                          label: _getReasonLabel(reason),
-                          isSelected: isSelected,
-                          primaryColor: primaryColor,
-                          chipColor: chipColor,
-                          textColor: textColor,
-                          onTap: () {
-                            setState(() {
-                              _selectedReason = isSelected ? null : reason;
-                            });
-                          },
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 48),
-                    Text(
-                      "Ekleyecek başka bir şeyiniz var\nmı?",
-                      style: TextStyle(
-                        color: textColor,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        height: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: chipColor,
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: TextField(
-                        controller: _noteCtrl,
-                        maxLines: 4,
-                        style: TextStyle(color: textColor),
-                        decoration: InputDecoration(
-                          hintText:
-                              "Bu hissi veya anı hatırlamanıza\nyardımcı olacak bir not ekleyin",
-                          hintStyle: TextStyle(color: hintColor, height: 1.4),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.all(24),
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
+                ),
               ),
             ),
           ),

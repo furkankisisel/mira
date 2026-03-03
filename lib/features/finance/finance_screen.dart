@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../l10n/app_localizations.dart';
 import '../../design_system/theme/theme_variations.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'data/transaction_model.dart';
 import 'data/transaction_repository.dart';
 import 'data/finance_category_repository.dart';
@@ -647,7 +648,24 @@ class _GeneralSection extends StatelessWidget {
         ),
       );
     }
-    return ListView(padding: const EdgeInsets.all(16), children: children);
+    return AnimationLimiter(
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: children.length,
+        itemBuilder: (context, index) {
+          return AnimationConfiguration.staggeredList(
+            position: index,
+            duration: const Duration(milliseconds: 375),
+            child: SlideAnimation(
+              verticalOffset: 50.0,
+              child: FadeInAnimation(
+                child: children[index],
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   void _showTxMenu(BuildContext context, FinanceTransaction tx) {
