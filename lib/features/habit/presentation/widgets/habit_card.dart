@@ -729,8 +729,7 @@ class _HabitCardState extends State<HabitCard>
                       color: widget.isMuted
                           ? Colors.transparent
                           : done
-                              ? Color.lerp(completedBg, Colors.white, 0.25) ??
-                                  completedBg
+                              ? completedBg
                               : Color.alphaBlend(
                                   widget.color.withValues(alpha: 0.15),
                                   cs.surfaceContainerHighest),

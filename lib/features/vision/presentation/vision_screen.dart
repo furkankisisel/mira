@@ -1652,7 +1652,7 @@ class _FreeformCard extends StatelessWidget {
             else
               DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Color.lerp(color, Colors.white, 0.25) ?? color,
+                  color: color,
                 ),
               ),
             // Apply subtle gradient only when showing text so text is readable
@@ -2154,7 +2154,7 @@ class _Board extends StatelessWidget {
                         bottom: 4,
                       ), // Slight spacing for shadow visibility
                       decoration: BoxDecoration(
-                        color: Color.lerp(color, Colors.white, 0.25) ?? color,
+                        color: color,
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
