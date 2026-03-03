@@ -863,91 +863,87 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Badge icon with gradient background
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      gradient: isUnlocked
-                          ? LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [scheme.primary, scheme.tertiary],
-                            )
-                          : null,
-                      color: isUnlocked ? null : scheme.surfaceContainerHighest,
-                      shape: BoxShape.circle,
-                      boxShadow: isUnlocked
-                          ? [
-                              BoxShadow(
-                                color: scheme.primary.withValues(alpha: 0.4),
-                                blurRadius: 8,
-                                spreadRadius: 0,
-                              ),
-                            ]
-                          : null,
-                    ),
-                    child: Icon(
-                      badge.icon,
-                      size: 22,
-                      color: isUnlocked
-                          ? Colors.white
-                          : scheme.onSurfaceVariant.withValues(alpha: 0.5),
-                    ),
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Badge icon with gradient background
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    gradient: isUnlocked
+                        ? LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [scheme.primary, scheme.tertiary],
+                          )
+                        : null,
+                    color: isUnlocked ? null : scheme.surfaceContainerHighest,
+                    shape: BoxShape.circle,
+                    boxShadow: isUnlocked
+                        ? [
+                            BoxShadow(
+                              color: scheme.primary.withValues(alpha: 0.4),
+                              blurRadius: 8,
+                              spreadRadius: 0,
+                            ),
+                          ]
+                        : null,
                   ),
-                  const SizedBox(height: 8),
-                  // Badge title
-                  Text(
-                    badge.title,
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight:
-                          isUnlocked ? FontWeight.w600 : FontWeight.w500,
-                      color: isUnlocked
-                          ? scheme.onSurface
-                          : scheme.onSurfaceVariant.withValues(alpha: 0.7),
-                      height: 1.2,
-                    ),
+                  child: Icon(
+                    badge.icon,
+                    size: 22,
+                    color: isUnlocked
+                        ? Colors.white
+                        : scheme.onSurfaceVariant.withValues(alpha: 0.5),
                   ),
-                  // Progress indicator for locked badges
-                  if (!isUnlocked) ...[
-                    const SizedBox(height: 6),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: LinearProgressIndicator(
-                          value: progress,
-                          minHeight: 3,
-                          backgroundColor: scheme.outlineVariant.withValues(
-                            alpha: 0.3,
-                          ),
-                          color: scheme.primary.withValues(alpha: 0.6),
+                ),
+                const SizedBox(height: 8),
+                // Badge title
+                Text(
+                  badge.title,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: isUnlocked ? FontWeight.w600 : FontWeight.w500,
+                    color: isUnlocked
+                        ? scheme.onSurface
+                        : scheme.onSurfaceVariant.withValues(alpha: 0.7),
+                    height: 1.2,
+                  ),
+                ),
+                // Progress indicator for locked badges
+                if (!isUnlocked) ...[
+                  const SizedBox(height: 6),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        minHeight: 3,
+                        backgroundColor: scheme.outlineVariant.withValues(
+                          alpha: 0.3,
                         ),
+                        color: scheme.primary.withValues(alpha: 0.6),
                       ),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${(progress * 100).toInt()}%',
-                      style: TextStyle(
-                        fontSize: 9,
-                        color: scheme.onSurfaceVariant.withValues(alpha: 0.6),
-                        fontWeight: FontWeight.w500,
-                      ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${(progress * 100).toInt()}%',
+                    style: TextStyle(
+                      fontSize: 9,
+                      color: scheme.onSurfaceVariant.withValues(alpha: 0.6),
+                      fontWeight: FontWeight.w500,
                     ),
-                  ],
+                  ),
                 ],
-              ),
+              ],
             ),
           ),
         ),

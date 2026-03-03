@@ -153,19 +153,17 @@ class HabitScreenState extends State<HabitScreen>
   void initState() {
     super.initState();
     _initMood();
-    // Repository'yi başlat ve hazır olunca ekranı yenile
-    _repo.initialize().then((_) {
-      if (mounted) setState(() {});
-    });
     _repo.addListener(_onRepoChange);
-    _listRepo.initialize().then((_) {
-      if (mounted) setState(() {});
-    });
     _listRepo.addListener(_onRepoChange);
-    _taskRepo.initialize().then((_) {
+    _taskRepo.addListener(_onRepoChange);
+
+    Future.wait([
+      _repo.initialize(),
+      _listRepo.initialize(),
+      _taskRepo.initialize(),
+    ]).then((_) {
       if (mounted) setState(() {});
     });
-    _taskRepo.addListener(_onRepoChange);
 
     // Initialize AI service
     final apiKey = ApiConfig.groqApiKey;

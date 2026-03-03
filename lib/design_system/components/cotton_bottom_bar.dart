@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 
 import '../tokens/radii.dart';
 import '../theme/theme_variations.dart';
@@ -48,39 +47,36 @@ class CottonBottomBar extends StatelessWidget {
         ),
         child: ClipRRect(
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 16.0, sigmaY: 16.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: bgColor,
-              ),
-              child: SafeArea(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(destinations.length, (index) {
-                      final item = destinations[index];
-                      final isSelected = selectedIndex == index;
+          child: Container(
+            decoration: BoxDecoration(
+              color: bgColor,
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: List.generate(destinations.length, (index) {
+                    final item = destinations[index];
+                    final isSelected = selectedIndex == index;
 
-                      // Decide active color
-                      // If globally World theme, we might want specific colors per tab,
-                      // otherwise use primary.
-                      // For simplicity in this reusable component, we use the item's color if provided,
-                      // or fall back to scheme.primary.
-                      final activeColor = item.color ?? scheme.primary;
+                    // Decide active color
+                    // If globally World theme, we might want specific colors per tab,
+                    // otherwise use primary.
+                    // For simplicity in this reusable component, we use the item's color if provided,
+                    // or fall back to scheme.primary.
+                    final activeColor = item.color ?? scheme.primary;
 
-                      return _CottonNavItem(
-                        icon: item.icon,
-                        selectedIcon: item.selectedIcon,
-                        label: item.label,
-                        isSelected: isSelected,
-                        activeColor: activeColor,
-                        onTap: () => onDestinationSelected(index),
-                      );
-                    }),
-                  ),
+                    return _CottonNavItem(
+                      icon: item.icon,
+                      selectedIcon: item.selectedIcon,
+                      label: item.label,
+                      isSelected: isSelected,
+                      activeColor: activeColor,
+                      onTap: () => onDestinationSelected(index),
+                    );
+                  }),
                 ),
               ),
             ),

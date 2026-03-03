@@ -1673,28 +1673,25 @@ class _FreeformCard extends StatelessWidget {
               right: 8,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
-                child: BackdropFilter(
-                  filter: ui.ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: onLink,
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        padding: EdgeInsets.all(width * 0.025),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.3),
-                            width: 1,
-                          ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: onLink,
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      padding: EdgeInsets.all(width * 0.025),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.3),
+                          width: 1,
                         ),
-                        child: Icon(
-                          Icons.link,
-                          size: width * 0.1,
-                          color: Colors.white,
-                        ),
+                      ),
+                      child: Icon(
+                        Icons.link,
+                        size: width * 0.1,
+                        color: Colors.white,
                       ),
                     ),
                   ),
