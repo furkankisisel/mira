@@ -6,6 +6,9 @@ import '../../../ui/widgets/wizard_base_widgets.dart';
 import '../domain/habit_model.dart';
 import '../domain/habit_types.dart';
 import '../domain/subtask_model.dart';
+import 'package:provider/provider.dart';
+import '../../../providers/premium_provider.dart';
+import '../../rhythm/domain/live_rhythm_model.dart';
 
 /// Gelişmiş alışkanlık oluşturma wizard'ı - 6 sayfalı kompakt akış
 class AdvancedHabitWizardScreen extends StatefulWidget {
@@ -37,6 +40,7 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
   DateTime? _endDate;
   bool _reminderEnabled = false;
   TimeOfDay _reminderTime = const TimeOfDay(hour: 9, minute: 0);
+  RhythmWindow? _selectedRhythmWindow;
 
   NumericalTargetType _numericalTargetType = NumericalTargetType.minimum;
   final TimerTargetType _timerTargetType = TimerTargetType.minimum;
@@ -124,13 +128,197 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
     super.dispose();
   }
 
-  void _nextPage() {
+  void _nextPage() async {
     if (_currentPage < _totalPages - 1) {
+      if (_currentPage == 3 && mounted) {
+        final isPremium = context.read<PremiumProvider>().isPremium;
+        if (isPremium) {
+          await _showAiAnalysisDialog();
+        }
+      }
+
       _pageController.animateToPage(
         _currentPage + 1,
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
       );
+    }
+  }
+
+  Future<void> _showAiAnalysisDialog() async {
+    final statusTexts = [
+      '🔍 Alışkanlığınız analiz ediliyor...',
+      '🧠 Canlı Ritminiz hesaplanıyor...',
+      '⏰ En uygun hatırlatıcı zamanı belirleniyor...',
+      '✨ Son ayarlamalar yapılıyor...',
+    ];
+
+    int currentStatus = 0;
+    bool dialogActive = true;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => PopScope(
+        canPop: false,
+        child: StatefulBuilder(
+          builder: (context, setDialogState) {
+            Future.delayed(const Duration(milliseconds: 1200), () {
+              if (dialogActive && currentStatus < statusTexts.length - 1) {
+                setDialogState(() => currentStatus++);
+              }
+            });
+
+            return Center(
+              child: Container(
+                margin: const EdgeInsets.all(32),
+                padding: const EdgeInsets.all(28),
+                decoration: BoxDecoration(
+                  color: Theme.of(ctx).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: _selectedColor.withOpacity(0.2),
+                      blurRadius: 30,
+                      offset: const Offset(0, 12),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [
+                            _selectedColor,
+                            _selectedColor.withOpacity(0.6),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: const Center(
+                        child: SizedBox(
+                          width: 28,
+                          height: 28,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      child: Text(
+                        statusTexts[currentStatus],
+                        key: ValueKey(currentStatus),
+                        style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Sizin için en iyi ayarları belirliyoruz',
+                      style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(ctx)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.5),
+                          ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: List.generate(
+                          4,
+                          (i) => Container(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 4),
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: i <= currentStatus
+                                      ? _selectedColor
+                                      : Theme.of(ctx)
+                                          .colorScheme
+                                          .outlineVariant,
+                                ),
+                              )),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+
+    await Future.delayed(const Duration(milliseconds: 5000));
+    dialogActive = false;
+
+    final aiRhythmWindow = _determineOptimalRhythmWindow();
+    final aiReminderTime = _determineOptimalReminderTime(aiRhythmWindow);
+
+    setState(() {
+      _selectedRhythmWindow = aiRhythmWindow;
+      _reminderEnabled = true;
+      _reminderTime = aiReminderTime;
+    });
+
+    if (mounted) Navigator.of(context).pop();
+  }
+
+  RhythmWindow _determineOptimalRhythmWindow() {
+    final title = _nameController.text.toLowerCase();
+
+    if (title.contains('medita') ||
+        title.contains('yat') ||
+        title.contains('günlük') ||
+        title.contains('journal') ||
+        title.contains('uyku') ||
+        title.contains('gece')) {
+      return RhythmWindow.reflection;
+    }
+    if (title.contains('spor') ||
+        title.contains('egzersiz') ||
+        title.contains('koş') ||
+        title.contains('yürü') ||
+        title.contains('fitness') ||
+        title.contains('workout')) {
+      return RhythmWindow.energy;
+    }
+    if (title.contains('oku') ||
+        title.contains('öğren') ||
+        title.contains('çalış') ||
+        title.contains('study') ||
+        title.contains('kod') ||
+        title.contains('program')) {
+      return RhythmWindow.focus;
+    }
+    return RhythmWindow.light;
+  }
+
+  TimeOfDay _determineOptimalReminderTime(RhythmWindow window) {
+    switch (window) {
+      case RhythmWindow.focus:
+        return const TimeOfDay(hour: 9, minute: 0);
+      case RhythmWindow.energy:
+        return const TimeOfDay(hour: 14, minute: 0);
+      case RhythmWindow.light:
+        return const TimeOfDay(hour: 17, minute: 0);
+      case RhythmWindow.reflection:
+        return const TimeOfDay(hour: 21, minute: 0);
     }
   }
 
@@ -202,6 +390,7 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
       numericalTargetType: _numericalTargetType,
       timerTargetType: _timerTargetType,
       subtasks: subtasks ?? [],
+      rhythmWindow: _selectedRhythmWindow,
     )..isAdvanced = true;
 
     Navigator.pop(context, habit);

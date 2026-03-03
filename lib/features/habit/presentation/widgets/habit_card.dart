@@ -726,40 +726,27 @@ class _HabitCardState extends State<HabitCard>
                   Container(
                     padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
                     decoration: BoxDecoration(
-                      color: widget.isMuted ? Colors.transparent : null,
-                      gradient: widget.isMuted
+                      color: widget.isMuted
+                          ? Colors.transparent
+                          : done
+                              ? Color.lerp(completedBg, Colors.white, 0.25) ??
+                                  completedBg
+                              : Color.alphaBlend(
+                                  widget.color.withValues(alpha: 0.15),
+                                  cs.surfaceContainerHighest),
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: widget.isMuted
                           ? null
-                          : LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: done
-                                  ? [
-                                      Color.lerp(
-                                              completedBg, Colors.white, 0.3) ??
-                                          completedBg,
-                                      Color.lerp(
-                                              completedBg, Colors.black, 0.2) ??
-                                          completedBg,
-                                    ]
-                                  : [
-                                      Color.alphaBlend(
-                                          widget.color.withValues(alpha: 0.25),
-                                          cs.surfaceContainerHighest),
-                                      Color.alphaBlend(
-                                          widget.color.withValues(alpha: 0.05),
-                                          cs.surfaceContainerHighest),
-                                    ],
-                            ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: (done && !widget.isMuted)
-                          ? [
+                          : [
                               BoxShadow(
-                                color: widget.color.withValues(alpha: 0.28),
-                                blurRadius: 18,
+                                color: done
+                                    ? widget.color.withValues(alpha: 0.2)
+                                    : cs.shadow.withValues(alpha: 0.04),
+                                blurRadius: 24,
+                                spreadRadius: -2,
                                 offset: const Offset(0, 8),
                               ),
-                            ]
-                          : null,
+                            ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

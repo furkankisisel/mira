@@ -1643,14 +1643,18 @@ class _FreeformCard extends StatelessWidget {
       width: width,
       height: height,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(roundCorners ? 16 : 0),
+        borderRadius: BorderRadius.circular(roundCorners ? 24 : 0),
         child: Stack(
           fit: StackFit.expand,
           children: [
             if (vision.coverImage != null && vision.coverImage!.isNotEmpty)
               _CoverImage(path: vision.coverImage!)
             else
-              DecoratedBox(decoration: BoxDecoration(color: color)),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Color.lerp(color, Colors.white, 0.25) ?? color,
+                ),
+              ),
             // Apply subtle gradient only when showing text so text is readable
             if (showText &&
                 vision.coverImage != null &&
@@ -2150,26 +2154,19 @@ class _Board extends StatelessWidget {
                         bottom: 4,
                       ), // Slight spacing for shadow visibility
                       decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(20), // Softer corners
+                        color: Color.lerp(color, Colors.white, 0.25) ?? color,
+                        borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: color.withValues(alpha: 0.3),
-                            blurRadius: 12,
-                            offset: const Offset(0, 6),
+                            color: color.withValues(alpha: 0.2),
+                            blurRadius: 24,
+                            spreadRadius: -2,
+                            offset: const Offset(0, 8),
                           ),
                         ],
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color.lerp(color, Colors.white, 0.3) ?? color,
-                            Color.lerp(color, Colors.black, 0.2) ?? color,
-                          ],
-                        ),
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(24),
                         child: Column(
                           children: [
                             Column(
