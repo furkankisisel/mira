@@ -301,7 +301,7 @@ class _HabitCardState extends State<HabitCard>
 
                     if (isTimer) ...[
                       SizedBox(
-                        height: 48,
+                        height: 46,
                         child: FilledButton.icon(
                           onPressed: () {
                             Navigator.pop(ctx);
@@ -310,17 +310,19 @@ class _HabitCardState extends State<HabitCard>
                                   builder: (_) => const TimerScreen()),
                             );
                           },
-                          icon: const Icon(Icons.play_arrow_rounded, size: 24),
+                          icon: const Icon(Icons.play_arrow_rounded, size: 22),
                           label: const Text(
                             "Süre Tut", // TODO: Localize
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 15,
                               fontWeight: FontWeight.w800,
+                              height: 1.0,
                             ),
                           ),
                           style: FilledButton.styleFrom(
-                            backgroundColor: widget.color.withValues(alpha: 0.9),
+                            backgroundColor: widget.color,
                             foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -356,76 +358,89 @@ class _HabitCardState extends State<HabitCard>
                               ),
                             )
                           else
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                _buildAdjustButton(
-                                  icon: Icons.remove_rounded,
-                                  onPressed: () {
-                                    if (currentValue > 0) {
+                            Container(
+                              height: 64,
+                              decoration: BoxDecoration(
+                                color: widget.color.withValues(alpha: 0.08),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: widget.color.withValues(alpha: 0.15),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _buildAdjustButton(
+                                    icon: Icons.remove_rounded,
+                                    onPressed: () {
+                                      if (currentValue > 0) {
+                                        setDialogState(() {
+                                          currentValue--;
+                                          c.text = currentValue.toString();
+                                        });
+                                        HapticFeedback.lightImpact();
+                                      }
+                                    },
+                                  ),
+                                  VerticalDivider(
+                                    color: widget.color.withValues(alpha: 0.2),
+                                    width: 1,
+                                    indent: 12,
+                                    endIndent: 12,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      setDialogState(() => isManualEntry = true);
+                                      HapticFeedback.selectionClick();
+                                    },
+                                    child: Container(
+                                      constraints: const BoxConstraints(minWidth: 80),
+                                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                                      color: Colors.transparent,
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            currentValue.toString(),
+                                            style: theme.textTheme.headlineLarge?.copyWith(
+                                              color: widget.color,
+                                              fontWeight: FontWeight.w900,
+                                              height: 1.0,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 1),
+                                          Text(
+                                            widget.unit ?? l10n.valueLabel,
+                                            style: theme.textTheme.labelSmall?.copyWith(
+                                              color: cs.onSurfaceVariant,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 9,
+                                              height: 1.0,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  VerticalDivider(
+                                    color: widget.color.withValues(alpha: 0.2),
+                                    width: 1,
+                                    indent: 12,
+                                    endIndent: 12,
+                                  ),
+                                  _buildAdjustButton(
+                                    icon: Icons.add_rounded,
+                                    onPressed: () {
                                       setDialogState(() {
-                                        currentValue--;
+                                        currentValue++;
                                         c.text = currentValue.toString();
                                       });
                                       HapticFeedback.lightImpact();
-                                    }
-                                  },
-                                ),
-                                const SizedBox(width: 20),
-                                GestureDetector(
-                                  onTap: () {
-                                    setDialogState(() => isManualEntry = true);
-                                    HapticFeedback.selectionClick();
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 10),
-                                    decoration: BoxDecoration(
-                                      color: widget.color
-                                          .withValues(alpha: 0.08),
-                                      borderRadius:
-                                          BorderRadius.circular(14),
-                                      border: Border.all(
-                                        color: widget.color
-                                            .withValues(alpha: 0.15),
-                                      ),
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          currentValue.toString(),
-                                          style: theme.textTheme.headlineLarge
-                                              ?.copyWith(
-                                            color: widget.color,
-                                            fontWeight: FontWeight.w900,
-                                            height: 1.1,
-                                          ),
-                                        ),
-                                        Text(
-                                          widget.unit ?? l10n.valueLabel,
-                                          style: theme.textTheme.labelSmall
-                                              ?.copyWith(
-                                            color: cs.onSurfaceVariant,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 10,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                    },
                                   ),
-                                ),
-                                const SizedBox(width: 20),
-                                _buildAdjustButton(
-                                  icon: Icons.add_rounded,
-                                  onPressed: () {
-                                    setDialogState(() {
-                                      currentValue++;
-                                      c.text = currentValue.toString();
-                                    });
-                                    HapticFeedback.lightImpact();
-                                  },
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           const SizedBox(height: 12),
                           GestureDetector(
@@ -517,7 +532,7 @@ class _HabitCardState extends State<HabitCard>
                         child: Row(
                           children: [
                             Icon(Icons.info_outline,
-                                size: 14, color: cs.primary),
+                                size: 14, color: widget.color),
                             const SizedBox(width: 8),
                             Flexible(
                               child: Text(
@@ -598,8 +613,11 @@ class _HabitCardState extends State<HabitCard>
                             ),
                             child: Text(
                               l10n.cancel,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: widget.color,
+                              ),
                             ),
                           ),
                         ),
@@ -613,7 +631,7 @@ class _HabitCardState extends State<HabitCard>
                             },
                             style: FilledButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 14),
-                              backgroundColor: cs.primary,
+                              backgroundColor: widget.color,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),
@@ -642,20 +660,15 @@ class _HabitCardState extends State<HabitCard>
     required IconData icon,
     required VoidCallback onPressed,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: widget.color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(12),
+    return IconButton(
+      icon: Icon(icon, color: widget.color, size: 24),
+      onPressed: onPressed,
+      constraints: const BoxConstraints(
+        minWidth: 56,
+        minHeight: 56,
       ),
-      child: IconButton(
-        icon: Icon(icon, color: widget.color, size: 24),
-        onPressed: onPressed,
-        constraints: const BoxConstraints(
-          minWidth: 40,
-          minHeight: 40,
-        ),
-        padding: EdgeInsets.zero,
-      ),
+      padding: EdgeInsets.zero,
+      splashRadius: 24,
     );
   }
 

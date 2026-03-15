@@ -240,17 +240,25 @@ class _LiveRhythmHeaderState extends State<LiveRhythmHeader>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  windowColor.withOpacity(0.15),
-                  windowColor.withOpacity(0.05),
+                  windowColor.withOpacity(0.12),
+                  windowColor.withOpacity(0.06),
+                  windowColor.withOpacity(0.01),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: windowColor.withOpacity(0.3),
-                width: 1,
+                color: windowColor.withOpacity(0.15),
+                width: 0.8,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: windowColor.withOpacity(0.04),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
             child: Material(
               color: Colors.transparent,
@@ -275,12 +283,12 @@ class _LiveRhythmHeaderState extends State<LiveRhythmHeader>
                                 boxShadow: [
                                   BoxShadow(
                                     color: windowColor.withOpacity(
-                                      0.3 * _breathingAnimation.value,
+                                      0.2 * _breathingAnimation.value,
                                     ),
-                                    blurRadius: 12 +
-                                        (6 * (1 - _breathingAnimation.value)),
-                                    spreadRadius: 2 +
-                                        (2 * (1 - _breathingAnimation.value)),
+                                    blurRadius: 16 +
+                                        (8 * (1 - _breathingAnimation.value)),
+                                    spreadRadius: 1 +
+                                        (3 * (1 - _breathingAnimation.value)),
                                   ),
                                 ],
                               ),
@@ -299,13 +307,14 @@ class _LiveRhythmHeaderState extends State<LiveRhythmHeader>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                _getWindowName(context, currentWindow),
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  color: windowColor,
+                                Text(
+                                  _getWindowName(context, currentWindow),
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: -0.5,
+                                    color: windowColor,
+                                  ),
                                 ),
-                              ),
                               const SizedBox(height: 2),
                               Text(
                                 _getWindowDescription(context, currentWindow),
@@ -324,8 +333,12 @@ class _LiveRhythmHeaderState extends State<LiveRhythmHeader>
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: windowColor.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(10),
+                              color: windowColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: windowColor.withOpacity(0.1),
+                                width: 0.5,
+                              ),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -353,19 +366,26 @@ class _LiveRhythmHeaderState extends State<LiveRhythmHeader>
                     // AI Message Section
                     if (widget.aiMessage != null ||
                         widget.isLoadingAiMessage) ...[
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
+                      // Divider with gradient
                       Container(
+                        height: 1,
                         width: double.infinity,
-                        padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: colorScheme.surface.withOpacity(0.6),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: windowColor.withOpacity(0.2),
+                          gradient: LinearGradient(
+                            colors: [
+                              windowColor.withOpacity(0.0),
+                              windowColor.withOpacity(0.15),
+                              windowColor.withOpacity(0.0),
+                            ],
                           ),
                         ),
-                        child: widget.isLoadingAiMessage
-                            ? Row(
+                      ),
+                      const SizedBox(height: 16),
+                      widget.isLoadingAiMessage
+                          ? Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              child: Row(
                                 children: [
                                   Text(
                                     '🤖',
@@ -376,44 +396,53 @@ class _LiveRhythmHeaderState extends State<LiveRhythmHeader>
                                     'Canlı Ritim analiz ediyor',
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: colorScheme.onSurface
-                                          .withOpacity(0.6),
+                                          .withOpacity(0.5),
                                       fontStyle: FontStyle.italic,
+                                      letterSpacing: 0.2,
                                     ),
                                   ),
                                   const SizedBox(width: 2),
                                   _AnimatedDots(
                                     controller: _dotController,
                                     color:
-                                        colorScheme.onSurface.withOpacity(0.6),
+                                        colorScheme.onSurface.withOpacity(0.4),
                                   ),
                                 ],
-                              )
-                            : InkWell(
-                                onTap: widget.onAiMessageTap,
-                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            )
+                          : InkWell(
+                              onTap: widget.onAiMessageTap,
+                              borderRadius: BorderRadius.circular(12),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      '✨',
-                                      style: const TextStyle(fontSize: 16),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2),
+                                      child: Text(
+                                        '✨',
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
                                     ),
-                                    const SizedBox(width: 8),
+                                    const SizedBox(width: 10),
                                     Expanded(
                                       child: Text(
                                         widget.aiMessage!,
                                         style: theme.textTheme.bodyMedium
                                             ?.copyWith(
                                           color: colorScheme.onSurface
-                                              .withValues(alpha: 0.85),
-                                          height: 1.4,
+                                              .withOpacity(0.8),
+                                          height: 1.5,
+                                          letterSpacing: 0.1,
                                         ),
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                      ),
+                            ),
                     ],
                   ],
                 ),
