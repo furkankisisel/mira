@@ -3924,24 +3924,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get rhythmQ5 => '하루 중 어느 시간대에 더 활력을 느끼나요?';
 
   @override
-  String get rhythmQ6 => '운동이 가장 쉽게 느껴지는 때는?';
-
-  @override
-  String get rhythmQ7 => '하루 중 어느 시간대에 미루는 경향이 있나요?';
-
-  @override
-  String get rhythmQ8 => '에너지가 낮을 때 보통 무엇을 하나요?';
-
-  @override
-  String get rhythmQ9 => '하루가 끝날 때 무엇이 더 좋게 느껴지나요?';
-
-  @override
-  String get rhythmQ10 => '저녁에 마음이 보통 어떻게 느껴지나요?';
-
-  @override
-  String get rhythmQ11 => '어느 쪽에 더 공감하나요?';
-
-  @override
   String get rhythmA1_1 => '22:00 – 23:00';
 
   @override
@@ -3952,6 +3934,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get rhythmA1_4 => '01:00+';
+
+  @override
+  String get rhythmA1_5 => '11:00 – 12:00';
 
   @override
   String get rhythmA2_1 => '06:00 – 07:00';
@@ -4008,79 +3993,38 @@ class AppLocalizationsKo extends AppLocalizations {
   String get rhythmA5_4 => '없음';
 
   @override
-  String get rhythmA5_5 => '하루 종일 변동';
+  String get rhythmResultTitle => 'Biyolojik Saat Profiliniz';
 
   @override
-  String get rhythmA6_1 => '아침';
+  String get rhythmResultSubtitle =>
+      'Verilerinize dayanarak gününüzü sizin için bölümlere ayırdık.';
 
   @override
-  String get rhythmA6_2 => '오후';
+  String get rhythmChronoMorning => 'Sabah İnsanı (Erkenci Kuş)';
 
   @override
-  String get rhythmA6_3 => '저녁';
+  String get rhythmChronoEvening => 'Akşam İnsanı (Gece Kuşu)';
 
   @override
-  String get rhythmA6_4 => '차이 없음';
+  String get rhythmChronoIntermediate => 'Ara Tip (Dengeli)';
 
   @override
-  String get rhythmA7_1 => '정오 이후';
+  String get rhythmHabitSuggestionTitle => 'Sizin İçin Önerilen Saatler:';
 
   @override
-  String get rhythmA7_2 => '늦은 오후';
+  String get rhythmResultGotIt => 'Harika, Başlayalım';
 
   @override
-  String get rhythmA7_3 => '밤';
+  String get rhythmFocusHint => 'Zihinsel çalışma, analiz, öğrenme';
 
   @override
-  String get rhythmA7_4 => '특정 없음';
+  String get rhythmEnergyHint => 'Antrenman, fiziksel aktivite';
 
   @override
-  String get rhythmA8_1 => '소셜 미디어를 봄';
+  String get rhythmLightHint => 'E-postalar, sosyal medya, ufak işler';
 
   @override
-  String get rhythmA8_2 => '간단한 작업을 함';
-
-  @override
-  String get rhythmA8_3 => '휴식';
-
-  @override
-  String get rhythmA8_4 => '계속하려고 노력함';
-
-  @override
-  String get rhythmA9_1 => '쓰기 / 생각하기';
-
-  @override
-  String get rhythmA9_2 => '조용한 휴식';
-
-  @override
-  String get rhythmA9_3 => '읽기';
-
-  @override
-  String get rhythmA9_4 => '바로 잠자리에 들기';
-
-  @override
-  String get rhythmA10_1 => '차분하고 침착함';
-
-  @override
-  String get rhythmA10_2 => '피곤하지만 사려깊음';
-
-  @override
-  String get rhythmA10_3 => '산만함';
-
-  @override
-  String get rhythmA10_4 => '아직 활동적';
-
-  @override
-  String get rhythmA11_1 => '저는 아침형 인간입니다';
-
-  @override
-  String get rhythmA11_2 => '저는 저녁형 인간입니다';
-
-  @override
-  String get rhythmA11_3 => '중간입니다';
-
-  @override
-  String get rhythmA11_4 => '계절에 따라 변합니다';
+  String get rhythmReflectionHint => 'Günlük, kitap, uykuya hazırlık';
 
   @override
   String get testsSection => '테스트';

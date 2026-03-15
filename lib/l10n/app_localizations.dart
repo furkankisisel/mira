@@ -7481,350 +7481,236 @@ abstract class AppLocalizations {
   /// No description provided for @rhythmQ1.
   ///
   /// In tr, this message translates to:
-  /// **'Genelde kaçta uyuyorsun?'**
+  /// **'Tamamen kendi isteğinize bırakılsaydı ve ertesi gün zorunlu bir işiniz olmasaydı, saat kaçta kalkardınız?'**
   String get rhythmQ1;
 
   /// No description provided for @rhythmQ2.
   ///
   /// In tr, this message translates to:
-  /// **'Genelde kaçta uyanıyorsun?'**
+  /// **'Sabah uyandıktan sonraki ilk yarım saatte kendinizi genelde ne kadar yorgun hissedersiniz?'**
   String get rhythmQ2;
 
   /// No description provided for @rhythmQ3.
   ///
   /// In tr, this message translates to:
-  /// **'Zor bir işi en rahat ne zaman yaparsın?'**
+  /// **'Akşamları tamamen serbestsiniz ve ertesi gün bir zorunluluğunuz yok. Saat kaçta uyurdunuz?'**
   String get rhythmQ3;
 
   /// No description provided for @rhythmQ4.
   ///
   /// In tr, this message translates to:
-  /// **'Yeni bir şey öğrenirken kendini en net hissettiğin zaman?'**
+  /// **'Günün hangi saatinde kendinizi en iyi (enerjik) hissedersiniz?'**
   String get rhythmQ4;
 
   /// No description provided for @rhythmQ5.
   ///
   /// In tr, this message translates to:
-  /// **'Günün hangi bölümünde daha hareketli hissedersin?'**
+  /// **'\"Sabah insanı\" mı yoksa \"Akşam insanı\" mı olduğunuzu düşünüyorsunuz?'**
   String get rhythmQ5;
-
-  /// No description provided for @rhythmQ6.
-  ///
-  /// In tr, this message translates to:
-  /// **'Spor veya fiziksel işler sana ne zaman daha kolay gelir?'**
-  String get rhythmQ6;
-
-  /// No description provided for @rhythmQ7.
-  ///
-  /// In tr, this message translates to:
-  /// **'Günün hangi saatlerinde çabuk sıkılırsın veya ertelemeye yatkın olursun?'**
-  String get rhythmQ7;
-
-  /// No description provided for @rhythmQ8.
-  ///
-  /// In tr, this message translates to:
-  /// **'Bu düşük enerji zamanlarında genelde ne yaparsın?'**
-  String get rhythmQ8;
-
-  /// No description provided for @rhythmQ9.
-  ///
-  /// In tr, this message translates to:
-  /// **'Günün sonunda hangisi sana daha iyi gelir?'**
-  String get rhythmQ9;
-
-  /// No description provided for @rhythmQ10.
-  ///
-  /// In tr, this message translates to:
-  /// **'Akşam saatlerinde zihnin genelde nasıl olur?'**
-  String get rhythmQ10;
-
-  /// No description provided for @rhythmQ11.
-  ///
-  /// In tr, this message translates to:
-  /// **'Kendini hangisine daha yakın hissediyorsun?'**
-  String get rhythmQ11;
 
   /// No description provided for @rhythmA1_1.
   ///
   /// In tr, this message translates to:
-  /// **'22:00 – 23:00'**
+  /// **'05:00 – 06:30'**
   String get rhythmA1_1;
 
   /// No description provided for @rhythmA1_2.
   ///
   /// In tr, this message translates to:
-  /// **'23:00 – 00:00'**
+  /// **'06:30 – 07:45'**
   String get rhythmA1_2;
 
   /// No description provided for @rhythmA1_3.
   ///
   /// In tr, this message translates to:
-  /// **'00:00 – 01:00'**
+  /// **'07:45 – 09:45'**
   String get rhythmA1_3;
 
   /// No description provided for @rhythmA1_4.
   ///
   /// In tr, this message translates to:
-  /// **'01:00+'**
+  /// **'09:45 – 11:00'**
   String get rhythmA1_4;
+
+  /// No description provided for @rhythmA1_5.
+  ///
+  /// In tr, this message translates to:
+  /// **'11:00 – 12:00'**
+  String get rhythmA1_5;
 
   /// No description provided for @rhythmA2_1.
   ///
   /// In tr, this message translates to:
-  /// **'06:00 – 07:00'**
+  /// **'Çok yorgun'**
   String get rhythmA2_1;
 
   /// No description provided for @rhythmA2_2.
   ///
   /// In tr, this message translates to:
-  /// **'07:00 – 08:00'**
+  /// **'Oldukça yorgun'**
   String get rhythmA2_2;
 
   /// No description provided for @rhythmA2_3.
   ///
   /// In tr, this message translates to:
-  /// **'08:00 – 09:00'**
+  /// **'Biraz yorgun'**
   String get rhythmA2_3;
 
   /// No description provided for @rhythmA2_4.
   ///
   /// In tr, this message translates to:
-  /// **'09:00+'**
+  /// **'Hiç yorgun değil'**
   String get rhythmA2_4;
 
   /// No description provided for @rhythmA3_1.
   ///
   /// In tr, this message translates to:
-  /// **'Sabah erken'**
+  /// **'20:00 – 21:00'**
   String get rhythmA3_1;
 
   /// No description provided for @rhythmA3_2.
   ///
   /// In tr, this message translates to:
-  /// **'Sabah ortası'**
+  /// **'21:00 – 22:15'**
   String get rhythmA3_2;
 
   /// No description provided for @rhythmA3_3.
   ///
   /// In tr, this message translates to:
-  /// **'Öğleden sonra'**
+  /// **'22:15 – 00:30'**
   String get rhythmA3_3;
 
   /// No description provided for @rhythmA3_4.
   ///
   /// In tr, this message translates to:
-  /// **'Akşam'**
+  /// **'00:30 – 01:45'**
   String get rhythmA3_4;
 
   /// No description provided for @rhythmA3_5.
   ///
   /// In tr, this message translates to:
-  /// **'Fark etmez'**
+  /// **'01:45 – 03:00'**
   String get rhythmA3_5;
 
   /// No description provided for @rhythmA4_1.
   ///
   /// In tr, this message translates to:
-  /// **'Sabah'**
+  /// **'05:00 – 09:00'**
   String get rhythmA4_1;
 
   /// No description provided for @rhythmA4_2.
   ///
   /// In tr, this message translates to:
-  /// **'Öğlen'**
+  /// **'09:00 – 14:00'**
   String get rhythmA4_2;
 
   /// No description provided for @rhythmA4_3.
   ///
   /// In tr, this message translates to:
-  /// **'Akşam'**
+  /// **'14:00 – 17:00'**
   String get rhythmA4_3;
 
   /// No description provided for @rhythmA4_4.
   ///
   /// In tr, this message translates to:
-  /// **'Gece'**
+  /// **'17:00 – 21:00'**
   String get rhythmA4_4;
 
   /// No description provided for @rhythmA4_5.
   ///
   /// In tr, this message translates to:
-  /// **'Değişiyor'**
+  /// **'21:00 – 05:00'**
   String get rhythmA4_5;
 
   /// No description provided for @rhythmA5_1.
   ///
   /// In tr, this message translates to:
-  /// **'Sabah'**
+  /// **'Kesinlikle sabah insanı'**
   String get rhythmA5_1;
 
   /// No description provided for @rhythmA5_2.
   ///
   /// In tr, this message translates to:
-  /// **'Öğlen'**
+  /// **'Daha çok sabah insanı'**
   String get rhythmA5_2;
 
   /// No description provided for @rhythmA5_3.
   ///
   /// In tr, this message translates to:
-  /// **'Akşam'**
+  /// **'Daha çok akşam insanı'**
   String get rhythmA5_3;
 
   /// No description provided for @rhythmA5_4.
   ///
   /// In tr, this message translates to:
-  /// **'Hiçbiri'**
+  /// **'Kesinlikle akşam insanı'**
   String get rhythmA5_4;
 
-  /// No description provided for @rhythmA5_5.
+  /// No description provided for @rhythmResultTitle.
   ///
   /// In tr, this message translates to:
-  /// **'Gün içinde dalgalı'**
-  String get rhythmA5_5;
+  /// **'Biyolojik Saat Profiliniz'**
+  String get rhythmResultTitle;
 
-  /// No description provided for @rhythmA6_1.
+  /// No description provided for @rhythmResultSubtitle.
   ///
   /// In tr, this message translates to:
-  /// **'Sabah'**
-  String get rhythmA6_1;
+  /// **'Verilerinize dayanarak gününüzü sizin için bölümlere ayırdık.'**
+  String get rhythmResultSubtitle;
 
-  /// No description provided for @rhythmA6_2.
+  /// No description provided for @rhythmChronoMorning.
   ///
   /// In tr, this message translates to:
-  /// **'Öğleden sonra'**
-  String get rhythmA6_2;
+  /// **'Sabah İnsanı (Erkenci Kuş)'**
+  String get rhythmChronoMorning;
 
-  /// No description provided for @rhythmA6_3.
+  /// No description provided for @rhythmChronoEvening.
   ///
   /// In tr, this message translates to:
-  /// **'Akşam'**
-  String get rhythmA6_3;
+  /// **'Akşam İnsanı (Gece Kuşu)'**
+  String get rhythmChronoEvening;
 
-  /// No description provided for @rhythmA6_4.
+  /// No description provided for @rhythmChronoIntermediate.
   ///
   /// In tr, this message translates to:
-  /// **'Hiç fark etmez'**
-  String get rhythmA6_4;
+  /// **'Ara Tip (Dengeli)'**
+  String get rhythmChronoIntermediate;
 
-  /// No description provided for @rhythmA7_1.
+  /// No description provided for @rhythmHabitSuggestionTitle.
   ///
   /// In tr, this message translates to:
-  /// **'Öğle sonrası'**
-  String get rhythmA7_1;
+  /// **'Sizin İçin Önerilen Saatler:'**
+  String get rhythmHabitSuggestionTitle;
 
-  /// No description provided for @rhythmA7_2.
+  /// No description provided for @rhythmResultGotIt.
   ///
   /// In tr, this message translates to:
-  /// **'Akşamüstü'**
-  String get rhythmA7_2;
+  /// **'Harika, Başlayalım'**
+  String get rhythmResultGotIt;
 
-  /// No description provided for @rhythmA7_3.
+  /// No description provided for @rhythmFocusHint.
   ///
   /// In tr, this message translates to:
-  /// **'Gece'**
-  String get rhythmA7_3;
+  /// **'Zihinsel çalışma, analiz, öğrenme'**
+  String get rhythmFocusHint;
 
-  /// No description provided for @rhythmA7_4.
+  /// No description provided for @rhythmEnergyHint.
   ///
   /// In tr, this message translates to:
-  /// **'Belirgin değil'**
-  String get rhythmA7_4;
+  /// **'Antrenman, fiziksel aktivite'**
+  String get rhythmEnergyHint;
 
-  /// No description provided for @rhythmA8_1.
+  /// No description provided for @rhythmLightHint.
   ///
   /// In tr, this message translates to:
-  /// **'Sosyal medyada oyalanırım'**
-  String get rhythmA8_1;
+  /// **'E-postalar, sosyal medya, ufak işler'**
+  String get rhythmLightHint;
 
-  /// No description provided for @rhythmA8_2.
+  /// No description provided for @rhythmReflectionHint.
   ///
   /// In tr, this message translates to:
-  /// **'Basit işler yaparım'**
-  String get rhythmA8_2;
-
-  /// No description provided for @rhythmA8_3.
-  ///
-  /// In tr, this message translates to:
-  /// **'Dinlenirim'**
-  String get rhythmA8_3;
-
-  /// No description provided for @rhythmA8_4.
-  ///
-  /// In tr, this message translates to:
-  /// **'Kendimi zorlamaya çalışırım'**
-  String get rhythmA8_4;
-
-  /// No description provided for @rhythmA9_1.
-  ///
-  /// In tr, this message translates to:
-  /// **'Yazmak / düşünmek'**
-  String get rhythmA9_1;
-
-  /// No description provided for @rhythmA9_2.
-  ///
-  /// In tr, this message translates to:
-  /// **'Sessizce dinlenmek'**
-  String get rhythmA9_2;
-
-  /// No description provided for @rhythmA9_3.
-  ///
-  /// In tr, this message translates to:
-  /// **'Okumak'**
-  String get rhythmA9_3;
-
-  /// No description provided for @rhythmA9_4.
-  ///
-  /// In tr, this message translates to:
-  /// **'Direkt uyumak'**
-  String get rhythmA9_4;
-
-  /// No description provided for @rhythmA10_1.
-  ///
-  /// In tr, this message translates to:
-  /// **'Sakin ve toparlayıcı'**
-  String get rhythmA10_1;
-
-  /// No description provided for @rhythmA10_2.
-  ///
-  /// In tr, this message translates to:
-  /// **'Yorgun ama düşünceli'**
-  String get rhythmA10_2;
-
-  /// No description provided for @rhythmA10_3.
-  ///
-  /// In tr, this message translates to:
-  /// **'Dağınık'**
-  String get rhythmA10_3;
-
-  /// No description provided for @rhythmA10_4.
-  ///
-  /// In tr, this message translates to:
-  /// **'Hâlâ aktif'**
-  String get rhythmA10_4;
-
-  /// No description provided for @rhythmA11_1.
-  ///
-  /// In tr, this message translates to:
-  /// **'Sabah insanıyım'**
-  String get rhythmA11_1;
-
-  /// No description provided for @rhythmA11_2.
-  ///
-  /// In tr, this message translates to:
-  /// **'Akşam insanıyım'**
-  String get rhythmA11_2;
-
-  /// No description provided for @rhythmA11_3.
-  ///
-  /// In tr, this message translates to:
-  /// **'Ortadayım'**
-  String get rhythmA11_3;
-
-  /// No description provided for @rhythmA11_4.
-  ///
-  /// In tr, this message translates to:
-  /// **'Dönemsel değişiyor'**
-  String get rhythmA11_4;
+  /// **'Günlük, kitap, uykuya hazırlık'**
+  String get rhythmReflectionHint;
 
   /// No description provided for @testsSection.
   ///

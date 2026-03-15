@@ -39,6 +39,12 @@ class WeeklyScheduleRepository extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Reloads data from storage (e.g., after restoring a backup)
+  Future<void> reload() async {
+    _initialized = false;
+    await initialize();
+  }
+
   // ── CRUD ────────────────────────────────────────────────────────────────
 
   Future<void> addEvent(ScheduleEvent event) async {

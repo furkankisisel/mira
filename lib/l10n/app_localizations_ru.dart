@@ -3967,24 +3967,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get rhythmQ5 => 'В какой части дня вы чувствуете больше энергии?';
 
   @override
-  String get rhythmQ6 => 'Когда физические упражнения даются легче?';
-
-  @override
-  String get rhythmQ7 => 'В какое время дня вы склонны откладывать дела?';
-
-  @override
-  String get rhythmQ8 => 'Что вы обычно делаете в периоды низкой энергии?';
-
-  @override
-  String get rhythmQ9 => 'Что лучше для вас в конце дня?';
-
-  @override
-  String get rhythmQ10 => 'Как обычно чувствует себя ваш разум вечером?';
-
-  @override
-  String get rhythmQ11 => 'С чем вы больше себя отождествляете?';
-
-  @override
   String get rhythmA1_1 => '22:00 – 23:00';
 
   @override
@@ -3995,6 +3977,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get rhythmA1_4 => '01:00+';
+
+  @override
+  String get rhythmA1_5 => '11:00 – 12:00';
 
   @override
   String get rhythmA2_1 => '06:00 – 07:00';
@@ -4051,79 +4036,38 @@ class AppLocalizationsRu extends AppLocalizations {
   String get rhythmA5_4 => 'Никогда';
 
   @override
-  String get rhythmA5_5 => 'Меняется в течение дня';
+  String get rhythmResultTitle => 'Biyolojik Saat Profiliniz';
 
   @override
-  String get rhythmA6_1 => 'Утро';
+  String get rhythmResultSubtitle =>
+      'Verilerinize dayanarak gününüzü sizin için bölümlere ayırdık.';
 
   @override
-  String get rhythmA6_2 => 'День';
+  String get rhythmChronoMorning => 'Sabah İnsanı (Erkenci Kuş)';
 
   @override
-  String get rhythmA6_3 => 'Вечер';
+  String get rhythmChronoEvening => 'Akşam İnsanı (Gece Kuşu)';
 
   @override
-  String get rhythmA6_4 => 'Без разницы';
+  String get rhythmChronoIntermediate => 'Ara Tip (Dengeli)';
 
   @override
-  String get rhythmA7_1 => 'После полудня';
+  String get rhythmHabitSuggestionTitle => 'Sizin İçin Önerilen Saatler:';
 
   @override
-  String get rhythmA7_2 => 'Поздний день';
+  String get rhythmResultGotIt => 'Harika, Başlayalım';
 
   @override
-  String get rhythmA7_3 => 'Ночь';
+  String get rhythmFocusHint => 'Zihinsel çalışma, analiz, öğrenme';
 
   @override
-  String get rhythmA7_4 => 'Не определено';
+  String get rhythmEnergyHint => 'Antrenman, fiziksel aktivite';
 
   @override
-  String get rhythmA8_1 => 'Листаю соцсети';
+  String get rhythmLightHint => 'E-postalar, sosyal medya, ufak işler';
 
   @override
-  String get rhythmA8_2 => 'Делаю простые дела';
-
-  @override
-  String get rhythmA8_3 => 'Отдыхаю';
-
-  @override
-  String get rhythmA8_4 => 'Пытаюсь продолжить';
-
-  @override
-  String get rhythmA9_1 => 'Писать / думать';
-
-  @override
-  String get rhythmA9_2 => 'Тихий отдых';
-
-  @override
-  String get rhythmA9_3 => 'Чтение';
-
-  @override
-  String get rhythmA9_4 => 'Сразу спать';
-
-  @override
-  String get rhythmA10_1 => 'Спокойный и собранный';
-
-  @override
-  String get rhythmA10_2 => 'Уставший, но вдумчивый';
-
-  @override
-  String get rhythmA10_3 => 'Рассеянный';
-
-  @override
-  String get rhythmA10_4 => 'Всё ещё активный';
-
-  @override
-  String get rhythmA11_1 => 'Я жаворонок';
-
-  @override
-  String get rhythmA11_2 => 'Я сова';
-
-  @override
-  String get rhythmA11_3 => 'Я посередине';
-
-  @override
-  String get rhythmA11_4 => 'Меняется сезонно';
+  String get rhythmReflectionHint => 'Günlük, kitap, uykuya hazırlık';
 
   @override
   String get testsSection => 'Тесты';

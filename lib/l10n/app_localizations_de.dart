@@ -3978,26 +3978,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'In welchem Teil des Tages fühlst du dich energiegeladener?';
 
   @override
-  String get rhythmQ6 =>
-      'Wann fühlt sich körperliche Bewegung am einfachsten an?';
-
-  @override
-  String get rhythmQ7 => 'Zu welcher Tageszeit neigst du zum Aufschieben?';
-
-  @override
-  String get rhythmQ8 =>
-      'Was machst du normalerweise in diesen energiearmen Zeiten?';
-
-  @override
-  String get rhythmQ9 => 'Was fühlt sich am Ende des Tages besser für dich an?';
-
-  @override
-  String get rhythmQ10 => 'Wie fühlt sich dein Geist abends normalerweise an?';
-
-  @override
-  String get rhythmQ11 => 'Mit welchem identifizierst du dich mehr?';
-
-  @override
   String get rhythmA1_1 => '22:00 – 23:00';
 
   @override
@@ -4008,6 +3988,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get rhythmA1_4 => '01:00+';
+
+  @override
+  String get rhythmA1_5 => '11:00 – 12:00';
 
   @override
   String get rhythmA2_1 => '06:00 – 07:00';
@@ -4064,79 +4047,38 @@ class AppLocalizationsDe extends AppLocalizations {
   String get rhythmA5_4 => 'Keiner';
 
   @override
-  String get rhythmA5_5 => 'Schwankt über den Tag';
+  String get rhythmResultTitle => 'Biyolojik Saat Profiliniz';
 
   @override
-  String get rhythmA6_1 => 'Morgen';
+  String get rhythmResultSubtitle =>
+      'Verilerinize dayanarak gününüzü sizin için bölümlere ayırdık.';
 
   @override
-  String get rhythmA6_2 => 'Nachmittag';
+  String get rhythmChronoMorning => 'Sabah İnsanı (Erkenci Kuş)';
 
   @override
-  String get rhythmA6_3 => 'Abend';
+  String get rhythmChronoEvening => 'Akşam İnsanı (Gece Kuşu)';
 
   @override
-  String get rhythmA6_4 => 'Kein Unterschied';
+  String get rhythmChronoIntermediate => 'Ara Tip (Dengeli)';
 
   @override
-  String get rhythmA7_1 => 'Nach dem Mittag';
+  String get rhythmHabitSuggestionTitle => 'Sizin İçin Önerilen Saatler:';
 
   @override
-  String get rhythmA7_2 => 'Spätnachmittag';
+  String get rhythmResultGotIt => 'Harika, Başlayalım';
 
   @override
-  String get rhythmA7_3 => 'Nacht';
+  String get rhythmFocusHint => 'Zihinsel çalışma, analiz, öğrenme';
 
   @override
-  String get rhythmA7_4 => 'Nicht spezifisch';
+  String get rhythmEnergyHint => 'Antrenman, fiziksel aktivite';
 
   @override
-  String get rhythmA8_1 => 'Ich scrolle durch soziale Medien';
+  String get rhythmLightHint => 'E-postalar, sosyal medya, ufak işler';
 
   @override
-  String get rhythmA8_2 => 'Ich erledige einfache Aufgaben';
-
-  @override
-  String get rhythmA8_3 => 'Ich ruhe mich aus';
-
-  @override
-  String get rhythmA8_4 => 'Ich versuche durchzuhalten';
-
-  @override
-  String get rhythmA9_1 => 'Schreiben / Nachdenken';
-
-  @override
-  String get rhythmA9_2 => 'Stille Ruhe';
-
-  @override
-  String get rhythmA9_3 => 'Lesen';
-
-  @override
-  String get rhythmA9_4 => 'Direkt schlafen gehen';
-
-  @override
-  String get rhythmA10_1 => 'Ruhig und gesammelt';
-
-  @override
-  String get rhythmA10_2 => 'Müde aber nachdenklich';
-
-  @override
-  String get rhythmA10_3 => 'Zerstreut';
-
-  @override
-  String get rhythmA10_4 => 'Noch aktiv';
-
-  @override
-  String get rhythmA11_1 => 'Ich bin ein Morgenmensch';
-
-  @override
-  String get rhythmA11_2 => 'Ich bin ein Abendmensch';
-
-  @override
-  String get rhythmA11_3 => 'Ich bin dazwischen';
-
-  @override
-  String get rhythmA11_4 => 'Es ändert sich saisonal';
+  String get rhythmReflectionHint => 'Günlük, kitap, uykuya hazırlık';
 
   @override
   String get testsSection => 'Tests';

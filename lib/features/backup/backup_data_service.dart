@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../habit/domain/habit_repository.dart';
 import '../gamification/gamification_repository.dart';
+import '../schedule/domain/weekly_schedule_repository.dart';
 
 /// Service to collect all app data for backup and restore from backup
 class BackupDataService {
@@ -30,6 +31,7 @@ class BackupDataService {
     'locale', // language setting
     'onboarding_complete',
     'notification_settings_v1',
+    'weekly_schedule_events_v1', // weekly schedules
   ];
 
   /// Collects all app data into a JSON string for backup
@@ -170,6 +172,14 @@ class BackupDataService {
 
     // Add other repository reloads as needed
     // FocusRepository, ListRepository, etc. can be added here
+    try {
+      await WeeklyScheduleRepository.instance.reload();
+      debugPrint('[BackupDataService] WeeklyScheduleRepository reloaded');
+    } catch (e) {
+      debugPrint(
+        '[BackupDataService] Error reloading WeeklyScheduleRepository: $e',
+      );
+    }
 
     debugPrint('[BackupDataService] All repositories reloaded');
   }

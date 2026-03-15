@@ -262,44 +262,19 @@ class _HabitCardState extends State<HabitCard>
       return null;
     }
 
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          bottom: MediaQuery.of(ctx).viewInsets.bottom + 32,
-          top: 12,
-        ),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 20,
-              offset: const Offset(0, -4),
-            ),
-          ],
-        ),
+      builder: (ctx) => Dialog(
+        backgroundColor: theme.colorScheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
         child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: cs.outlineVariant.withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(2.5),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
+          child: Padding(
+            padding: const EdgeInsets.all(32.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
               Text(
                 l10n.enterValueTitle,
                 style: theme.textTheme.titleLarge?.copyWith(
@@ -507,6 +482,7 @@ class _HabitCardState extends State<HabitCard>
               ),
             ],
           ),
+        ),
         ),
       ),
     );
@@ -723,30 +699,58 @@ class _HabitCardState extends State<HabitCard>
               scale: _scale,
               child: Stack(
                 children: [
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: widget.isMuted
+                            ? Colors.transparent
+                            : Color.alphaBlend(
+                                widget.color.withValues(alpha: 0.15),
+                                cs.surfaceContainerHighest,
+                              ),
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: widget.isMuted
+                            ? null
+                            : [
+                                BoxShadow(
+                                  color: done
+                                      ? widget.color.withValues(alpha: 0.2)
+                                      : cs.shadow.withValues(alpha: 0.04),
+                                  blurRadius: 24,
+                                  spreadRadius: -2,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final double progress = widget.targetCount > 0
+                                ? (widget.currentStreak / widget.targetCount).clamp(0.0, 1.0)
+                                : (done ? 1.0 : 0.0);
+
+                            return Align(
+                              alignment: Alignment.centerLeft,
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.easeOutCubic,
+                                width: constraints.maxWidth * progress,
+                                height: constraints.maxHeight,
+                                decoration: BoxDecoration(
+                                  color: done
+                                      ? completedBg
+                                      : widget.color.withValues(alpha: 0.25),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
                   Container(
                     padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
-                    decoration: BoxDecoration(
-                      color: widget.isMuted
-                          ? Colors.transparent
-                          : done
-                              ? completedBg
-                              : Color.alphaBlend(
-                                  widget.color.withValues(alpha: 0.15),
-                                  cs.surfaceContainerHighest),
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: widget.isMuted
-                          ? null
-                          : [
-                              BoxShadow(
-                                color: done
-                                    ? widget.color.withValues(alpha: 0.2)
-                                    : cs.shadow.withValues(alpha: 0.04),
-                                blurRadius: 24,
-                                spreadRadius: -2,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -789,9 +793,6 @@ class _HabitCardState extends State<HabitCard>
                                         fontWeight: FontWeight.w600,
                                         color:
                                             done ? onCompleted : cs.onSurface,
-                                        // Tighter line-height when there's no description so
-                                        // the single-line title visually centers with
-                                        // the emoji/check area.
                                         height: widget.description.isEmpty
                                             ? 1.02
                                             : null,
@@ -920,7 +921,6 @@ class _HabitCardState extends State<HabitCard>
                               ),
                           ],
                         ),
-                        // Subtasks listesi (sadece subtasks habit type için)
                         if (widget.habitType == HabitType.subtasks &&
                             widget.subtasks != null &&
                             widget.subtasks!.isNotEmpty) ...[

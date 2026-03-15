@@ -4,6 +4,7 @@ import '../domain/rhythm_questions.dart';
 import '../domain/rhythm_question.dart';
 import '../domain/rhythm_analyzer_service.dart';
 import '../domain/live_rhythm_repository.dart';
+import 'rhythm_results_screen.dart';
 
 /// Rhythm onboarding screen with 11 biological clock questions
 /// Only shown to premium users
@@ -68,8 +69,13 @@ class _RhythmOnboardingScreenState extends State<RhythmOnboardingScreen> {
       await LiveRhythmRepository.instance.saveProfile(profile);
 
       if (mounted) {
-        // Navigate to home
-        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+        // Navigate to results screen
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (_) => RhythmResultsScreen(profile: profile),
+          ),
+          (route) => false,
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -84,28 +90,16 @@ class _RhythmOnboardingScreenState extends State<RhythmOnboardingScreen> {
   String _getQuestionText(BuildContext context, RhythmQuestion question) {
     final l10n = AppLocalizations.of(context);
     switch (question.id) {
-      case 'sleep_time':
+      case 'rmeq_wake_time':
         return l10n.rhythmQ1;
-      case 'wake_time':
+      case 'rmeq_morning_tiredness':
         return l10n.rhythmQ2;
-      case 'hard_work_time':
+      case 'rmeq_sleep_time':
         return l10n.rhythmQ3;
-      case 'learning_clarity':
+      case 'rmeq_peak_time':
         return l10n.rhythmQ4;
-      case 'energy_peak':
+      case 'rmeq_subjective_type':
         return l10n.rhythmQ5;
-      case 'exercise_ease':
-        return l10n.rhythmQ6;
-      case 'procrastination_time':
-        return l10n.rhythmQ7;
-      case 'low_energy_behavior':
-        return l10n.rhythmQ8;
-      case 'evening_activity':
-        return l10n.rhythmQ9;
-      case 'evening_mind':
-        return l10n.rhythmQ10;
-      case 'chrono_type':
-        return l10n.rhythmQ11;
       default:
         return question.questionKey;
     }
@@ -114,21 +108,22 @@ class _RhythmOnboardingScreenState extends State<RhythmOnboardingScreen> {
   List<String> _getAnswerTexts(BuildContext context, RhythmQuestion question) {
     final l10n = AppLocalizations.of(context);
     switch (question.id) {
-      case 'sleep_time':
+      case 'rmeq_wake_time':
         return [
           l10n.rhythmA1_1,
           l10n.rhythmA1_2,
           l10n.rhythmA1_3,
           l10n.rhythmA1_4,
+          l10n.rhythmA1_5,
         ];
-      case 'wake_time':
+      case 'rmeq_morning_tiredness':
         return [
           l10n.rhythmA2_1,
           l10n.rhythmA2_2,
           l10n.rhythmA2_3,
           l10n.rhythmA2_4,
         ];
-      case 'hard_work_time':
+      case 'rmeq_sleep_time':
         return [
           l10n.rhythmA3_1,
           l10n.rhythmA3_2,
@@ -136,7 +131,7 @@ class _RhythmOnboardingScreenState extends State<RhythmOnboardingScreen> {
           l10n.rhythmA3_4,
           l10n.rhythmA3_5,
         ];
-      case 'learning_clarity':
+      case 'rmeq_peak_time':
         return [
           l10n.rhythmA4_1,
           l10n.rhythmA4_2,
@@ -144,55 +139,12 @@ class _RhythmOnboardingScreenState extends State<RhythmOnboardingScreen> {
           l10n.rhythmA4_4,
           l10n.rhythmA4_5,
         ];
-      case 'energy_peak':
+      case 'rmeq_subjective_type':
         return [
           l10n.rhythmA5_1,
           l10n.rhythmA5_2,
           l10n.rhythmA5_3,
           l10n.rhythmA5_4,
-          l10n.rhythmA5_5,
-        ];
-      case 'exercise_ease':
-        return [
-          l10n.rhythmA6_1,
-          l10n.rhythmA6_2,
-          l10n.rhythmA6_3,
-          l10n.rhythmA6_4,
-        ];
-      case 'procrastination_time':
-        return [
-          l10n.rhythmA7_1,
-          l10n.rhythmA7_2,
-          l10n.rhythmA7_3,
-          l10n.rhythmA7_4,
-        ];
-      case 'low_energy_behavior':
-        return [
-          l10n.rhythmA8_1,
-          l10n.rhythmA8_2,
-          l10n.rhythmA8_3,
-          l10n.rhythmA8_4,
-        ];
-      case 'evening_activity':
-        return [
-          l10n.rhythmA9_1,
-          l10n.rhythmA9_2,
-          l10n.rhythmA9_3,
-          l10n.rhythmA9_4,
-        ];
-      case 'evening_mind':
-        return [
-          l10n.rhythmA10_1,
-          l10n.rhythmA10_2,
-          l10n.rhythmA10_3,
-          l10n.rhythmA10_4,
-        ];
-      case 'chrono_type':
-        return [
-          l10n.rhythmA11_1,
-          l10n.rhythmA11_2,
-          l10n.rhythmA11_3,
-          l10n.rhythmA11_4,
         ];
       default:
         return question.answerKeys;

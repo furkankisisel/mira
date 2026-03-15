@@ -13,6 +13,13 @@ import 'data/budget_repository.dart';
 import 'finance_wizard_screen.dart';
 import 'finance_edit_screen.dart';
 import '../../ui/premium_gate.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:file_picker/file_picker.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
+import 'data/ai_finance_service.dart';
+import 'domain/ai_finance_dto.dart';
+import 'presentation/ai_finance_preview_dialog.dart';
 
 class FinanceScreen extends StatefulWidget {
   const FinanceScreen({super.key, this.variant});
@@ -104,7 +111,7 @@ class FinanceScreenState extends State<FinanceScreen>
           child: Scaffold(
             backgroundColor: Colors.transparent,
             floatingActionButton: FloatingActionButton.extended(
-              onPressed: _openAddPageDefault,
+              onPressed: _showAddOptions,
               icon: const Icon(Icons.add),
               label: Text(AppLocalizations.of(context).add),
               backgroundColor: scheme.primary,
@@ -533,6 +540,106 @@ class FinanceScreenState extends State<FinanceScreen>
         );
       },
     );
+  }
+
+  Future<void> _showAddOptions() async {
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit_note),
+              title: const Text('Manuel Ekle'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _openAddPageDefault();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.document_scanner),
+              title: const Text('Yapay Zeka ile Ekstre/Fiş Yükle'),
+              subtitle: const Text('Görsel veya PDF üzerinden otomatik ekler'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickAndAnalyzeStatement();
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickAndAnalyzeStatement() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['png', 'jpg', 'jpeg', 'pdf'],
+    );
+
+    if (result == null || result.files.isEmpty) return;
+    
+    if (!mounted) return;
+    
+    // Show Loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+    
+    try {
+      final file = File(result.files.single.path!);
+      final extension = result.files.single.extension?.toLowerCase();
+      
+      final service = AiFinanceService();
+      AiFinanceResponse? aiResponse;
+
+      if (extension == 'pdf') {
+        final bytes = await file.readAsBytes();
+        final PdfDocument document = PdfDocument(inputBytes: bytes);
+        final String text = PdfTextExtractor(document).extractText();
+        document.dispose();
+        aiResponse = await service.analyzeStatement(pdfText: text);
+      } else {
+        final bytes = await file.readAsBytes();
+        final String base64Image = base64Encode(bytes);
+        aiResponse = await service.analyzeStatement(imageBase64: base64Image);
+      }
+      
+      if (!mounted) return;
+      // Close loading dialog
+      Navigator.pop(context);
+
+      // Open Preview Dialog
+      final selectedTxs = await Navigator.of(context).push<List<FinanceTransaction>>(
+        MaterialPageRoute(
+          builder: (_) => AiFinancePreviewDialog(
+            parsedTransactions: aiResponse!.transactions,
+            catRepo: _catRepo,
+          ),
+        ),
+      );
+
+      if (selectedTxs != null && selectedTxs.isNotEmpty) {
+        for (var tx in selectedTxs) {
+          await _repo.add(tx);
+        }
+        if (mounted) setState(() {});
+      }
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pop(context); // close loading
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Hata oluştu: $e')),
+      );
+    }
   }
 
   String _capitalize(String s) =>
