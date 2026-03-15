@@ -4,8 +4,11 @@ import '../../domain/habit_model.dart';
 import '../../domain/habit_types.dart';
 import '../../domain/daily_task_model.dart';
 import '../../domain/subtask_model.dart';
-import '../../../../design_system/tokens/colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../timer/timer_screen.dart';
+import '../../../../design_system/tokens/colors.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/cupertino.dart';
 
 /// Golden ratio constant for proportional design
 const double phi = 1.618033988749895;
@@ -194,132 +197,156 @@ class _FocusCardState extends State<FocusCard>
           // The main card
           Container(
             margin: EdgeInsets.symmetric(horizontal: cardPadding, vertical: 8),
-            decoration: BoxDecoration(
-              color: backgroundColor,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: _color.withValues(alpha: _isCompleted ? 0.3 : 0.15),
-                  blurRadius: _isCompleted ? 24 : 16,
-                  offset: const Offset(0, 8),
-                  spreadRadius: _isCompleted ? 2 : 0,
+            child: Stack(
+              children: [
+                // Filling Background
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Color.alphaBlend(
+                        _color.withValues(alpha: 0.08),
+                        colorScheme.surfaceContainerHighest,
+                      ),
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: _color
+                              .withValues(alpha: _isCompleted ? 0.3 : 0.15),
+                          blurRadius: _isCompleted ? 24 : 16,
+                          offset: const Offset(0, 8),
+                          spreadRadius: _isCompleted ? 2 : 0,
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          return Align(
+                            alignment: Alignment.centerLeft,
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.easeOutCubic,
+                              width: constraints.maxWidth * _progress,
+                              height: constraints.maxHeight,
+                              decoration: BoxDecoration(
+                                color: _isCompleted
+                                    ? _color
+                                    : _color.withValues(alpha: 0.2),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
                 ),
-              ],
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: _handleTap,
-                onLongPress: _showOptionsMenu,
-                borderRadius: BorderRadius.circular(24),
-                child: Padding(
-                  padding: EdgeInsets.all(cardPadding),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Card Content (Title, Description, Icon)
-                      Row(
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: _handleTap,
+                    onLongPress: _showOptionsMenu,
+                    borderRadius: BorderRadius.circular(24),
+                    child: Padding(
+                      padding: EdgeInsets.all(cardPadding),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Icon container
-                          Container(
-                            width: iconSize,
-                            height: iconSize,
-                            decoration: BoxDecoration(
-                              color: _isCompleted
-                                  ? Colors.white.withValues(alpha: 0.2)
-                                  : _color.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Center(
-                              child: _emoji != null && _emoji!.isNotEmpty
-                                  ? Text(
-                                      _emoji!,
-                                      style: const TextStyle(fontSize: 28),
-                                    )
-                                  : Icon(
-                                      _isCompleted
-                                          ? Icons.check_circle
-                                          : Icons.flag_rounded,
-                                      color: _isCompleted
-                                          ? Colors.white
-                                          : _color,
-                                      size: 28,
-                                    ),
-                            ),
-                          ),
-
-                          const SizedBox(width: 16),
-
-                          // Title and description
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  _title,
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: onColor,
-                                    decoration: _isCompleted
-                                        ? TextDecoration.lineThrough
-                                        : null,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
+                          // Card Content (Title, Description, Icon)
+                          Row(
+                            children: [
+                              // Icon container
+                              Container(
+                                width: iconSize,
+                                height: iconSize,
+                                decoration: BoxDecoration(
+                                  color: _isCompleted
+                                      ? Colors.white.withValues(alpha: 0.2)
+                                      : _color.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
-                                if (_description.isNotEmpty) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    _description,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: onColor.withValues(alpha: 0.7),
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
+                                child: Center(
+                                  child: _emoji != null && _emoji!.isNotEmpty
+                                      ? Text(
+                                          _emoji!,
+                                          style: const TextStyle(fontSize: 28),
+                                        )
+                                      : Icon(
+                                          _isCompleted
+                                              ? Icons.check_circle
+                                              : Icons.flag_rounded,
+                                          color: _isCompleted
+                                              ? Colors.white
+                                              : _color,
+                                          size: 28,
+                                        ),
+                                ),
+                              ),
 
-                          // Status indicator with habit-specific icon
-                          Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: _color.withValues(alpha: 0.15),
-                              border: Border.all(
-                                color: _color.withValues(alpha: 0.3),
-                                width: 2,
+                              const SizedBox(width: 16),
+
+                              // Title and description
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _title,
+                                      style:
+                                          theme.textTheme.titleLarge?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: onColor,
+                                        decoration: _isCompleted
+                                            ? TextDecoration.lineThrough
+                                            : null,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    if (_description.isNotEmpty) ...[
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        _description,
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                          color: onColor.withValues(alpha: 0.7),
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            child: Center(
-                              child: Icon(
-                                _getHabitTypeIcon(),
-                                color: _color,
-                                size: 24,
+
+                              // Status indicator with habit-specific icon
+                              Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: _color.withValues(alpha: 0.15),
+                                  border: Border.all(
+                                    color: _color.withValues(alpha: 0.3),
+                                    width: 2,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Icon(
+                                    _getHabitTypeIcon(),
+                                    color: _color,
+                                    size: 24,
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: LinearProgressIndicator(
-                          value: _progress,
-                          minHeight: 6,
-                          backgroundColor: onColor.withValues(alpha: 0.1),
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            _isCompleted ? Colors.white : _color,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
           ),
         ],
@@ -443,196 +470,365 @@ class _FocusCardState extends State<FocusCard>
 
     final habit = widget.habit!;
     final isTimer = habit.habitType == HabitType.timer;
-    final controller = TextEditingController(
-      text: habit.currentStreak.toString(),
-    );
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    
+    // Initial value from habit state
+    int currentValue = habit.currentStreak;
+    bool isManualEntry = false;
+    
+    final controller = TextEditingController(text: currentValue.toString());
 
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          bottom: MediaQuery.of(ctx).viewInsets.bottom + 32,
-          top: 12,
-        ),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 20,
-              offset: const Offset(0, -4),
-            ),
-          ],
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.outlineVariant.withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(2.5),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'Değer Gir', // TODO: Localize
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          final double progress = habit.targetCount > 0
+              ? (currentValue / habit.targetCount).clamp(0.0, 1.0)
+              : 0.0;
 
-              if (isTimer) ...[
-                SizedBox(
-                  height: 64,
-                  child: FilledButton.icon(
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const TimerScreen()),
-                      );
-                    },
-                    icon: const Icon(Icons.play_arrow_rounded, size: 32),
-                    label: const Text(
-                      "Süre Tut", // TODO: Localize
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.seed.withValues(alpha: 0.9),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      elevation: 0,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Row(
+          return Dialog(
+            backgroundColor: theme.colorScheme.surface,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+            insetPadding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
-                      child: Divider(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.outlineVariant.withValues(alpha: 0.3),
+                    Text(
+                      l10n.enterValueTitle,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: cs.onSurface,
+                        letterSpacing: 0.2,
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        "veya manuel gir", // TODO: Localize
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w500,
+                    const SizedBox(height: 20),
+
+                    if (isTimer) ...[
+                      SizedBox(
+                        height: 48,
+                        child: FilledButton.icon(
+                          onPressed: () {
+                            Navigator.pop(ctx);
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => const TimerScreen()),
+                            );
+                          },
+                          icon: const Icon(Icons.play_arrow_rounded, size: 24),
+                          label: const Text(
+                            "Süre Tut", // TODO: Localize
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: _color.withValues(alpha: 0.9),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
+                          ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: Divider(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.outlineVariant.withValues(alpha: 0.3),
+                      const SizedBox(height: 16),
+                      Divider(
+                        color: cs.outlineVariant.withValues(alpha: 0.2),
+                        height: 1,
                       ),
+                      const SizedBox(height: 16),
+                    ],
+
+                    // Main Value Entry Area
+                    if (!isManualEntry)
+                      Column(
+                        children: [
+                          if (isTimer)
+                            SizedBox(
+                              height: 150,
+                              child: CupertinoTimerPicker(
+                                mode: CupertinoTimerPickerMode.hm,
+                                initialTimerDuration: Duration(minutes: currentValue),
+                                onTimerDurationChanged: (Duration newDuration) {
+                                  setDialogState(() {
+                                    currentValue = newDuration.inMinutes;
+                                    controller.text = currentValue.toString();
+                                  });
+                                },
+                              ),
+                            )
+                          else
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _buildAdjustButton(
+                                  icon: Icons.remove_rounded,
+                                  onPressed: () {
+                                    if (currentValue > 0) {
+                                      setDialogState(() {
+                                        currentValue--;
+                                        controller.text = currentValue.toString();
+                                      });
+                                      HapticFeedback.lightImpact();
+                                    }
+                                  },
+                                ),
+                                const SizedBox(width: 20),
+                                GestureDetector(
+                                  onTap: () {
+                                    setDialogState(() => isManualEntry = true);
+                                    HapticFeedback.selectionClick();
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 10),
+                                    decoration: BoxDecoration(
+                                      color: _color.withValues(alpha: 0.08),
+                                      borderRadius: BorderRadius.circular(14),
+                                      border: Border.all(
+                                        color: _color.withValues(alpha: 0.15),
+                                      ),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          currentValue.toString(),
+                                          style: theme.textTheme.headlineLarge?.copyWith(
+                                            color: _color,
+                                            fontWeight: FontWeight.w900,
+                                            height: 1.1,
+                                          ),
+                                        ),
+                                        Text(
+                                          habit.unit ?? l10n.valueLabel,
+                                          style: theme.textTheme.labelSmall?.copyWith(
+                                            color: cs.onSurfaceVariant,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 10,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 20),
+                                _buildAdjustButton(
+                                  icon: Icons.add_rounded,
+                                  onPressed: () {
+                                    setDialogState(() {
+                                      currentValue++;
+                                      controller.text = currentValue.toString();
+                                    });
+                                    HapticFeedback.lightImpact();
+                                  },
+                                ),
+                              ],
+                            ),
+                          const SizedBox(height: 12),
+                          GestureDetector(
+                            onTap: () {
+                              setDialogState(() => isManualEntry = true);
+                              HapticFeedback.selectionClick();
+                            },
+                            child: Text(
+                              isTimer
+                                  ? "Klavyeyle girmek için dokun"
+                                  : "Klavyeyle girmek için rakama dokun",
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: cs.onSurfaceVariant.withValues(alpha: 0.7),
+                                fontSize: 11,
+                                decoration: isTimer ? TextDecoration.underline : null,
+                                fontStyle: isTimer ? null : FontStyle.italic,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    else
+                      TextField(
+                        controller: controller,
+                        keyboardType: TextInputType.number,
+                        autofocus: true,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                        ),
+                        textAlign: TextAlign.center,
+                        decoration: InputDecoration(
+                          labelText: habit.unit ?? l10n.valueLabel,
+                          hintText: 'Hedef: ${habit.targetCount}',
+                          labelStyle: const TextStyle(fontSize: 14),
+                          prefixIcon: Icon(
+                            Icons.edit_note_rounded,
+                            color: _color,
+                            size: 20,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.check_circle_outline, size: 20),
+                            onPressed: () {
+                              setDialogState(() {
+                                final v = int.tryParse(controller.text.trim()) ?? currentValue;
+                                currentValue = v;
+                                isManualEntry = false;
+                              });
+                            },
+                          ),
+                          filled: true,
+                          fillColor: _color.withValues(alpha: 0.05),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(
+                                color: _color.withValues(alpha: 0.2)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(color: _color, width: 1.5),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 16,
+                          ),
+                        ),
+                        onChanged: (val) {
+                          final v = int.tryParse(val.trim());
+                          if (v != null) {
+                            setDialogState(() => currentValue = v);
+                          }
+                        },
+                        onSubmitted: (_) {
+                          final v = int.tryParse(controller.text.trim()) ?? currentValue;
+                          widget.onValueUpdate?.call(v);
+                          Navigator.pop(ctx);
+                        },
+                      ),
+
+                    const SizedBox(height: 20),
+
+                    // Progress Section
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Bugünkü İlerleme', // TODO: Localize
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: cs.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              '${(progress * 100).round()}%',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: _color,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: LinearProgressIndicator(
+                            minHeight: 8,
+                            value: progress <= 0 ? 0 : progress,
+                            backgroundColor: _color.withValues(alpha: 0.08),
+                            valueColor: AlwaysStoppedAnimation(_color),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            '$currentValue / ${habit.targetCount}${habit.unit != null ? ' ${habit.unit}' : ''}',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: cs.onSurfaceVariant.withValues(alpha: 0.6),
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            child: Text(
+                              l10n.cancel,
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: () {
+                              final v = int.tryParse(controller.text.trim()) ?? currentValue;
+                              widget.onValueUpdate?.call(v);
+                              Navigator.pop(ctx);
+                            },
+                            style: FilledButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              backgroundColor: cs.primary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: Text(
+                              l10n.save,
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
-              ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
 
-              TextField(
-                controller: controller,
-                keyboardType: TextInputType.number,
-                autofocus: !isTimer,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-                decoration: InputDecoration(
-                  labelText: habit.unit ?? 'Değer',
-                  hintText: 'Hedef: ${habit.targetCount}',
-                  prefixIcon: const Icon(
-                    Icons.edit_note_rounded,
-                    color: AppColors.seed,
-                  ),
-                  filled: true,
-                  fillColor: AppColors.seed.withValues(alpha: 0.05),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: const EdgeInsets.all(20),
-                ),
-                onSubmitted: (_) {
-                  final value = int.tryParse(controller.text.trim());
-                  if (value != null && value >= 0) {
-                    widget.onValueUpdate!(value);
-                    Navigator.pop(ctx);
-                  }
-                },
-              ),
-              const SizedBox(height: 32),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: const Text(
-                        'İptal',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: FilledButton(
-                      onPressed: () {
-                        final value = int.tryParse(controller.text.trim());
-                        if (value != null && value >= 0) {
-                          widget.onValueUpdate!(value);
-                          Navigator.pop(ctx);
-                        }
-                      },
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: const Text(
-                        'Kaydet',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+  Widget _buildAdjustButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: _color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: IconButton(
+        icon: Icon(icon, color: _color, size: 24),
+        onPressed: onPressed,
+        constraints: const BoxConstraints(
+          minWidth: 40,
+          minHeight: 40,
         ),
+        padding: EdgeInsets.zero,
       ),
     );
   }

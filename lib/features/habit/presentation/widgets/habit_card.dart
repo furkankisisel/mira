@@ -6,6 +6,8 @@ import '../../../../core/settings/settings_repository.dart' as app_settings;
 import '../../../../l10n/app_localizations.dart';
 import '../../../timer/timer_screen.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/cupertino.dart';
+
 
 class HabitCard extends StatefulWidget {
   final String title;
@@ -221,272 +223,442 @@ class _HabitCardState extends State<HabitCard>
   // (showManualValueDialog, _submitManual, _showMenu, _confirmDelete remain identical — omitted here for brevity)
   void _showManualValueDialog() {
     if (widget.readOnly || widget.onValueUpdate == null) return;
-    final c = TextEditingController(text: widget.currentStreak.toString());
+    
+    // Initial value from habit state
+    int currentValue = widget.currentStreak;
+    bool isManualEntry = false;
+    
+    final c = TextEditingController(text: currentValue.toString());
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
     final l10n = AppLocalizations.of(context);
     final bool isTimer = widget.habitType == HabitType.timer;
-    final double progress = widget.targetCount > 0
-        ? (widget.currentStreak / widget.targetCount).clamp(0.0, 1.0)
-        : 0.0;
-    String? ruleHint() {
-      String unitLabel = '';
-      if (widget.unit != null && widget.unit!.isNotEmpty) {
-        unitLabel = ' ${widget.unit}';
-      } else if (widget.habitType == HabitType.timer) {
-        unitLabel = ' ${l10n.minutes.toLowerCase()}';
-      }
-      final targetText = '${widget.targetCount}$unitLabel';
-      if (widget.habitType == HabitType.numerical &&
-          widget.numericalTargetType != null) {
-        switch (widget.numericalTargetType!) {
-          case NumericalTargetType.minimum:
-            return l10n.ruleEnteredValueAtLeast(targetText);
-          case NumericalTargetType.exact:
-            return l10n.ruleEnteredValueExactly(targetText);
-          case NumericalTargetType.maximum:
-            return l10n.ruleEnteredValueAtMost(targetText);
-        }
-      }
-      if (widget.habitType == HabitType.timer &&
-          widget.timerTargetType != null) {
-        switch (widget.timerTargetType!) {
-          case TimerTargetType.minimum:
-            return l10n.ruleEnteredDurationAtLeast(targetText);
-          case TimerTargetType.exact:
-            return l10n.ruleEnteredDurationExactly(targetText);
-          case TimerTargetType.maximum:
-            return l10n.ruleEnteredDurationAtMost(targetText);
-        }
-      }
-      return null;
-    }
 
     showDialog(
       context: context,
-      builder: (ctx) => Dialog(
-        backgroundColor: theme.colorScheme.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
-        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(32.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-              Text(
-                l10n.enterValueTitle,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: cs.onSurface,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          final double progress = widget.targetCount > 0
+              ? (currentValue / widget.targetCount).clamp(0.0, 1.0)
+              : 0.0;
 
-              if (isTimer) ...[
-                SizedBox(
-                  height: 64,
-                  child: FilledButton.icon(
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const TimerScreen()),
-                      );
-                    },
-                    icon: const Icon(Icons.play_arrow_rounded, size: 32),
-                    label: Text(
-                      "Süre Tut", // TODO: Localize
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: widget.color.withValues(alpha: 0.9),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      elevation: 0,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Row(
+          String? ruleHint() {
+            String unitLabel = '';
+            if (widget.unit != null && widget.unit!.isNotEmpty) {
+              unitLabel = ' ${widget.unit}';
+            } else if (widget.habitType == HabitType.timer) {
+              unitLabel = ' ${l10n.minutes.toLowerCase()}';
+            }
+            final targetText = '${widget.targetCount}$unitLabel';
+            if (widget.habitType == HabitType.numerical &&
+                widget.numericalTargetType != null) {
+              switch (widget.numericalTargetType!) {
+                case NumericalTargetType.minimum:
+                  return l10n.ruleEnteredValueAtLeast(targetText);
+                case NumericalTargetType.exact:
+                  return l10n.ruleEnteredValueExactly(targetText);
+                case NumericalTargetType.maximum:
+                  return l10n.ruleEnteredValueAtMost(targetText);
+              }
+            }
+            if (widget.habitType == HabitType.timer &&
+                widget.timerTargetType != null) {
+              switch (widget.timerTargetType!) {
+                case TimerTargetType.minimum:
+                  return l10n.ruleEnteredDurationAtLeast(targetText);
+                case TimerTargetType.exact:
+                  return l10n.ruleEnteredDurationExactly(targetText);
+                case TimerTargetType.maximum:
+                  return l10n.ruleEnteredDurationAtMost(targetText);
+              }
+            }
+            return null;
+          }
+
+          return Dialog(
+            backgroundColor: theme.colorScheme.surface,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+            insetPadding:
+                const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
-                      child: Divider(
-                        color: cs.outlineVariant.withValues(alpha: 0.3),
+                    Text(
+                      l10n.enterValueTitle,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: cs.onSurface,
+                        letterSpacing: 0.2,
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        "veya manuel gir", // TODO: Localize
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: cs.onSurfaceVariant,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Divider(
-                        color: cs.outlineVariant.withValues(alpha: 0.3),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-              ],
+                    const SizedBox(height: 20),
 
-              TextField(
-                controller: c,
-                keyboardType: TextInputType.number,
-                autofocus: !isTimer,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-                decoration: InputDecoration(
-                  labelText: widget.unit ?? l10n.valueLabel,
-                  hintText: 'Hedef: ${widget.targetCount}',
-                  prefixIcon: Icon(
-                    Icons.edit_note_rounded,
-                    color: widget.color,
-                  ),
-                  filled: true,
-                  fillColor: widget.color.withValues(alpha: 0.05),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: const EdgeInsets.all(20),
-                ),
-                onSubmitted: (_) => _submitManual(c, ctx),
-              ),
-              const SizedBox(height: 12),
-              if (ruleHint() != null)
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: cs.onSurface.withValues(alpha: 0.03),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.info_outline, size: 16, color: cs.primary),
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: Text(
-                          ruleHint()!,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: cs.onSurfaceVariant,
-                            height: 1.3,
+                    if (isTimer) ...[
+                      SizedBox(
+                        height: 48,
+                        child: FilledButton.icon(
+                          onPressed: () {
+                            Navigator.pop(ctx);
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (_) => const TimerScreen()),
+                            );
+                          },
+                          icon: const Icon(Icons.play_arrow_rounded, size: 24),
+                          label: const Text(
+                            "Süre Tut", // TODO: Localize
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: widget.color.withValues(alpha: 0.9),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 0,
                           ),
                         ),
                       ),
+                      const SizedBox(height: 16),
+                      Divider(
+                        color: cs.outlineVariant.withValues(alpha: 0.2),
+                        height: 1,
+                      ),
+                      const SizedBox(height: 16),
                     ],
-                  ),
+
+                    // Main Value Entry Area
+                    if (!isManualEntry)
+                      Column(
+                        children: [
+                          if (isTimer)
+                            SizedBox(
+                              height: 150,
+                              child: CupertinoTimerPicker(
+                                mode: CupertinoTimerPickerMode.hm,
+                                initialTimerDuration:
+                                    Duration(minutes: currentValue),
+                                onTimerDurationChanged: (Duration newDuration) {
+                                  setDialogState(() {
+                                    currentValue = newDuration.inMinutes;
+                                    c.text = currentValue.toString();
+                                  });
+                                },
+                              ),
+                            )
+                          else
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _buildAdjustButton(
+                                  icon: Icons.remove_rounded,
+                                  onPressed: () {
+                                    if (currentValue > 0) {
+                                      setDialogState(() {
+                                        currentValue--;
+                                        c.text = currentValue.toString();
+                                      });
+                                      HapticFeedback.lightImpact();
+                                    }
+                                  },
+                                ),
+                                const SizedBox(width: 20),
+                                GestureDetector(
+                                  onTap: () {
+                                    setDialogState(() => isManualEntry = true);
+                                    HapticFeedback.selectionClick();
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 10),
+                                    decoration: BoxDecoration(
+                                      color: widget.color
+                                          .withValues(alpha: 0.08),
+                                      borderRadius:
+                                          BorderRadius.circular(14),
+                                      border: Border.all(
+                                        color: widget.color
+                                            .withValues(alpha: 0.15),
+                                      ),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          currentValue.toString(),
+                                          style: theme.textTheme.headlineLarge
+                                              ?.copyWith(
+                                            color: widget.color,
+                                            fontWeight: FontWeight.w900,
+                                            height: 1.1,
+                                          ),
+                                        ),
+                                        Text(
+                                          widget.unit ?? l10n.valueLabel,
+                                          style: theme.textTheme.labelSmall
+                                              ?.copyWith(
+                                            color: cs.onSurfaceVariant,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 10,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 20),
+                                _buildAdjustButton(
+                                  icon: Icons.add_rounded,
+                                  onPressed: () {
+                                    setDialogState(() {
+                                      currentValue++;
+                                      c.text = currentValue.toString();
+                                    });
+                                    HapticFeedback.lightImpact();
+                                  },
+                                ),
+                              ],
+                            ),
+                          const SizedBox(height: 12),
+                          GestureDetector(
+                            onTap: () {
+                              setDialogState(() => isManualEntry = true);
+                              HapticFeedback.selectionClick();
+                            },
+                            child: Text(
+                              isTimer
+                                  ? "Klavyeyle girmek için dokun"
+                                  : "Klavyeyle girmek için rakama dokun", // TODO: Localize
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: cs.onSurfaceVariant.withValues(alpha: 0.7),
+                                fontSize: 11,
+                                decoration: isTimer ? TextDecoration.underline : null,
+                                fontStyle: isTimer ? null : FontStyle.italic,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    else
+                      TextField(
+                        controller: c,
+                        keyboardType: TextInputType.number,
+                        autofocus: true,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                        ),
+                        textAlign: TextAlign.center,
+                        decoration: InputDecoration(
+                          labelText: widget.unit ?? l10n.valueLabel,
+                          hintText: 'Hedef: ${widget.targetCount}',
+                          labelStyle: const TextStyle(fontSize: 14),
+                          prefixIcon: Icon(
+                            Icons.edit_note_rounded,
+                            color: widget.color,
+                            size: 20,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.check_circle_outline, size: 20),
+                            onPressed: () {
+                              setDialogState(() {
+                                final v = int.tryParse(c.text.trim()) ?? currentValue;
+                                currentValue = v;
+                                isManualEntry = false;
+                              });
+                            },
+                          ),
+                          filled: true,
+                          fillColor: widget.color.withValues(alpha: 0.05),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(
+                                color: widget.color.withValues(alpha: 0.2)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide:
+                                BorderSide(color: widget.color, width: 1.5),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 16,
+                          ),
+                        ),
+                        onChanged: (val) {
+                          final v = int.tryParse(val.trim());
+                          if (v != null) {
+                            setDialogState(() => currentValue = v);
+                          }
+                        },
+                        onSubmitted: (_) {
+                          final v = int.tryParse(c.text.trim()) ?? currentValue;
+                          widget.onValueUpdate?.call(v);
+                          Navigator.pop(ctx);
+                        },
+                      ),
+
+                    const SizedBox(height: 20),
+                    if (ruleHint() != null)
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: cs.onSurface.withValues(alpha: 0.03),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.info_outline,
+                                size: 14, color: cs.primary),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: Text(
+                                ruleHint()!,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: cs.onSurfaceVariant,
+                                  height: 1.2,
+                                  fontSize: 10.5,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    const SizedBox(height: 20),
+
+                    // Progress Section
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Bugünkü İlerleme', // TODO: Localize
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: cs.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              '${(progress * 100).round()}%',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: widget.color,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: LinearProgressIndicator(
+                            minHeight: 8,
+                            value: progress <= 0 ? 0 : progress,
+                            backgroundColor: widget.color.withValues(alpha: 0.08),
+                            valueColor: AlwaysStoppedAnimation(widget.color),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        if (widget.habitType != HabitType.simple)
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              '$currentValue / ${widget.targetCount}${widget.unit != null ? ' ${widget.unit}' : ''}',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: cs.onSurfaceVariant.withValues(alpha: 0.6),
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            child: Text(
+                              l10n.cancel,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: () {
+                              final v = int.tryParse(c.text.trim()) ?? currentValue;
+                              widget.onValueUpdate?.call(v);
+                              Navigator.pop(ctx);
+                            },
+                            style: FilledButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              backgroundColor: cs.primary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: Text(
+                              l10n.save,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              const SizedBox(height: 24),
-
-              // Progress Section
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Bugünkü İlerleme', // TODO: Localize
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: cs.onSurfaceVariant,
-                        ),
-                      ),
-                      Text(
-                        '${(progress * 100).round()}%',
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: widget.color,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: LinearProgressIndicator(
-                      minHeight: 10,
-                      value: progress <= 0 ? 0 : progress,
-                      backgroundColor: widget.color.withValues(alpha: 0.1),
-                      valueColor: AlwaysStoppedAnimation(widget.color),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  if (widget.habitType != HabitType.simple)
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        '${widget.currentStreak} / ${widget.targetCount}${widget.unit != null ? ' ${widget.unit}' : ''}',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: cs.onSurfaceVariant,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                ],
               ),
-
-              const SizedBox(height: 32),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: TextButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: Text(
-                        l10n.cancel,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: FilledButton(
-                      onPressed: () => _submitManual(c, ctx),
-                      style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        backgroundColor: cs.primary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: Text(
-                        l10n.save,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
+
+  Widget _buildAdjustButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: widget.color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: IconButton(
+        icon: Icon(icon, color: widget.color, size: 24),
+        onPressed: onPressed,
+        constraints: const BoxConstraints(
+          minWidth: 40,
+          minHeight: 40,
+        ),
+        padding: EdgeInsets.zero,
+      ),
+    );
+  }
+
 
   void _submitManual(TextEditingController c, BuildContext ctx) {
     final v = int.tryParse(c.text.trim());

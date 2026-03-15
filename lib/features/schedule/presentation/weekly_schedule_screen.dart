@@ -814,18 +814,9 @@ class _WeeklyScheduleScreenState extends State<WeeklyScheduleScreen> {
     ];
 
     const List<String> quickEmojis = [
-      '🎯',
-      '⭐',
-      '❤️',
-      '🔥',
-      '📚',
-      '💪',
-      '🧘‍♀️',
-      '🏃‍♂️',
-      '🎨',
-      '✈️',
-      '💰',
-      '🎵'
+      '🎯', '⭐', '❤️', '🔥', '📚', '💪', '🧘‍♀️', '🏃‍♂️', '🎨', '✈️', '💰', '🎵',
+      '✨', '✅', '🚀', '💡', '⏰', '🥗', '☕', '💤', '🏠', '🌱', '☀️', '🌊',
+      '🌈', '💻', '📱', '✍️', '🎮', '🎬', '🐶', '🍕', '🛒', '🎁', '🔔'
     ];
 
     Color selectedColor = editEvent?.color ?? presetColors[0];
