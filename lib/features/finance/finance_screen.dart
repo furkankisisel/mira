@@ -578,6 +578,8 @@ class FinanceScreenState extends State<FinanceScreen>
   }
 
   Future<void> _pickAndAnalyzeStatement() async {
+    if (!await requirePremium(context)) return;
+
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['png', 'jpg', 'jpeg', 'pdf'],
