@@ -35,6 +35,11 @@ import 'live_rhythm_header.dart';
 import '../../rhythm/domain/live_rhythm_repository.dart';
 import '../../rhythm/domain/live_rhythm_model.dart';
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../social/data/room_service.dart';
+import '../../social/domain/room_model.dart';
+import '../../social/presentation/room_detail_screen.dart';
+import '../../social/presentation/social_hub_screen.dart';
 
 import '../../../providers/premium_provider.dart';
 // removed unused imports
@@ -163,6 +168,10 @@ class HabitScreenState extends State<HabitScreen>
       _taskRepo.initialize(),
     ]).then((_) {
       if (mounted) setState(() {});
+      // Sync room habits from Firestore → local repo for all members
+      RoomService.instance.syncRoomHabitsToLocal().then((_) {
+        if (mounted) setState(() {});
+      });
     });
 
     // Initialize AI service
@@ -234,10 +243,20 @@ class HabitScreenState extends State<HabitScreen>
     }
   }
 
+  Timer? _syncDebounce;
+
   void _onRepoChange() {
     if (!mounted) return;
     setState(() {});
     _loadFocusAiMessage();
+    // Debounced sync of room progress to Firestore
+    _syncDebounce?.cancel();
+    _syncDebounce = Timer(const Duration(seconds: 2), () {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null && !user.isAnonymous) {
+        RoomService.instance.syncAllMyProgress();
+      }
+    });
   }
 
   (Habit?, DailyTask?) _findFocusedItem() {
@@ -588,6 +607,7 @@ class HabitScreenState extends State<HabitScreen>
     _taskRepo.removeListener(_onRepoChange);
     _dateScrollController.dispose();
     _rhythmTimer?.cancel();
+    _syncDebounce?.cancel();
     super.dispose();
   }
 
@@ -2871,7 +2891,7 @@ class HabitScreenState extends State<HabitScreen>
                           ? groupedItems
                           : <_GroupedItem>[];
 
-                      // Calculate item count: rhythm header (premium only) + focus + toggle button (if focus active) + items + action card (when expanded)
+                      // Calculate item count: rhythm header (premium only) + focus + toggle button (if focus active) + items + action card (when expanded) + rooms section
                       final isPremium =
                           context.watch<PremiumProvider>().isPremium;
                       final int rhythmHeaderCount = isPremium ? 1 : 0;
@@ -2879,12 +2899,14 @@ class HabitScreenState extends State<HabitScreen>
                       final int focusItemCount = isFocusActive ? 1 : 0;
                       final int toggleButtonCount = isFocusActive ? 1 : 0;
                       final int actionCardCount = shouldShowOtherItems ? 1 : 0;
+                      final int roomsSectionCount = 1; // always show rooms
                       final int totalCount = rhythmHeaderCount +
                           filterRowCount +
                           focusItemCount +
                           toggleButtonCount +
                           itemsToShow.length +
-                          actionCardCount;
+                          actionCardCount +
+                          roomsSectionCount;
 
                       return AnimationLimiter(
                         key: _listAnimationKey,
@@ -2923,10 +2945,18 @@ class HabitScreenState extends State<HabitScreen>
                                   focusItemCount -
                                   toggleButtonCount;
 
-                              // 4. Show inline action card at the end (when items are shown)
+                              // 4. Show inline action card (when items are shown)
                               if (shouldShowOtherItems &&
                                   adjustedIndex == itemsToShow.length) {
                                 childWidget = _buildInlineActionCard();
+                              } else if (shouldShowOtherItems &&
+                                  adjustedIndex == itemsToShow.length + actionCardCount) {
+                                // 5. Show rooms section at the very end
+                                childWidget = _buildRoomsSection();
+                              } else if (!shouldShowOtherItems &&
+                                  adjustedIndex == itemsToShow.length) {
+                                // Rooms when items collapsed
+                                childWidget = _buildRoomsSection();
                               } else if (adjustedIndex < 0 ||
                                   adjustedIndex >= itemsToShow.length) {
                                 childWidget = const SizedBox.shrink();
@@ -3816,6 +3846,134 @@ class HabitScreenState extends State<HabitScreen>
           );
         },
       ),
+    );
+  }
+
+  /// Builds the rooms section — horizontal scrollable room cards + '+' card.
+  Widget _buildRoomsSection() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
+          child: Text(
+            '👥 Odalarım',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 120,
+          child: StreamBuilder<List<Room>>(
+            stream: RoomService.instance.streamMyRooms(),
+            builder: (context, snap) {
+              final rooms = snap.data ?? [];
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                itemCount: rooms.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == rooms.length) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: SizedBox(
+                        width: 100,
+                        child: Card(
+                          clipBehavior: Clip.antiAlias,
+                          color: colorScheme.surfaceContainerHighest.withOpacity(0.4),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            side: BorderSide(
+                              color: colorScheme.primary.withOpacity(0.3),
+                              width: 1.5,
+                              strokeAlign: BorderSide.strokeAlignInside,
+                            ),
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const SocialHubScreen(),
+                                ),
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(16),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.add_circle_outline, size: 32, color: colorScheme.primary),
+                                const SizedBox(height: 8),
+                                Text('Oda Ekle', style: theme.textTheme.labelMedium?.copyWith(
+                                  color: colorScheme.primary, fontWeight: FontWeight.w600,
+                                )),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                  final room = rooms[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: SizedBox(
+                      width: 120,
+                      child: Card(
+                        clipBehavior: Clip.antiAlias,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => RoomDetailScreen(room: room)),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(16),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  colorScheme.primaryContainer.withOpacity(0.5),
+                                  colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                                ],
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(room.emoji ?? '🏠', style: const TextStyle(fontSize: 30)),
+                                const SizedBox(height: 8),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                                  child: Text(room.name,
+                                    style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
+                                    maxLines: 1, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text('${room.memberIds.length} üye',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant, fontSize: 11,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
