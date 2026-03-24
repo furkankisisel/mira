@@ -15,6 +15,9 @@ import '../../habit/domain/daily_task_repository.dart';
 import '../../habit/presentation/simple_habit_screen.dart';
 import '../../habit/presentation/advanced_habit_wizard_screen.dart';
 import '../../habit/presentation/widgets/daily_task_dialog.dart';
+import '../../../ui/premium_gate.dart';
+import 'room_analytics_screen.dart';
+import '../../habit/presentation/advanced_habit_screen.dart';
 
 /// Detail view for a social room — live dashboard + notes.
 class RoomDetailScreen extends StatelessWidget {
@@ -40,6 +43,15 @@ class RoomDetailScreen extends StatelessWidget {
           ],
         ),
         actions: [
+          IconButton(
+            tooltip: 'Oda Analizi',
+            icon: const Icon(Icons.analytics_outlined),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => RoomAnalyticsScreen(room: room)),
+              );
+            },
+          ),
           IconButton(
             tooltip: 'Davet Kodu',
             icon: const Icon(Icons.share_outlined),
@@ -126,7 +138,8 @@ class RoomDetailScreen extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.auto_graph),
               title: const Text('Gelişmiş Alışkanlık'),
-              subtitle: const Text('Detaylı ayarlarla alışkanlık oluştur'),
+              subtitle: const Text('Premium • Detaylı ayarlarla alışkanlık oluştur'),
+              trailing: const Icon(Icons.workspace_premium, size: 18),
               onTap: () {
                 Navigator.pop(ctx);
                 _addAdvancedHabit(context);
@@ -172,6 +185,10 @@ class RoomDetailScreen extends StatelessWidget {
   }
 
   void _addAdvancedHabit(BuildContext context) async {
+    // Gate: only premium users can create advanced habits
+    final ok = await requirePremium(context);
+    if (!ok) return;
+
     final habit = await Navigator.of(context).push<Habit>(
       MaterialPageRoute(builder: (_) => const AdvancedHabitWizardScreen()),
     );
@@ -648,6 +665,101 @@ class _HabitCard extends StatelessWidget {
                     ),
                   ),
                 ),
+                // Edit/Delete menu — only visible to creator
+                if (FirebaseAuth.instance.currentUser?.uid == habit.createdBy)
+                  PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert, size: 18),
+                    tooltip: 'Düzenle / Sil',
+                    onSelected: (val) async {
+                      if (val == 'delete') {
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            title: const Text('Alışkanlığı Sil'),
+                            content: Text('\'${habit.title}\' odadan silinsin mi?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: const Text('İptal'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                                child: const Text('Sil'),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (confirm == true) {
+                          await RoomService.instance.deleteRoomHabit(roomId, habit.id);
+                        }
+                      } else if (val == 'edit') {
+                        // Find the local habit mapped to this room habit
+                        final localHabit = HabitRepository.instance.habits
+                            .where((h) => h.title == habit.title)
+                            .firstOrNull;
+
+                        if (localHabit == null) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Sadece kişisel listenize eklenmiş alışkanlıkları düzenleyebilirsiniz.')),
+                            );
+                          }
+                          return;
+                        }
+
+                        // Route to the exact same screen used in "Today" screen
+                        if (habit.isAdvanced) {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => AdvancedHabitScreen(existingHabit: localHabit),
+                            ),
+                          );
+                        } else {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => SimpleHabitScreen(existingHabit: localHabit),
+                            ),
+                          );
+                        }
+
+                        // Simple/Advanced screens save directly to HabitRepository!
+                        // Get the newly saved data and sync the visual info back to the Room format:
+                        final updatedLocal = HabitRepository.instance.findById(localHabit.id);
+                        if (updatedLocal != null) {
+                          await RoomService.instance.updateRoomHabit(
+                            roomId: roomId,
+                            habit: habit, 
+                            newTitle: updatedLocal.title,
+                            newEmoji: updatedLocal.emoji,
+                            newColorValue: updatedLocal.color.value,
+                          );
+                        }
+                      }
+                    },
+                    itemBuilder: (_) => [
+                      const PopupMenuItem(
+                        value: 'edit',
+                        child: ListTile(
+                          dense: true,
+                          leading: Icon(Icons.edit_outlined),
+                          title: Text('Düzenle'),
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: ListTile(
+                          dense: true,
+                          leading: Icon(Icons.delete_outline, color: Colors.red),
+                          title: Text('Sil', style: TextStyle(color: Colors.red)),
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),

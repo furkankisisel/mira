@@ -778,7 +778,6 @@ class _MonthlyTrendChart extends StatelessWidget {
             touchTooltipData: BarTouchTooltipData(
               getTooltipColor: (_) =>
                   Theme.of(context).colorScheme.inverseSurface,
-              tooltipRoundedRadius: 8,
               getTooltipItem: (group, groupIndex, rod, rodIndex) {
                 return BarTooltipItem(
                   rod.toY.toStringAsFixed(0),
@@ -900,7 +899,6 @@ class _YearlyTrendChart extends StatelessWidget {
             touchTooltipData: BarTouchTooltipData(
               getTooltipColor: (_) =>
                   Theme.of(context).colorScheme.inverseSurface,
-              tooltipRoundedRadius: 8,
               getTooltipItem: (group, groupIndex, rod, rodIndex) {
                 final m = group.x.toInt();
                 final monthName = DateFormat.MMM(

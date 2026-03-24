@@ -1,6 +1,0 @@
-Analyzing mira...                                               
-
-   info - The import of 'package:characters/characters.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' - lib\features\finance\finance_edit_screen.dart:10:8 - unnecessary_import
-   info - The imported package 'characters' isn't a dependency of the importing package - lib\features\finance\finance_edit_screen.dart:10:8 - depend_on_referenced_packages
-
-2 issues found. (ran in 10.2s)

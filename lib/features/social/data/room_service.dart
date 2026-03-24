@@ -12,6 +12,7 @@ import '../../profile/profile_repository.dart';
 import '../../habit/domain/habit_repository.dart';
 import '../../habit/domain/habit_model.dart';
 import '../../habit/domain/habit_types.dart';
+import '../../../services/premium_service.dart';
 
 /// Business-logic service for social rooms.
 class RoomService {
@@ -102,7 +103,7 @@ class RoomService {
   // ─── Room Habits ────────────────────────────────────────
 
   /// Add a habit to a room from a locally-created Habit object.
-  /// The Habit's title, emoji, and color are used to create a RoomHabit.
+  /// The Habit's title, emoji, color, and isAdvanced flag are stored.
   Future<String> addHabitToRoom(String roomId, Habit habit) async {
     final uid = _currentUid;
     if (uid == null) throw StateError('Giriş yapılmamış');
@@ -114,6 +115,7 @@ class RoomService {
       colorValue: habit.color.value,
       createdBy: uid,
       createdAt: DateTime.now(),
+      isAdvanced: habit.isAdvanced == true,
     );
     return _repo.addRoomHabit(roomId, roomHabit);
   }
@@ -121,6 +123,104 @@ class RoomService {
   /// Delete a room habit.
   Future<void> deleteRoomHabit(String roomId, String habitId) async {
     await _repo.deleteRoomHabit(roomId, habitId);
+  }
+
+  /// Update the title of a room habit (creator only).
+  Future<void> updateRoomHabitTitle({
+    required String roomId,
+    required String habitId,
+    required String newTitle,
+  }) async {
+    await _repo.updateRoomHabitTitle(roomId, habitId, newTitle);
+  }
+
+  /// Update a room habit completely (title, emoji, color) and sync locally.
+  Future<void> updateRoomHabit({
+    required String roomId,
+    required RoomHabit habit,
+    required String newTitle,
+    String? newEmoji,
+    required int newColorValue,
+  }) async {
+    await _repo.updateRoomHabit(roomId, habit.id, {
+      'title': newTitle,
+      'emoji': newEmoji,
+      'colorValue': newColorValue,
+    });
+    
+    // Attempt local sync (matches by OLD title)
+    try {
+      final habitsRepo = HabitRepository.instance;
+      // .habits provides the unmodifiable list
+      final localHabits = habitsRepo.habits;
+      // We look for any local habit that matches the OLD title of this room habit
+      for (final lh in localHabits) {
+        if (lh.title == habit.title) {
+            final updated = Habit(
+              id: lh.id,
+              title: newTitle, // apply the new title!
+              description: lh.description,
+              icon: lh.icon,
+              emoji: newEmoji,
+              color: Color(newColorValue),
+              targetCount: lh.targetCount,
+              habitType: lh.habitType,
+              unit: lh.unit,
+              currentStreak: lh.currentStreak,
+              isCompleted: lh.isCompleted,
+              progressDate: lh.progressDate,
+              startDate: lh.startDate,
+              endDate: lh.endDate,
+              dailyLog: Map.of(lh.dailyLog),
+              leftoverSeconds: lh.leftoverSeconds,
+              listId: lh.listId,
+              scheduledDates: lh.scheduledDates == null ? null : List<String>.from(lh.scheduledDates!),
+              reminderEnabled: lh.reminderEnabled,
+              reminderTime: lh.reminderTime,
+            )..isAdvanced = lh.isAdvanced;
+            await habitsRepo.updateHabit(updated);
+        }
+      }
+    } catch(e) {
+      debugPrint('Local habit sync failed on edit: $e');
+    }
+  }
+
+  /// Get all habits for a room.
+  Future<List<RoomHabit>> getRoomHabits(String roomId) async {
+    return _repo.getRoomHabits(roomId);
+  }
+
+  // ─── Room Habit Sessions (Analytics) ───────────────────────
+
+  /// Add a new habit session (time spent vs reported value)
+  Future<String> addRoomHabitSession({
+    required String roomId,
+    required String habitId,
+    required DateTime startTime,
+    required DateTime endTime,
+    required int elapsedSeconds,
+    required int reportedValue,
+  }) async {
+    final uid = _currentUid;
+    if (uid == null) throw StateError('Giriş yapılmamış');
+
+    final session = RoomHabitSession(
+      id: '',
+      habitId: habitId,
+      uid: uid,
+      startTime: startTime,
+      endTime: endTime,
+      elapsedSeconds: elapsedSeconds,
+      reportedValue: reportedValue,
+    );
+    return _repo.addRoomHabitSession(roomId, session);
+  }
+
+  /// Get sessions for a room within a time range
+  Future<List<RoomHabitSession>> getRoomHabitSessions(
+      String roomId, DateTime start, DateTime end) async {
+    return _repo.getRoomHabitSessions(roomId, start, end);
   }
 
   /// Sync the current user's progress for a specific room habit.
@@ -144,6 +244,12 @@ class RoomService {
       isCompleted = h.isCompleted;
     }
 
+    int previousValue = 0;
+    try {
+      final prev = await _repo.getMemberProgress(roomId, roomHabit.id, uid);
+      if (prev != null) previousValue = prev.value;
+    } catch (_) {}
+
     final progress = MemberProgress(
       uid: uid,
       displayName: _displayName,
@@ -160,6 +266,20 @@ class RoomService {
       uid: uid,
       progress: progress,
     );
+
+    // Auto-log a session purely based on positive progress delta
+    if (value > previousValue) {
+      try {
+        await addRoomHabitSession(
+          roomId: roomId,
+          habitId: roomHabit.id,
+          startTime: DateTime.now(),
+          endTime: DateTime.now(),
+          elapsedSeconds: 0,
+          reportedValue: value - previousValue,
+        );
+      } catch (_) {}
+    }
   }
 
   /// Sync all of the current user's progress across all rooms.
@@ -182,11 +302,19 @@ class RoomService {
 
   /// Pull all room habits from Firestore and add missing ones to local repo.
   /// This ensures every room member gets the room habits on their Bugün screen.
+  /// If the habit is advanced and the user is premium, syncs as advanced habit.
+  /// Otherwise always syncs as simple habit.
   Future<void> syncRoomHabitsToLocal() async {
     final uid = _currentUid;
     if (uid == null) return;
 
     try {
+      // Check if current user is premium (service-level, no BuildContext needed)
+      bool isPremium = false;
+      try {
+        isPremium = await PremiumService().checkIsPremium();
+      } catch (_) {}
+
       final localHabits = HabitRepository.instance.habits;
       final localTitles = localHabits.map((h) => h.title).toSet();
 
@@ -201,6 +329,11 @@ class RoomService {
           final dayKey =
               '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
 
+          // Use advanced type only if habit is marked advanced AND user is premium
+          final habitType = (rh.isAdvanced && isPremium)
+              ? HabitType.numerical
+              : HabitType.simple;
+
           final habit = Habit(
             id: 'room_${rh.id}_${now.millisecondsSinceEpoch}',
             title: rh.title,
@@ -208,7 +341,7 @@ class RoomService {
             icon: Icons.track_changes,
             emoji: rh.emoji,
             color: rh.color,
-            habitType: HabitType.simple,
+            habitType: habitType,
             targetCount: 1,
             unit: '',
             currentStreak: 0,
@@ -218,6 +351,8 @@ class RoomService {
             frequency: 'Günlük',
             frequencyType: 'daily',
           );
+          // isAdvanced is a mutable field, not a constructor param
+          habit.isAdvanced = rh.isAdvanced && isPremium;
 
           await HabitRepository.instance.addHabit(habit);
           localTitles.add(rh.title); // prevent duplicate adds

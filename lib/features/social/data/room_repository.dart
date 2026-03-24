@@ -137,6 +137,52 @@ class RoomRepository {
     await habitRef.delete();
   }
 
+  /// Update the title of a room habit.
+  Future<void> updateRoomHabitTitle(
+      String roomId, String habitId, String newTitle) async {
+    await _roomsRef
+        .doc(roomId)
+        .collection('habits')
+        .doc(habitId)
+        .update({'title': newTitle});
+  }
+
+  /// Update full details of a room habit.
+  Future<void> updateRoomHabit(String roomId, String habitId, Map<String, dynamic> data) async {
+    await _roomsRef
+        .doc(roomId)
+        .collection('habits')
+        .doc(habitId)
+        .update(data);
+  }
+
+  // ─── Room Habit Sessions (Analytics) ───────────────────────
+
+  /// Adds a new session record for analytics.
+  Future<String> addRoomHabitSession(
+      String roomId, RoomHabitSession session) async {
+    final docRef = await _roomsRef
+        .doc(roomId)
+        .collection('sessions')
+        .add(session.toJson());
+    return docRef.id;
+  }
+
+  /// Fetches all sessions for a room within a time range.
+  Future<List<RoomHabitSession>> getRoomHabitSessions(
+      String roomId, DateTime start, DateTime end) async {
+    final snap = await _roomsRef
+        .doc(roomId)
+        .collection('sessions')
+        .where('startTime', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
+        .where('startTime', isLessThanOrEqualTo: Timestamp.fromDate(end))
+        .get();
+
+    return snap.docs.map((d) => RoomHabitSession.fromFirestore(d)).toList();
+  }
+
+  // ─── Room Habit Streams ───────────────────────────────────
+
   /// Stream all habits for a room.
   Stream<List<RoomHabit>> streamRoomHabits(String roomId) {
     return _roomsRef
@@ -148,6 +194,25 @@ class RoomRepository {
       habits.sort((a, b) => a.createdAt.compareTo(b.createdAt));
       return habits;
     });
+  }
+
+  /// Get a specific member's progress for a habit.
+  Future<MemberProgress?> getMemberProgress(
+    String roomId,
+    String habitId,
+    String uid,
+  ) async {
+    final doc = await _roomsRef
+        .doc(roomId)
+        .collection('habits')
+        .doc(habitId)
+        .collection('progress')
+        .doc(uid)
+        .get();
+    if (doc.exists && doc.data() != null) {
+      return MemberProgress.fromFirestore(doc);
+    }
+    return null;
   }
 
   /// Stream all member progress for a specific room habit.

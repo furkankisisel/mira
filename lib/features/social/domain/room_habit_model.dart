@@ -10,6 +10,7 @@ class RoomHabit {
     this.colorValue,
     required this.createdBy,
     required this.createdAt,
+    this.isAdvanced = false,
   });
 
   final String id;
@@ -18,6 +19,7 @@ class RoomHabit {
   final int? colorValue;
   final String createdBy;
   final DateTime createdAt;
+  final bool isAdvanced;
 
   Color get color => colorValue != null ? Color(colorValue!) : const Color(0xFF6366F1);
 
@@ -27,6 +29,7 @@ class RoomHabit {
         if (colorValue != null) 'colorValue': colorValue,
         'createdBy': createdBy,
         'createdAt': Timestamp.fromDate(createdAt),
+        'isAdvanced': isAdvanced,
       };
 
   static RoomHabit fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -38,6 +41,7 @@ class RoomHabit {
       colorValue: (d['colorValue'] as num?)?.toInt(),
       createdBy: d['createdBy'] as String? ?? '',
       createdAt: (d['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      isAdvanced: d['isAdvanced'] as bool? ?? false,
     );
   }
 }
@@ -83,6 +87,51 @@ class MemberProgress {
       target: (d['target'] as num?)?.toInt() ?? 1,
       isCompleted: d['isCompleted'] as bool? ?? false,
       lastUpdated: (d['lastUpdated'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    );
+  }
+}
+
+/// Represents a recorded session of work for a room habit, capturing start/stop times and calculated lost time.
+class RoomHabitSession {
+  const RoomHabitSession({
+    required this.id,
+    required this.habitId,
+    required this.uid,
+    required this.startTime,
+    required this.endTime,
+    required this.elapsedSeconds,
+    required this.reportedValue,
+  });
+
+  final String id;
+  final String habitId;
+  final String uid;
+  final DateTime startTime;
+  final DateTime endTime;
+  final int elapsedSeconds; // The actual world time passed between start and stop
+  final int reportedValue; // What the user said they achieved (in minutes or units)
+
+  Map<String, dynamic> toJson() => {
+        'habitId': habitId,
+        'uid': uid,
+        'startTime': Timestamp.fromDate(startTime),
+        'endTime': Timestamp.fromDate(endTime),
+        'elapsedSeconds': elapsedSeconds,
+        'reportedValue': reportedValue,
+      };
+
+  static RoomHabitSession fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> doc,
+  ) {
+    final d = doc.data()!;
+    return RoomHabitSession(
+      id: doc.id,
+      habitId: d['habitId'] as String? ?? '',
+      uid: d['uid'] as String? ?? '',
+      startTime: (d['startTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      endTime: (d['endTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      elapsedSeconds: (d['elapsedSeconds'] as num?)?.toInt() ?? 0,
+      reportedValue: (d['reportedValue'] as num?)?.toInt() ?? 0,
     );
   }
 }
