@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 import '../data/room_service.dart';
 import '../domain/room_habit_model.dart';
+import '../../../design_system/tokens/colors.dart';
 
-/// Glassmorphism-styled stats card shown at the top of the room detail screen.
-/// Shows today's completion rate, top performer, and overall room streak.
+/// Mira-themed Room Stats Card with soft, organic, and "Cotton" style aesthetic.
 class RoomStatsCard extends StatelessWidget {
   const RoomStatsCard({super.key, required this.roomId});
   final String roomId;
@@ -106,7 +106,6 @@ class _StatsContentState extends State<_StatsContent> {
       }
     }
 
-    // Find top performer
     memberCompletions.forEach((name, count) {
       if (count > topCompletions) {
         topCompletions = count;
@@ -114,160 +113,212 @@ class _StatsContentState extends State<_StatsContent> {
       }
     });
 
-    final completionRate = totalPossible > 0
-        ? ((totalCompletions / totalPossible) * 100).round()
-        : 0;
+    final completionRatio = totalPossible > 0 ? (totalCompletions / totalPossible) : 0.0;
+    final completionPercent = (completionRatio * 100).round();
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isDark
-                ? [
-                    theme.colorScheme.primary.withOpacity(0.15),
-                    theme.colorScheme.tertiary.withOpacity(0.10),
-                  ]
-                : [
-                    theme.colorScheme.primary.withOpacity(0.08),
-                    theme.colorScheme.tertiary.withOpacity(0.06),
-                  ],
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // Soft "Cotton" Background
+          Container(
+            height: 170,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(32),
+              color: isDark ? theme.colorScheme.surfaceContainer : AppColors.background,
+              boxShadow: [
+                BoxShadow(
+                  color: (isDark ? Colors.black : theme.colorScheme.primary).withOpacity(0.06),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
           ),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: theme.colorScheme.primary.withOpacity(isDark ? 0.2 : 0.12),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(Icons.insights_rounded,
-                      size: 18, color: theme.colorScheme.primary),
-                  const SizedBox(width: 6),
-                  Text(
-                    'Oda Özeti',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
-                ],
+
+          // Content Layer
+          Container(
+            height: 170,
+            padding: const EdgeInsets.all(22),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(
+                color: isDark ? Colors.white.withOpacity(0.03) : Colors.white.withOpacity(0.6),
+                width: 1.5,
               ),
-              const SizedBox(height: 14),
-              Row(
-                children: [
-                  _StatTile(
-                    icon: Icons.check_circle_outline_rounded,
-                    label: 'Tamamlama',
-                    value: '%$completionRate',
-                    color: _completionColor(completionRate),
+            ),
+            child: Row(
+              children: [
+                // Completion Ring (Main Focus)
+                _CompletionDisplay(
+                  percent: completionPercent,
+                  isDark: isDark,
+                  primaryColor: theme.colorScheme.primary,
+                ),
+
+                const SizedBox(width: 24),
+
+                // Stats Details
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _MiraStatTile(
+                        icon: Icons.local_fire_department_rounded,
+                        label: 'En Uzun Seri',
+                        value: '$maxStreak gün',
+                        subtitle: streakHolder,
+                        accentColor: AppColors.accentGold,
+                        isDark: isDark,
+                      ),
+                      const SizedBox(height: 16),
+                      _MiraStatTile(
+                        icon: Icons.emoji_events_rounded,
+                        label: 'En Aktif Üye',
+                        value: topPerformer.isNotEmpty ? topPerformer : '—',
+                        subtitle: topPerformer.isNotEmpty ? '$topCompletions tamamlandı' : null,
+                        accentColor: AppColors.accentMatcha,
+                        isDark: isDark,
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  _StatTile(
-                    icon: Icons.local_fire_department_rounded,
-                    label: 'En Uzun Seri',
-                    value: '$maxStreak gün',
-                    subtitle: streakHolder.isNotEmpty ? streakHolder : null,
-                    color: const Color(0xFFFF6B35),
-                  ),
-                  const SizedBox(width: 12),
-                  _StatTile(
-                    icon: Icons.emoji_events_rounded,
-                    label: 'En Aktif',
-                    value: topPerformer.isNotEmpty ? topPerformer : '—',
-                    subtitle: topPerformer.isNotEmpty
-                        ? '$topCompletions/${widget.habits.length}'
-                        : null,
-                    color: const Color(0xFFFFB800),
-                  ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
+}
 
-  Color _completionColor(int rate) {
-    if (rate >= 80) return const Color(0xFF22C55E);
-    if (rate >= 50) return const Color(0xFFFFB800);
-    return const Color(0xFFEF4444);
+class _CompletionDisplay extends StatelessWidget {
+  const _CompletionDisplay({
+    required this.percent,
+    required this.isDark,
+    required this.primaryColor,
+  });
+
+  final int percent;
+  final bool isDark;
+  final Color primaryColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            SizedBox(
+              width: 80,
+              height: 80,
+              child: CircularProgressIndicator(
+                value: percent / 100,
+                strokeWidth: 8,
+                backgroundColor: (isDark ? Colors.white : Colors.black).withOpacity(0.04),
+                color: isDark ? AppColors.accentMatcha : primaryColor,
+                strokeCap: StrokeCap.round,
+              ),
+            ),
+            Text(
+              '%$percent',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: isDark ? Colors.white : theme.colorScheme.onSurface,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Text(
+          'ODA ÖZETİ',
+          style: theme.textTheme.labelSmall?.copyWith(
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.5,
+            color: (isDark ? Colors.white : primaryColor).withOpacity(0.6),
+          ),
+        ),
+      ],
+    );
   }
 }
 
-class _StatTile extends StatelessWidget {
-  const _StatTile({
+class _MiraStatTile extends StatelessWidget {
+  const _MiraStatTile({
     required this.icon,
     required this.label,
     required this.value,
-    required this.color,
     this.subtitle,
+    required this.accentColor,
+    required this.isDark,
   });
 
   final IconData icon;
   final String label;
   final String value;
-  final Color color;
   final String? subtitle;
+  final Color accentColor;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(12),
+    final surfaceColor = isDark ? Colors.white : Colors.black;
+
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: accentColor.withOpacity(isDark ? 0.12 : 0.18),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Icon(icon, size: 18, color: isDark ? accentColor : accentColor.withOpacity(0.9)),
         ),
-        child: Column(
-          children: [
-            Icon(icon, size: 20, color: color),
-            const SizedBox(height: 6),
-            Text(
-              value,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-                color: color,
-                fontSize: 13,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-            ),
-            if (subtitle != null) ...[
-              const SizedBox(height: 2),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               Text(
-                subtitle!,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontSize: 10,
-                  color: theme.colorScheme.onSurfaceVariant,
+                value,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 14,
+                  height: 1.1,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
               ),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                  color: surfaceColor.withOpacity(0.5),
+                ),
+              ),
+              if (subtitle != null) ...[
+                Text(
+                  subtitle!,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: accentColor.withOpacity(isDark ? 0.8 : 1),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ],
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: theme.textTheme.bodySmall?.copyWith(
-                fontSize: 10,
-                color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }

@@ -133,7 +133,6 @@ class MiraAssistantService {
   List<String> getDefaultQuickReplies() {
     return [
       'Bugün ne yapmalıyım?',
-      'Haftalık rapor',
       'Beni motive et',
       '🎮 Oyun oynayalım',
       'Günün önerisi',
@@ -149,10 +148,28 @@ class MiraAssistantService {
     final insight = await getUserInsight();
     final lowerMessage = userMessage.toLowerCase();
 
-    // Local keyword handling to force specific flows
-    // The try/catch block was removed as per instruction,
-    // assuming the content within was also removed or moved.
-    // If local keyword handling is intended, it should be re-added here.
+    // Local keyword handling
+    if (_matchesPattern(lowerMessage, ['bugün', 'ne yapmalı', 'durum'])) {
+      return _buildTodayReportResponse(insight);
+    }
+    if (_matchesPattern(lowerMessage, ['rapor', 'istatistik', 'haftalık'])) {
+      return _buildReportResponse(insight);
+    }
+    if (_matchesPattern(lowerMessage, ['motive', 'vazgeç', 'pes'])) {
+      return _buildMotivationResponse(insight);
+    }
+    if (_matchesPattern(lowerMessage, ['nasıl', 'oluştur', 'ekle'])) {
+      return _buildHowToCreateHabitResponse();
+    }
+    if (_matchesPattern(lowerMessage, ['öneri', 'başka', 'ne var'])) {
+      return _buildFeatureSuggestionResponse();
+    }
+    if (_matchesPattern(lowerMessage, ['zamanla', 'timer', 'pomodoro'])) {
+      return _buildTimerGuideResponse();
+    }
+    if (_matchesPattern(lowerMessage, ['ruh', 'mood', 'nasıl his'])) {
+      return _buildMoodGuideResponse();
+    }
 
     // Fall back to AI for free-form questions
     if (_aiService != null) {

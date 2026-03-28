@@ -1,3 +1,4 @@
+import 'dart:io' as io;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,6 +19,7 @@ import '../../habit/presentation/advanced_habit_wizard_screen.dart';
 import '../../habit/presentation/widgets/daily_task_dialog.dart';
 import '../../../ui/premium_gate.dart';
 import '../../habit/presentation/advanced_habit_screen.dart';
+import '../../profile/profile_repository.dart';
 import 'room_stats_card.dart';
 import 'room_leaderboard_widget.dart';
 import 'member_profile_screen.dart';
@@ -491,59 +493,129 @@ class _MembersBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return StreamBuilder<List<RoomMember>>(
       stream: RoomService.instance.streamMembers(roomId),
       builder: (context, snap) {
         final members = snap.data ?? [];
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          child: Wrap(
-            spacing: 6,
-            runSpacing: 4,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
+              child: Row(
                 children: [
-                  Icon(Icons.people,
-                      size: 18, color: theme.colorScheme.primary),
-                  const SizedBox(width: 6),
+                  Icon(Icons.people_alt_rounded,
+                      size: 20, color: theme.colorScheme.primary),
+                  const SizedBox(width: 8),
                   Text(
-                    '${members.length} üye',
+                    'ODA ÜYELERİ',
                     style: theme.textTheme.labelLarge?.copyWith(
                       color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.2,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const Spacer(),
+                  Text(
+                    '${members.length} kişi',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
-              ...members.map((m) => GestureDetector(
+            ),
+            SizedBox(
+              height: 100,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                itemCount: members.length,
+                separatorBuilder: (context, _) => const SizedBox(width: 12),
+                itemBuilder: (context, index) {
+                  final m = members[index];
+                  final isMe = m.uid == FirebaseAuth.instance.currentUser?.uid;
+                  return GestureDetector(
                     onTap: () => _openMemberProfile(context, m),
-                    child: Chip(
-                      avatar: m.avatarUrl != null
-                          ? CircleAvatar(
-                              backgroundImage: NetworkImage(m.avatarUrl!),
-                              radius: 12,
-                            )
-                          : CircleAvatar(
-                              radius: 12,
-                              child: Text(
-                                m.displayName.isNotEmpty
-                                    ? m.displayName[0].toUpperCase()
-                                    : '?',
-                                style: const TextStyle(fontSize: 10),
-                              ),
+                    child: ListenableBuilder(
+                      listenable: ProfileRepository.instance,
+                      builder: (context, _) {
+                        final profile = ProfileRepository.instance;
+                        final name = isMe ? (profile.name.isNotEmpty ? profile.name : m.displayName) : m.displayName;
+                        
+                        ImageProvider? avatar;
+                        if (isMe) {
+                          if (profile.avatarPath != null && profile.avatarPath!.isNotEmpty) {
+                            avatar = FileImage(io.File(profile.avatarPath!));
+                          } else if (profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty) {
+                            avatar = NetworkImage(profile.avatarUrl!);
+                          }
+                        } else if (m.avatarUrl != null) {
+                          avatar = NetworkImage(m.avatarUrl!);
+                        }
+
+                        return Container(
+                          width: 85,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainerLow.withOpacity(0.6),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: theme.colorScheme.outlineVariant.withOpacity(0.3),
                             ),
-                      label:
-                          Text(m.displayName, style: theme.textTheme.labelSmall),
-                      padding: EdgeInsets.zero,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: VisualDensity.compact,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.04),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Hero(
+                                tag: 'member_avatar_${m.uid}',
+                                child: CircleAvatar(
+                                  radius: 22,
+                                  backgroundColor: avatar == null ? theme.colorScheme.primaryContainer : null,
+                                  backgroundImage: avatar,
+                                  child: avatar == null
+                                      ? Text(
+                                          name.isNotEmpty ? name[0].toUpperCase() : '?',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: theme.colorScheme.onPrimaryContainer,
+                                          ),
+                                        )
+                                      : null,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                name,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 10,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
-                  )),
-            ],
-          ),
+                  );
+                },
+              ),
+            ),
+          ],
         );
       },
     );
@@ -826,6 +898,7 @@ class _HabitCard extends StatelessWidget {
               final progress = snap.data ?? [];
               return RoomLeaderboard(
                 progressList: progress,
+                roomId: roomId,
                 habitColor: habitColor,
                 habitTitle: habit.title,
               );
