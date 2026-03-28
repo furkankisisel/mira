@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/room_service.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Dialog for creating a new social room.
 class CreateRoomDialog extends StatefulWidget {
@@ -37,14 +38,14 @@ class _CreateRoomDialogState extends State<CreateRoomDialog> {
       if (mounted) {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Oda oluşturuldu! 🎉')),
+          SnackBar(content: Text(AppLocalizations.of(context).createRoomSuccessSnackbar)),
         );
       }
     } catch (e) {
       if (mounted) {
         setState(() => _loading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hata: $e')),
+          SnackBar(content: Text('${AppLocalizations.of(context).errorPrefix}$e')),
         );
       }
     }
@@ -55,7 +56,7 @@ class _CreateRoomDialogState extends State<CreateRoomDialog> {
     final theme = Theme.of(context);
 
     return AlertDialog(
-      title: const Text('Oda Oluştur'),
+      title: Text(AppLocalizations.of(context).createRoomTitle),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -93,8 +94,8 @@ class _CreateRoomDialogState extends State<CreateRoomDialog> {
           TextField(
             controller: _nameCtrl,
             decoration: InputDecoration(
-              labelText: 'Oda Adı',
-              hintText: 'Örn: Sabah Rutini Ekibi',
+              labelText: AppLocalizations.of(context).roomNameLabel,
+              hintText: AppLocalizations.of(context).roomNameHint,
               border:
                   OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               prefixIcon: const Icon(Icons.group),
@@ -108,7 +109,7 @@ class _CreateRoomDialogState extends State<CreateRoomDialog> {
       actions: [
         TextButton(
           onPressed: _loading ? null : () => Navigator.pop(context),
-          child: const Text('İptal'),
+          child: Text(AppLocalizations.of(context).cancelButton),
         ),
         FilledButton(
           onPressed: _loading ? null : _create,
@@ -118,7 +119,7 @@ class _CreateRoomDialogState extends State<CreateRoomDialog> {
                   height: 18,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Oluştur'),
+              : Text(AppLocalizations.of(context).createButton),
         ),
       ],
     );

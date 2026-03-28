@@ -7,6 +7,7 @@ import '../domain/room_habit_model.dart';
 import '../domain/room_member_model.dart';
 import '../domain/room_progress_models.dart';
 import '../../profile/profile_repository.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Full-screen profile view showing a member's progress across all room habits.
 /// Includes weekly/monthly/yearly bar charts and a nudge button.
@@ -76,7 +77,7 @@ class _MemberProfileScreenState extends State<MemberProfileScreen>
               padding: const EdgeInsets.only(right: 8),
               child: FilledButton.tonalIcon(
                 icon: const Icon(Icons.notifications_active_outlined, size: 18),
-                label: const Text('Dürt'),
+                label: Text(AppLocalizations.of(context).nudgeButtonLabel),
                 onPressed: () => _sendNudge(context),
                 style: FilledButton.styleFrom(
                   visualDensity: VisualDensity.compact,
@@ -109,7 +110,7 @@ class _MemberProfileScreenState extends State<MemberProfileScreen>
                               size: 18, color: theme.colorScheme.primary),
                           const SizedBox(width: 6),
                           Text(
-                            'Alışkanlık Seç',
+                            AppLocalizations.of(context).selectHabitLabel,
                             style: theme.textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w700,
                             ),
@@ -177,10 +178,10 @@ class _MemberProfileScreenState extends State<MemberProfileScreen>
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
                         ),
-                        tabs: const [
-                          Tab(text: 'Haftalık'),
-                          Tab(text: 'Aylık'),
-                          Tab(text: 'Yıllık'),
+                        tabs: [
+                          Tab(text: AppLocalizations.of(context).weekly),
+                          Tab(text: AppLocalizations.of(context).monthly),
+                          Tab(text: AppLocalizations.of(context).yearly),
                         ],
                       ),
                     ),
@@ -222,7 +223,7 @@ class _MemberProfileScreenState extends State<MemberProfileScreen>
                     Padding(
                       padding: const EdgeInsets.all(32),
                       child: Text(
-                        'Henüz alışkanlık eklenmemiş',
+                        AppLocalizations.of(context).noHabitsAdded,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -241,7 +242,7 @@ class _MemberProfileScreenState extends State<MemberProfileScreen>
                               size: 18, color: theme.colorScheme.primary),
                           const SizedBox(width: 6),
                           Text(
-                            'Tüm Alışkanlıklar',
+                            AppLocalizations.of(context).allHabitsLabel,
                             style: theme.textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w700,
                             ),
@@ -269,11 +270,7 @@ class _MemberProfileScreenState extends State<MemberProfileScreen>
 
   void _sendNudge(BuildContext context) async {
     final messages = [
-      '💪 Haydi, alışkanlıklarını tamamla!',
-      '🔥 Serini kırma, devam et!',
-      '⏰ Alışkanlık zamanı!',
-      '🎯 Bugünkü hedeflerini unutma!',
-      '🏆 Sıralamada yükselmeni bekliyorum!',
+      AppLocalizations.of(context).nudgeDefaultMessage,
     ];
 
     final selectedMessage = await showModalBottomSheet<String>(
@@ -289,7 +286,7 @@ class _MemberProfileScreenState extends State<MemberProfileScreen>
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
                 child: Text(
-                  '${widget.member.displayName} kişisini dürt 👊',
+                  AppLocalizations.of(ctx).nudgeTitle(widget.member.displayName),
                   style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -318,7 +315,7 @@ class _MemberProfileScreenState extends State<MemberProfileScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                '${widget.member.displayName} dürtüldü! 👊'),
+                AppLocalizations.of(context).nudgeSuccessSnackbar(widget.member.displayName)),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -405,7 +402,7 @@ class _ProfileHeader extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              'Sen',
+                              AppLocalizations.of(context).youLabel,
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: theme.colorScheme.primary,
                                 fontWeight: FontWeight.w600,
@@ -417,7 +414,7 @@ class _ProfileHeader extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Katılım: ${_formatDate(member.joinedAt)}',
+                      AppLocalizations.of(context).joinedAtLabel(_formatDate(context, member.joinedAt)),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -432,23 +429,11 @@ class _ProfileHeader extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime dt) {
-    const months = [
-      '',
-      'Oca',
-      'Şub',
-      'Mar',
-      'Nis',
-      'May',
-      'Haz',
-      'Tem',
-      'Ağu',
-      'Eyl',
-      'Eki',
-      'Kas',
-      'Ara'
-    ];
-    return '${dt.day} ${months[dt.month]} ${dt.year}';
+  String _formatDate(BuildContext context, DateTime dt) {
+    final months = AppLocalizations.of(context).monthsShort.split(',');
+    // months is usually comma separated in ARB
+    // If not, adjust. Jan,Feb...
+    return '${dt.day} ${months[(dt.month - 1) % 12]} ${dt.year}';
   }
 }
 
@@ -540,7 +525,7 @@ class _HabitProgressSummary extends StatelessWidget {
                         ),
                       ] else
                         Text(
-                          'Henüz ilerleme yok',
+                          AppLocalizations.of(context).noProgressYet,
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                             fontSize: 11,
@@ -565,7 +550,7 @@ class _HabitProgressSummary extends StatelessWidget {
                             size: 14, color: Color(0xFFFF6B35)),
                         const SizedBox(width: 2),
                         Text(
-                          '${myProgress.streak}',
+                          AppLocalizations.of(context).streakDays(myProgress.streak),
                           style: theme.textTheme.labelSmall?.copyWith(
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFFFF6B35),
@@ -637,7 +622,7 @@ class _ProgressChartState extends State<_ProgressChart> {
                     color: widget.color.withOpacity(0.2)),
                 const SizedBox(height: 12),
                 Text(
-                  'İlerleme Yolculuğu Başlıyor',
+                  AppLocalizations.of(context).progressJourneyStarts,
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.onSurface,
                     fontWeight: FontWeight.bold,
@@ -645,7 +630,7 @@ class _ProgressChartState extends State<_ProgressChart> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Alışkanlıklarını tamamladıkça bu grafik\nsenin başarınla şekillenecek ✨',
+                  AppLocalizations.of(context).progressJourneyMessage,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
                     fontSize: 12,
@@ -692,7 +677,7 @@ class _ProgressChartState extends State<_ProgressChart> {
 
   List<_ChartData> _buildWeeklyData(DateTime now, List<ProgressHistoryEntry> entries) {
     final result = <_ChartData>[];
-    const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+    final days = AppLocalizations.of(context).weekDaysShort.split(',');
 
     for (int i = 6; i >= 0; i--) {
       final day = now.subtract(Duration(days: i));
@@ -743,7 +728,7 @@ class _ProgressChartState extends State<_ProgressChart> {
 
   List<_ChartData> _buildYearlyData(DateTime now, List<ProgressHistoryEntry> entries) {
     final result = <_ChartData>[];
-    const months = ['', 'Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+    final months = AppLocalizations.of(context).monthsShort.split(',');
 
     for (int i = 11; i >= 0; i--) {
       final month = DateTime(now.year, now.month - i, 1);
@@ -762,7 +747,7 @@ class _ProgressChartState extends State<_ProgressChart> {
       final avgRatio = count > 0 ? totalRatio / count : 0.0;
 
       result.add(_ChartData(
-        label: months[month.month],
+        label: months[(month.month - 1) % 12],
         value: avgRatio,
         isToday: i == 0,
       ));

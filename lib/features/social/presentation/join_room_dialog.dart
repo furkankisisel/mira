@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../data/room_service.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Dialog for joining a room via a 6-character invite code.
 class JoinRoomDialog extends StatefulWidget {
@@ -25,7 +26,7 @@ class _JoinRoomDialogState extends State<JoinRoomDialog> {
   Future<void> _join() async {
     final code = _codeCtrl.text.trim().toUpperCase();
     if (code.length != 6) {
-      setState(() => _error = 'Kod 6 karakter olmalıdır');
+      setState(() => _error = AppLocalizations.of(context).invalidCodeLengthError);
       return;
     }
     setState(() {
@@ -39,7 +40,7 @@ class _JoinRoomDialogState extends State<JoinRoomDialog> {
         if (mounted) {
           setState(() {
             _loading = false;
-            _error = 'Bu kodla bir oda bulunamadı';
+            _error = AppLocalizations.of(context).roomNotFoundError;
           });
         }
         return;
@@ -47,14 +48,14 @@ class _JoinRoomDialogState extends State<JoinRoomDialog> {
       if (mounted) {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$roomName odasına katıldın! 🎉')),
+          SnackBar(content: Text(AppLocalizations.of(context).joinRoomSuccessSnackbar(roomName))),
         );
       }
     } catch (e) {
       if (mounted) {
         setState(() {
           _loading = false;
-          _error = 'Hata: $e';
+          _error = '${AppLocalizations.of(context).errorPrefix}$e';
         });
       }
     }
@@ -65,12 +66,12 @@ class _JoinRoomDialogState extends State<JoinRoomDialog> {
     final theme = Theme.of(context);
 
     return AlertDialog(
-      title: const Text('Odaya Katıl'),
+      title: Text(AppLocalizations.of(context).joinRoomTitle),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Arkadaşından aldığın 6 haneli davet kodunu gir:',
+            AppLocalizations.of(context).joinRoomCodeMessage,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -103,7 +104,7 @@ class _JoinRoomDialogState extends State<JoinRoomDialog> {
       actions: [
         TextButton(
           onPressed: _loading ? null : () => Navigator.pop(context),
-          child: const Text('İptal'),
+          child: Text(AppLocalizations.of(context).cancelButton),
         ),
         FilledButton(
           onPressed: _loading ? null : _join,
@@ -113,7 +114,7 @@ class _JoinRoomDialogState extends State<JoinRoomDialog> {
                   height: 18,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Katıl'),
+              : Text(AppLocalizations.of(context).joinButton),
         ),
       ],
     );

@@ -24,6 +24,7 @@ import 'room_stats_card.dart';
 import 'room_leaderboard_widget.dart';
 import 'member_profile_screen.dart';
 import '../../../design_system/components/banner_ad_widget.dart';
+import '../../../l10n/app_localizations.dart';
 
 
 /// Detail view for a social room — live dashboard + notes.
@@ -51,41 +52,41 @@ class RoomDetailScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            tooltip: 'Davet Kodu',
+            tooltip: AppLocalizations.of(context).inviteCodeTooltip,
             icon: const Icon(Icons.share_outlined),
             onPressed: () => _showInviteCode(context),
           ),
           PopupMenuButton<String>(
             onSelected: (v) => _handleMenu(context, v, isOwner),
-            itemBuilder: (_) => [
-              const PopupMenuItem(
+            itemBuilder: (_) => <PopupMenuEntry<String>>[
+              PopupMenuItem(
                 value: 'code',
                 child: ListTile(
                   dense: true,
-                  leading: Icon(Icons.copy),
-                  title: Text('Kodu Kopyala'),
+                  leading: const Icon(Icons.copy),
+                  title: Text(AppLocalizations.of(context).copyCodeTitle),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
               if (isOwner)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'delete',
                   child: ListTile(
                     dense: true,
-                    leading: Icon(Icons.delete_outline, color: Colors.red),
+                    leading: const Icon(Icons.delete_outline, color: Colors.red),
                     title:
-                        Text('Odayı Sil', style: TextStyle(color: Colors.red)),
+                        Text(AppLocalizations.of(context).deleteRoomTitle, style: const TextStyle(color: Colors.red)),
                     contentPadding: EdgeInsets.zero,
                   ),
                 )
               else
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'leave',
                   child: ListTile(
                     dense: true,
-                    leading: Icon(Icons.exit_to_app, color: Colors.red),
-                    title: Text('Odadan Çık',
-                        style: TextStyle(color: Colors.red)),
+                    leading: const Icon(Icons.exit_to_app, color: Colors.red),
+                    title: Text(AppLocalizations.of(context).leaveRoomTitle,
+                        style: const TextStyle(color: Colors.red)),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -99,14 +100,14 @@ class RoomDetailScreen extends StatelessWidget {
         children: [
           FloatingActionButton.small(
             heroTag: 'room_add_item',
-            tooltip: 'Ekle',
+            tooltip: AppLocalizations.of(context).addFabTooltip,
             onPressed: () => _showAddMenu(context),
             child: const Icon(Icons.add),
           ),
           const SizedBox(height: 8),
           FloatingActionButton(
             heroTag: 'room_add_note',
-            tooltip: 'Not Paylaş',
+            tooltip: AppLocalizations.of(context).shareNoteTitle,
             onPressed: () => _addNote(context),
             child: const Icon(Icons.edit_outlined),
           ),
@@ -116,6 +117,7 @@ class RoomDetailScreen extends StatelessWidget {
   }
 
   void _showAddMenu(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
@@ -125,8 +127,8 @@ class RoomDetailScreen extends StatelessWidget {
           children: [
             ListTile(
               leading: const Icon(Icons.bolt),
-              title: const Text('Basit Alışkanlık'),
-              subtitle: const Text('Hızlıca bir alışkanlık oluştur'),
+              title: Text(l10n.simpleHabitTitle),
+              subtitle: Text(l10n.simpleHabitSubtitle),
               onTap: () {
                 Navigator.pop(ctx);
                 _addSimpleHabit(context);
@@ -135,8 +137,8 @@ class RoomDetailScreen extends StatelessWidget {
             const Divider(height: 1),
             ListTile(
               leading: const Icon(Icons.auto_graph),
-              title: const Text('Gelişmiş Alışkanlık'),
-              subtitle: const Text('Premium • Detaylı ayarlarla alışkanlık oluştur'),
+              title: Text(l10n.advancedHabitTitle),
+              subtitle: Text(l10n.advancedHabitSubtitle),
               trailing: const Icon(Icons.workspace_premium, size: 18),
               onTap: () {
                 Navigator.pop(ctx);
@@ -146,8 +148,8 @@ class RoomDetailScreen extends StatelessWidget {
             const Divider(height: 1),
             ListTile(
               leading: const Icon(Icons.task_alt),
-              title: const Text('Günlük Görev'),
-              subtitle: const Text('Bugüne özel bir görev ekle'),
+              title: Text(l10n.dailyTaskTitle),
+              subtitle: Text(l10n.dailyTaskSubtitle),
               onTap: () {
                 Navigator.pop(ctx);
                 _addDailyTask(context);
@@ -259,7 +261,7 @@ class RoomDetailScreen extends StatelessWidget {
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$title görevi eklendi! ✅')),
+          SnackBar(content: Text(AppLocalizations.of(context).taskAddedSnackbar(title))),
         );
       }
     }
@@ -267,6 +269,7 @@ class RoomDetailScreen extends StatelessWidget {
 
   void _addNote(BuildContext context) {
     final ctrl = TextEditingController();
+    final l10n = AppLocalizations.of(context);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -282,7 +285,7 @@ class RoomDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Not Paylaş',
+              l10n.shareNoteTitle,
               style: Theme.of(ctx)
                   .textTheme
                   .titleLarge
@@ -292,7 +295,7 @@ class RoomDetailScreen extends StatelessWidget {
             TextField(
               controller: ctrl,
               decoration: InputDecoration(
-                hintText: 'Düşüncelerini paylaş...',
+                hintText: l10n.shareNoteHint,
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12)),
               ),
@@ -305,15 +308,14 @@ class RoomDetailScreen extends StatelessWidget {
             FilledButton(
               onPressed: () async {
                 if (ctrl.text.trim().isEmpty) return;
-                await RoomService.instance.shareNote(room.id, ctrl.text);
                 if (ctx.mounted) Navigator.pop(ctx);
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Not paylaşıldı! ✨')),
+                    SnackBar(content: Text(l10n.noteSharedSnackbar)),
                   );
                 }
               },
-              child: const Text('Paylaş'),
+              child: Text(l10n.shareButton),
             ),
           ],
         ),
@@ -323,14 +325,15 @@ class RoomDetailScreen extends StatelessWidget {
 
   void _showInviteCode(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Davet Kodu'),
+        title: Text(l10n.inviteCodeTooltip),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Bu kodu arkadaşlarınla paylaş:',
+            Text(l10n.shareInviteCodeMessage,
                 style: theme.textTheme.bodyMedium),
             const SizedBox(height: 16),
             Container(
@@ -355,16 +358,16 @@ class RoomDetailScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Kapat'),
+            child: Text(l10n.closeButton),
           ),
           FilledButton.icon(
             icon: const Icon(Icons.copy, size: 18),
-            label: const Text('Kopyala'),
+            label: Text(l10n.copyButton),
             onPressed: () {
               Clipboard.setData(ClipboardData(text: room.inviteCode));
               Navigator.pop(ctx);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Davet kodu kopyalandı!')),
+                SnackBar(content: Text(l10n.inviteCodeCopiedSnackbar)),
               );
             },
           ),
@@ -378,22 +381,22 @@ class RoomDetailScreen extends StatelessWidget {
       case 'code':
         Clipboard.setData(ClipboardData(text: room.inviteCode));
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Davet kodu kopyalandı!')),
+          SnackBar(content: Text(AppLocalizations.of(context).inviteCodeCopiedSnackbar)),
         );
         break;
       case 'leave':
         final confirm = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text('Odadan Çık'),
-            content: const Text('Bu odadan çıkmak istediğine emin misin?'),
+            title: Text(AppLocalizations.of(context).leaveRoomTitle),
+            content: Text(AppLocalizations.of(context).leaveRoomWarning),
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(ctx, false),
-                  child: const Text('İptal')),
+                  child: Text(AppLocalizations.of(context).cancelButton)),
               FilledButton(
                   onPressed: () => Navigator.pop(ctx, true),
-                  child: const Text('Çık')),
+                  child: Text(AppLocalizations.of(context).leaveButton)),
             ],
           ),
         );
@@ -406,18 +409,17 @@ class RoomDetailScreen extends StatelessWidget {
         final confirm = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text('Odayı Sil'),
-            content: const Text(
-                'Bu oda ve tüm içeriği kalıcı olarak silinecek. Devam etmek istiyor musun?'),
+            title: Text(AppLocalizations.of(context).deleteRoomTitle),
+            content: Text(AppLocalizations.of(context).deleteRoomWarning),
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(ctx, false),
-                  child: const Text('İptal')),
+                  child: Text(AppLocalizations.of(context).cancelButton)),
               FilledButton(
                 style: FilledButton.styleFrom(
                     backgroundColor: Theme.of(ctx).colorScheme.error),
                 onPressed: () => Navigator.pop(ctx, true),
-                child: const Text('Sil'),
+                child: Text(AppLocalizations.of(context).deleteButton),
               ),
             ],
           ),
@@ -464,7 +466,7 @@ class _RoomBody extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  '🏆 Sıralama & Alışkanlıklar',
+                  AppLocalizations.of(context).rankingAndHabitsSection,
                   style: theme.textTheme.titleMedium
                       ?.copyWith(fontWeight: FontWeight.w700),
                 ),
@@ -477,7 +479,7 @@ class _RoomBody extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
             child: Text(
-              '📝 Notlar',
+              AppLocalizations.of(context).notesSection,
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.w700),
             ),
@@ -804,23 +806,23 @@ class _HabitCard extends StatelessWidget {
                   PopupMenuButton<String>(
                     icon: Icon(Icons.more_vert, size: 18,
                         color: theme.colorScheme.onSurfaceVariant),
-                    tooltip: 'Düzenle / Sil',
+                    tooltip: AppLocalizations.of(context).editDeleteTooltip,
                     onSelected: (val) async {
                       if (val == 'delete') {
                         final confirm = await showDialog<bool>(
                           context: context,
                           builder: (_) => AlertDialog(
-                            title: const Text('Alışkanlığı Sil'),
-                            content: Text('\'${habit.title}\' odadan silinsin mi?'),
+                            title: Text(AppLocalizations.of(context).deleteHabitTitle),
+                            content: Text(AppLocalizations.of(context).deleteHabitConfirm(habit.title)),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context, false),
-                                child: const Text('İptal'),
+                                child: Text(AppLocalizations.of(context).cancelButton),
                               ),
                               TextButton(
                                 onPressed: () => Navigator.pop(context, true),
                                 style: TextButton.styleFrom(foregroundColor: Colors.red),
-                                child: const Text('Sil'),
+                                child: Text(AppLocalizations.of(context).deleteButton),
                               ),
                             ],
                           ),
@@ -836,7 +838,7 @@ class _HabitCard extends StatelessWidget {
                         if (localHabit == null) {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Sadece kişisel listenize eklenmiş alışkanlıkları düzenleyebilirsiniz.')),
+                              SnackBar(content: Text(AppLocalizations.of(context).editOnlyPersonalHabits)),
                             );
                           }
                           return;
@@ -872,21 +874,21 @@ class _HabitCard extends StatelessWidget {
                       }
                     },
                     itemBuilder: (_) => [
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'edit',
                         child: ListTile(
                           dense: true,
-                          leading: Icon(Icons.edit_outlined),
-                          title: Text('Düzenle'),
+                          leading: const Icon(Icons.edit_outlined),
+                          title: Text(AppLocalizations.of(context).editButton),
                           contentPadding: EdgeInsets.zero,
                         ),
                       ),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'delete',
                         child: ListTile(
                           dense: true,
-                          leading: Icon(Icons.delete_outline, color: Colors.red),
-                          title: Text('Sil', style: TextStyle(color: Colors.red)),
+                          leading: const Icon(Icons.delete_outline, color: Colors.red),
+                          title: Text(AppLocalizations.of(context).deleteButton, style: const TextStyle(color: Colors.red)),
                           contentPadding: EdgeInsets.zero,
                         ),
                       ),
@@ -1001,7 +1003,7 @@ class _NudgeCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '👊 ${nudge.fromName} seni dürtüyüyor!',
+                  AppLocalizations.of(context).nudgeNotification(nudge.fromName),
                   style: theme.textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFFFF6B35),
@@ -1052,7 +1054,7 @@ class _NotesFeed extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
             child: Text(
-              'Henüz not yok',
+              AppLocalizations.of(context).noNotesYet,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
@@ -1114,7 +1116,7 @@ class _NoteCard extends StatelessWidget {
                       ),
                       const Spacer(),
                       Text(
-                        _timeAgo(post.createdAt),
+                        _timeAgo(context, post.createdAt),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                           fontSize: 11,
@@ -1145,12 +1147,13 @@ class _NoteCard extends StatelessWidget {
     );
   }
 
-  String _timeAgo(DateTime dt) {
+  String _timeAgo(BuildContext context, DateTime dt) {
+    final l10n = AppLocalizations.of(context);
     final diff = DateTime.now().difference(dt);
-    if (diff.inMinutes < 1) return 'Az önce';
-    if (diff.inMinutes < 60) return '${diff.inMinutes} dk';
-    if (diff.inHours < 24) return '${diff.inHours} sa';
-    if (diff.inDays < 7) return '${diff.inDays} gün';
+    if (diff.inMinutes < 1) return l10n.justNow;
+    if (diff.inMinutes < 60) return '${diff.inMinutes} ${l10n.minutesSuffixShort}';
+    if (diff.inHours < 24) return '${diff.inHours} ${l10n.hoursSuffixShort}';
+    if (diff.inDays < 7) return '${diff.inDays} ${l10n.daysSuffixShort}';
     return '${dt.day}.${dt.month}.${dt.year}';
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../data/room_service.dart';
 import '../domain/room_habit_model.dart';
 import '../../../design_system/tokens/colors.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Mira-themed Room Stats Card with soft, organic, and "Cotton" style aesthetic.
 class RoomStatsCard extends StatelessWidget {
@@ -166,8 +167,8 @@ class _StatsContentState extends State<_StatsContent> {
                     children: [
                       _MiraStatTile(
                         icon: Icons.local_fire_department_rounded,
-                        label: 'En Uzun Seri',
-                        value: '$maxStreak gün',
+                        label: AppLocalizations.of(context).longestStreakLabel,
+                        value: AppLocalizations.of(context).streakDays(maxStreak),
                         subtitle: streakHolder,
                         accentColor: AppColors.accentGold,
                         isDark: isDark,
@@ -175,9 +176,9 @@ class _StatsContentState extends State<_StatsContent> {
                       const SizedBox(height: 16),
                       _MiraStatTile(
                         icon: Icons.emoji_events_rounded,
-                        label: 'En Aktif Üye',
+                        label: AppLocalizations.of(context).mostActiveMemberLabel,
                         value: topPerformer.isNotEmpty ? topPerformer : '—',
-                        subtitle: topPerformer.isNotEmpty ? '$topCompletions tamamlandı' : null,
+                        subtitle: topPerformer.isNotEmpty ? AppLocalizations.of(context).completionsCount(topCompletions) : null,
                         accentColor: AppColors.accentMatcha,
                         isDark: isDark,
                       ),
@@ -235,7 +236,7 @@ class _CompletionDisplay extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         Text(
-          'ODA ÖZETİ',
+          AppLocalizations.of(context).roomSummaryHeader,
           style: theme.textTheme.labelSmall?.copyWith(
             fontWeight: FontWeight.w900,
             letterSpacing: 1.5,

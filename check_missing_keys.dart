@@ -19,22 +19,25 @@ void main() {
     (f) => f.path.endsWith('.arb'),
   );
 
+  final Map<String, List<String>> allMissing = {};
+
   for (final file in files) {
     if (file.path.contains('app_tr.arb')) continue;
 
     final map = json.decode(file.readAsStringSync()) as Map<String, dynamic>;
     final keys = map.keys.where((k) => !k.startsWith('@')).toSet();
 
-    final missing = trKeys.difference(keys);
+    final missing = trKeys.difference(keys).toList();
     if (missing.isNotEmpty) {
-      print(
-        '\nMissing keys in ${file.path.split(Platform.pathSeparator).last}: ${missing.length}',
-      );
-      // print(missing.join(', '));
-      // Print first 5 missing
-      print('Examples: ${missing.take(5).join(', ')}...');
-    } else {
-      // print('${file.path} is complete.');
+      final fileName = file.path.split(Platform.pathSeparator).last;
+      final langCode = fileName.replaceAll('app_', '').replaceAll('.arb', '');
+      allMissing[langCode] = missing;
+      print('Collected ${missing.length} missing keys for $langCode');
     }
   }
+
+  final outFile = File('missing_translations.json');
+  outFile.writeAsStringSync(JsonEncoder.withIndent('  ').convert(allMissing));
+  print('\nResults written to missing_translations.json');
 }
+

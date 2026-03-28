@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../domain/room_habit_model.dart';
 import '../data/room_service.dart';
 import '../../profile/profile_repository.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Leaderboard widget for a single room habit.
 /// Shows members ranked by completion with medals and streak badges.
@@ -28,7 +29,7 @@ class RoomLeaderboard extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.all(14),
         child: Text(
-          'Henüz ilerleme yok',
+          AppLocalizations.of(context).noProgressYet,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
@@ -204,9 +205,9 @@ class _LeaderboardEntry extends StatelessWidget {
                           color: theme.colorScheme.primary,
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: const Text(
-                          'SEN',
-                          style: TextStyle(
+                        child: Text(
+                          AppLocalizations.of(context).youLabel.toUpperCase(),
+                          style: const TextStyle(
                             fontSize: 8,
                             fontWeight: FontWeight.w900,
                             color: Colors.white,
@@ -360,12 +361,12 @@ class _QuickNudgeButton extends StatelessWidget {
             roomId: roomId,
             toUid: toUid,
             toName: toName,
-            message: '👊 Hadi dostum, bugün biraz daha gayret! Alışkanlıklarını tamamla.',
+            message: AppLocalizations.of(context).nudgeDefaultMessage,
           );
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('$toName dürtüldü! 👊'),
+                content: Text(AppLocalizations.of(context).nudgeSuccessSnackbar(toName)),
                 behavior: SnackBarBehavior.floating,
                 duration: const Duration(seconds: 1),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -484,7 +485,7 @@ class _StreakBadge extends StatelessWidget {
               size: 13, color: badgeColor),
           const SizedBox(width: 4),
           Text(
-            '$streak gün',
+            AppLocalizations.of(context).streakDays(streak),
             style: theme.textTheme.labelSmall?.copyWith(
               fontSize: 10,
               fontWeight: FontWeight.w900,

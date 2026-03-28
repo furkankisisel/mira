@@ -9,56 +9,6 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get weeklyReportsTitle => 'Weekly Reports';
-
-  @override
-  String get noReportsYet => 'No reports yet';
-
-  @override
-  String get createFirstReportPrompt =>
-      'Click + to create your first weekly report';
-
-  @override
-  String get generating => 'Generating...';
-
-  @override
-  String get createReport => 'Create Report';
-
-  @override
-  String costTokens(Object cost) {
-    return 'Cost: $cost tokens';
-  }
-
-  @override
-  String balanceParenthesis(Object balance) {
-    return '(Balance: $balance)';
-  }
-
-  @override
-  String get watchAdForToken => 'Watch Ad (+1 Token)';
-
-  @override
-  String get selectReportType => 'Select Report Type:';
-
-  @override
-  String generatedAtDate(Object date) {
-    return 'Generated: $date';
-  }
-
-  @override
-  String get insufficientTokensWatchAd =>
-      'Insufficient tokens! Watch an ad to earn tokens.';
-
-  @override
-  String get reportCreatedSuccess => 'Report created! ✨';
-
-  @override
-  String get reportAlreadyExists => 'Report already exists for this week.';
-
-  @override
-  String get tokenEarnedSuccess => '+1 token earned! 🎉';
-
-  @override
   String get about => 'About';
 
   @override
@@ -83,10 +33,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addDate => 'Add Date';
 
   @override
+  String get addEvent => 'Add Event';
+
+  @override
+  String get addFabTooltip => 'Add';
+
+  @override
   String get addFirstTransaction => 'Add first transaction';
 
   @override
   String get addHabit => 'Add Habit';
+
+  @override
+  String get addHabitToRoomPrompt =>
+      'Add a habit to the room with the + button!';
 
   @override
   String get addImage => 'Add image';
@@ -119,6 +79,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addToList => 'Add to list';
 
   @override
+  String addedToRoomSnackbar(Object title) {
+    return '$title added to room! 🎯';
+  }
+
+  @override
   String get advancedAnalysis => 'Advanced Analysis';
 
   @override
@@ -126,6 +91,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get advancedHabit => 'Advanced Habit';
+
+  @override
+  String get advancedHabitSubtitle =>
+      'Premium • Create habit with detailed settings';
 
   @override
   String get advancedHabitTitle => 'Advanced Habit';
@@ -221,6 +190,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allDataDeleted => 'All data deleted';
+
+  @override
+  String get allHabitsLabel => 'All Habits';
 
   @override
   String get allLabel => 'All';
@@ -454,6 +426,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get badges => 'Badges';
 
   @override
+  String balanceParenthesis(Object balance) {
+    return '(Balance: $balance)';
+  }
+
+  @override
   String get becomePremium => 'Become Premium';
 
   @override
@@ -505,6 +482,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancel => 'Cancel';
+
+  @override
+  String get cancelButton => 'Cancel';
 
   @override
   String get cancelEffect =>
@@ -573,10 +553,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get choosePhoto => 'Choose Photo';
 
   @override
-  String get choosePhotoSubtitle => 'Choose a photo to motivate you';
+  String get choosePhotoDesc => 'Select a photo that inspires you';
 
   @override
-  String get choosePhotoDesc => 'Select a photo that inspires you';
+  String get choosePhotoSubtitle => 'Choose a photo to motivate you';
 
   @override
   String get clear => 'Clear';
@@ -589,6 +569,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get close => 'Close';
+
+  @override
+  String get closeButton => 'Close';
 
   @override
   String get cloudBackup => 'Cloud Backup';
@@ -615,6 +598,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get completedSelectedDay => 'Completed on selected day';
 
   @override
+  String get completedTableHeader => 'DONE';
+
+  @override
+  String get completionPercentLabel => 'Completion %';
+
+  @override
+  String completionsCount(Object count) {
+    return '$count completions';
+  }
+
+  @override
   String get confirmDeleteAccount => 'Confirm Account Deletion';
 
   @override
@@ -625,6 +619,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get continueText => 'Continue';
+
+  @override
+  String get copyButton => 'Copy';
+
+  @override
+  String get copyCodeTitle => 'Copy Code';
+
+  @override
+  String costTokens(Object cost) {
+    return 'Cost: $cost tokens';
+  }
 
   @override
   String get cottonCandy => 'Cotton Candy';
@@ -657,10 +662,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createAdvancedHabit => 'Create Advanced Habit';
 
   @override
+  String get createButton => 'Create';
+
+  @override
   String get createDailyTask => 'Create Daily Task';
 
   @override
   String get createFirstHabit => 'Create Habit';
+
+  @override
+  String get createFirstReportPrompt =>
+      'Click + to create your first weekly report';
 
   @override
   String get createFirstVision => 'Create Your First Vision';
@@ -685,6 +697,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createNewList => 'Create New List';
+
+  @override
+  String get createReport => 'Create Report';
+
+  @override
+  String get createRoomSubtitle => 'Create a new room and invite your friends';
+
+  @override
+  String get createRoomSuccessSnackbar => 'Room created! 🎉';
+
+  @override
+  String get createRoomTitle => 'Create Room';
 
   @override
   String get createVision => 'Create Vision';
@@ -720,6 +744,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customEmojiOptional => 'Custom emoji (optional)';
 
   @override
+  String get customEvent => 'Custom Event';
+
+  @override
   String get customFrequency => 'Custom';
 
   @override
@@ -738,6 +765,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dailyDesc => 'Every day';
 
   @override
+  String get dailyHabitInfo => 'Daily habit info';
+
+  @override
   String get dailyLimit => 'Daily limit';
 
   @override
@@ -747,6 +777,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String dailyTaskCreatedMessage(Object title) {
     return 'Daily task created successfully';
   }
+
+  @override
+  String get dailyTaskSubtitle => 'Add a task specific to today';
+
+  @override
+  String get dailyTaskTitle => 'Daily Task';
 
   @override
   String get dailyTasksSection => 'Daily Tasks';
@@ -830,6 +866,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get daysRemaining => 'Days Remaining';
 
   @override
+  String get daysSuffixShort => 'd';
+
+  @override
   String get decisionEggDescription => 'Pick a mystical egg for answers';
 
   @override
@@ -867,6 +906,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Are you sure you want to delete all your app data? This action cannot be undone.';
 
   @override
+  String get deleteButton => 'Delete';
+
+  @override
   String deleteCategoryConfirmNamed(Object name) {
     return 'Delete the category \"$name\"?';
   }
@@ -882,9 +924,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Are you sure you want to delete this entry?';
 
   @override
+  String get deleteEvent => 'Delete Event';
+
+  @override
   String deleteHabitConfirm(Object title) {
-    return 'Delete habit \"$title\"?';
+    return 'Delete \'$title\' from room?';
   }
+
+  @override
+  String get deleteHabitTitle => 'Delete Habit';
 
   @override
   String get deleteListMessage => 'Are you sure you want to delete this list?';
@@ -894,6 +942,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteMyAccount => 'Delete My Account';
+
+  @override
+  String get deleteRoomTitle => 'Delete Room';
+
+  @override
+  String get deleteRoomWarning =>
+      'This room and all its content will be permanently deleted. Do you want to continue?';
 
   @override
   String get deleteTaskConfirm => 'Are you sure you want to delete this task?';
@@ -973,13 +1028,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get edit => 'Edit';
 
   @override
+  String get editButton => 'Edit';
+
+  @override
   String get editCategory => 'Edit Category';
+
+  @override
+  String get editDeleteTooltip => 'Edit / Delete';
+
+  @override
+  String get editEvent => 'Edit Event';
 
   @override
   String get editHabit => 'Edit Habit';
 
   @override
   String get editListTitle => 'Edit List';
+
+  @override
+  String get editOnlyPersonalHabits =>
+      'You can only edit habits that are added to your personal list.';
 
   @override
   String get education => 'Education';
@@ -1024,6 +1092,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emojiLabel => 'Emoji';
 
   @override
+  String get emotionBlessed => 'Blessed';
+
+  @override
+  String get emotionBored => 'Bored';
+
+  @override
+  String get emotionConfident => 'Confident';
+
+  @override
+  String get emotionConfused => 'Confused';
+
+  @override
+  String get emotionDistracted => 'Distracted';
+
+  @override
+  String get emotionEuphoric => 'Euphoric';
+
+  @override
+  String get emotionGuilty => 'Guilty';
+
+  @override
+  String get emotionHopeful => 'Hopeful';
+
+  @override
+  String get emotionInsecure => 'Insecure';
+
+  @override
+  String get emotionLonely => 'Lonely';
+
+  @override
+  String get emotionNumb => 'Numb';
+
+  @override
+  String get emotionOverwhelmed => 'Overwhelmed';
+
+  @override
+  String get emotionProud => 'Proud';
+
+  @override
+  String get emotionRegretful => 'Regretful';
+
+  @override
+  String get emotionUnstoppable => 'Unstoppable';
+
+  @override
   String get emptyHabitSubtitle =>
       'Create your first habit to begin tracking your progress.';
 
@@ -1044,6 +1157,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get endDayOptionalLabel => 'End day (optional)';
+
+  @override
+  String get endTime => 'End Time';
 
   @override
   String get enterBothOptions => 'Please enter both options';
@@ -1068,10 +1184,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get entries => 'Entries';
 
   @override
+  String get entryCountLabel => 'Entry Count';
+
+  @override
   String get entrySaved => 'Entry saved successfully!';
 
   @override
   String get errorPrefix => 'Error: ';
+
+  @override
+  String get eventDescription => 'Description';
+
+  @override
+  String get eventDetails => 'Event Details';
+
+  @override
+  String get eventTitle => 'Event Title';
 
   @override
   String get every => 'Every';
@@ -1081,6 +1209,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get everyLabel => 'Every';
+
+  @override
+  String everyNDays(Object days) {
+    return 'Every $days days';
+  }
+
+  @override
+  String everyNDaysInfo(Object days) {
+    return 'Occurs every $days days';
+  }
 
   @override
   String get everyNDaysQuestion => 'Every how many days?';
@@ -1284,7 +1422,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get generalNotifications => 'General notifications';
 
   @override
+  String get generalRoomStatsHeader => 'GENERAL ROOM STATS';
+
+  @override
   String get generate => 'Generate';
+
+  @override
+  String generatedAtDate(Object date) {
+    return 'Generated: $date';
+  }
+
+  @override
+  String get generating => 'Generating...';
 
   @override
   String get glasses => 'Glasses';
@@ -1347,6 +1496,9 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get habitBlock => 'Habit';
 
   @override
   String habitCreatedMessage(Object title) {
@@ -1583,6 +1735,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hours => 'Hours';
 
   @override
+  String get hoursSuffixShort => 'h';
+
+  @override
   String get howAreYouFeeling => 'How are you feeling?';
 
   @override
@@ -1637,16 +1792,52 @@ class AppLocalizationsEn extends AppLocalizations {
   String get insights => 'Insights';
 
   @override
+  String get insufficientTokensWatchAd =>
+      'Insufficient tokens! Watch an ad to earn tokens.';
+
+  @override
+  String get invalidCodeLengthError => 'Code must be 6 characters';
+
+  @override
   String get invalidLink => 'Invalid link.';
 
   @override
   String get invalidValue => 'Invalid value';
 
   @override
+  String get inviteCodeCopiedSnackbar => 'Invite code copied!';
+
+  @override
+  String get inviteCodeTooltip => 'Invite Code';
+
+  @override
   String get issueDescription => 'Issue Description';
 
   @override
   String get issueDescriptionHint => 'Describe the issue in detail...';
+
+  @override
+  String get joinButton => 'Join';
+
+  @override
+  String get joinRoomCodeMessage =>
+      'Enter the 6-digit invite code from your friend:';
+
+  @override
+  String get joinRoomSubtitle => 'Join an existing room with an invite code';
+
+  @override
+  String joinRoomSuccessSnackbar(Object roomName) {
+    return 'Joined $roomName room! 🎉';
+  }
+
+  @override
+  String get joinRoomTitle => 'Join Room';
+
+  @override
+  String joinedAtLabel(Object date) {
+    return 'Joined: $date';
+  }
 
   @override
   String get journalEntry => 'Journal Entry';
@@ -1662,6 +1853,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get jsonDataExample => 'JSON Data (example):';
 
   @override
+  String get justNow => 'Just now';
+
+  @override
   String get keepItUp => 'Awesome! Keep it up! 💪';
 
   @override
@@ -1669,6 +1863,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageSelection => 'Language Selection';
+
+  @override
+  String get last7DaysProgressLabel => 'Last 7 Days Progress';
 
   @override
   String lastBackup(String date) {
@@ -1683,6 +1880,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lavenderDreamsDesc => 'Elegant lavender & purple tones';
+
+  @override
+  String get leaderboardDetailsTitle => 'Ranking Details';
+
+  @override
+  String get leaveButton => 'Leave';
+
+  @override
+  String get leaveRoomTitle => 'Leave Room';
+
+  @override
+  String get leaveRoomWarning => 'Are you sure you want to leave this room?';
 
   @override
   String get letsPlayGame => 'Let\'s play! 🎮';
@@ -1750,6 +1959,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get longestStreak => 'Longest Streak';
 
   @override
+  String get longestStreakLabel => 'Longest Streak';
+
+  @override
   String get manageLists => 'Manage lists';
 
   @override
@@ -1785,6 +1997,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get medium => 'Medium';
 
   @override
+  String memberCountText(Object count) {
+    return '$count members';
+  }
+
+  @override
+  String get memberHabitsLabel => 'Member\'s Habits';
+
+  @override
+  String get memberProfileTitle => 'Member Profile';
+
+  @override
+  String get memberTableHeader => 'MEMBER';
+
+  @override
+  String membersCompletedStatus(Object completed, Object total) {
+    return '$completed/$total members completed';
+  }
+
+  @override
+  String membersCountText(Object count) {
+    return '$count people';
+  }
+
+  @override
   String get minLabel => 'min';
 
   @override
@@ -1800,7 +2036,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get minutes => 'Minutes';
 
   @override
-  String get minutesSuffixShort => 'min';
+  String get minutesSuffixShort => 'm';
 
   @override
   String get miraPlusActive => 'Mira Plus Active';
@@ -1916,6 +2152,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get moodTrend => 'Mood Trend (Last 30 Days)';
 
   @override
+  String get moreChartsButton => 'More Charts';
+
+  @override
+  String get mostActiveMemberLabel => 'Most Active Member';
+
+  @override
   String get mostCommonEmotion => 'Most Common Emotion';
 
   @override
@@ -1963,54 +2205,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get multipleSubItemsDesc => 'Multiple sub-items';
 
   @override
-  String get emotionOverwhelmed => 'Overwhelmed';
-
-  @override
-  String get emotionLonely => 'Lonely';
-
-  @override
-  String get emotionRegretful => 'Regretful';
-
-  @override
-  String get emotionInsecure => 'Insecure';
-
-  @override
-  String get emotionGuilty => 'Guilty';
-
-  @override
-  String get emotionBored => 'Bored';
-
-  @override
-  String get emotionNumb => 'Numb';
-
-  @override
-  String get emotionConfused => 'Confused';
-
-  @override
-  String get emotionDistracted => 'Distracted';
-
-  @override
-  String get emotionProud => 'Proud';
-
-  @override
-  String get emotionConfident => 'Confident';
-
-  @override
-  String get emotionHopeful => 'Hopeful';
-
-  @override
-  String get emotionEuphoric => 'Euphoric';
-
-  @override
-  String get emotionBlessed => 'Blessed';
-
-  @override
-  String get emotionUnstoppable => 'Unstoppable';
-
-  @override
-  String get reasonTitle => 'Reason';
-
-  @override
   String get mustBePremiumToUse =>
       'You must be a Premium subscriber to use this feature.';
 
@@ -2025,6 +2219,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mysticThemeDesc => 'Mystic purple theme';
+
+  @override
+  String nDays(Object days) {
+    return '$days days';
+  }
 
   @override
   String nDaysLabel(Object count) {
@@ -2077,10 +2276,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nextYear => 'Next year';
 
   @override
+  String get noActiveHabitsForMember => 'Member has no active habits yet.';
+
+  @override
   String get noBackups => 'Yedek bulunamadı';
 
   @override
   String get noBackupsFound => 'No backups found.';
+
+  @override
+  String get noBadgesEarned => 'No badges earned yet.';
 
   @override
   String get noDataLast7Days => 'No data for last 7 days';
@@ -2099,6 +2304,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noEntriesYet => 'No entries yet';
 
   @override
+  String get noEvents => 'No events yet';
+
+  @override
   String get noExpenseInThisCategory => 'No expenses in this category';
 
   @override
@@ -2108,7 +2316,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noExpensesThisMonth => 'No expenses for this month';
 
   @override
+  String get noHabitsAdded => 'No habits added yet';
+
+  @override
   String get noHabitsAddedYet => 'No habits added yet.';
+
+  @override
+  String get noHabitsInRoom => 'No habits added yet';
 
   @override
   String get noHistory => 'No mood history';
@@ -2120,19 +2334,48 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noItemsMatchFilters => 'No items match the current filters';
 
   @override
+  String get noLeaderboardData => 'No Ranking Data';
+
+  @override
   String get noLinkedHabitsInVision => 'No habits linked to this vision.';
+
+  @override
+  String get noMeasurableDataForMember =>
+      'No measurable data available for this member yet.';
+
+  @override
+  String get noMemberDataYet => 'No member data yet.';
 
   @override
   String get noMoodData => 'No mood data yet';
 
   @override
+  String get noNotesYet => 'No notes yet';
+
+  @override
   String get noPlansAvailable => 'No plans available at the moment.';
+
+  @override
+  String get noProgressYet => 'No progress yet';
 
   @override
   String get noReadyVisionsFound => 'No ready visions found.';
 
   @override
   String get noRecordsThisMonth => 'No records for this month';
+
+  @override
+  String get noReportsYet => 'No reports yet';
+
+  @override
+  String get noRoomsJoinedMessage =>
+      'Create a room or join one with an invite code.\nReach your goals together with friends!';
+
+  @override
+  String get noRoomsJoinedTitle => 'You haven\'t joined any rooms yet';
+
+  @override
+  String get noStatsAvailable => 'No Statistics Available';
 
   @override
   String get noTasksYet => 'No tasks added yet';
@@ -2154,6 +2397,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noteOptional => 'Note (optional)';
+
+  @override
+  String get noteSharedSnackbar => 'Note shared! ✨';
+
+  @override
+  String get notesSection => '📝 Notes';
 
   @override
   String get notificationBehavior => 'Notification Behavior';
@@ -2180,6 +2429,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationsMasterSubtitle => 'Control all app notifications';
+
+  @override
+  String get nudgeButtonLabel => 'Nudge';
+
+  @override
+  String get nudgeDefaultMessage =>
+      '👊 Come on friend, a little more effort today! Complete your habits.';
+
+  @override
+  String nudgeNotification(Object name) {
+    return '👊 $name is nudging you!';
+  }
+
+  @override
+  String nudgeSuccessSnackbar(Object displayName) {
+    return '$displayName nudged! 👊';
+  }
+
+  @override
+  String nudgeTitle(Object displayName) {
+    return 'Nudge $displayName 👊';
+  }
 
   @override
   String get numberLabel => 'Number';
@@ -2395,6 +2666,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseFillAllFields => 'Please fill all fields';
 
   @override
+  String get pointsTableHeader => 'POINTS';
+
+  @override
   String get pomodoroAndCustomTimers => 'Pomodoro and custom timers';
 
   @override
@@ -2402,6 +2676,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get premiumFeature => 'Premium Feature';
+
+  @override
+  String get premiumFeatureLabel => 'Premium Feature';
 
   @override
   String get premiumFeatures => 'Premium Features';
@@ -2444,6 +2721,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileUpdated => 'Profile updated';
 
   @override
+  String get progressJourneyMessage =>
+      'As you complete your habits, this chart will be shaped by your success ✨';
+
+  @override
+  String get progressJourneyStarts => 'Journey of Progress Begins';
+
+  @override
   String get promoCodeActiveMessage =>
       'Your Premium access is activated via promo code ✨';
 
@@ -2467,6 +2751,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get quickSuggestions => 'Quick Suggestions';
+
+  @override
+  String get rankingAndHabitsSection => '🏆 Ranking & Habits';
 
   @override
   String get readBook => 'Read Book';
@@ -2497,6 +2784,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reasonSocial => 'Social';
+
+  @override
+  String get reasonTitle => 'Reason';
 
   @override
   String get reasonWeather => 'Weather';
@@ -2558,6 +2848,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get repeatEveryNDays => 'Repeat Every N Days';
 
   @override
+  String get reportAlreadyExists => 'Report already exists for this week.';
+
+  @override
   String get reportBug => 'Report Bug';
 
   @override
@@ -2566,6 +2859,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reportBugSubtitle => 'Report issues you encounter';
+
+  @override
+  String get reportCreatedSuccess => 'Report created! ✨';
 
   @override
   String get reset => 'Reset';
@@ -2611,7 +2907,222 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retakePersonalityTest => 'Retake Personality Test';
 
   @override
+  String get retakePersonalityTestDesc => 'Rediscover your character type';
+
+  @override
+  String get retakeRhythmTest => 'Retake Rhythm Test';
+
+  @override
+  String get retakeRhythmTestDesc => 'Reconfigure your biological clock';
+
+  @override
   String get retry => 'Retry';
+
+  @override
+  String get rhythmA1_1 => '05:00 AM – 06:30 AM';
+
+  @override
+  String get rhythmA1_2 => '06:30 AM – 07:45 AM';
+
+  @override
+  String get rhythmA1_3 => '07:45 AM – 09:45 AM';
+
+  @override
+  String get rhythmA1_4 => '09:45 AM – 11:00 AM';
+
+  @override
+  String get rhythmA1_5 => '11:00 AM – 12:00 PM';
+
+  @override
+  String get rhythmA2_1 => 'Very tired';
+
+  @override
+  String get rhythmA2_2 => 'Fairly tired';
+
+  @override
+  String get rhythmA2_3 => 'Fairly rested';
+
+  @override
+  String get rhythmA2_4 => 'Very rested';
+
+  @override
+  String get rhythmA3_1 => '08:00 PM – 09:00 PM';
+
+  @override
+  String get rhythmA3_2 => '09:00 PM – 10:15 PM';
+
+  @override
+  String get rhythmA3_3 => '10:15 PM – 12:30 AM';
+
+  @override
+  String get rhythmA3_4 => '12:30 AM – 01:45 AM';
+
+  @override
+  String get rhythmA3_5 => '01:45 AM – 03:00 AM';
+
+  @override
+  String get rhythmA4_1 => '05:00 AM – 09:00 AM';
+
+  @override
+  String get rhythmA4_2 => '09:00 AM – 02:00 PM';
+
+  @override
+  String get rhythmA4_3 => '02:00 PM – 05:00 PM';
+
+  @override
+  String get rhythmA4_4 => '05:00 PM – 09:00 PM';
+
+  @override
+  String get rhythmA4_5 => '09:00 PM – 05:00 AM';
+
+  @override
+  String get rhythmA5_1 => 'Definitely a morning type';
+
+  @override
+  String get rhythmA5_2 => 'Rather more a morning type';
+
+  @override
+  String get rhythmA5_3 => 'Rather more an evening type';
+
+  @override
+  String get rhythmA5_4 => 'Definitely an evening type';
+
+  @override
+  String get rhythmAnalyzing => 'Live Rhythm is analyzing...';
+
+  @override
+  String get rhythmBenefit1 => 'Right task at the right time';
+
+  @override
+  String get rhythmBenefit2 => 'No decision fatigue';
+
+  @override
+  String get rhythmBenefit3 => 'Personalization every week';
+
+  @override
+  String get rhythmChronoEvening => 'Evening Type (Night Owl)';
+
+  @override
+  String get rhythmChronoIntermediate => 'Intermediate Type (Balanced)';
+
+  @override
+  String get rhythmChronoMorning => 'Morning Type (Early Bird)';
+
+  @override
+  String get rhythmDisclaimer =>
+      'These are not definitive results. Live Rhythm will adjust as it gets to know you.';
+
+  @override
+  String get rhythmEnergyHint => 'Workout, physical activity';
+
+  @override
+  String get rhythmFocusHint => 'Mental work, analysis, learning';
+
+  @override
+  String get rhythmHabitSuggestionTitle => 'Recommended Time Blocks:';
+
+  @override
+  String get rhythmLightHint => 'Emails, social media, small tasks';
+
+  @override
+  String get rhythmQ1 =>
+      'Considering only your own \"feeling best\" rhythm, at what time would you get up if you were entirely free to plan your day?';
+
+  @override
+  String get rhythmQ2 =>
+      'During the first half-hour after having woken in the morning, how tired do you feel?';
+
+  @override
+  String get rhythmQ3 =>
+      'At what time would you go to bed if you were entirely free to plan your evening?';
+
+  @override
+  String get rhythmQ4 =>
+      'At what time of day do you feel your best (most energetic)?';
+
+  @override
+  String get rhythmQ5 =>
+      'Do you consider yourself a \"morning type\" or an \"evening type\"?';
+
+  @override
+  String get rhythmReflectionHint => 'Journal, reading, wind down';
+
+  @override
+  String get rhythmResultGotIt => 'Got It, Let\'s Start';
+
+  @override
+  String get rhythmResultSubtitle =>
+      'We\'ve mapped out your day based on your natural rhythm.';
+
+  @override
+  String get rhythmResultTitle => 'Your Biological Clock Profile';
+
+  @override
+  String get rhythmTeaserCta => 'View Packages';
+
+  @override
+  String get rhythmTeaserSkip => 'Skip';
+
+  @override
+  String get rhythmTeaserSubtitle =>
+      'Live Rhythm learns your most productive moments and places habits at the right time.';
+
+  @override
+  String get rhythmTeaserTitle =>
+      'Maximize Your Habits Based on Your Biological Clock';
+
+  @override
+  String get rhythmWindowEnergy => 'Energy Time';
+
+  @override
+  String get rhythmWindowEnergyDesc => 'Movement, action, sports';
+
+  @override
+  String get rhythmWindowFocus => 'Focus Time';
+
+  @override
+  String get rhythmWindowFocusDesc => 'Mental clarity, learning, analysis';
+
+  @override
+  String get rhythmWindowLight => 'Light Time';
+
+  @override
+  String get rhythmWindowLightDesc => 'Low effort, small tasks';
+
+  @override
+  String get rhythmWindowNoProfileHint =>
+      'Complete the rhythm test to get personalized suggestions';
+
+  @override
+  String get rhythmWindowReflection => 'Reflection Time';
+
+  @override
+  String get rhythmWindowReflectionDesc => 'Journaling, contemplation, closure';
+
+  @override
+  String get rhythmWindowStepSubtitle =>
+      'When would you like to do this habit?';
+
+  @override
+  String get rhythmWindowStepTitle => 'Best Time Window';
+
+  @override
+  String get roomFabLabel => 'Room';
+
+  @override
+  String get roomMembersLabel => 'ROOM MEMBERS';
+
+  @override
+  String get roomNameHint => 'e.g. Morning Routine Team';
+
+  @override
+  String get roomNameLabel => 'Room Name';
+
+  @override
+  String get roomNotFoundError => 'No room found with this code';
+
+  @override
+  String get roomSummaryHeader => 'ROOM SUMMARY';
 
   @override
   String get roundCorners => 'Round Corners';
@@ -2656,6 +3167,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get save => 'Save';
 
   @override
+  String get saveButton => 'Save';
+
+  @override
   String get saveChanges => 'Save Changes';
 
   @override
@@ -2695,16 +3209,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectAll => 'Select All';
 
   @override
+  String get selectAtLeastOneDay => 'Please select at least one day';
+
+  @override
   String get selectCategory => 'Select Category';
 
   @override
   String get selectDate => 'Select Date';
 
   @override
-  String get selectDuration => 'Select Duration';
+  String get selectDay => 'Select Day';
 
   @override
-  String get selectAtLeastOneDay => 'Please select at least one day';
+  String get selectDuration => 'Select Duration';
 
   @override
   String get selectEmoji => 'Select Emoji';
@@ -2714,6 +3231,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectFrequency => 'Select Frequency';
+
+  @override
+  String get selectHabitLabel => 'Select Habit';
 
   @override
   String get selectHabitType => 'Select Habit Type';
@@ -2730,6 +3250,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectReasonDesc => 'Which factor affected your day the most?';
+
+  @override
+  String get selectReportType => 'Select Report Type:';
 
   @override
   String get selectSubEmotion => 'Select Sub-emotion';
@@ -2770,10 +3293,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareBoard => 'Share board';
 
   @override
+  String get shareButton => 'Share';
+
+  @override
   String get shareDashboard => 'Share Dashboard';
 
   @override
+  String get shareInviteCodeMessage => 'Share this code with your friends:';
+
+  @override
   String get shareLinkCopied => 'Share link copied to clipboard.';
+
+  @override
+  String get shareNoteHint => 'Share your thoughts...';
+
+  @override
+  String get shareNoteTitle => 'Share Note';
+
+  @override
+  String get shareNoteTooltip => 'Share Note';
 
   @override
   String get shareVision => 'Share vision';
@@ -2869,7 +3407,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get simpleHabitStartDateTitle => 'When will you start?';
 
   @override
+  String get simpleHabitSubtitle => 'Quickly create a habit';
+
+  @override
   String get simpleHabitTargetOne => 'Simple habit (target = 1)';
+
+  @override
+  String get simpleHabitTitle => 'Simple Habit';
 
   @override
   String get simpleHabitWeekdaysSubtitle => 'Select the active days';
@@ -2900,7 +3444,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get social => 'Social';
 
   @override
+  String get socialFeaturesGuestMessage =>
+      'You need to sign in with Google to create rooms and track progress with friends.';
+
+  @override
+  String get socialFeaturesTitle => 'Social Features';
+
+  @override
   String get socialFeedTitle => 'Feed';
+
+  @override
+  String get socialRoomsTitle => 'Social Rooms';
 
   @override
   String get softCloud => 'Soft Cloud';
@@ -2997,6 +3551,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startTestTitle => 'Do you want to start the personality test?';
 
   @override
+  String get startTime => 'Start Time';
+
+  @override
   String get startTrackingFinances =>
       'Start tracking your finances and take control of your spending.';
 
@@ -3028,7 +3585,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String streakDays(Object count) {
-    return '$count Day Streak';
+    return '$count days';
   }
 
   @override
@@ -3243,6 +3800,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get taskAdded => 'Task added';
 
   @override
+  String taskAddedSnackbar(Object title) {
+    return '$title task added! ✅';
+  }
+
+  @override
   String get taskCompleted => 'Completed';
 
   @override
@@ -3277,6 +3839,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get templatesTabReady => 'Ready';
+
+  @override
+  String get testsSection => 'Tests';
 
   @override
   String get textLabel => 'Text';
@@ -3520,6 +4085,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get todaysHabits => 'Today\'s Habits';
 
   @override
+  String get tokenEarnedSuccess => '+1 token earned! 🎉';
+
+  @override
   String get tomorrow => 'Tomorrow';
 
   @override
@@ -3530,6 +4098,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get totalEntries => 'Total Entries';
+
+  @override
+  String get totalMembersLabel => 'Total members';
 
   @override
   String get totalProgress => 'Total progress';
@@ -3743,6 +4314,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get warmJournalDesc => 'Warm journal & emotion tracking';
 
   @override
+  String get watchAdForToken => 'Watch Ad (+1 Token)';
+
+  @override
   String get wednesdayShort => 'Wed';
 
   @override
@@ -3782,6 +4356,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weeklyProgress => 'Weekly progress';
 
   @override
+  String get weeklyReportsTitle => 'Weekly Reports';
+
+  @override
+  String get weeklySchedule => 'Weekly';
+
+  @override
   String get weeklySummaryEmail => 'Weekly summary email';
 
   @override
@@ -3797,10 +4377,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wheelOfFortuneTitle => 'Wheel of Fortune';
 
   @override
+  String get whichDays => 'Which days';
+
+  @override
   String get whichDaysActive => 'Which days should be active?';
 
   @override
+  String get whichMonthDays => 'Which days of the month?';
+
+  @override
   String get whichWeekdays => 'Which weekdays?';
+
+  @override
+  String get whichYearDays => 'Which year days';
 
   @override
   String get worldTheme => 'World';
@@ -3817,7 +4406,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get xpToNextLevel => 'to next level';
+  String xpToNextLevel(Object toNext) {
+    return '$toNext XP to next level';
+  }
 
   @override
   String get yearly => 'Yearly';
@@ -3838,6 +4429,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yesterday => 'Yesterday';
 
   @override
+  String get youLabel => 'You';
+
+  @override
   String get yourCharacterType => 'Your Character Type';
 
   @override
@@ -3848,270 +4442,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get yourMoodToday => 'Your Mood Today';
-
-  @override
-  String get dailyHabitInfo => 'Daily habit info';
-
-  @override
-  String get whichDays => 'Which days';
-
-  @override
-  String get whichMonthDays => 'Which days of the month?';
-
-  @override
-  String get whichYearDays => 'Which year days';
-
-  @override
-  String everyNDays(Object days) {
-    return 'Every $days days';
-  }
-
-  @override
-  String nDays(Object days) {
-    return '$days days';
-  }
-
-  @override
-  String everyNDaysInfo(Object days) {
-    return 'Occurs every $days days';
-  }
-
-  @override
-  String get rhythmTeaserTitle =>
-      'Maximize Your Habits Based on Your Biological Clock';
-
-  @override
-  String get rhythmTeaserSubtitle =>
-      'Live Rhythm learns your most productive moments and places habits at the right time.';
-
-  @override
-  String get rhythmTeaserSkip => 'Skip';
-
-  @override
-  String get rhythmTeaserCta => 'View Packages';
-
-  @override
-  String get rhythmWindowFocus => 'Focus Time';
-
-  @override
-  String get rhythmWindowFocusDesc => 'Mental clarity, learning, analysis';
-
-  @override
-  String get rhythmWindowEnergy => 'Energy Time';
-
-  @override
-  String get rhythmWindowEnergyDesc => 'Movement, action, sports';
-
-  @override
-  String get rhythmWindowLight => 'Light Time';
-
-  @override
-  String get rhythmWindowLightDesc => 'Low effort, small tasks';
-
-  @override
-  String get rhythmWindowReflection => 'Reflection Time';
-
-  @override
-  String get rhythmWindowReflectionDesc => 'Journaling, contemplation, closure';
-
-  @override
-  String get rhythmBenefit1 => 'Right task at the right time';
-
-  @override
-  String get rhythmBenefit2 => 'No decision fatigue';
-
-  @override
-  String get rhythmBenefit3 => 'Personalization every week';
-
-  @override
-  String get rhythmAnalyzing => 'Live Rhythm is analyzing...';
-
-  @override
-  String get rhythmDisclaimer =>
-      'These are not definitive results. Live Rhythm will adjust as it gets to know you.';
-
-  @override
-  String get rhythmQ1 =>
-      'Considering only your own \"feeling best\" rhythm, at what time would you get up if you were entirely free to plan your day?';
-
-  @override
-  String get rhythmQ2 =>
-      'During the first half-hour after having woken in the morning, how tired do you feel?';
-
-  @override
-  String get rhythmQ3 =>
-      'At what time would you go to bed if you were entirely free to plan your evening?';
-
-  @override
-  String get rhythmQ4 =>
-      'At what time of day do you feel your best (most energetic)?';
-
-  @override
-  String get rhythmQ5 =>
-      'Do you consider yourself a \"morning type\" or an \"evening type\"?';
-
-  @override
-  String get rhythmA1_1 => '05:00 AM – 06:30 AM';
-
-  @override
-  String get rhythmA1_2 => '06:30 AM – 07:45 AM';
-
-  @override
-  String get rhythmA1_3 => '07:45 AM – 09:45 AM';
-
-  @override
-  String get rhythmA1_4 => '09:45 AM – 11:00 AM';
-
-  @override
-  String get rhythmA1_5 => '11:00 AM – 12:00 PM';
-
-  @override
-  String get rhythmA2_1 => 'Very tired';
-
-  @override
-  String get rhythmA2_2 => 'Fairly tired';
-
-  @override
-  String get rhythmA2_3 => 'Fairly rested';
-
-  @override
-  String get rhythmA2_4 => 'Very rested';
-
-  @override
-  String get rhythmA3_1 => '08:00 PM – 09:00 PM';
-
-  @override
-  String get rhythmA3_2 => '09:00 PM – 10:15 PM';
-
-  @override
-  String get rhythmA3_3 => '10:15 PM – 12:30 AM';
-
-  @override
-  String get rhythmA3_4 => '12:30 AM – 01:45 AM';
-
-  @override
-  String get rhythmA3_5 => '01:45 AM – 03:00 AM';
-
-  @override
-  String get rhythmA4_1 => '05:00 AM – 09:00 AM';
-
-  @override
-  String get rhythmA4_2 => '09:00 AM – 02:00 PM';
-
-  @override
-  String get rhythmA4_3 => '02:00 PM – 05:00 PM';
-
-  @override
-  String get rhythmA4_4 => '05:00 PM – 09:00 PM';
-
-  @override
-  String get rhythmA4_5 => '09:00 PM – 05:00 AM';
-
-  @override
-  String get rhythmA5_1 => 'Definitely a morning type';
-
-  @override
-  String get rhythmA5_2 => 'Rather more a morning type';
-
-  @override
-  String get rhythmA5_3 => 'Rather more an evening type';
-
-  @override
-  String get rhythmA5_4 => 'Definitely an evening type';
-
-  @override
-  String get rhythmResultTitle => 'Your Biological Clock Profile';
-
-  @override
-  String get rhythmResultSubtitle =>
-      'We\'ve mapped out your day based on your natural rhythm.';
-
-  @override
-  String get rhythmChronoMorning => 'Morning Type (Early Bird)';
-
-  @override
-  String get rhythmChronoEvening => 'Evening Type (Night Owl)';
-
-  @override
-  String get rhythmChronoIntermediate => 'Intermediate Type (Balanced)';
-
-  @override
-  String get rhythmHabitSuggestionTitle => 'Recommended Time Blocks:';
-
-  @override
-  String get rhythmResultGotIt => 'Got It, Let\'s Start';
-
-  @override
-  String get rhythmFocusHint => 'Mental work, analysis, learning';
-
-  @override
-  String get rhythmEnergyHint => 'Workout, physical activity';
-
-  @override
-  String get rhythmLightHint => 'Emails, social media, small tasks';
-
-  @override
-  String get rhythmReflectionHint => 'Journal, reading, wind down';
-
-  @override
-  String get testsSection => 'Tests';
-
-  @override
-  String get retakePersonalityTestDesc => 'Rediscover your character type';
-
-  @override
-  String get retakeRhythmTest => 'Retake Rhythm Test';
-
-  @override
-  String get retakeRhythmTestDesc => 'Reconfigure your biological clock';
-
-  @override
-  String get rhythmWindowStepTitle => 'Best Time Window';
-
-  @override
-  String get rhythmWindowStepSubtitle =>
-      'When would you like to do this habit?';
-
-  @override
-  String get rhythmWindowNoProfileHint =>
-      'Complete the rhythm test to get personalized suggestions';
-
-  @override
-  String get weeklySchedule => 'Weekly';
-
-  @override
-  String get addEvent => 'Add Event';
-
-  @override
-  String get eventTitle => 'Event Title';
-
-  @override
-  String get eventDescription => 'Description';
-
-  @override
-  String get startTime => 'Start Time';
-
-  @override
-  String get endTime => 'End Time';
-
-  @override
-  String get selectDay => 'Select Day';
-
-  @override
-  String get eventDetails => 'Event Details';
-
-  @override
-  String get deleteEvent => 'Delete Event';
-
-  @override
-  String get editEvent => 'Edit Event';
-
-  @override
-  String get noEvents => 'No events yet';
-
-  @override
-  String get habitBlock => 'Habit';
-
-  @override
-  String get customEvent => 'Custom Event';
 }

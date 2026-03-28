@@ -9,56 +9,6 @@ class AppLocalizationsNl extends AppLocalizations {
   AppLocalizationsNl([String locale = 'nl']) : super(locale);
 
   @override
-  String get weeklyReportsTitle => 'Wekelijkse Rapporten';
-
-  @override
-  String get noReportsYet => 'Nog geen rapporten';
-
-  @override
-  String get createFirstReportPrompt =>
-      'Klik op + om je eerste weekrapport te maken';
-
-  @override
-  String get generating => 'Genereren...';
-
-  @override
-  String get createReport => 'Rapport Maken';
-
-  @override
-  String costTokens(Object cost) {
-    return 'Kosten: $cost tokens';
-  }
-
-  @override
-  String balanceParenthesis(Object balance) {
-    return '(Saldo: $balance)';
-  }
-
-  @override
-  String get watchAdForToken => 'Bekijk Advertentie (+1 Token)';
-
-  @override
-  String get selectReportType => 'Selecteer Rapporttype:';
-
-  @override
-  String generatedAtDate(Object date) {
-    return 'Gegenereerd: $date';
-  }
-
-  @override
-  String get insufficientTokensWatchAd =>
-      'Onvoldoende tokens! Bekijk een advertentie.';
-
-  @override
-  String get reportCreatedSuccess => 'Rapport gemaakt! ✨';
-
-  @override
-  String get reportAlreadyExists => 'Rapport bestaat al voor deze week.';
-
-  @override
-  String get tokenEarnedSuccess => '+1 token verdiend! 🎉';
-
-  @override
   String get about => 'Over';
 
   @override
@@ -83,10 +33,20 @@ class AppLocalizationsNl extends AppLocalizations {
   String get addDate => 'Datum toevoegen';
 
   @override
+  String get addEvent => 'Gebeurtenis toevoegen';
+
+  @override
+  String get addFabTooltip => 'Toevoegen';
+
+  @override
   String get addFirstTransaction => 'İlk işlemi ekle';
 
   @override
   String get addHabit => 'Gewoonte toevoegen';
+
+  @override
+  String get addHabitToRoomPrompt =>
+      'Voeg een gewoonte toe aan de kamer met de +-knop!';
 
   @override
   String get addImage => 'Afbeelding toevoegen';
@@ -119,6 +79,11 @@ class AppLocalizationsNl extends AppLocalizations {
   String get addToList => 'Aan lijst toevoegen';
 
   @override
+  String addedToRoomSnackbar(Object title) {
+    return '$title toegevoegd aan kamer! 🎯';
+  }
+
+  @override
   String get advancedAnalysis => 'Advanced Analysis';
 
   @override
@@ -126,6 +91,10 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get advancedHabit => 'Geavanceerde gewoonte';
+
+  @override
+  String get advancedHabitSubtitle =>
+      'Premium • Gewoonte maken met gedetailleerde instellingen';
 
   @override
   String get advancedHabitTitle => 'Advanced Habit';
@@ -225,6 +194,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get allDataDeleted => 'All data deleted';
+
+  @override
+  String get allHabitsLabel => 'Tüm Alışkanlıklar';
 
   @override
   String get allLabel => 'Alles';
@@ -458,6 +430,11 @@ class AppLocalizationsNl extends AppLocalizations {
   String get badges => 'Badges';
 
   @override
+  String balanceParenthesis(Object balance) {
+    return '(Saldo: $balance)';
+  }
+
+  @override
   String get becomePremium => 'Become Premium';
 
   @override
@@ -509,6 +486,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get cancel => 'Annuleren';
+
+  @override
+  String get cancelButton => 'İptal';
 
   @override
   String get cancelEffect =>
@@ -577,10 +557,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get choosePhoto => 'Fotoğraf Seç';
 
   @override
-  String get choosePhotoSubtitle => 'Seni motive eden bir fotoğraf seç';
+  String get choosePhotoDesc => 'Size ilham veren bir fotoğraf seçin';
 
   @override
-  String get choosePhotoDesc => 'Size ilham veren bir fotoğraf seçin';
+  String get choosePhotoSubtitle => 'Seni motive eden bir fotoğraf seç';
 
   @override
   String get clear => 'Wissen';
@@ -593,6 +573,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get close => 'Sluiten';
+
+  @override
+  String get closeButton => 'Kapat';
 
   @override
   String get cloudBackup => 'Cloud Backup';
@@ -619,6 +602,17 @@ class AppLocalizationsNl extends AppLocalizations {
   String get completedSelectedDay => 'Voltooid (geselecteerde dag)';
 
   @override
+  String get completedTableHeader => 'KLAAR';
+
+  @override
+  String get completionPercentLabel => 'Voltooiing %';
+
+  @override
+  String completionsCount(Object count) {
+    return '$count tamamlandı';
+  }
+
+  @override
   String get confirmDeleteAccount => 'Confirm Account Deletion';
 
   @override
@@ -629,6 +623,17 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get continueText => 'Devam Et';
+
+  @override
+  String get copyButton => 'Kopyala';
+
+  @override
+  String get copyCodeTitle => 'Code kopiëren';
+
+  @override
+  String costTokens(Object cost) {
+    return 'Kosten: $cost tokens';
+  }
 
   @override
   String get cottonCandy => 'Pamuk Şeker';
@@ -661,10 +666,17 @@ class AppLocalizationsNl extends AppLocalizations {
   String get createAdvancedHabit => 'Geavanceerde gewoonte maken';
 
   @override
+  String get createButton => 'Oluştur';
+
+  @override
   String get createDailyTask => 'Dagelijkse taak maken';
 
   @override
   String get createFirstHabit => 'Alışkanlık Oluştur';
+
+  @override
+  String get createFirstReportPrompt =>
+      'Klik op + om je eerste weekrapport te maken';
 
   @override
   String get createFirstVision => 'İlk Vizyonunuzu Oluşturun';
@@ -689,6 +701,19 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get createNewList => 'Nieuwe lijst maken';
+
+  @override
+  String get createReport => 'Rapport Maken';
+
+  @override
+  String get createRoomSubtitle =>
+      'Maak een nieuwe kamer en nodig je vrienden uit';
+
+  @override
+  String get createRoomSuccessSnackbar => 'Kamer gemaakt! 🎉';
+
+  @override
+  String get createRoomTitle => 'Kamer Maken';
 
   @override
   String get createVision => 'Visie creëren';
@@ -724,6 +749,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get customEmojiOptional => 'Aangepaste emoji (optioneel)';
 
   @override
+  String get customEvent => 'Aangepaste gebeurtenis';
+
+  @override
   String get customFrequency => 'Aangepast';
 
   @override
@@ -742,6 +770,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get dailyDesc => 'Her gün yapılacak';
 
   @override
+  String get dailyHabitInfo => 'Bu alışkanlık her gün tekrarlanacak';
+
+  @override
   String get dailyLimit => 'Dagelijkse limiet';
 
   @override
@@ -751,6 +782,12 @@ class AppLocalizationsNl extends AppLocalizations {
   String dailyTaskCreatedMessage(Object title) {
     return 'Dagelijkse taak gemaakt: $title';
   }
+
+  @override
+  String get dailyTaskSubtitle => 'Voeg een taak specifiek voor vandaag toe';
+
+  @override
+  String get dailyTaskTitle => 'Günlük Görev';
 
   @override
   String get dailyTasksSection => 'Dagelijkse taken';
@@ -834,6 +871,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get daysRemaining => 'Days Remaining';
 
   @override
+  String get daysSuffixShort => 'gün';
+
+  @override
   String get decisionEggDescription => 'Mistik yumurtalardan birini seç';
 
   @override
@@ -871,6 +911,9 @@ class AppLocalizationsNl extends AppLocalizations {
       'Are you sure you want to delete all your app data? This action cannot be undone.';
 
   @override
+  String get deleteButton => 'Sil';
+
+  @override
   String deleteCategoryConfirmNamed(Object name) {
     return 'De categorie \"$name\" verwijderen?';
   }
@@ -886,9 +929,15 @@ class AppLocalizationsNl extends AppLocalizations {
   String get deleteEntryConfirm => 'Deze invoer verwijderen?';
 
   @override
+  String get deleteEvent => 'Gebeurtenis verwijderen';
+
+  @override
   String deleteHabitConfirm(Object title) {
     return 'De gewoonte \"$title\" verwijderen?';
   }
+
+  @override
+  String get deleteHabitTitle => 'Alışkanlığı Sil';
 
   @override
   String get deleteListMessage =>
@@ -899,6 +948,13 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get deleteMyAccount => 'Delete My Account';
+
+  @override
+  String get deleteRoomTitle => 'Kamer Verwijderen';
+
+  @override
+  String get deleteRoomWarning =>
+      'Deze kamer en alle inhoud worden permanent verwijderd. Wil je doorgaan?';
 
   @override
   String get deleteTaskConfirm => 'Are you sure you want to delete this task?';
@@ -978,13 +1034,26 @@ class AppLocalizationsNl extends AppLocalizations {
   String get edit => 'Bewerken';
 
   @override
+  String get editButton => 'Düzenle';
+
+  @override
   String get editCategory => 'Categorie bewerken';
+
+  @override
+  String get editDeleteTooltip => 'Düzenle / Sil';
+
+  @override
+  String get editEvent => 'Gebeurtenis bewerken';
 
   @override
   String get editHabit => 'Gewoonte bewerken';
 
   @override
   String get editListTitle => 'Lijst bewerken';
+
+  @override
+  String get editOnlyPersonalHabits =>
+      'Sadece kişisel listenize eklenmiş alışkanlıkları düzenleyebilirsiniz.';
 
   @override
   String get education => 'Onderwijs';
@@ -1030,6 +1099,51 @@ class AppLocalizationsNl extends AppLocalizations {
   String get emojiLabel => 'Emoji';
 
   @override
+  String get emotionBlessed => 'Gezegend';
+
+  @override
+  String get emotionBored => 'Verveeld';
+
+  @override
+  String get emotionConfident => 'Zelfverzekerd';
+
+  @override
+  String get emotionConfused => 'Verward';
+
+  @override
+  String get emotionDistracted => 'Afgeleid';
+
+  @override
+  String get emotionEuphoric => 'Euforisch';
+
+  @override
+  String get emotionGuilty => 'Schuldig';
+
+  @override
+  String get emotionHopeful => 'Hoopvol';
+
+  @override
+  String get emotionInsecure => 'Onzeker';
+
+  @override
+  String get emotionLonely => 'Eenzaam';
+
+  @override
+  String get emotionNumb => 'Gevoelloos';
+
+  @override
+  String get emotionOverwhelmed => 'Overwhelmed';
+
+  @override
+  String get emotionProud => 'Trots';
+
+  @override
+  String get emotionRegretful => 'Spijtig';
+
+  @override
+  String get emotionUnstoppable => 'Niet te stoppen';
+
+  @override
   String get emptyHabitSubtitle =>
       'İlerlemeni takip etmek için ilk alışkanlığını oluştur.';
 
@@ -1050,6 +1164,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get endDayOptionalLabel => 'Einddag (optioneel)';
+
+  @override
+  String get endTime => 'Eindtijd';
 
   @override
   String get enterBothOptions => 'Lütfen her iki seçeneği de girin';
@@ -1075,10 +1192,22 @@ class AppLocalizationsNl extends AppLocalizations {
   String get entries => 'Invoeren';
 
   @override
+  String get entryCountLabel => 'Aantal invoer';
+
+  @override
   String get entrySaved => 'Entry saved successfully!';
 
   @override
   String get errorPrefix => 'Error: ';
+
+  @override
+  String get eventDescription => 'Beschrijving';
+
+  @override
+  String get eventDetails => 'Details van gebeurtenis';
+
+  @override
+  String get eventTitle => 'Titel gebeurtenis';
 
   @override
   String get every => 'Every';
@@ -1088,6 +1217,16 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get everyLabel => 'Every';
+
+  @override
+  String everyNDays(Object days) {
+    return 'Kaç günde bir?';
+  }
+
+  @override
+  String everyNDaysInfo(Object days) {
+    return 'Her $days günde bir tekrarlanacak';
+  }
 
   @override
   String get everyNDaysQuestion => 'Om de hoeveel dagen?';
@@ -1138,17 +1277,18 @@ class AppLocalizationsNl extends AppLocalizations {
   String get featureAdvancedHabits => 'Gelişmiş Alışkanlık Oluşturma';
 
   @override
-  String get featureAiBioClock => 'AI Destekli Biyolojik Saat';
+  String get featureAiBioClock => 'AI-gestuurde biologische klok';
 
   @override
   String get featureAiBioClockDesc =>
-      'Biyolojik ritminize göre optimum zamanlama';
+      'Optimale timing op basis van uw biologische ritme';
 
   @override
-  String get featureAiWeeklyReport => 'AI Destekli Haftalık Rapor';
+  String get featureAiWeeklyReport => 'AI-gestuurd weekrapport';
 
   @override
-  String get featureAiWeeklyReportDesc => 'İlerlemenizin detaylı AI analizi';
+  String get featureAiWeeklyReportDesc =>
+      'Gedetailleerde AI-analyse van uw voortgang';
 
   @override
   String get featureBackup => 'Yedekleme Özelliği';
@@ -1289,7 +1429,18 @@ class AppLocalizationsNl extends AppLocalizations {
   String get generalNotifications => 'Algemene meldingen';
 
   @override
+  String get generalRoomStatsHeader => 'ALGEMENE KAMERSTATISTIEKEN';
+
+  @override
   String get generate => 'Oluştur';
+
+  @override
+  String generatedAtDate(Object date) {
+    return 'Gegenereerd: $date';
+  }
+
+  @override
+  String get generating => 'Genereren...';
 
   @override
   String get glasses => 'Glazen';
@@ -1352,6 +1503,9 @@ class AppLocalizationsNl extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get habitBlock => 'Gewoonte';
 
   @override
   String habitCreatedMessage(Object title) {
@@ -1590,6 +1744,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get hours => 'Uren';
 
   @override
+  String get hoursSuffixShort => 'sa';
+
+  @override
   String get howAreYouFeeling => 'Hoe voelt u zich?';
 
   @override
@@ -1644,16 +1801,53 @@ class AppLocalizationsNl extends AppLocalizations {
   String get insights => 'Insights';
 
   @override
+  String get insufficientTokensWatchAd =>
+      'Onvoldoende tokens! Bekijk een advertentie.';
+
+  @override
+  String get invalidCodeLengthError => 'Code moet 6 tekens bevatten';
+
+  @override
   String get invalidLink => 'Ongeldige link.';
 
   @override
   String get invalidValue => 'Ongeldige waarde';
 
   @override
+  String get inviteCodeCopiedSnackbar => 'Uitnodigingscode gekopieerd!';
+
+  @override
+  String get inviteCodeTooltip => 'Uitnodigingscode';
+
+  @override
   String get issueDescription => 'Issue Description';
 
   @override
   String get issueDescriptionHint => 'Describe the issue in detail...';
+
+  @override
+  String get joinButton => 'Katıl';
+
+  @override
+  String get joinRoomCodeMessage =>
+      'Voer de 6-cijferige uitnodigingscode van je vriend in:';
+
+  @override
+  String get joinRoomSubtitle =>
+      'Neem deel aan een bestaande kamer met een uitnodigingscode';
+
+  @override
+  String joinRoomSuccessSnackbar(Object roomName) {
+    return 'Deelnemen aan kamer $roomName gelukt! 🎉';
+  }
+
+  @override
+  String get joinRoomTitle => 'Deelnemen aan Kamer';
+
+  @override
+  String joinedAtLabel(Object date) {
+    return 'Katılım: $date';
+  }
 
   @override
   String get journalEntry => 'Journal Entry';
@@ -1669,6 +1863,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get jsonDataExample => 'JSON Data (example):';
 
   @override
+  String get justNow => 'Az önce';
+
+  @override
   String get keepItUp => 'Harika! Aynen devam! 💪';
 
   @override
@@ -1676,6 +1873,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get languageSelection => 'Taalselectie';
+
+  @override
+  String get last7DaysProgressLabel => 'Voortgang laatste 7 dagen';
 
   @override
   String lastBackup(String date) {
@@ -1690,6 +1890,19 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get lavenderDreamsDesc => 'Zarif lavanta ve mor tonları';
+
+  @override
+  String get leaderboardDetailsTitle => 'Rankingdetails';
+
+  @override
+  String get leaveButton => 'Çık';
+
+  @override
+  String get leaveRoomTitle => 'Kamer Verlaten';
+
+  @override
+  String get leaveRoomWarning =>
+      'Weet je zeker dat je deze kamer wilt verlaten?';
 
   @override
   String get letsPlayGame => 'Hadi oynayalım! 🎮';
@@ -1757,6 +1970,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get longestStreak => 'Langste reeks';
 
   @override
+  String get longestStreakLabel => 'En Uzun Seri';
+
+  @override
   String get manageLists => 'Lijsten beheren';
 
   @override
@@ -1791,6 +2007,30 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get medium => 'Gemiddeld';
+
+  @override
+  String memberCountText(Object count) {
+    return '$count leden';
+  }
+
+  @override
+  String get memberHabitsLabel => 'Gewoontes van lid';
+
+  @override
+  String get memberProfileTitle => 'Ledenprofiel';
+
+  @override
+  String get memberTableHeader => 'LID';
+
+  @override
+  String membersCompletedStatus(Object completed, Object total) {
+    return '$completed/$total leden voltooid';
+  }
+
+  @override
+  String membersCountText(Object count) {
+    return '$count personen';
+  }
 
   @override
   String get minLabel => 'min';
@@ -1924,6 +2164,12 @@ class AppLocalizationsNl extends AppLocalizations {
   String get moodTrend => 'Mood Trend (Last 30 Days)';
 
   @override
+  String get moreChartsButton => 'Meer grafieken';
+
+  @override
+  String get mostActiveMemberLabel => 'En Aktif Üye';
+
+  @override
   String get mostCommonEmotion => 'Most Common Emotion';
 
   @override
@@ -1970,54 +2216,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get multipleSubItemsDesc => 'Çoklu alt öğeler';
 
   @override
-  String get emotionOverwhelmed => 'Bunalmış';
-
-  @override
-  String get emotionLonely => 'Yalnız';
-
-  @override
-  String get emotionRegretful => 'Pişman';
-
-  @override
-  String get emotionInsecure => 'Güvensiz';
-
-  @override
-  String get emotionGuilty => 'Suçlu';
-
-  @override
-  String get emotionBored => 'Sıkılmış';
-
-  @override
-  String get emotionNumb => 'Hissiz';
-
-  @override
-  String get emotionConfused => 'Kafası Karışık';
-
-  @override
-  String get emotionDistracted => 'Dikkati Dağınık';
-
-  @override
-  String get emotionProud => 'Gururlu';
-
-  @override
-  String get emotionConfident => 'Kendinden Emin';
-
-  @override
-  String get emotionHopeful => 'Umutlu';
-
-  @override
-  String get emotionEuphoric => 'Coşkulu';
-
-  @override
-  String get emotionBlessed => 'Şanslı/Kutsanmış';
-
-  @override
-  String get emotionUnstoppable => 'Durdurulamaz';
-
-  @override
-  String get reasonTitle => 'Neden';
-
-  @override
   String get mustBePremiumToUse =>
       'You must be a Premium subscriber to use this feature.';
 
@@ -2032,6 +2230,11 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get mysticThemeDesc => 'Mystiek paars thema';
+
+  @override
+  String nDays(Object days) {
+    return '$days gün';
+  }
 
   @override
   String nDaysLabel(Object count) {
@@ -2084,10 +2287,16 @@ class AppLocalizationsNl extends AppLocalizations {
   String get nextYear => 'Volgend jaar';
 
   @override
+  String get noActiveHabitsForMember => 'Lid heeft nog geen actieve gewoontes.';
+
+  @override
   String get noBackups => 'Yedek bulunamadı';
 
   @override
   String get noBackupsFound => 'No backups found.';
+
+  @override
+  String get noBadgesEarned => 'Nog geen badges verdiend.';
 
   @override
   String get noDataLast7Days => 'Geen gegevens voor de laatste 7 dagen';
@@ -2106,6 +2315,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get noEntriesYet => 'Nog geen invoeren';
 
   @override
+  String get noEvents => 'Nog geen gebeurtenissen';
+
+  @override
   String get noExpenseInThisCategory => 'Geen uitgaven in deze categorie';
 
   @override
@@ -2115,7 +2327,13 @@ class AppLocalizationsNl extends AppLocalizations {
   String get noExpensesThisMonth => 'Geen uitgaven voor deze maand';
 
   @override
+  String get noHabitsAdded => 'Henüz alışkanlık eklenmemiş';
+
+  @override
   String get noHabitsAddedYet => 'Nog geen gewoonten toegevoegd.';
+
+  @override
+  String get noHabitsInRoom => 'Nog geen gewoontes toegevoegd';
 
   @override
   String get noHistory => 'Geen geschiedenis';
@@ -2128,20 +2346,49 @@ class AppLocalizationsNl extends AppLocalizations {
       'Geen items komen overeen met de geselecteerde filters';
 
   @override
+  String get noLeaderboardData => 'Geen rankinggegevens';
+
+  @override
   String get noLinkedHabitsInVision =>
       'Geen gewoonten gekoppeld aan deze visie.';
+
+  @override
+  String get noMeasurableDataForMember =>
+      'Nog geen meetbare gegevens beschikbaar voor dit lid.';
+
+  @override
+  String get noMemberDataYet => 'Nog geen ledenspecificaties.';
 
   @override
   String get noMoodData => 'No mood data yet';
 
   @override
+  String get noNotesYet => 'Henüz not yok';
+
+  @override
   String get noPlansAvailable => 'No plans available at the moment.';
+
+  @override
+  String get noProgressYet => 'Henüz ilerleme yok';
 
   @override
   String get noReadyVisionsFound => 'Geen kant-en-klare visies gevonden.';
 
   @override
   String get noRecordsThisMonth => 'Geen records voor deze maand';
+
+  @override
+  String get noReportsYet => 'Nog geen rapporten';
+
+  @override
+  String get noRoomsJoinedMessage =>
+      'Maak een kamer of neem deel met een uitnodigingscode.\nBereik samen je doelen!';
+
+  @override
+  String get noRoomsJoinedTitle => 'Je bent nog geen lid van een kamer';
+
+  @override
+  String get noStatsAvailable => 'Geen statistieken beschikbaar';
 
   @override
   String get noTasksYet => 'No tasks added yet';
@@ -2163,6 +2410,12 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get noteOptional => 'Notitie (optioneel)';
+
+  @override
+  String get noteSharedSnackbar => 'Notitie gedeeld! ✨';
+
+  @override
+  String get notesSection => '📝 Notities';
 
   @override
   String get notificationBehavior => 'Meldingsgedrag';
@@ -2189,6 +2442,28 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get notificationsMasterSubtitle => 'Beheer alle app-meldingen';
+
+  @override
+  String get nudgeButtonLabel => 'Dürt';
+
+  @override
+  String get nudgeDefaultMessage =>
+      '👊 Hadi dostum, bugün biraz daha gayret! Alışkanlıklarını tamamla.';
+
+  @override
+  String nudgeNotification(Object name) {
+    return '👊 $name seni dürtüyor!';
+  }
+
+  @override
+  String nudgeSuccessSnackbar(Object displayName) {
+    return '$displayName dürtüldü! 👊';
+  }
+
+  @override
+  String nudgeTitle(Object displayName) {
+    return '$displayName kişisini dürt 👊';
+  }
 
   @override
   String get numberLabel => 'Getal';
@@ -2405,6 +2680,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get pleaseFillAllFields => 'Please fill all fields';
 
   @override
+  String get pointsTableHeader => 'PUNTEN';
+
+  @override
   String get pomodoroAndCustomTimers => 'Pomodoro and custom timers';
 
   @override
@@ -2412,6 +2690,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get premiumFeature => 'Premium Feature';
+
+  @override
+  String get premiumFeatureLabel => 'Premium Functie';
 
   @override
   String get premiumFeatures => 'Premium Features';
@@ -2454,6 +2735,13 @@ class AppLocalizationsNl extends AppLocalizations {
   String get profileUpdated => 'Profiel bijgewerkt';
 
   @override
+  String get progressJourneyMessage =>
+      'Alışkanlıklarını tamamladıkça bu grafik senin başarınla şekillenecek ✨';
+
+  @override
+  String get progressJourneyStarts => 'İlerleme Yolculuğu Başlıyor';
+
+  @override
   String get promoCodeActiveMessage =>
       'Your Premium access is activated via promo code ✨';
 
@@ -2477,6 +2765,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get quickSuggestions => 'Hızlı Öneriler';
+
+  @override
+  String get rankingAndHabitsSection => '🏆 Ranking & Gewoontes';
 
   @override
   String get readBook => 'Kitap Oku';
@@ -2508,6 +2799,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get reasonSocial => 'Social';
+
+  @override
+  String get reasonTitle => 'Reden';
 
   @override
   String get reasonWeather => 'Weather';
@@ -2569,6 +2863,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get repeatEveryNDays => 'Herhaal elke N dagen';
 
   @override
+  String get reportAlreadyExists => 'Rapport bestaat al voor deze week.';
+
+  @override
   String get reportBug => 'Report Bug';
 
   @override
@@ -2577,6 +2874,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get reportBugSubtitle => 'Report issues you encounter';
+
+  @override
+  String get reportCreatedSuccess => 'Rapport gemaakt! ✨';
 
   @override
   String get reset => 'Resetten';
@@ -2622,7 +2922,217 @@ class AppLocalizationsNl extends AppLocalizations {
   String get retakePersonalityTest => 'Retake Personality Test';
 
   @override
+  String get retakePersonalityTestDesc => 'Herontdek je persoonlijkheidstype';
+
+  @override
+  String get retakeRhythmTest => 'Ritmetest Opnieuw Doen';
+
+  @override
+  String get retakeRhythmTestDesc => 'Herconfigureer je biologische klok';
+
+  @override
   String get retry => 'Opnieuw proberen';
+
+  @override
+  String get rhythmA1_1 => '22:00 – 23:00';
+
+  @override
+  String get rhythmA1_2 => '23:00 – 00:00';
+
+  @override
+  String get rhythmA1_3 => '00:00 – 01:00';
+
+  @override
+  String get rhythmA1_4 => '01:00+';
+
+  @override
+  String get rhythmA1_5 => '11:00 – 12:00';
+
+  @override
+  String get rhythmA2_1 => '06:00 – 07:00';
+
+  @override
+  String get rhythmA2_2 => '07:00 – 08:00';
+
+  @override
+  String get rhythmA2_3 => '08:00 – 09:00';
+
+  @override
+  String get rhythmA2_4 => '09:00+';
+
+  @override
+  String get rhythmA3_1 => 'Vroege ochtend';
+
+  @override
+  String get rhythmA3_2 => 'Midden ochtend';
+
+  @override
+  String get rhythmA3_3 => 'Middag';
+
+  @override
+  String get rhythmA3_4 => 'Avond';
+
+  @override
+  String get rhythmA3_5 => 'Geen verschil';
+
+  @override
+  String get rhythmA4_1 => 'Ochtend';
+
+  @override
+  String get rhythmA4_2 => 'Middag';
+
+  @override
+  String get rhythmA4_3 => 'Avond';
+
+  @override
+  String get rhythmA4_4 => 'Nacht';
+
+  @override
+  String get rhythmA4_5 => 'Varieert';
+
+  @override
+  String get rhythmA5_1 => 'Ochtend';
+
+  @override
+  String get rhythmA5_2 => 'Middag';
+
+  @override
+  String get rhythmA5_3 => 'Avond';
+
+  @override
+  String get rhythmA5_4 => 'Geen';
+
+  @override
+  String get rhythmAnalyzing => 'Live Rhythm analyseert...';
+
+  @override
+  String get rhythmBenefit1 => 'Juiste taak op het juiste moment';
+
+  @override
+  String get rhythmBenefit2 => 'Geen beslissingsmoeheid';
+
+  @override
+  String get rhythmBenefit3 => 'Wekelijkse personalisatie';
+
+  @override
+  String get rhythmChronoEvening => 'Avondtype (Nachtuil)';
+
+  @override
+  String get rhythmChronoIntermediate => 'Intermediair type (Gebalanceerd)';
+
+  @override
+  String get rhythmChronoMorning => 'Ochtendtype (Vroege vogel)';
+
+  @override
+  String get rhythmDisclaimer =>
+      'Dit zijn geen definitieve resultaten. Live Rhythm past zich aan naarmate het je leert kennen.';
+
+  @override
+  String get rhythmEnergyHint => 'Training, fysieke activiteit';
+
+  @override
+  String get rhythmFocusHint => 'Mentaal werk, analyse, leren';
+
+  @override
+  String get rhythmHabitSuggestionTitle => 'Aanbevolen tijdsblokken:';
+
+  @override
+  String get rhythmLightHint => 'E-mails, sociale media, kleine taken';
+
+  @override
+  String get rhythmQ1 => 'Hoe laat ga je meestal slapen?';
+
+  @override
+  String get rhythmQ2 => 'Hoe laat word je meestal wakker?';
+
+  @override
+  String get rhythmQ3 => 'Wanneer pak je moeilijke taken het makkelijkst aan?';
+
+  @override
+  String get rhythmQ4 => 'Wanneer voel je je het helderst om te leren?';
+
+  @override
+  String get rhythmQ5 =>
+      'In welk deel van de dag voel je je het meest energiek?';
+
+  @override
+  String get rhythmReflectionHint => 'Dagboek, lezen, ontspannen';
+
+  @override
+  String get rhythmResultGotIt => 'Begrepen, laten we beginnen';
+
+  @override
+  String get rhythmResultSubtitle =>
+      'We hebben uw dag ingedeeld op basis van uw natuurlijke ritme.';
+
+  @override
+  String get rhythmResultTitle => 'Uw biologische klokprofiel';
+
+  @override
+  String get rhythmTeaserCta => 'Bekijk Pakketten';
+
+  @override
+  String get rhythmTeaserSkip => 'Overslaan';
+
+  @override
+  String get rhythmTeaserSubtitle =>
+      'Live Rhythm leert je meest productieve momenten en plaatst gewoontes op het juiste moment.';
+
+  @override
+  String get rhythmTeaserTitle =>
+      'Maximaliseer Je Gewoontes op Basis van Je Biologische Klok';
+
+  @override
+  String get rhythmWindowEnergy => 'Energietijd';
+
+  @override
+  String get rhythmWindowEnergyDesc => 'Beweging, actie, sport';
+
+  @override
+  String get rhythmWindowFocus => 'Focustijd';
+
+  @override
+  String get rhythmWindowFocusDesc => 'Mentale helderheid, leren, analyse';
+
+  @override
+  String get rhythmWindowLight => 'Lichte Tijd';
+
+  @override
+  String get rhythmWindowLightDesc => 'Lage inspanning, kleine taken';
+
+  @override
+  String get rhythmWindowNoProfileHint =>
+      'Voltooi de ritmetest voor gepersonaliseerde suggesties';
+
+  @override
+  String get rhythmWindowReflection => 'Reflectietijd';
+
+  @override
+  String get rhythmWindowReflectionDesc => 'Dagboek, contemplatie, afsluiting';
+
+  @override
+  String get rhythmWindowStepSubtitle => 'Wanneer wil je deze gewoonte doen?';
+
+  @override
+  String get rhythmWindowStepTitle => 'Beste Tijdvenster';
+
+  @override
+  String get roomFabLabel => 'Kamer';
+
+  @override
+  String get roomMembersLabel => 'KAMERLEDEN';
+
+  @override
+  String get roomNameHint => 'bijv. Ochtendroutine Team';
+
+  @override
+  String get roomNameLabel => 'Kamernaam';
+
+  @override
+  String get roomNotFoundError => 'Geen kamer gevonden met deze code';
+
+  @override
+  String get roomSummaryHeader => 'ODA ÖZETİ';
 
   @override
   String get roundCorners => 'Round Corners';
@@ -2667,6 +3177,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get save => 'Opslaan';
 
   @override
+  String get saveButton => 'Kaydet';
+
+  @override
   String get saveChanges => 'Save Changes';
 
   @override
@@ -2706,16 +3219,19 @@ class AppLocalizationsNl extends AppLocalizations {
   String get selectAll => 'Alles selecteren';
 
   @override
+  String get selectAtLeastOneDay => 'Selecteer minimaal één dag';
+
+  @override
   String get selectCategory => 'Categorie selecteren';
 
   @override
   String get selectDate => 'Datum selecteren';
 
   @override
-  String get selectDuration => 'Select Duration';
+  String get selectDay => 'Selecteer dag';
 
   @override
-  String get selectAtLeastOneDay => 'Lütfen en az bir gün seçin';
+  String get selectDuration => 'Select Duration';
 
   @override
   String get selectEmoji => 'Select Emoji';
@@ -2725,6 +3241,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get selectFrequency => 'Frequentie selecteren';
+
+  @override
+  String get selectHabitLabel => 'Alışkanlık Seç';
 
   @override
   String get selectHabitType => 'Type gewoonte selecteren';
@@ -2741,6 +3260,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get selectReasonDesc => 'Selecteer wat uw stemming beïnvloedt';
+
+  @override
+  String get selectReportType => 'Selecteer Rapporttype:';
 
   @override
   String get selectSubEmotion => 'Selecteer sub-emotie';
@@ -2782,10 +3304,25 @@ class AppLocalizationsNl extends AppLocalizations {
   String get shareBoard => 'Share board';
 
   @override
+  String get shareButton => 'Delen';
+
+  @override
   String get shareDashboard => 'Share Dashboard';
 
   @override
+  String get shareInviteCodeMessage => 'Deel deze code met je vrienden:';
+
+  @override
   String get shareLinkCopied => 'Deellink gekopieerd naar klembord.';
+
+  @override
+  String get shareNoteHint => 'Deel je gedachten...';
+
+  @override
+  String get shareNoteTitle => 'Notitie Delen';
+
+  @override
+  String get shareNoteTooltip => 'Notitie Delen';
 
   @override
   String get shareVision => 'Visie delen';
@@ -2883,7 +3420,13 @@ class AppLocalizationsNl extends AppLocalizations {
   String get simpleHabitStartDateTitle => 'Ne zaman başlayacaksın?';
 
   @override
+  String get simpleHabitSubtitle => 'Snel een gewoonte maken';
+
+  @override
   String get simpleHabitTargetOne => 'Eenvoudige gewoonte (doel = 1)';
+
+  @override
+  String get simpleHabitTitle => 'Simpele gewoonte';
 
   @override
   String get simpleHabitWeekdaysSubtitle => 'Aktif olacağı günleri seç';
@@ -2915,7 +3458,17 @@ class AppLocalizationsNl extends AppLocalizations {
   String get social => 'Sociaal';
 
   @override
+  String get socialFeaturesGuestMessage =>
+      'Je moet inloggen met Google om kamers te maken en voortgang te delen met vrienden.';
+
+  @override
+  String get socialFeaturesTitle => 'Sociale Functies';
+
+  @override
   String get socialFeedTitle => 'Feed';
+
+  @override
+  String get socialRoomsTitle => 'Sociale Kamers';
 
   @override
   String get softCloud => 'Yumuşak Bulut';
@@ -3012,6 +3565,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get startTestTitle => 'Do you want to start the personality test?';
+
+  @override
+  String get startTime => 'Starttijd';
 
   @override
   String get startTrackingFinances =>
@@ -3259,6 +3815,11 @@ class AppLocalizationsNl extends AppLocalizations {
   String get taskAdded => 'Task added';
 
   @override
+  String taskAddedSnackbar(Object title) {
+    return 'Taak $title toegevoegd! ✅';
+  }
+
+  @override
   String get taskCompleted => 'Completed';
 
   @override
@@ -3293,6 +3854,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get templatesTabReady => 'Klaar';
+
+  @override
+  String get testsSection => 'Tests';
 
   @override
   String get textLabel => 'Tekst';
@@ -3536,6 +4100,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get todaysHabits => 'Bugünün Alışkanlıkları';
 
   @override
+  String get tokenEarnedSuccess => '+1 token verdiend! 🎉';
+
+  @override
   String get tomorrow => 'Tomorrow';
 
   @override
@@ -3546,6 +4113,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get totalEntries => 'Total Entries';
+
+  @override
+  String get totalMembersLabel => 'Totaal aantal leden';
 
   @override
   String get totalProgress => 'Totale voortgang';
@@ -3760,6 +4330,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get warmJournalDesc => 'Sıcak günlük ve duygu takibi';
 
   @override
+  String get watchAdForToken => 'Bekijk Advertentie (+1 Token)';
+
+  @override
   String get wednesdayShort => 'Çar';
 
   @override
@@ -3799,6 +4372,12 @@ class AppLocalizationsNl extends AppLocalizations {
   String get weeklyProgress => 'Wekelijkse vooruitgang';
 
   @override
+  String get weeklyReportsTitle => 'Wekelijkse Rapporten';
+
+  @override
+  String get weeklySchedule => 'Wekelijks';
+
+  @override
   String get weeklySummaryEmail => 'Wekelijkse samenvattingsmail';
 
   @override
@@ -3814,10 +4393,19 @@ class AppLocalizationsNl extends AppLocalizations {
   String get wheelOfFortuneTitle => 'Çark Çevirme';
 
   @override
+  String get whichDays => 'Hangi günler?';
+
+  @override
   String get whichDaysActive => 'Welke dagen moeten actief zijn?';
 
   @override
+  String get whichMonthDays => 'Welke dagen van de maand?';
+
+  @override
   String get whichWeekdays => 'Welke weekdagen?';
+
+  @override
+  String get whichYearDays => 'Yılın hangi günleri?';
 
   @override
   String get worldTheme => 'Wereld';
@@ -3834,7 +4422,9 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get xpToNextLevel => 'sonraki seviyeye';
+  String xpToNextLevel(Object toNext) {
+    return 'sonraki seviyeye';
+  }
 
   @override
   String get yearly => 'Jaarlijks';
@@ -3855,6 +4445,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get yesterday => 'Yesterday';
 
   @override
+  String get youLabel => 'Sen';
+
+  @override
   String get yourCharacterType => 'Your Character Type';
 
   @override
@@ -3865,265 +4458,4 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get yourMoodToday => 'Your Mood Today';
-
-  @override
-  String get dailyHabitInfo => 'Bu alışkanlık her gün tekrarlanacak';
-
-  @override
-  String get whichDays => 'Hangi günler?';
-
-  @override
-  String get whichMonthDays => 'Welke dagen van de maand?';
-
-  @override
-  String get whichYearDays => 'Yılın hangi günleri?';
-
-  @override
-  String everyNDays(Object days) {
-    return 'Kaç günde bir?';
-  }
-
-  @override
-  String nDays(Object days) {
-    return '$days gün';
-  }
-
-  @override
-  String everyNDaysInfo(Object days) {
-    return 'Her $days günde bir tekrarlanacak';
-  }
-
-  @override
-  String get rhythmTeaserTitle =>
-      'Maximaliseer Je Gewoontes op Basis van Je Biologische Klok';
-
-  @override
-  String get rhythmTeaserSubtitle =>
-      'Live Rhythm leert je meest productieve momenten en plaatst gewoontes op het juiste moment.';
-
-  @override
-  String get rhythmTeaserSkip => 'Overslaan';
-
-  @override
-  String get rhythmTeaserCta => 'Bekijk Pakketten';
-
-  @override
-  String get rhythmWindowFocus => 'Focustijd';
-
-  @override
-  String get rhythmWindowFocusDesc => 'Mentale helderheid, leren, analyse';
-
-  @override
-  String get rhythmWindowEnergy => 'Energietijd';
-
-  @override
-  String get rhythmWindowEnergyDesc => 'Beweging, actie, sport';
-
-  @override
-  String get rhythmWindowLight => 'Lichte Tijd';
-
-  @override
-  String get rhythmWindowLightDesc => 'Lage inspanning, kleine taken';
-
-  @override
-  String get rhythmWindowReflection => 'Reflectietijd';
-
-  @override
-  String get rhythmWindowReflectionDesc => 'Dagboek, contemplatie, afsluiting';
-
-  @override
-  String get rhythmBenefit1 => 'Juiste taak op het juiste moment';
-
-  @override
-  String get rhythmBenefit2 => 'Geen beslissingsmoeheid';
-
-  @override
-  String get rhythmBenefit3 => 'Wekelijkse personalisatie';
-
-  @override
-  String get rhythmAnalyzing => 'Live Rhythm analyseert...';
-
-  @override
-  String get rhythmDisclaimer =>
-      'Dit zijn geen definitieve resultaten. Live Rhythm past zich aan naarmate het je leert kennen.';
-
-  @override
-  String get rhythmQ1 => 'Hoe laat ga je meestal slapen?';
-
-  @override
-  String get rhythmQ2 => 'Hoe laat word je meestal wakker?';
-
-  @override
-  String get rhythmQ3 => 'Wanneer pak je moeilijke taken het makkelijkst aan?';
-
-  @override
-  String get rhythmQ4 => 'Wanneer voel je je het helderst om te leren?';
-
-  @override
-  String get rhythmQ5 =>
-      'In welk deel van de dag voel je je het meest energiek?';
-
-  @override
-  String get rhythmA1_1 => '22:00 – 23:00';
-
-  @override
-  String get rhythmA1_2 => '23:00 – 00:00';
-
-  @override
-  String get rhythmA1_3 => '00:00 – 01:00';
-
-  @override
-  String get rhythmA1_4 => '01:00+';
-
-  @override
-  String get rhythmA1_5 => '11:00 – 12:00';
-
-  @override
-  String get rhythmA2_1 => '06:00 – 07:00';
-
-  @override
-  String get rhythmA2_2 => '07:00 – 08:00';
-
-  @override
-  String get rhythmA2_3 => '08:00 – 09:00';
-
-  @override
-  String get rhythmA2_4 => '09:00+';
-
-  @override
-  String get rhythmA3_1 => 'Vroege ochtend';
-
-  @override
-  String get rhythmA3_2 => 'Midden ochtend';
-
-  @override
-  String get rhythmA3_3 => 'Middag';
-
-  @override
-  String get rhythmA3_4 => 'Avond';
-
-  @override
-  String get rhythmA3_5 => 'Geen verschil';
-
-  @override
-  String get rhythmA4_1 => 'Ochtend';
-
-  @override
-  String get rhythmA4_2 => 'Middag';
-
-  @override
-  String get rhythmA4_3 => 'Avond';
-
-  @override
-  String get rhythmA4_4 => 'Nacht';
-
-  @override
-  String get rhythmA4_5 => 'Varieert';
-
-  @override
-  String get rhythmA5_1 => 'Ochtend';
-
-  @override
-  String get rhythmA5_2 => 'Middag';
-
-  @override
-  String get rhythmA5_3 => 'Avond';
-
-  @override
-  String get rhythmA5_4 => 'Geen';
-
-  @override
-  String get rhythmResultTitle => 'Biyolojik Saat Profiliniz';
-
-  @override
-  String get rhythmResultSubtitle =>
-      'Verilerinize dayanarak gününüzü sizin için bölümlere ayırdık.';
-
-  @override
-  String get rhythmChronoMorning => 'Sabah İnsanı (Erkenci Kuş)';
-
-  @override
-  String get rhythmChronoEvening => 'Akşam İnsanı (Gece Kuşu)';
-
-  @override
-  String get rhythmChronoIntermediate => 'Ara Tip (Dengeli)';
-
-  @override
-  String get rhythmHabitSuggestionTitle => 'Sizin İçin Önerilen Saatler:';
-
-  @override
-  String get rhythmResultGotIt => 'Harika, Başlayalım';
-
-  @override
-  String get rhythmFocusHint => 'Zihinsel çalışma, analiz, öğrenme';
-
-  @override
-  String get rhythmEnergyHint => 'Antrenman, fiziksel aktivite';
-
-  @override
-  String get rhythmLightHint => 'E-postalar, sosyal medya, ufak işler';
-
-  @override
-  String get rhythmReflectionHint => 'Günlük, kitap, uykuya hazırlık';
-
-  @override
-  String get testsSection => 'Tests';
-
-  @override
-  String get retakePersonalityTestDesc => 'Herontdek je persoonlijkheidstype';
-
-  @override
-  String get retakeRhythmTest => 'Ritmetest Opnieuw Doen';
-
-  @override
-  String get retakeRhythmTestDesc => 'Herconfigureer je biologische klok';
-
-  @override
-  String get rhythmWindowStepTitle => 'Beste Tijdvenster';
-
-  @override
-  String get rhythmWindowStepSubtitle => 'Wanneer wil je deze gewoonte doen?';
-
-  @override
-  String get rhythmWindowNoProfileHint =>
-      'Voltooi de ritmetest voor gepersonaliseerde suggesties';
-
-  @override
-  String get weeklySchedule => 'Haftalık';
-
-  @override
-  String get addEvent => 'Etkinlik Ekle';
-
-  @override
-  String get eventTitle => 'Etkinlik Başlığı';
-
-  @override
-  String get eventDescription => 'Açıklama';
-
-  @override
-  String get startTime => 'Başlangıç Saati';
-
-  @override
-  String get endTime => 'Bitiş Saati';
-
-  @override
-  String get selectDay => 'Gün Seçin';
-
-  @override
-  String get eventDetails => 'Etkinlik Detayı';
-
-  @override
-  String get deleteEvent => 'Etkinliği Sil';
-
-  @override
-  String get editEvent => 'Etkinliği Düzenle';
-
-  @override
-  String get noEvents => 'Henüz etkinlik yok';
-
-  @override
-  String get habitBlock => 'Alışkanlık';
-
-  @override
-  String get customEvent => 'Özel Etkinlik';
 }

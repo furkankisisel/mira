@@ -6,6 +6,7 @@ import '../domain/room_model.dart';
 import 'room_detail_screen.dart';
 import 'create_room_dialog.dart';
 import 'join_room_dialog.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Main social hub: lists rooms the user belongs to.
 class SocialHubScreen extends StatelessWidget {
@@ -16,8 +17,9 @@ class SocialHubScreen extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
     final isGuest = user == null || user.isAnonymous;
 
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Sosyal Odalar')),
+      appBar: AppBar(title: Text(l10n.socialRoomsTitle)),
       body: isGuest ? _GuestPrompt() : const _RoomList(),
       floatingActionButton: isGuest
           ? null
@@ -25,12 +27,13 @@ class SocialHubScreen extends StatelessWidget {
               heroTag: 'social_fab',
               onPressed: () => _showFabOptions(context),
               icon: const Icon(Icons.add),
-              label: const Text('Oda'),
+              label: Text(AppLocalizations.of(context).roomFabLabel),
             ),
     );
   }
 
   void _showFabOptions(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
@@ -40,8 +43,8 @@ class SocialHubScreen extends StatelessWidget {
           children: [
             ListTile(
               leading: const Icon(Icons.add_circle_outline),
-              title: const Text('Oda Oluştur'),
-              subtitle: const Text('Yeni bir oda oluştur ve arkadaşlarını davet et'),
+              title: Text(l10n.createRoomTitle),
+              subtitle: Text(l10n.createRoomSubtitle),
               onTap: () {
                 Navigator.pop(ctx);
                 showDialog(
@@ -53,8 +56,8 @@ class SocialHubScreen extends StatelessWidget {
             const Divider(height: 1),
             ListTile(
               leading: const Icon(Icons.login),
-              title: const Text('Odaya Katıl'),
-              subtitle: const Text('Davet koduyla mevcut bir odaya katıl'),
+              title: Text(l10n.joinRoomTitle),
+              subtitle: Text(l10n.joinRoomSubtitle),
               onTap: () {
                 Navigator.pop(ctx);
                 showDialog(
@@ -75,6 +78,7 @@ class _GuestPrompt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -84,12 +88,12 @@ class _GuestPrompt extends StatelessWidget {
             Icon(Icons.people_outline, size: 80, color: theme.colorScheme.primary.withOpacity(0.5)),
             const SizedBox(height: 16),
             Text(
-              'Sosyal Özellikler',
+              l10n.socialFeaturesTitle,
               style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
             Text(
-              'Arkadaşlarınla oda oluşturup birbirinizin ilerlemesini takip etmek için Google ile giriş yapman gerekiyor.',
+              l10n.socialFeaturesGuestMessage,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -132,6 +136,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -145,13 +150,13 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Henüz bir odaya katılmadın',
+              l10n.noRoomsJoinedTitle,
               style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              'Bir oda oluştur veya davet koduyla bir odaya katıl.\nArkadaşlarınla birlikte hedeflerine ulaş!',
+              l10n.noRoomsJoinedMessage,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -223,7 +228,7 @@ class _RoomCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          '${room.memberCount} üye',
+                          AppLocalizations.of(context).memberCountText(room.memberCount),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),

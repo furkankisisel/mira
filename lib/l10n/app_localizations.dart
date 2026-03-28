@@ -122,90 +122,6 @@ abstract class AppLocalizations {
     Locale('zh')
   ];
 
-  /// No description provided for @weeklyReportsTitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Haftalık Raporlar'**
-  String get weeklyReportsTitle;
-
-  /// No description provided for @noReportsYet.
-  ///
-  /// In tr, this message translates to:
-  /// **'Henüz rapor yok'**
-  String get noReportsYet;
-
-  /// No description provided for @createFirstReportPrompt.
-  ///
-  /// In tr, this message translates to:
-  /// **'İlk haftalık raporunuzu oluşturmak için + butonuna tıklayın'**
-  String get createFirstReportPrompt;
-
-  /// No description provided for @generating.
-  ///
-  /// In tr, this message translates to:
-  /// **'Oluşturuluyor...'**
-  String get generating;
-
-  /// No description provided for @createReport.
-  ///
-  /// In tr, this message translates to:
-  /// **'Rapor Oluştur'**
-  String get createReport;
-
-  /// No description provided for @costTokens.
-  ///
-  /// In tr, this message translates to:
-  /// **'Maliyet: {cost} jeton'**
-  String costTokens(Object cost);
-
-  /// No description provided for @balanceParenthesis.
-  ///
-  /// In tr, this message translates to:
-  /// **'(Bakiye: {balance})'**
-  String balanceParenthesis(Object balance);
-
-  /// No description provided for @watchAdForToken.
-  ///
-  /// In tr, this message translates to:
-  /// **'Reklam İzle (+1 Jeton)'**
-  String get watchAdForToken;
-
-  /// No description provided for @selectReportType.
-  ///
-  /// In tr, this message translates to:
-  /// **'Rapor Türü Seçin:'**
-  String get selectReportType;
-
-  /// No description provided for @generatedAtDate.
-  ///
-  /// In tr, this message translates to:
-  /// **'Oluşturulma: {date}'**
-  String generatedAtDate(Object date);
-
-  /// No description provided for @insufficientTokensWatchAd.
-  ///
-  /// In tr, this message translates to:
-  /// **'Yetersiz jeton! Reklam izleyerek jeton kazanın.'**
-  String get insufficientTokensWatchAd;
-
-  /// No description provided for @reportCreatedSuccess.
-  ///
-  /// In tr, this message translates to:
-  /// **'Rapor oluşturuldu! ✨'**
-  String get reportCreatedSuccess;
-
-  /// No description provided for @reportAlreadyExists.
-  ///
-  /// In tr, this message translates to:
-  /// **'Bu hafta için rapor zaten mevcut.'**
-  String get reportAlreadyExists;
-
-  /// No description provided for @tokenEarnedSuccess.
-  ///
-  /// In tr, this message translates to:
-  /// **'+1 jeton kazandınız! 🎉'**
-  String get tokenEarnedSuccess;
-
   /// No description provided for @about.
   ///
   /// In tr, this message translates to:
@@ -254,6 +170,18 @@ abstract class AppLocalizations {
   /// **'Tarih ekle'**
   String get addDate;
 
+  /// No description provided for @addEvent.
+  ///
+  /// In tr, this message translates to:
+  /// **'Etkinlik Ekle'**
+  String get addEvent;
+
+  /// No description provided for @addFabTooltip.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ekle'**
+  String get addFabTooltip;
+
   /// No description provided for @addFirstTransaction.
   ///
   /// In tr, this message translates to:
@@ -265,6 +193,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Alışkanlık Ekle'**
   String get addHabit;
+
+  /// No description provided for @addHabitToRoomPrompt.
+  ///
+  /// In tr, this message translates to:
+  /// **'+ butonuyla odaya bir alışkanlık ekle!'**
+  String get addHabitToRoomPrompt;
 
   /// No description provided for @addImage.
   ///
@@ -326,6 +260,12 @@ abstract class AppLocalizations {
   /// **'Listeye ekle'**
   String get addToList;
 
+  /// No description provided for @addedToRoomSnackbar.
+  ///
+  /// In tr, this message translates to:
+  /// **'{title} odaya eklendi! 🎯'**
+  String addedToRoomSnackbar(Object title);
+
   /// No description provided for @advancedAnalysis.
   ///
   /// In tr, this message translates to:
@@ -343,6 +283,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Gelişmiş Alışkanlık'**
   String get advancedHabit;
+
+  /// No description provided for @advancedHabitSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium • Detaylı ayarlarla alışkanlık oluştur'**
+  String get advancedHabitSubtitle;
 
   /// No description provided for @advancedHabitTitle.
   ///
@@ -517,6 +463,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Tüm veriler silindi'**
   String get allDataDeleted;
+
+  /// No description provided for @allHabitsLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tüm Alışkanlıklar'**
+  String get allHabitsLabel;
 
   /// No description provided for @allLabel.
   ///
@@ -968,6 +920,12 @@ abstract class AppLocalizations {
   /// **'Rozetler'**
   String get badges;
 
+  /// No description provided for @balanceParenthesis.
+  ///
+  /// In tr, this message translates to:
+  /// **'(Bakiye: {balance})'**
+  String balanceParenthesis(Object balance);
+
   /// No description provided for @becomePremium.
   ///
   /// In tr, this message translates to:
@@ -1063,6 +1021,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'İptal'**
   String get cancel;
+
+  /// No description provided for @cancelButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'İptal'**
+  String get cancelButton;
 
   /// No description provided for @cancelEffect.
   ///
@@ -1184,17 +1148,17 @@ abstract class AppLocalizations {
   /// **'Fotoğraf Seç'**
   String get choosePhoto;
 
-  /// No description provided for @choosePhotoSubtitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Seni motive eden bir fotoğraf seç'**
-  String get choosePhotoSubtitle;
-
   /// No description provided for @choosePhotoDesc.
   ///
   /// In tr, this message translates to:
   /// **'Size ilham veren bir fotoğraf seçin'**
   String get choosePhotoDesc;
+
+  /// No description provided for @choosePhotoSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seni motive eden bir fotoğraf seç'**
+  String get choosePhotoSubtitle;
 
   /// No description provided for @clear.
   ///
@@ -1219,6 +1183,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Kapat'**
   String get close;
+
+  /// No description provided for @closeButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kapat'**
+  String get closeButton;
 
   /// No description provided for @cloudBackup.
   ///
@@ -1268,6 +1238,24 @@ abstract class AppLocalizations {
   /// **'Tamamlandı (seçilen gün)'**
   String get completedSelectedDay;
 
+  /// No description provided for @completedTableHeader.
+  ///
+  /// In tr, this message translates to:
+  /// **'TAMAM'**
+  String get completedTableHeader;
+
+  /// No description provided for @completionPercentLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tamamlanma %'**
+  String get completionPercentLabel;
+
+  /// No description provided for @completionsCount.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} tamamlandı'**
+  String completionsCount(Object count);
+
   /// No description provided for @confirmDeleteAccount.
   ///
   /// In tr, this message translates to:
@@ -1291,6 +1279,24 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Devam Et'**
   String get continueText;
+
+  /// No description provided for @copyButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kopyala'**
+  String get copyButton;
+
+  /// No description provided for @copyCodeTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kodu Kopyala'**
+  String get copyCodeTitle;
+
+  /// No description provided for @costTokens.
+  ///
+  /// In tr, this message translates to:
+  /// **'Maliyet: {cost} jeton'**
+  String costTokens(Object cost);
 
   /// No description provided for @cottonCandy.
   ///
@@ -1352,6 +1358,12 @@ abstract class AppLocalizations {
   /// **'Gelişmiş Alışkanlık Oluştur'**
   String get createAdvancedHabit;
 
+  /// No description provided for @createButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oluştur'**
+  String get createButton;
+
   /// No description provided for @createDailyTask.
   ///
   /// In tr, this message translates to:
@@ -1363,6 +1375,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Alışkanlık Oluştur'**
   String get createFirstHabit;
+
+  /// No description provided for @createFirstReportPrompt.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlk haftalık raporunuzu oluşturmak için + butonuna tıklayın'**
+  String get createFirstReportPrompt;
 
   /// No description provided for @createFirstVision.
   ///
@@ -1411,6 +1429,30 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Yeni liste oluştur'**
   String get createNewList;
+
+  /// No description provided for @createReport.
+  ///
+  /// In tr, this message translates to:
+  /// **'Rapor Oluştur'**
+  String get createReport;
+
+  /// No description provided for @createRoomSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni bir oda oluştur ve arkadaşlarını davet et'**
+  String get createRoomSubtitle;
+
+  /// No description provided for @createRoomSuccessSnackbar.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oda oluşturuldu! 🎉'**
+  String get createRoomSuccessSnackbar;
+
+  /// No description provided for @createRoomTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oda Oluştur'**
+  String get createRoomTitle;
 
   /// No description provided for @createVision.
   ///
@@ -1478,6 +1520,12 @@ abstract class AppLocalizations {
   /// **'Özel emoji (isteğe bağlı)'**
   String get customEmojiOptional;
 
+  /// No description provided for @customEvent.
+  ///
+  /// In tr, this message translates to:
+  /// **'Özel Etkinlik'**
+  String get customEvent;
+
   /// No description provided for @customFrequency.
   ///
   /// In tr, this message translates to:
@@ -1514,6 +1562,12 @@ abstract class AppLocalizations {
   /// **'Her gün yapılacak'**
   String get dailyDesc;
 
+  /// No description provided for @dailyHabitInfo.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük'**
+  String get dailyHabitInfo;
+
   /// No description provided for @dailyLimit.
   ///
   /// In tr, this message translates to:
@@ -1531,6 +1585,18 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Günlük görev oluşturuldu: {title}'**
   String dailyTaskCreatedMessage(Object title);
+
+  /// No description provided for @dailyTaskSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugüne özel bir görev ekle'**
+  String get dailyTaskSubtitle;
+
+  /// No description provided for @dailyTaskTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük Görev'**
+  String get dailyTaskTitle;
 
   /// No description provided for @dailyTasksSection.
   ///
@@ -1670,6 +1736,12 @@ abstract class AppLocalizations {
   /// **'Kalan Gün'**
   String get daysRemaining;
 
+  /// No description provided for @daysSuffixShort.
+  ///
+  /// In tr, this message translates to:
+  /// **'gün'**
+  String get daysSuffixShort;
+
   /// No description provided for @decisionEggDescription.
   ///
   /// In tr, this message translates to:
@@ -1736,6 +1808,12 @@ abstract class AppLocalizations {
   /// **'Tüm uygulama verilerinizi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.'**
   String get deleteAllDataConfirmContent;
 
+  /// No description provided for @deleteButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sil'**
+  String get deleteButton;
+
   /// No description provided for @deleteCategoryConfirmNamed.
   ///
   /// In tr, this message translates to:
@@ -1760,11 +1838,23 @@ abstract class AppLocalizations {
   /// **'Bu kaydı silmek istediğinden emin misin?'**
   String get deleteEntryConfirm;
 
+  /// No description provided for @deleteEvent.
+  ///
+  /// In tr, this message translates to:
+  /// **'Etkinliği Sil'**
+  String get deleteEvent;
+
   /// No description provided for @deleteHabitConfirm.
   ///
   /// In tr, this message translates to:
-  /// **'\"{title}\" alışkanlığı silinsin mi?'**
+  /// **'\'{title}\' odadan silinsin mi?'**
   String deleteHabitConfirm(Object title);
+
+  /// No description provided for @deleteHabitTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alışkanlığı Sil'**
+  String get deleteHabitTitle;
 
   /// No description provided for @deleteListMessage.
   ///
@@ -1783,6 +1873,18 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Hesabımı sil'**
   String get deleteMyAccount;
+
+  /// No description provided for @deleteRoomTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Odayı Sil'**
+  String get deleteRoomTitle;
+
+  /// No description provided for @deleteRoomWarning.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu oda ve tüm içeriği kalıcı olarak silinecek. Devam etmek istiyor musun?'**
+  String get deleteRoomWarning;
 
   /// No description provided for @deleteTaskConfirm.
   ///
@@ -1928,11 +2030,29 @@ abstract class AppLocalizations {
   /// **'Düzenle'**
   String get edit;
 
+  /// No description provided for @editButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Düzenle'**
+  String get editButton;
+
   /// No description provided for @editCategory.
   ///
   /// In tr, this message translates to:
   /// **'Kategoriyi Düzenle'**
   String get editCategory;
+
+  /// No description provided for @editDeleteTooltip.
+  ///
+  /// In tr, this message translates to:
+  /// **'Düzenle / Sil'**
+  String get editDeleteTooltip;
+
+  /// No description provided for @editEvent.
+  ///
+  /// In tr, this message translates to:
+  /// **'Etkinliği Düzenle'**
+  String get editEvent;
 
   /// No description provided for @editHabit.
   ///
@@ -1945,6 +2065,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Listeyi Düzenle'**
   String get editListTitle;
+
+  /// No description provided for @editOnlyPersonalHabits.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sadece kişisel listenize eklenmiş alışkanlıkları düzenleyebilirsiniz.'**
+  String get editOnlyPersonalHabits;
 
   /// No description provided for @education.
   ///
@@ -2030,6 +2156,96 @@ abstract class AppLocalizations {
   /// **'Emoji'**
   String get emojiLabel;
 
+  /// No description provided for @emotionBlessed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şanslı/Kutsanmış'**
+  String get emotionBlessed;
+
+  /// No description provided for @emotionBored.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sıkılmış'**
+  String get emotionBored;
+
+  /// No description provided for @emotionConfident.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kendinden Emin'**
+  String get emotionConfident;
+
+  /// No description provided for @emotionConfused.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kafası Karışık'**
+  String get emotionConfused;
+
+  /// No description provided for @emotionDistracted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dikkati Dağınık'**
+  String get emotionDistracted;
+
+  /// No description provided for @emotionEuphoric.
+  ///
+  /// In tr, this message translates to:
+  /// **'Coşkulu'**
+  String get emotionEuphoric;
+
+  /// No description provided for @emotionGuilty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Suçlu'**
+  String get emotionGuilty;
+
+  /// No description provided for @emotionHopeful.
+  ///
+  /// In tr, this message translates to:
+  /// **'Umutlu'**
+  String get emotionHopeful;
+
+  /// No description provided for @emotionInsecure.
+  ///
+  /// In tr, this message translates to:
+  /// **'Güvensiz'**
+  String get emotionInsecure;
+
+  /// No description provided for @emotionLonely.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yalnız'**
+  String get emotionLonely;
+
+  /// No description provided for @emotionNumb.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hissiz'**
+  String get emotionNumb;
+
+  /// No description provided for @emotionOverwhelmed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bunalmış'**
+  String get emotionOverwhelmed;
+
+  /// No description provided for @emotionProud.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gururlu'**
+  String get emotionProud;
+
+  /// No description provided for @emotionRegretful.
+  ///
+  /// In tr, this message translates to:
+  /// **'Pişman'**
+  String get emotionRegretful;
+
+  /// No description provided for @emotionUnstoppable.
+  ///
+  /// In tr, this message translates to:
+  /// **'Durdurulamaz'**
+  String get emotionUnstoppable;
+
   /// No description provided for @emptyHabitSubtitle.
   ///
   /// In tr, this message translates to:
@@ -2071,6 +2287,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bitiş günü (isteğe bağlı)'**
   String get endDayOptionalLabel;
+
+  /// No description provided for @endTime.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bitiş Saati'**
+  String get endTime;
 
   /// No description provided for @enterBothOptions.
   ///
@@ -2114,6 +2336,12 @@ abstract class AppLocalizations {
   /// **'Girişler'**
   String get entries;
 
+  /// No description provided for @entryCountLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Giriş Sayısı'**
+  String get entryCountLabel;
+
   /// No description provided for @entrySaved.
   ///
   /// In tr, this message translates to:
@@ -2125,6 +2353,24 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Hata: '**
   String get errorPrefix;
+
+  /// No description provided for @eventDescription.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açıklama'**
+  String get eventDescription;
+
+  /// No description provided for @eventDetails.
+  ///
+  /// In tr, this message translates to:
+  /// **'Etkinlik Detayı'**
+  String get eventDetails;
+
+  /// No description provided for @eventTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Etkinlik Başlığı'**
+  String get eventTitle;
 
   /// No description provided for @every.
   ///
@@ -2143,6 +2389,18 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Her'**
   String get everyLabel;
+
+  /// No description provided for @everyNDays.
+  ///
+  /// In tr, this message translates to:
+  /// **'Her {days} günde bir'**
+  String everyNDays(Object days);
+
+  /// No description provided for @everyNDaysInfo.
+  ///
+  /// In tr, this message translates to:
+  /// **'Her {days} günde bir gerçekleşir'**
+  String everyNDaysInfo(Object days);
 
   /// No description provided for @everyNDaysQuestion.
   ///
@@ -2516,11 +2774,29 @@ abstract class AppLocalizations {
   /// **'Genel bildirimler'**
   String get generalNotifications;
 
+  /// No description provided for @generalRoomStatsHeader.
+  ///
+  /// In tr, this message translates to:
+  /// **'GENEL ODA İSTATİSTİKLERİ'**
+  String get generalRoomStatsHeader;
+
   /// No description provided for @generate.
   ///
   /// In tr, this message translates to:
   /// **'Oluştur'**
   String get generate;
+
+  /// No description provided for @generatedAtDate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oluşturulma: {date}'**
+  String generatedAtDate(Object date);
+
+  /// No description provided for @generating.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oluşturuluyor...'**
+  String get generating;
 
   /// No description provided for @glasses.
   ///
@@ -2623,6 +2899,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'{count, plural, =0{Hiç alışkanlık eklenmedi} =1{1 alışkanlık eklendi} other{{count} alışkanlık eklendi}}'**
   String habitAddSuccess(int count);
+
+  /// No description provided for @habitBlock.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alışkanlık'**
+  String get habitBlock;
 
   /// No description provided for @habitCreatedMessage.
   ///
@@ -3044,6 +3326,12 @@ abstract class AppLocalizations {
   /// **'Saat'**
   String get hours;
 
+  /// No description provided for @hoursSuffixShort.
+  ///
+  /// In tr, this message translates to:
+  /// **'sa'**
+  String get hoursSuffixShort;
+
   /// No description provided for @howAreYouFeeling.
   ///
   /// In tr, this message translates to:
@@ -3152,6 +3440,18 @@ abstract class AppLocalizations {
   /// **'İçgörüler'**
   String get insights;
 
+  /// No description provided for @insufficientTokensWatchAd.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yetersiz jeton! Reklam izleyerek jeton kazanın.'**
+  String get insufficientTokensWatchAd;
+
+  /// No description provided for @invalidCodeLengthError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kod 6 karakter olmalıdır'**
+  String get invalidCodeLengthError;
+
   /// No description provided for @invalidLink.
   ///
   /// In tr, this message translates to:
@@ -3164,6 +3464,18 @@ abstract class AppLocalizations {
   /// **'Geçersiz değer'**
   String get invalidValue;
 
+  /// No description provided for @inviteCodeCopiedSnackbar.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet kodu kopyalandı!'**
+  String get inviteCodeCopiedSnackbar;
+
+  /// No description provided for @inviteCodeTooltip.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet Kodu'**
+  String get inviteCodeTooltip;
+
   /// No description provided for @issueDescription.
   ///
   /// In tr, this message translates to:
@@ -3175,6 +3487,42 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Sorunu detaylı olarak açıklayın...'**
   String get issueDescriptionHint;
+
+  /// No description provided for @joinButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Katıl'**
+  String get joinButton;
+
+  /// No description provided for @joinRoomCodeMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Arkadaşından aldığın 6 haneli davet kodunu gir:'**
+  String get joinRoomCodeMessage;
+
+  /// No description provided for @joinRoomSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet koduyla mevcut bir odaya katıl'**
+  String get joinRoomSubtitle;
+
+  /// No description provided for @joinRoomSuccessSnackbar.
+  ///
+  /// In tr, this message translates to:
+  /// **'{roomName} odasına katıldın! 🎉'**
+  String joinRoomSuccessSnackbar(Object roomName);
+
+  /// No description provided for @joinRoomTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Odaya Katıl'**
+  String get joinRoomTitle;
+
+  /// No description provided for @joinedAtLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Katılım: {date}'**
+  String joinedAtLabel(Object date);
 
   /// No description provided for @journalEntry.
   ///
@@ -3200,6 +3548,12 @@ abstract class AppLocalizations {
   /// **'JSON Veri (örnek):'**
   String get jsonDataExample;
 
+  /// No description provided for @justNow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Az önce'**
+  String get justNow;
+
   /// No description provided for @keepItUp.
   ///
   /// In tr, this message translates to:
@@ -3217,6 +3571,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Dil Seçimi'**
   String get languageSelection;
+
+  /// No description provided for @last7DaysProgressLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son 7 Günlük İlerleme'**
+  String get last7DaysProgressLabel;
 
   /// No description provided for @lastBackup.
   ///
@@ -3241,6 +3601,30 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Zarif lavanta ve mor tonları'**
   String get lavenderDreamsDesc;
+
+  /// No description provided for @leaderboardDetailsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sıralama Detayları'**
+  String get leaderboardDetailsTitle;
+
+  /// No description provided for @leaveButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çık'**
+  String get leaveButton;
+
+  /// No description provided for @leaveRoomTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Odadan Çık'**
+  String get leaveRoomTitle;
+
+  /// No description provided for @leaveRoomWarning.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu odadan çıkmak istediğine emin misin?'**
+  String get leaveRoomWarning;
 
   /// No description provided for @letsPlayGame.
   ///
@@ -3356,6 +3740,12 @@ abstract class AppLocalizations {
   /// **'En uzun seri'**
   String get longestStreak;
 
+  /// No description provided for @longestStreakLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'En Uzun Seri'**
+  String get longestStreakLabel;
+
   /// No description provided for @manageLists.
   ///
   /// In tr, this message translates to:
@@ -3421,6 +3811,42 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Orta'**
   String get medium;
+
+  /// No description provided for @memberCountText.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} üye'**
+  String memberCountText(Object count);
+
+  /// No description provided for @memberHabitsLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Üyenin Alışkanlıkları'**
+  String get memberHabitsLabel;
+
+  /// No description provided for @memberProfileTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Üye Profili'**
+  String get memberProfileTitle;
+
+  /// No description provided for @memberTableHeader.
+  ///
+  /// In tr, this message translates to:
+  /// **'ÜYE'**
+  String get memberTableHeader;
+
+  /// No description provided for @membersCompletedStatus.
+  ///
+  /// In tr, this message translates to:
+  /// **'{completed}/{total} üye tamamladı'**
+  String membersCompletedStatus(Object completed, Object total);
+
+  /// No description provided for @membersCountText.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} kişi'**
+  String membersCountText(Object count);
 
   /// No description provided for @minLabel.
   ///
@@ -3680,6 +4106,18 @@ abstract class AppLocalizations {
   /// **'Duygu Trendi (Son 30 Gün)'**
   String get moodTrend;
 
+  /// No description provided for @moreChartsButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daha Fazla Grafik'**
+  String get moreChartsButton;
+
+  /// No description provided for @mostActiveMemberLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'En Aktif Üye'**
+  String get mostActiveMemberLabel;
+
   /// No description provided for @mostCommonEmotion.
   ///
   /// In tr, this message translates to:
@@ -3758,102 +4196,6 @@ abstract class AppLocalizations {
   /// **'Birden fazla alt öğe'**
   String get multipleSubItemsDesc;
 
-  /// No description provided for @emotionOverwhelmed.
-  ///
-  /// In tr, this message translates to:
-  /// **'Bunalmış'**
-  String get emotionOverwhelmed;
-
-  /// No description provided for @emotionLonely.
-  ///
-  /// In tr, this message translates to:
-  /// **'Yalnız'**
-  String get emotionLonely;
-
-  /// No description provided for @emotionRegretful.
-  ///
-  /// In tr, this message translates to:
-  /// **'Pişman'**
-  String get emotionRegretful;
-
-  /// No description provided for @emotionInsecure.
-  ///
-  /// In tr, this message translates to:
-  /// **'Güvensiz'**
-  String get emotionInsecure;
-
-  /// No description provided for @emotionGuilty.
-  ///
-  /// In tr, this message translates to:
-  /// **'Suçlu'**
-  String get emotionGuilty;
-
-  /// No description provided for @emotionBored.
-  ///
-  /// In tr, this message translates to:
-  /// **'Sıkılmış'**
-  String get emotionBored;
-
-  /// No description provided for @emotionNumb.
-  ///
-  /// In tr, this message translates to:
-  /// **'Hissiz'**
-  String get emotionNumb;
-
-  /// No description provided for @emotionConfused.
-  ///
-  /// In tr, this message translates to:
-  /// **'Kafası Karışık'**
-  String get emotionConfused;
-
-  /// No description provided for @emotionDistracted.
-  ///
-  /// In tr, this message translates to:
-  /// **'Dikkati Dağınık'**
-  String get emotionDistracted;
-
-  /// No description provided for @emotionProud.
-  ///
-  /// In tr, this message translates to:
-  /// **'Gururlu'**
-  String get emotionProud;
-
-  /// No description provided for @emotionConfident.
-  ///
-  /// In tr, this message translates to:
-  /// **'Kendinden Emin'**
-  String get emotionConfident;
-
-  /// No description provided for @emotionHopeful.
-  ///
-  /// In tr, this message translates to:
-  /// **'Umutlu'**
-  String get emotionHopeful;
-
-  /// No description provided for @emotionEuphoric.
-  ///
-  /// In tr, this message translates to:
-  /// **'Coşkulu'**
-  String get emotionEuphoric;
-
-  /// No description provided for @emotionBlessed.
-  ///
-  /// In tr, this message translates to:
-  /// **'Şanslı/Kutsanmış'**
-  String get emotionBlessed;
-
-  /// No description provided for @emotionUnstoppable.
-  ///
-  /// In tr, this message translates to:
-  /// **'Durdurulamaz'**
-  String get emotionUnstoppable;
-
-  /// No description provided for @reasonTitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Neden'**
-  String get reasonTitle;
-
   /// No description provided for @mustBePremiumToUse.
   ///
   /// In tr, this message translates to:
@@ -3883,6 +4225,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Mistik mor tema'**
   String get mysticThemeDesc;
+
+  /// No description provided for @nDays.
+  ///
+  /// In tr, this message translates to:
+  /// **'{days} gün'**
+  String nDays(Object days);
 
   /// No description provided for @nDaysLabel.
   ///
@@ -3980,6 +4328,12 @@ abstract class AppLocalizations {
   /// **'Gelecek yıl'**
   String get nextYear;
 
+  /// No description provided for @noActiveHabitsForMember.
+  ///
+  /// In tr, this message translates to:
+  /// **'Üyenin henüz aktif alışkanlığı yok.'**
+  String get noActiveHabitsForMember;
+
   /// No description provided for @noBackups.
   ///
   /// In tr, this message translates to:
@@ -3991,6 +4345,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Yedek bulunamadı.'**
   String get noBackupsFound;
+
+  /// No description provided for @noBadgesEarned.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz rozet kazanılmamış.'**
+  String get noBadgesEarned;
 
   /// No description provided for @noDataLast7Days.
   ///
@@ -4022,6 +4382,12 @@ abstract class AppLocalizations {
   /// **'Henüz giriş yok'**
   String get noEntriesYet;
 
+  /// No description provided for @noEvents.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz etkinlik yok'**
+  String get noEvents;
+
   /// No description provided for @noExpenseInThisCategory.
   ///
   /// In tr, this message translates to:
@@ -4040,11 +4406,23 @@ abstract class AppLocalizations {
   /// **'Bu ay hiç harcama yok'**
   String get noExpensesThisMonth;
 
+  /// No description provided for @noHabitsAdded.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz alışkanlık eklenmemiş'**
+  String get noHabitsAdded;
+
   /// No description provided for @noHabitsAddedYet.
   ///
   /// In tr, this message translates to:
   /// **'Henüz alışkanlık eklenmedi.'**
   String get noHabitsAddedYet;
+
+  /// No description provided for @noHabitsInRoom.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz alışkanlık eklenmemiş'**
+  String get noHabitsInRoom;
 
   /// No description provided for @noHistory.
   ///
@@ -4064,11 +4442,29 @@ abstract class AppLocalizations {
   /// **'Seçilen filtrelerle eşleşen öğe yok'**
   String get noItemsMatchFilters;
 
+  /// No description provided for @noLeaderboardData.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sıralama Bulunmuyor'**
+  String get noLeaderboardData;
+
   /// No description provided for @noLinkedHabitsInVision.
   ///
   /// In tr, this message translates to:
   /// **'Bu vizyona bağlı alışkanlık yok.'**
   String get noLinkedHabitsInVision;
+
+  /// No description provided for @noMeasurableDataForMember.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu üye için henüz ölçülebilir veri bulunmamaktadır.'**
+  String get noMeasurableDataForMember;
+
+  /// No description provided for @noMemberDataYet.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz üye verisi yok.'**
+  String get noMemberDataYet;
 
   /// No description provided for @noMoodData.
   ///
@@ -4076,11 +4472,23 @@ abstract class AppLocalizations {
   /// **'Henüz duygu verisi yok'**
   String get noMoodData;
 
+  /// No description provided for @noNotesYet.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz not yok'**
+  String get noNotesYet;
+
   /// No description provided for @noPlansAvailable.
   ///
   /// In tr, this message translates to:
   /// **'Şu anda görüntülenecek plan yok.'**
   String get noPlansAvailable;
+
+  /// No description provided for @noProgressYet.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz ilerleme yok'**
+  String get noProgressYet;
 
   /// No description provided for @noReadyVisionsFound.
   ///
@@ -4093,6 +4501,30 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bu ay için kayıt yok'**
   String get noRecordsThisMonth;
+
+  /// No description provided for @noReportsYet.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz rapor yok'**
+  String get noReportsYet;
+
+  /// No description provided for @noRoomsJoinedMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir oda oluştur veya davet koduyla bir odaya katıl.\nArkadaşlarınla birlikte hedeflerine ulaş!'**
+  String get noRoomsJoinedMessage;
+
+  /// No description provided for @noRoomsJoinedTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz bir odaya katılmadın'**
+  String get noRoomsJoinedTitle;
+
+  /// No description provided for @noStatsAvailable.
+  ///
+  /// In tr, this message translates to:
+  /// **'İstatistik Bulunmuyor'**
+  String get noStatsAvailable;
 
   /// No description provided for @noTasksYet.
   ///
@@ -4135,6 +4567,18 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Not (isteğe bağlı)'**
   String get noteOptional;
+
+  /// No description provided for @noteSharedSnackbar.
+  ///
+  /// In tr, this message translates to:
+  /// **'Not paylaşıldı! ✨'**
+  String get noteSharedSnackbar;
+
+  /// No description provided for @notesSection.
+  ///
+  /// In tr, this message translates to:
+  /// **'📝 Notlar'**
+  String get notesSection;
 
   /// No description provided for @notificationBehavior.
   ///
@@ -4183,6 +4627,36 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Tüm uygulama bildirimlerini kontrol et'**
   String get notificationsMasterSubtitle;
+
+  /// No description provided for @nudgeButtonLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dürt'**
+  String get nudgeButtonLabel;
+
+  /// No description provided for @nudgeDefaultMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'👊 Hadi dostum, bugün biraz daha gayret! Alışkanlıklarını tamamla.'**
+  String get nudgeDefaultMessage;
+
+  /// No description provided for @nudgeNotification.
+  ///
+  /// In tr, this message translates to:
+  /// **'👊 {name} seni dürtüyor!'**
+  String nudgeNotification(Object name);
+
+  /// No description provided for @nudgeSuccessSnackbar.
+  ///
+  /// In tr, this message translates to:
+  /// **'{displayName} dürtüldü! 👊'**
+  String nudgeSuccessSnackbar(Object displayName);
+
+  /// No description provided for @nudgeTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'{displayName} kişisini dürt 👊'**
+  String nudgeTitle(Object displayName);
 
   /// No description provided for @numberLabel.
   ///
@@ -4580,6 +5054,12 @@ abstract class AppLocalizations {
   /// **'Lütfen tüm alanları doldurun'**
   String get pleaseFillAllFields;
 
+  /// No description provided for @pointsTableHeader.
+  ///
+  /// In tr, this message translates to:
+  /// **'PUAN'**
+  String get pointsTableHeader;
+
   /// No description provided for @pomodoroAndCustomTimers.
   ///
   /// In tr, this message translates to:
@@ -4597,6 +5077,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Premium Özellik'**
   String get premiumFeature;
+
+  /// No description provided for @premiumFeatureLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Premium Özellik'**
+  String get premiumFeatureLabel;
 
   /// No description provided for @premiumFeatures.
   ///
@@ -4676,6 +5162,18 @@ abstract class AppLocalizations {
   /// **'Profil güncellendi'**
   String get profileUpdated;
 
+  /// No description provided for @progressJourneyMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alışkanlıklarını tamamladıkça bu grafik senin başarınla şekillenecek ✨'**
+  String get progressJourneyMessage;
+
+  /// No description provided for @progressJourneyStarts.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlerleme Yolculuğu Başlıyor'**
+  String get progressJourneyStarts;
+
   /// No description provided for @promoCodeActiveMessage.
   ///
   /// In tr, this message translates to:
@@ -4717,6 +5215,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Hızlı Öneriler'**
   String get quickSuggestions;
+
+  /// No description provided for @rankingAndHabitsSection.
+  ///
+  /// In tr, this message translates to:
+  /// **'🏆 Sıralama & Alışkanlıklar'**
+  String get rankingAndHabitsSection;
 
   /// No description provided for @readBook.
   ///
@@ -4777,6 +5281,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Sosyal'**
   String get reasonSocial;
+
+  /// No description provided for @reasonTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Neden'**
+  String get reasonTitle;
 
   /// No description provided for @reasonWeather.
   ///
@@ -4892,6 +5402,12 @@ abstract class AppLocalizations {
   /// **'Her N Günde Bir Tekrarla'**
   String get repeatEveryNDays;
 
+  /// No description provided for @reportAlreadyExists.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu hafta için rapor zaten mevcut.'**
+  String get reportAlreadyExists;
+
   /// No description provided for @reportBug.
   ///
   /// In tr, this message translates to:
@@ -4909,6 +5425,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Karşılaştığınız sorunları bildirin'**
   String get reportBugSubtitle;
+
+  /// No description provided for @reportCreatedSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Rapor oluşturuldu! ✨'**
+  String get reportCreatedSuccess;
 
   /// No description provided for @reset.
   ///
@@ -4988,11 +5510,419 @@ abstract class AppLocalizations {
   /// **'Kişilik Testini Yeniden Yap'**
   String get retakePersonalityTest;
 
+  /// No description provided for @retakePersonalityTestDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Karakter tipini tekrar keşfet'**
+  String get retakePersonalityTestDesc;
+
+  /// No description provided for @retakeRhythmTest.
+  ///
+  /// In tr, this message translates to:
+  /// **'Canlı Ritim Testini Yeniden Yap'**
+  String get retakeRhythmTest;
+
+  /// No description provided for @retakeRhythmTestDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Biyolojik saatini tekrar belirle'**
+  String get retakeRhythmTestDesc;
+
   /// No description provided for @retry.
   ///
   /// In tr, this message translates to:
   /// **'Tekrar dene'**
   String get retry;
+
+  /// No description provided for @rhythmA1_1.
+  ///
+  /// In tr, this message translates to:
+  /// **'05:00 – 06:30'**
+  String get rhythmA1_1;
+
+  /// No description provided for @rhythmA1_2.
+  ///
+  /// In tr, this message translates to:
+  /// **'06:30 – 07:45'**
+  String get rhythmA1_2;
+
+  /// No description provided for @rhythmA1_3.
+  ///
+  /// In tr, this message translates to:
+  /// **'07:45 – 09:45'**
+  String get rhythmA1_3;
+
+  /// No description provided for @rhythmA1_4.
+  ///
+  /// In tr, this message translates to:
+  /// **'09:45 – 11:00'**
+  String get rhythmA1_4;
+
+  /// No description provided for @rhythmA1_5.
+  ///
+  /// In tr, this message translates to:
+  /// **'11:00 – 12:00'**
+  String get rhythmA1_5;
+
+  /// No description provided for @rhythmA2_1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çok yorgun'**
+  String get rhythmA2_1;
+
+  /// No description provided for @rhythmA2_2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oldukça yorgun'**
+  String get rhythmA2_2;
+
+  /// No description provided for @rhythmA2_3.
+  ///
+  /// In tr, this message translates to:
+  /// **'Biraz yorgun'**
+  String get rhythmA2_3;
+
+  /// No description provided for @rhythmA2_4.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hiç yorgun değil'**
+  String get rhythmA2_4;
+
+  /// No description provided for @rhythmA3_1.
+  ///
+  /// In tr, this message translates to:
+  /// **'20:00 – 21:00'**
+  String get rhythmA3_1;
+
+  /// No description provided for @rhythmA3_2.
+  ///
+  /// In tr, this message translates to:
+  /// **'21:00 – 22:15'**
+  String get rhythmA3_2;
+
+  /// No description provided for @rhythmA3_3.
+  ///
+  /// In tr, this message translates to:
+  /// **'22:15 – 00:30'**
+  String get rhythmA3_3;
+
+  /// No description provided for @rhythmA3_4.
+  ///
+  /// In tr, this message translates to:
+  /// **'00:30 – 01:45'**
+  String get rhythmA3_4;
+
+  /// No description provided for @rhythmA3_5.
+  ///
+  /// In tr, this message translates to:
+  /// **'01:45 – 03:00'**
+  String get rhythmA3_5;
+
+  /// No description provided for @rhythmA4_1.
+  ///
+  /// In tr, this message translates to:
+  /// **'05:00 – 09:00'**
+  String get rhythmA4_1;
+
+  /// No description provided for @rhythmA4_2.
+  ///
+  /// In tr, this message translates to:
+  /// **'09:00 – 14:00'**
+  String get rhythmA4_2;
+
+  /// No description provided for @rhythmA4_3.
+  ///
+  /// In tr, this message translates to:
+  /// **'14:00 – 17:00'**
+  String get rhythmA4_3;
+
+  /// No description provided for @rhythmA4_4.
+  ///
+  /// In tr, this message translates to:
+  /// **'17:00 – 21:00'**
+  String get rhythmA4_4;
+
+  /// No description provided for @rhythmA4_5.
+  ///
+  /// In tr, this message translates to:
+  /// **'21:00 – 05:00'**
+  String get rhythmA4_5;
+
+  /// No description provided for @rhythmA5_1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kesinlikle sabah insanı'**
+  String get rhythmA5_1;
+
+  /// No description provided for @rhythmA5_2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daha çok sabah insanı'**
+  String get rhythmA5_2;
+
+  /// No description provided for @rhythmA5_3.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daha çok akşam insanı'**
+  String get rhythmA5_3;
+
+  /// No description provided for @rhythmA5_4.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kesinlikle akşam insanı'**
+  String get rhythmA5_4;
+
+  /// No description provided for @rhythmAnalyzing.
+  ///
+  /// In tr, this message translates to:
+  /// **'Canlı Ritim analiz ediyor...'**
+  String get rhythmAnalyzing;
+
+  /// No description provided for @rhythmBenefit1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğru zamanda doğru iş'**
+  String get rhythmBenefit1;
+
+  /// No description provided for @rhythmBenefit2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Karar yorgunluğu yok'**
+  String get rhythmBenefit2;
+
+  /// No description provided for @rhythmBenefit3.
+  ///
+  /// In tr, this message translates to:
+  /// **'Her hafta kişiselleşme'**
+  String get rhythmBenefit3;
+
+  /// No description provided for @rhythmChronoEvening.
+  ///
+  /// In tr, this message translates to:
+  /// **'Akşam İnsanı (Gece Kuşu)'**
+  String get rhythmChronoEvening;
+
+  /// No description provided for @rhythmChronoIntermediate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ara Tip (Dengeli)'**
+  String get rhythmChronoIntermediate;
+
+  /// No description provided for @rhythmChronoMorning.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sabah İnsanı (Erkenci Kuş)'**
+  String get rhythmChronoMorning;
+
+  /// No description provided for @rhythmDisclaimer.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bunlar kesin sonuçlar değil. Canlı Ritim seni tanıdıkça ayarlanacak.'**
+  String get rhythmDisclaimer;
+
+  /// No description provided for @rhythmEnergyHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Antrenman, fiziksel aktivite'**
+  String get rhythmEnergyHint;
+
+  /// No description provided for @rhythmFocusHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Zihinsel çalışma, analiz, öğrenme'**
+  String get rhythmFocusHint;
+
+  /// No description provided for @rhythmHabitSuggestionTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sizin İçin Önerilen Saatler:'**
+  String get rhythmHabitSuggestionTitle;
+
+  /// No description provided for @rhythmLightHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'E-postalar, sosyal medya, ufak işler'**
+  String get rhythmLightHint;
+
+  /// No description provided for @rhythmQ1.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tamamen kendi isteğinize bırakılsaydı ve ertesi gün zorunlu bir işiniz olmasaydı, saat kaçta kalkardınız?'**
+  String get rhythmQ1;
+
+  /// No description provided for @rhythmQ2.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sabah uyandıktan sonraki ilk yarım saatte kendinizi genelde ne kadar yorgun hissedersiniz?'**
+  String get rhythmQ2;
+
+  /// No description provided for @rhythmQ3.
+  ///
+  /// In tr, this message translates to:
+  /// **'Akşamları tamamen serbestsiniz ve ertesi gün bir zorunluluğunuz yok. Saat kaçta uyurdunuz?'**
+  String get rhythmQ3;
+
+  /// No description provided for @rhythmQ4.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günün hangi saatinde kendinizi en iyi (enerjik) hissedersiniz?'**
+  String get rhythmQ4;
+
+  /// No description provided for @rhythmQ5.
+  ///
+  /// In tr, this message translates to:
+  /// **'\"Sabah insanı\" mı yoksa \"Akşam insanı\" mı olduğunuzu düşünüyorsunuz?'**
+  String get rhythmQ5;
+
+  /// No description provided for @rhythmReflectionHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük, kitap, uykuya hazırlık'**
+  String get rhythmReflectionHint;
+
+  /// No description provided for @rhythmResultGotIt.
+  ///
+  /// In tr, this message translates to:
+  /// **'Harika, Başlayalım'**
+  String get rhythmResultGotIt;
+
+  /// No description provided for @rhythmResultSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Verilerinize dayanarak gününüzü sizin için bölümlere ayırdık.'**
+  String get rhythmResultSubtitle;
+
+  /// No description provided for @rhythmResultTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Biyolojik Saat Profiliniz'**
+  String get rhythmResultTitle;
+
+  /// No description provided for @rhythmTeaserCta.
+  ///
+  /// In tr, this message translates to:
+  /// **'Paketleri İncele'**
+  String get rhythmTeaserCta;
+
+  /// No description provided for @rhythmTeaserSkip.
+  ///
+  /// In tr, this message translates to:
+  /// **'Atla'**
+  String get rhythmTeaserSkip;
+
+  /// No description provided for @rhythmTeaserSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Canlı Ritim, en verimli anlarınızı öğrenir ve alışkanlıklarınızı doğru zamana yerleştirir.'**
+  String get rhythmTeaserSubtitle;
+
+  /// No description provided for @rhythmTeaserTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Biyolojik Saatinize Göre Alışkanlıkları Maksimum Verimle Kazanın'**
+  String get rhythmTeaserTitle;
+
+  /// No description provided for @rhythmWindowEnergy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Enerji Zamanı'**
+  String get rhythmWindowEnergy;
+
+  /// No description provided for @rhythmWindowEnergyDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hareket, aksiyon, spor'**
+  String get rhythmWindowEnergyDesc;
+
+  /// No description provided for @rhythmWindowFocus.
+  ///
+  /// In tr, this message translates to:
+  /// **'Odak Zamanı'**
+  String get rhythmWindowFocus;
+
+  /// No description provided for @rhythmWindowFocusDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Zihinsel netlik, öğrenme, analiz'**
+  String get rhythmWindowFocusDesc;
+
+  /// No description provided for @rhythmWindowLight.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hafif Zaman'**
+  String get rhythmWindowLight;
+
+  /// No description provided for @rhythmWindowLightDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Düşük efor, küçük işler'**
+  String get rhythmWindowLightDesc;
+
+  /// No description provided for @rhythmWindowNoProfileHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ritim testini tamamlayarak kişiselleştirilmiş öneriler alabilirsin'**
+  String get rhythmWindowNoProfileHint;
+
+  /// No description provided for @rhythmWindowReflection.
+  ///
+  /// In tr, this message translates to:
+  /// **'Refleksiyon Zamanı'**
+  String get rhythmWindowReflection;
+
+  /// No description provided for @rhythmWindowReflectionDesc.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük, tefekkür, kapanış'**
+  String get rhythmWindowReflectionDesc;
+
+  /// No description provided for @rhythmWindowStepSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu alışkanlığı hangi zaman diliminde yapmak istersin?'**
+  String get rhythmWindowStepSubtitle;
+
+  /// No description provided for @rhythmWindowStepTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'En Uygun Zaman Dilimi'**
+  String get rhythmWindowStepTitle;
+
+  /// No description provided for @roomFabLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oda'**
+  String get roomFabLabel;
+
+  /// No description provided for @roomMembersLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'ODA ÜYELERİ'**
+  String get roomMembersLabel;
+
+  /// No description provided for @roomNameHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Örn: Sabah Rutini Ekibi'**
+  String get roomNameHint;
+
+  /// No description provided for @roomNameLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oda Adı'**
+  String get roomNameLabel;
+
+  /// No description provided for @roomNotFoundError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kodla bir oda bulunamadı'**
+  String get roomNotFoundError;
+
+  /// No description provided for @roomSummaryHeader.
+  ///
+  /// In tr, this message translates to:
+  /// **'ODA ÖZETİ'**
+  String get roomSummaryHeader;
 
   /// No description provided for @roundCorners.
   ///
@@ -5053,6 +5983,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Kaydet'**
   String get save;
+
+  /// No description provided for @saveButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydet'**
+  String get saveButton;
 
   /// No description provided for @saveChanges.
   ///
@@ -5132,6 +6068,12 @@ abstract class AppLocalizations {
   /// **'Tümünü Seç'**
   String get selectAll;
 
+  /// No description provided for @selectAtLeastOneDay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Lütfen en az bir gün seçin'**
+  String get selectAtLeastOneDay;
+
   /// No description provided for @selectCategory.
   ///
   /// In tr, this message translates to:
@@ -5144,17 +6086,17 @@ abstract class AppLocalizations {
   /// **'Tarih Seç'**
   String get selectDate;
 
+  /// No description provided for @selectDay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gün Seçin'**
+  String get selectDay;
+
   /// No description provided for @selectDuration.
   ///
   /// In tr, this message translates to:
   /// **'Süre Seç'**
   String get selectDuration;
-
-  /// No description provided for @selectAtLeastOneDay.
-  ///
-  /// In tr, this message translates to:
-  /// **'Lütfen en az bir gün seçin'**
-  String get selectAtLeastOneDay;
 
   /// No description provided for @selectEmoji.
   ///
@@ -5173,6 +6115,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Sıklık Seç'**
   String get selectFrequency;
+
+  /// No description provided for @selectHabitLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alışkanlık Seç'**
+  String get selectHabitLabel;
 
   /// No description provided for @selectHabitType.
   ///
@@ -5203,6 +6151,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Günümüzü en çok hangi faktör etkiledi?'**
   String get selectReasonDesc;
+
+  /// No description provided for @selectReportType.
+  ///
+  /// In tr, this message translates to:
+  /// **'Rapor Türü Seçin:'**
+  String get selectReportType;
 
   /// No description provided for @selectSubEmotion.
   ///
@@ -5276,17 +6230,47 @@ abstract class AppLocalizations {
   /// **'Panoyu paylaş'**
   String get shareBoard;
 
+  /// No description provided for @shareButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Paylaş'**
+  String get shareButton;
+
   /// No description provided for @shareDashboard.
   ///
   /// In tr, this message translates to:
   /// **'Panoyu paylaş'**
   String get shareDashboard;
 
+  /// No description provided for @shareInviteCodeMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kodu arkadaşlarınla paylaş:'**
+  String get shareInviteCodeMessage;
+
   /// No description provided for @shareLinkCopied.
   ///
   /// In tr, this message translates to:
   /// **'Paylaşım bağlantısı panoya kopyalandı.'**
   String get shareLinkCopied;
+
+  /// No description provided for @shareNoteHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Düşüncelerini paylaş...'**
+  String get shareNoteHint;
+
+  /// No description provided for @shareNoteTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Not Paylaş'**
+  String get shareNoteTitle;
+
+  /// No description provided for @shareNoteTooltip.
+  ///
+  /// In tr, this message translates to:
+  /// **'Not Paylaş'**
+  String get shareNoteTooltip;
 
   /// No description provided for @shareVision.
   ///
@@ -5468,11 +6452,23 @@ abstract class AppLocalizations {
   /// **'Ne zaman başlayacaksın?'**
   String get simpleHabitStartDateTitle;
 
+  /// No description provided for @simpleHabitSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hızlıca bir alışkanlık oluştur'**
+  String get simpleHabitSubtitle;
+
   /// No description provided for @simpleHabitTargetOne.
   ///
   /// In tr, this message translates to:
   /// **'Basit alışkanlık (hedef = 1)'**
   String get simpleHabitTargetOne;
+
+  /// No description provided for @simpleHabitTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Basit Alışkanlık'**
+  String get simpleHabitTitle;
 
   /// No description provided for @simpleHabitWeekdaysSubtitle.
   ///
@@ -5528,11 +6524,29 @@ abstract class AppLocalizations {
   /// **'Sosyal'**
   String get social;
 
+  /// No description provided for @socialFeaturesGuestMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Arkadaşlarınla oda oluşturup birbirinizin ilerlemesini takip etmek için Google ile giriş yapman gerekiyor.'**
+  String get socialFeaturesGuestMessage;
+
+  /// No description provided for @socialFeaturesTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sosyal Özellikler'**
+  String get socialFeaturesTitle;
+
   /// No description provided for @socialFeedTitle.
   ///
   /// In tr, this message translates to:
   /// **'Akış'**
   String get socialFeedTitle;
+
+  /// No description provided for @socialRoomsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sosyal Odalar'**
+  String get socialRoomsTitle;
 
   /// No description provided for @softCloud.
   ///
@@ -5702,6 +6716,12 @@ abstract class AppLocalizations {
   /// **'Kişilik testine başlamak ister misin?'**
   String get startTestTitle;
 
+  /// No description provided for @startTime.
+  ///
+  /// In tr, this message translates to:
+  /// **'Başlangıç Saati'**
+  String get startTime;
+
   /// No description provided for @startTrackingFinances.
   ///
   /// In tr, this message translates to:
@@ -5759,7 +6779,7 @@ abstract class AppLocalizations {
   /// No description provided for @streakDays.
   ///
   /// In tr, this message translates to:
-  /// **'{count} Günlük Seri'**
+  /// **'{count} gün'**
   String streakDays(Object count);
 
   /// No description provided for @streakIndicator.
@@ -6170,6 +7190,12 @@ abstract class AppLocalizations {
   /// **'Görev eklendi'**
   String get taskAdded;
 
+  /// No description provided for @taskAddedSnackbar.
+  ///
+  /// In tr, this message translates to:
+  /// **'{title} görevi eklendi! ✅'**
+  String taskAddedSnackbar(Object title);
+
   /// No description provided for @taskCompleted.
   ///
   /// In tr, this message translates to:
@@ -6235,6 +7261,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Hazır'**
   String get templatesTabReady;
+
+  /// No description provided for @testsSection.
+  ///
+  /// In tr, this message translates to:
+  /// **'Testler'**
+  String get testsSection;
 
   /// No description provided for @textLabel.
   ///
@@ -6704,6 +7736,12 @@ abstract class AppLocalizations {
   /// **'Bugünün Alışkanlıkları'**
   String get todaysHabits;
 
+  /// No description provided for @tokenEarnedSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'+1 jeton kazandınız! 🎉'**
+  String get tokenEarnedSuccess;
+
   /// No description provided for @tomorrow.
   ///
   /// In tr, this message translates to:
@@ -6727,6 +7765,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Toplam Kayıt'**
   String get totalEntries;
+
+  /// No description provided for @totalMembersLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Toplam üye'**
+  String get totalMembersLabel;
 
   /// No description provided for @totalProgress.
   ///
@@ -7124,6 +8168,12 @@ abstract class AppLocalizations {
   /// **'Sıcak günlük ve duygu takibi'**
   String get warmJournalDesc;
 
+  /// No description provided for @watchAdForToken.
+  ///
+  /// In tr, this message translates to:
+  /// **'Reklam İzle (+1 Jeton)'**
+  String get watchAdForToken;
+
   /// No description provided for @wednesdayShort.
   ///
   /// In tr, this message translates to:
@@ -7202,6 +8252,18 @@ abstract class AppLocalizations {
   /// **'Haftalık ilerleme'**
   String get weeklyProgress;
 
+  /// No description provided for @weeklyReportsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Haftalık Raporlar'**
+  String get weeklyReportsTitle;
+
+  /// No description provided for @weeklySchedule.
+  ///
+  /// In tr, this message translates to:
+  /// **'Haftalık'**
+  String get weeklySchedule;
+
   /// No description provided for @weeklySummaryEmail.
   ///
   /// In tr, this message translates to:
@@ -7232,17 +8294,35 @@ abstract class AppLocalizations {
   /// **'Çark Çevirme'**
   String get wheelOfFortuneTitle;
 
+  /// No description provided for @whichDays.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hangi günler'**
+  String get whichDays;
+
   /// No description provided for @whichDaysActive.
   ///
   /// In tr, this message translates to:
   /// **'Hangi günler aktif olmalı?'**
   String get whichDaysActive;
 
+  /// No description provided for @whichMonthDays.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ayın hangi günleri'**
+  String get whichMonthDays;
+
   /// No description provided for @whichWeekdays.
   ///
   /// In tr, this message translates to:
   /// **'Hangi hafta günleri?'**
   String get whichWeekdays;
+
+  /// No description provided for @whichYearDays.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yılın hangi günleri'**
+  String get whichYearDays;
 
   /// No description provided for @worldTheme.
   ///
@@ -7272,7 +8352,7 @@ abstract class AppLocalizations {
   ///
   /// In tr, this message translates to:
   /// **'sonraki seviyeye'**
-  String get xpToNextLevel;
+  String xpToNextLevel(Object toNext);
 
   /// No description provided for @yearly.
   ///
@@ -7310,6 +8390,12 @@ abstract class AppLocalizations {
   /// **'Dün'**
   String get yesterday;
 
+  /// No description provided for @youLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sen'**
+  String get youLabel;
+
   /// No description provided for @yourCharacterType.
   ///
   /// In tr, this message translates to:
@@ -7333,504 +8419,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bugünkü Ruh Halin'**
   String get yourMoodToday;
-
-  /// No description provided for @dailyHabitInfo.
-  ///
-  /// In tr, this message translates to:
-  /// **'Günlük'**
-  String get dailyHabitInfo;
-
-  /// No description provided for @whichDays.
-  ///
-  /// In tr, this message translates to:
-  /// **'Hangi günler'**
-  String get whichDays;
-
-  /// No description provided for @whichMonthDays.
-  ///
-  /// In tr, this message translates to:
-  /// **'Ayın hangi günleri'**
-  String get whichMonthDays;
-
-  /// No description provided for @whichYearDays.
-  ///
-  /// In tr, this message translates to:
-  /// **'Yılın hangi günleri'**
-  String get whichYearDays;
-
-  /// No description provided for @everyNDays.
-  ///
-  /// In tr, this message translates to:
-  /// **'Her {days} günde bir'**
-  String everyNDays(Object days);
-
-  /// No description provided for @nDays.
-  ///
-  /// In tr, this message translates to:
-  /// **'{days} gün'**
-  String nDays(Object days);
-
-  /// No description provided for @everyNDaysInfo.
-  ///
-  /// In tr, this message translates to:
-  /// **'Her {days} günde bir gerçekleşir'**
-  String everyNDaysInfo(Object days);
-
-  /// No description provided for @rhythmTeaserTitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Biyolojik Saatinize Göre Alışkanlıkları Maksimum Verimle Kazanın'**
-  String get rhythmTeaserTitle;
-
-  /// No description provided for @rhythmTeaserSubtitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Canlı Ritim, en verimli anlarınızı öğrenir ve alışkanlıklarınızı doğru zamana yerleştirir.'**
-  String get rhythmTeaserSubtitle;
-
-  /// No description provided for @rhythmTeaserSkip.
-  ///
-  /// In tr, this message translates to:
-  /// **'Atla'**
-  String get rhythmTeaserSkip;
-
-  /// No description provided for @rhythmTeaserCta.
-  ///
-  /// In tr, this message translates to:
-  /// **'Paketleri İncele'**
-  String get rhythmTeaserCta;
-
-  /// No description provided for @rhythmWindowFocus.
-  ///
-  /// In tr, this message translates to:
-  /// **'Odak Zamanı'**
-  String get rhythmWindowFocus;
-
-  /// No description provided for @rhythmWindowFocusDesc.
-  ///
-  /// In tr, this message translates to:
-  /// **'Zihinsel netlik, öğrenme, analiz'**
-  String get rhythmWindowFocusDesc;
-
-  /// No description provided for @rhythmWindowEnergy.
-  ///
-  /// In tr, this message translates to:
-  /// **'Enerji Zamanı'**
-  String get rhythmWindowEnergy;
-
-  /// No description provided for @rhythmWindowEnergyDesc.
-  ///
-  /// In tr, this message translates to:
-  /// **'Hareket, aksiyon, spor'**
-  String get rhythmWindowEnergyDesc;
-
-  /// No description provided for @rhythmWindowLight.
-  ///
-  /// In tr, this message translates to:
-  /// **'Hafif Zaman'**
-  String get rhythmWindowLight;
-
-  /// No description provided for @rhythmWindowLightDesc.
-  ///
-  /// In tr, this message translates to:
-  /// **'Düşük efor, küçük işler'**
-  String get rhythmWindowLightDesc;
-
-  /// No description provided for @rhythmWindowReflection.
-  ///
-  /// In tr, this message translates to:
-  /// **'Refleksiyon Zamanı'**
-  String get rhythmWindowReflection;
-
-  /// No description provided for @rhythmWindowReflectionDesc.
-  ///
-  /// In tr, this message translates to:
-  /// **'Günlük, tefekkür, kapanış'**
-  String get rhythmWindowReflectionDesc;
-
-  /// No description provided for @rhythmBenefit1.
-  ///
-  /// In tr, this message translates to:
-  /// **'Doğru zamanda doğru iş'**
-  String get rhythmBenefit1;
-
-  /// No description provided for @rhythmBenefit2.
-  ///
-  /// In tr, this message translates to:
-  /// **'Karar yorgunluğu yok'**
-  String get rhythmBenefit2;
-
-  /// No description provided for @rhythmBenefit3.
-  ///
-  /// In tr, this message translates to:
-  /// **'Her hafta kişiselleşme'**
-  String get rhythmBenefit3;
-
-  /// No description provided for @rhythmAnalyzing.
-  ///
-  /// In tr, this message translates to:
-  /// **'Canlı Ritim analiz ediyor...'**
-  String get rhythmAnalyzing;
-
-  /// No description provided for @rhythmDisclaimer.
-  ///
-  /// In tr, this message translates to:
-  /// **'Bunlar kesin sonuçlar değil. Canlı Ritim seni tanıdıkça ayarlanacak.'**
-  String get rhythmDisclaimer;
-
-  /// No description provided for @rhythmQ1.
-  ///
-  /// In tr, this message translates to:
-  /// **'Tamamen kendi isteğinize bırakılsaydı ve ertesi gün zorunlu bir işiniz olmasaydı, saat kaçta kalkardınız?'**
-  String get rhythmQ1;
-
-  /// No description provided for @rhythmQ2.
-  ///
-  /// In tr, this message translates to:
-  /// **'Sabah uyandıktan sonraki ilk yarım saatte kendinizi genelde ne kadar yorgun hissedersiniz?'**
-  String get rhythmQ2;
-
-  /// No description provided for @rhythmQ3.
-  ///
-  /// In tr, this message translates to:
-  /// **'Akşamları tamamen serbestsiniz ve ertesi gün bir zorunluluğunuz yok. Saat kaçta uyurdunuz?'**
-  String get rhythmQ3;
-
-  /// No description provided for @rhythmQ4.
-  ///
-  /// In tr, this message translates to:
-  /// **'Günün hangi saatinde kendinizi en iyi (enerjik) hissedersiniz?'**
-  String get rhythmQ4;
-
-  /// No description provided for @rhythmQ5.
-  ///
-  /// In tr, this message translates to:
-  /// **'\"Sabah insanı\" mı yoksa \"Akşam insanı\" mı olduğunuzu düşünüyorsunuz?'**
-  String get rhythmQ5;
-
-  /// No description provided for @rhythmA1_1.
-  ///
-  /// In tr, this message translates to:
-  /// **'05:00 – 06:30'**
-  String get rhythmA1_1;
-
-  /// No description provided for @rhythmA1_2.
-  ///
-  /// In tr, this message translates to:
-  /// **'06:30 – 07:45'**
-  String get rhythmA1_2;
-
-  /// No description provided for @rhythmA1_3.
-  ///
-  /// In tr, this message translates to:
-  /// **'07:45 – 09:45'**
-  String get rhythmA1_3;
-
-  /// No description provided for @rhythmA1_4.
-  ///
-  /// In tr, this message translates to:
-  /// **'09:45 – 11:00'**
-  String get rhythmA1_4;
-
-  /// No description provided for @rhythmA1_5.
-  ///
-  /// In tr, this message translates to:
-  /// **'11:00 – 12:00'**
-  String get rhythmA1_5;
-
-  /// No description provided for @rhythmA2_1.
-  ///
-  /// In tr, this message translates to:
-  /// **'Çok yorgun'**
-  String get rhythmA2_1;
-
-  /// No description provided for @rhythmA2_2.
-  ///
-  /// In tr, this message translates to:
-  /// **'Oldukça yorgun'**
-  String get rhythmA2_2;
-
-  /// No description provided for @rhythmA2_3.
-  ///
-  /// In tr, this message translates to:
-  /// **'Biraz yorgun'**
-  String get rhythmA2_3;
-
-  /// No description provided for @rhythmA2_4.
-  ///
-  /// In tr, this message translates to:
-  /// **'Hiç yorgun değil'**
-  String get rhythmA2_4;
-
-  /// No description provided for @rhythmA3_1.
-  ///
-  /// In tr, this message translates to:
-  /// **'20:00 – 21:00'**
-  String get rhythmA3_1;
-
-  /// No description provided for @rhythmA3_2.
-  ///
-  /// In tr, this message translates to:
-  /// **'21:00 – 22:15'**
-  String get rhythmA3_2;
-
-  /// No description provided for @rhythmA3_3.
-  ///
-  /// In tr, this message translates to:
-  /// **'22:15 – 00:30'**
-  String get rhythmA3_3;
-
-  /// No description provided for @rhythmA3_4.
-  ///
-  /// In tr, this message translates to:
-  /// **'00:30 – 01:45'**
-  String get rhythmA3_4;
-
-  /// No description provided for @rhythmA3_5.
-  ///
-  /// In tr, this message translates to:
-  /// **'01:45 – 03:00'**
-  String get rhythmA3_5;
-
-  /// No description provided for @rhythmA4_1.
-  ///
-  /// In tr, this message translates to:
-  /// **'05:00 – 09:00'**
-  String get rhythmA4_1;
-
-  /// No description provided for @rhythmA4_2.
-  ///
-  /// In tr, this message translates to:
-  /// **'09:00 – 14:00'**
-  String get rhythmA4_2;
-
-  /// No description provided for @rhythmA4_3.
-  ///
-  /// In tr, this message translates to:
-  /// **'14:00 – 17:00'**
-  String get rhythmA4_3;
-
-  /// No description provided for @rhythmA4_4.
-  ///
-  /// In tr, this message translates to:
-  /// **'17:00 – 21:00'**
-  String get rhythmA4_4;
-
-  /// No description provided for @rhythmA4_5.
-  ///
-  /// In tr, this message translates to:
-  /// **'21:00 – 05:00'**
-  String get rhythmA4_5;
-
-  /// No description provided for @rhythmA5_1.
-  ///
-  /// In tr, this message translates to:
-  /// **'Kesinlikle sabah insanı'**
-  String get rhythmA5_1;
-
-  /// No description provided for @rhythmA5_2.
-  ///
-  /// In tr, this message translates to:
-  /// **'Daha çok sabah insanı'**
-  String get rhythmA5_2;
-
-  /// No description provided for @rhythmA5_3.
-  ///
-  /// In tr, this message translates to:
-  /// **'Daha çok akşam insanı'**
-  String get rhythmA5_3;
-
-  /// No description provided for @rhythmA5_4.
-  ///
-  /// In tr, this message translates to:
-  /// **'Kesinlikle akşam insanı'**
-  String get rhythmA5_4;
-
-  /// No description provided for @rhythmResultTitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Biyolojik Saat Profiliniz'**
-  String get rhythmResultTitle;
-
-  /// No description provided for @rhythmResultSubtitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Verilerinize dayanarak gününüzü sizin için bölümlere ayırdık.'**
-  String get rhythmResultSubtitle;
-
-  /// No description provided for @rhythmChronoMorning.
-  ///
-  /// In tr, this message translates to:
-  /// **'Sabah İnsanı (Erkenci Kuş)'**
-  String get rhythmChronoMorning;
-
-  /// No description provided for @rhythmChronoEvening.
-  ///
-  /// In tr, this message translates to:
-  /// **'Akşam İnsanı (Gece Kuşu)'**
-  String get rhythmChronoEvening;
-
-  /// No description provided for @rhythmChronoIntermediate.
-  ///
-  /// In tr, this message translates to:
-  /// **'Ara Tip (Dengeli)'**
-  String get rhythmChronoIntermediate;
-
-  /// No description provided for @rhythmHabitSuggestionTitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Sizin İçin Önerilen Saatler:'**
-  String get rhythmHabitSuggestionTitle;
-
-  /// No description provided for @rhythmResultGotIt.
-  ///
-  /// In tr, this message translates to:
-  /// **'Harika, Başlayalım'**
-  String get rhythmResultGotIt;
-
-  /// No description provided for @rhythmFocusHint.
-  ///
-  /// In tr, this message translates to:
-  /// **'Zihinsel çalışma, analiz, öğrenme'**
-  String get rhythmFocusHint;
-
-  /// No description provided for @rhythmEnergyHint.
-  ///
-  /// In tr, this message translates to:
-  /// **'Antrenman, fiziksel aktivite'**
-  String get rhythmEnergyHint;
-
-  /// No description provided for @rhythmLightHint.
-  ///
-  /// In tr, this message translates to:
-  /// **'E-postalar, sosyal medya, ufak işler'**
-  String get rhythmLightHint;
-
-  /// No description provided for @rhythmReflectionHint.
-  ///
-  /// In tr, this message translates to:
-  /// **'Günlük, kitap, uykuya hazırlık'**
-  String get rhythmReflectionHint;
-
-  /// No description provided for @testsSection.
-  ///
-  /// In tr, this message translates to:
-  /// **'Testler'**
-  String get testsSection;
-
-  /// No description provided for @retakePersonalityTestDesc.
-  ///
-  /// In tr, this message translates to:
-  /// **'Karakter tipini tekrar keşfet'**
-  String get retakePersonalityTestDesc;
-
-  /// No description provided for @retakeRhythmTest.
-  ///
-  /// In tr, this message translates to:
-  /// **'Canlı Ritim Testini Yeniden Yap'**
-  String get retakeRhythmTest;
-
-  /// No description provided for @retakeRhythmTestDesc.
-  ///
-  /// In tr, this message translates to:
-  /// **'Biyolojik saatini tekrar belirle'**
-  String get retakeRhythmTestDesc;
-
-  /// No description provided for @rhythmWindowStepTitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'En Uygun Zaman Dilimi'**
-  String get rhythmWindowStepTitle;
-
-  /// No description provided for @rhythmWindowStepSubtitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Bu alışkanlığı hangi zaman diliminde yapmak istersin?'**
-  String get rhythmWindowStepSubtitle;
-
-  /// No description provided for @rhythmWindowNoProfileHint.
-  ///
-  /// In tr, this message translates to:
-  /// **'Ritim testini tamamlayarak kişiselleştirilmiş öneriler alabilirsin'**
-  String get rhythmWindowNoProfileHint;
-
-  /// No description provided for @weeklySchedule.
-  ///
-  /// In tr, this message translates to:
-  /// **'Haftalık'**
-  String get weeklySchedule;
-
-  /// No description provided for @addEvent.
-  ///
-  /// In tr, this message translates to:
-  /// **'Etkinlik Ekle'**
-  String get addEvent;
-
-  /// No description provided for @eventTitle.
-  ///
-  /// In tr, this message translates to:
-  /// **'Etkinlik Başlığı'**
-  String get eventTitle;
-
-  /// No description provided for @eventDescription.
-  ///
-  /// In tr, this message translates to:
-  /// **'Açıklama'**
-  String get eventDescription;
-
-  /// No description provided for @startTime.
-  ///
-  /// In tr, this message translates to:
-  /// **'Başlangıç Saati'**
-  String get startTime;
-
-  /// No description provided for @endTime.
-  ///
-  /// In tr, this message translates to:
-  /// **'Bitiş Saati'**
-  String get endTime;
-
-  /// No description provided for @selectDay.
-  ///
-  /// In tr, this message translates to:
-  /// **'Gün Seçin'**
-  String get selectDay;
-
-  /// No description provided for @eventDetails.
-  ///
-  /// In tr, this message translates to:
-  /// **'Etkinlik Detayı'**
-  String get eventDetails;
-
-  /// No description provided for @deleteEvent.
-  ///
-  /// In tr, this message translates to:
-  /// **'Etkinliği Sil'**
-  String get deleteEvent;
-
-  /// No description provided for @editEvent.
-  ///
-  /// In tr, this message translates to:
-  /// **'Etkinliği Düzenle'**
-  String get editEvent;
-
-  /// No description provided for @noEvents.
-  ///
-  /// In tr, this message translates to:
-  /// **'Henüz etkinlik yok'**
-  String get noEvents;
-
-  /// No description provided for @habitBlock.
-  ///
-  /// In tr, this message translates to:
-  /// **'Alışkanlık'**
-  String get habitBlock;
-
-  /// No description provided for @customEvent.
-  ///
-  /// In tr, this message translates to:
-  /// **'Özel Etkinlik'**
-  String get customEvent;
 }
 
 class _AppLocalizationsDelegate
