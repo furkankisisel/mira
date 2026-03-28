@@ -434,6 +434,21 @@ class RoomService {
     );
   }
 
+  /// Stream progress history for a specific member on a habit.
+  Stream<List<ProgressHistoryEntry>> streamProgressHistory({
+    required String roomId,
+    required String habitId,
+    required String uid,
+    int limit = 365,
+  }) {
+    return _repo.streamProgressHistory(
+      roomId: roomId,
+      habitId: habitId,
+      uid: uid,
+      limit: limit,
+    );
+  }
+
   // ─── Nudges (Dürtme) ───────────────────────────────────
 
   /// Send a nudge to another member.

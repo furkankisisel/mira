@@ -1,3 +1,4 @@
+import 'dart:io' as io;
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -5,6 +6,7 @@ import '../data/room_service.dart';
 import '../domain/room_habit_model.dart';
 import '../domain/room_member_model.dart';
 import '../domain/room_progress_models.dart';
+import '../../profile/profile_repository.dart';
 
 /// Full-screen profile view showing a member's progress across all room habits.
 /// Includes weekly/monthly/yearly bar charts and a nudge button.
@@ -339,71 +341,94 @@ class _ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
-      child: Row(
-        children: [
-          // Avatar
-          CircleAvatar(
-            radius: 32,
-            backgroundImage: member.avatarUrl != null
-                ? NetworkImage(member.avatarUrl!)
-                : null,
-            child: member.avatarUrl == null
-                ? Text(
-                    member.displayName.isNotEmpty
-                        ? member.displayName[0].toUpperCase()
-                        : '?',
-                    style: const TextStyle(
-                        fontSize: 24, fontWeight: FontWeight.w700),
-                  )
-                : null,
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      member.displayName,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    if (isCurrentUser) ...[
-                      const SizedBox(width: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
+    return ListenableBuilder(
+      listenable: ProfileRepository.instance,
+      builder: (context, _) {
+        final profile = ProfileRepository.instance;
+        final name = isCurrentUser ? (profile.name.isNotEmpty ? profile.name : member.displayName) : member.displayName;
+
+        ImageProvider? avatar;
+        if (isCurrentUser) {
+          if (profile.avatarPath != null && profile.avatarPath!.isNotEmpty) {
+            avatar = FileImage(io.File(profile.avatarPath!));
+          } else if (profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty) {
+            avatar = NetworkImage(profile.avatarUrl!);
+          }
+        } else if (member.avatarUrl != null) {
+          avatar = NetworkImage(member.avatarUrl!);
+        }
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+          child: Row(
+            children: [
+              // Avatar
+              CircleAvatar(
+                radius: 32,
+                backgroundImage: avatar,
+                backgroundColor: avatar == null ? theme.colorScheme.primaryContainer : null,
+                child: avatar == null
+                    ? Text(
+                        name.isNotEmpty ? name[0].toUpperCase() : '?',
+                        style: TextStyle(
+                          fontSize: 24, 
+                          fontWeight: FontWeight.w700,
+                          color: theme.colorScheme.onPrimaryContainer,
                         ),
-                        child: Text(
-                          'Sen',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.w600,
+                      )
+                    : null,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            name,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        if (isCurrentUser) ...[
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              'Sen',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Katılım: ${_formatDate(member.joinedAt)}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
-                    ],
+                    ),
                   ],
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  'Katılım: ${_formatDate(member.joinedAt)}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -583,209 +608,162 @@ class _ProgressChart extends StatefulWidget {
 }
 
 class _ProgressChartState extends State<_ProgressChart> {
-  List<ProgressHistoryEntry> _entries = [];
-  bool _loading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-
-  @override
-  void didUpdateWidget(covariant _ProgressChart old) {
-    super.didUpdateWidget(old);
-    if (old.habitId != widget.habitId || old.period != widget.period) {
-      _loadData();
-    }
-  }
-
-  Future<void> _loadData() async {
-    setState(() => _loading = true);
-    try {
-      final entries = await RoomService.instance.getProgressHistory(
-        roomId: widget.roomId,
-        habitId: widget.habitId,
-        uid: widget.uid,
-      );
-      if (mounted) {
-        setState(() {
-          _entries = entries;
-          _loading = false;
-        });
-      }
-    } catch (_) {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
-    if (_loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    final chartData = _buildChartData();
-
-    if (chartData.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.bar_chart_rounded,
-                size: 48,
-                color: theme.colorScheme.onSurfaceVariant.withOpacity(0.3)),
-            const SizedBox(height: 8),
-            Text(
-              'Henüz yeterli veri yok',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Alışkanlık tamamlandıkça grafik oluşacak',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
-                fontSize: 11,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: CustomPaint(
-        painter: _BarChartPainter(
-          data: chartData,
-          barColor: widget.color,
-          completedColor: const Color(0xFF22C55E),
-          gridColor: theme.colorScheme.outlineVariant.withOpacity(0.3),
-          textColor: theme.colorScheme.onSurfaceVariant,
-          isDark: theme.brightness == Brightness.dark,
-        ),
-        size: const Size(double.infinity, 240),
+    return StreamBuilder<List<ProgressHistoryEntry>>(
+      stream: RoomService.instance.streamProgressHistory(
+        roomId: widget.roomId,
+        habitId: widget.habitId,
+        uid: widget.uid,
       ),
+      builder: (context, snap) {
+        if (snap.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final entries = snap.data ?? [];
+        final chartData = _buildChartData(entries);
+
+        if (chartData.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.auto_awesome_rounded,
+                    size: 48,
+                    color: widget.color.withOpacity(0.2)),
+                const SizedBox(height: 12),
+                Text(
+                  'İlerleme Yolculuğu Başlıyor',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.onSurface,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Alışkanlıklarını tamamladıkça bu grafik\nsenin başarınla şekillenecek ✨',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
+        }
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+          child: CustomPaint(
+            painter: _LineChartPainter(
+              data: chartData,
+              lineColor: widget.color,
+              dotColor: widget.color.withOpacity(0.8),
+              fillColor: widget.color.withOpacity(isDark ? 0.08 : 0.05),
+              gridColor: theme.colorScheme.outlineVariant.withOpacity(0.2),
+              textColor: theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
+              isDark: isDark,
+            ),
+            size: const Size(double.infinity, 200),
+          ),
+        );
+      },
     );
   }
 
-  List<_BarData> _buildChartData() {
+  List<_ChartData> _buildChartData(List<ProgressHistoryEntry> entries) {
     final now = DateTime.now();
 
     switch (widget.period) {
       case _ChartPeriod.weekly:
-        return _buildWeeklyData(now);
+        return _buildWeeklyData(now, entries);
       case _ChartPeriod.monthly:
-        return _buildMonthlyData(now);
+        return _buildMonthlyData(now, entries);
       case _ChartPeriod.yearly:
-        return _buildYearlyData(now);
+        return _buildYearlyData(now, entries);
     }
   }
 
-  List<_BarData> _buildWeeklyData(DateTime now) {
-    final result = <_BarData>[];
+  List<_ChartData> _buildWeeklyData(DateTime now, List<ProgressHistoryEntry> entries) {
+    final result = <_ChartData>[];
     const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
 
-    // Get last 7 days
     for (int i = 6; i >= 0; i--) {
       final day = now.subtract(Duration(days: i));
       final key =
           '${day.year}-${day.month.toString().padLeft(2, '0')}-${day.day.toString().padLeft(2, '0')}';
-      final entry = _entries.where((e) => e.date == key).firstOrNull;
+      final entry = entries.where((e) => e.date == key).firstOrNull;
 
-      result.add(_BarData(
+      result.add(_ChartData(
         label: days[(day.weekday - 1) % 7],
         value: entry?.completionRatio ?? 0.0,
-        isCompleted: entry?.isCompleted ?? false,
         isToday: i == 0,
       ));
     }
     return result;
   }
 
-  List<_BarData> _buildMonthlyData(DateTime now) {
-    final result = <_BarData>[];
+  List<_ChartData> _buildMonthlyData(DateTime now, List<ProgressHistoryEntry> entries) {
+    final result = <_ChartData>[];
 
-    // Get last 30 days grouped by 5-day periods
     for (int week = 5; week >= 0; week--) {
       final periodStart = now.subtract(Duration(days: (week + 1) * 5));
       final periodEnd = now.subtract(Duration(days: week * 5));
 
       double totalRatio = 0;
       int count = 0;
-      int completedDays = 0;
 
-      for (final entry in _entries) {
+      for (final entry in entries) {
         final entryDate = DateTime.tryParse(entry.date);
         if (entryDate != null &&
             entryDate.isAfter(periodStart) &&
             !entryDate.isAfter(periodEnd)) {
           totalRatio += entry.completionRatio;
           count++;
-          if (entry.isCompleted) completedDays++;
         }
       }
 
       final avgRatio = count > 0 ? totalRatio / count : 0.0;
-      final label =
-          '${periodEnd.day}/${periodEnd.month}';
+      final label = '${periodEnd.day}/${periodEnd.month}';
 
-      result.add(_BarData(
+      result.add(_ChartData(
         label: label,
         value: avgRatio,
-        isCompleted: count > 0 && completedDays == count,
         isToday: week == 0,
       ));
     }
     return result;
   }
 
-  List<_BarData> _buildYearlyData(DateTime now) {
-    final result = <_BarData>[];
-    const months = [
-      '',
-      'Oca',
-      'Şub',
-      'Mar',
-      'Nis',
-      'May',
-      'Haz',
-      'Tem',
-      'Ağu',
-      'Eyl',
-      'Eki',
-      'Kas',
-      'Ara'
-    ];
+  List<_ChartData> _buildYearlyData(DateTime now, List<ProgressHistoryEntry> entries) {
+    final result = <_ChartData>[];
+    const months = ['', 'Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
 
-    // Last 12 months
     for (int i = 11; i >= 0; i--) {
       final month = DateTime(now.year, now.month - i, 1);
-      final monthKey =
-          '${month.year}-${month.month.toString().padLeft(2, '0')}';
+      final monthKey = '${month.year}-${month.month.toString().padLeft(2, '0')}';
 
       double totalRatio = 0;
       int count = 0;
-      int completedDays = 0;
 
-      for (final entry in _entries) {
+      for (final entry in entries) {
         if (entry.date.startsWith(monthKey)) {
           totalRatio += entry.completionRatio;
           count++;
-          if (entry.isCompleted) completedDays++;
         }
       }
 
       final avgRatio = count > 0 ? totalRatio / count : 0.0;
 
-      result.add(_BarData(
+      result.add(_ChartData(
         label: months[month.month],
         value: avgRatio,
-        isCompleted: count > 0 && completedDays == count,
         isToday: i == 0,
       ));
     }
@@ -793,35 +771,32 @@ class _ProgressChartState extends State<_ProgressChart> {
   }
 }
 
-class _BarData {
-  const _BarData({
+class _ChartData {
+  const _ChartData({
     required this.label,
     required this.value,
-    this.isCompleted = false,
     this.isToday = false,
   });
-
   final String label;
-  final double value; // 0.0 – 1.0
-  final bool isCompleted;
+  final double value;
   final bool isToday;
 }
 
-// ─── Custom Bar Chart Painter ───────────────────────────────
-
-class _BarChartPainter extends CustomPainter {
-  _BarChartPainter({
+class _LineChartPainter extends CustomPainter {
+  const _LineChartPainter({
     required this.data,
-    required this.barColor,
-    required this.completedColor,
+    required this.lineColor,
+    required this.dotColor,
+    required this.fillColor,
     required this.gridColor,
     required this.textColor,
     required this.isDark,
   });
 
-  final List<_BarData> data;
-  final Color barColor;
-  final Color completedColor;
+  final List<_ChartData> data;
+  final Color lineColor;
+  final Color dotColor;
+  final Color fillColor;
   final Color gridColor;
   final Color textColor;
   final bool isDark;
@@ -830,142 +805,112 @@ class _BarChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (data.isEmpty) return;
 
-    const labelHeight = 24.0;
-    const topPadding = 20.0;
-    final chartHeight = size.height - labelHeight - topPadding;
-    final barWidth = (size.width / data.length) * 0.55;
-    final gap = (size.width - barWidth * data.length) / (data.length + 1);
+    final margin = 30.0;
+    final chartHeight = size.height - margin * 1.5;
+    final chartWidth = size.width;
+    final stepX = chartWidth / (data.length - 1);
 
-    // Grid lines
+    final linePaint = Paint()
+      ..color = lineColor
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final fillPaint = Paint()
+      ..color = fillColor
+      ..style = PaintingStyle.fill;
+
+    final dotPaint = Paint()
+      ..color = dotColor
+      ..style = PaintingStyle.fill;
+
     final gridPaint = Paint()
       ..color = gridColor
-      ..strokeWidth = 0.5;
+      ..strokeWidth = 1;
 
-    for (int i = 0; i <= 4; i++) {
-      final y = topPadding + chartHeight * (1 - i / 4);
-      canvas.drawLine(
-        Offset(0, y),
-        Offset(size.width, y),
-        gridPaint,
-      );
-
-      // Grid labels
-      final pctLabel = '${(i * 25)}%';
-      final tp = TextPainter(
-        text: TextSpan(
-          text: pctLabel,
-          style: TextStyle(
-            fontSize: 9,
-            color: textColor.withOpacity(0.5),
+    // Draw Grid Lines (Horizontal)
+    final gridSteps = 4;
+    for (int i = 0; i <= gridSteps; i++) {
+        final y = chartHeight - (i * chartHeight / gridSteps);
+        canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
+        
+        // PCT Label
+        final pctLabel = '${(i * 25)}%';
+        final tp = TextPainter(
+          text: TextSpan(
+            text: pctLabel,
+            style: TextStyle(
+              fontSize: 8,
+              color: textColor.withOpacity(0.4),
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        textDirection: TextDirection.ltr,
-      )..layout();
-      tp.paint(canvas, Offset(0, y - tp.height - 2));
+          textDirection: TextDirection.ltr,
+        )..layout();
+        tp.paint(canvas, Offset(0, y - tp.height - 2));
     }
 
-    // Bars
+    final path = Path();
+    final fillPath = Path();
+
+    // Calculate points
+    final points = <Offset>[];
     for (int i = 0; i < data.length; i++) {
-      final d = data[i];
-      final x = gap + i * (barWidth + gap);
-      final barHeight = chartHeight * d.value.clamp(0.0, 1.0);
-      final barTop = topPadding + chartHeight - barHeight;
+      final x = i * stepX;
+      final y = chartHeight - (data[i].value * chartHeight);
+      points.add(Offset(x, y));
+    }
 
-      // Bar background (ghost)
-      final bgRect = RRect.fromRectAndRadius(
-        Rect.fromLTWH(x, topPadding, barWidth, chartHeight),
-        const Radius.circular(6),
-      );
-      canvas.drawRRect(
-        bgRect,
-        Paint()..color = gridColor.withOpacity(0.3),
-      );
+    // Start fill path
+    fillPath.moveTo(0, chartHeight);
 
-      // Colored bar
-      if (barHeight > 0) {
-        final color = d.isCompleted ? completedColor : barColor;
-        final barRect = RRect.fromRectAndRadius(
-          Rect.fromLTWH(x, barTop, barWidth, barHeight),
-          const Radius.circular(6),
-        );
+    // Draw smooth line using Bezier
+    if (points.length > 1) {
+      path.moveTo(points[0].dx, points[0].dy);
+      fillPath.lineTo(points[0].dx, points[0].dy);
 
-        // Gradient fill
-        final gradient = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            color,
-            color.withOpacity(0.7),
-          ],
-        );
-
-        canvas.drawRRect(
-          barRect,
-          Paint()
-            ..shader = gradient.createShader(
-              Rect.fromLTWH(x, barTop, barWidth, barHeight),
-            ),
-        );
-
-        // Value label on top of bar
-        if (d.value > 0.05) {
-          final valueLabel = '${(d.value * 100).round()}%';
-          final valueTp = TextPainter(
-            text: TextSpan(
-              text: valueLabel,
-              style: TextStyle(
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
-                color: d.isCompleted
-                    ? completedColor
-                    : textColor,
-              ),
-            ),
-            textDirection: TextDirection.ltr,
-          )..layout();
-          valueTp.paint(
-            canvas,
-            Offset(x + (barWidth - valueTp.width) / 2, barTop - 14),
-          );
-        }
+      for (int i = 0; i < points.length - 1; i++) {
+        final p0 = points[i];
+        final p1 = points[i + 1];
+        final controlPoint1 = Offset(p0.dx + (p1.dx - p0.dx) / 2, p0.dy);
+        final controlPoint2 = Offset(p0.dx + (p1.dx - p0.dx) / 2, p1.dy);
+        path.cubicTo(controlPoint1.dx, controlPoint1.dy, 
+                   controlPoint2.dx, controlPoint2.dy, 
+                   p1.dx, p1.dy);
+        fillPath.cubicTo(controlPoint1.dx, controlPoint1.dy, 
+                       controlPoint2.dx, controlPoint2.dy, 
+                       p1.dx, p1.dy);
       }
+    }
 
-      // Today indicator
-      if (d.isToday) {
-        final dotPaint = Paint()
-          ..color = barColor
-          ..style = PaintingStyle.fill;
-        final dotCenter = Offset(
-          x + barWidth / 2,
-          topPadding + chartHeight + labelHeight - 4,
-        );
-        canvas.drawCircle(dotCenter, 3, dotPaint);
-      }
+    fillPath.lineTo(points.last.dx, chartHeight);
+    fillPath.lineTo(0, chartHeight);
+    fillPath.close();
 
-      // X-axis label
-      final labelTp = TextPainter(
-        text: TextSpan(
-          text: d.label,
-          style: TextStyle(
-            fontSize: 10,
-            fontWeight: d.isToday ? FontWeight.w700 : FontWeight.w500,
-            color: d.isToday ? barColor : textColor.withOpacity(0.7),
-          ),
-        ),
-        textDirection: TextDirection.ltr,
-      )..layout();
-      labelTp.paint(
-        canvas,
-        Offset(
-          x + (barWidth - labelTp.width) / 2,
-          topPadding + chartHeight + 4,
-        ),
+    // Draw Fill
+    canvas.drawPath(fillPath, fillPaint);
+    
+    // Draw Line
+    canvas.drawPath(path, linePaint);
+
+    // Draw Dots and Labels
+    final textPainter = TextPainter(textDirection: TextDirection.ltr);
+
+    for (int i = 0; i < points.length; i++) {
+      // Dot
+      canvas.drawCircle(points[i], 5, dotPaint);
+      canvas.drawCircle(points[i], 3, Paint()..color = Colors.white..style = PaintingStyle.fill);
+
+      // Label
+      textPainter.text = TextSpan(
+        text: data[i].label,
+        style: TextStyle(color: textColor, fontSize: 10, fontWeight: data[i].isToday ? FontWeight.w900 : FontWeight.w500),
       );
+      textPainter.layout();
+      textPainter.paint(canvas, Offset(points[i].dx - textPainter.width/2, chartHeight + 10));
     }
   }
 
   @override
-  bool shouldRepaint(covariant _BarChartPainter old) {
-    return old.data != data || old.barColor != barColor;
-  }
+  bool shouldRepaint(covariant _LineChartPainter old) => true;
 }

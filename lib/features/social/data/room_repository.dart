@@ -312,6 +312,31 @@ class RoomRepository {
     return entries;
   }
 
+  /// Stream of progress history for a specific member on a habit.
+  Stream<List<ProgressHistoryEntry>> streamProgressHistory({
+    required String roomId,
+    required String habitId,
+    required String uid,
+    int limit = 365,
+  }) {
+    return _roomsRef
+        .doc(roomId)
+        .collection('habits')
+        .doc(habitId)
+        .collection('progressHistory')
+        .where('uid', isEqualTo: uid)
+        .orderBy('date', descending: true)
+        .limit(limit)
+        .snapshots()
+        .map((snap) {
+      final entries = snap.docs
+          .map((d) => ProgressHistoryEntry.fromMap(d.data()))
+          .toList();
+      entries.sort((a, b) => a.date.compareTo(b.date));
+      return entries;
+    });
+  }
+
   // ─── Nudges (Dürtme) ───────────────────────────────────
 
   /// Send a nudge to another room member.

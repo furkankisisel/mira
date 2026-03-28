@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // --- SOCIAL ROOM RULES ---
+    
+    match /rooms/{roomId} {
+      // Herhangi bir giriş yapmış kullanıcı eğer üye listesindeyse okuyabilir
+      allow read: if request.auth != null && (request.auth.uid in resource.data.memberIds);
+      
+      // Herhangi bir giriş yapmış kullanıcı oda oluşturabilir
+      allow create: if request.auth != null;
+      
+      // Sadece oda sahibi güncelleyebilir veya silebilir
+      allow update, delete: if request.auth != null && resource.data.ownerId == request.auth.uid;
+
+      // Üye detay verileri (members subcollection)
+      match /members/{memberId} {
+        // Oda üyeleri birbirlerinin ilerlemesini görebilir
+        allow read: if request.auth != null && (request.auth.uid in get(/databases/$(database)/documents/rooms/$(roomId)).data.memberIds);
+        // Sadece kullanıcı kendi verisini güncelleyebilir
+        allow write: if request.auth != null && request.auth.uid == memberId;
+      }
+
+      // Alışkanlık tanımları (habits subcollection)
+      match /habits/{habitId} {
+        allow read: if request.auth != null && (request.auth.uid in get(/databases/$(database)/documents/rooms/$(roomId)).data.memberIds);
+        allow create: if request.auth != null;
+        allow update, delete: if request.auth != null && (request.auth.uid == get(/databases/$(database)/documents/rooms/$(roomId)).data.ownerId);
+
+        // İlerleme Geçmişi (habit subcollection)
+        match /progressHistory/{entryId} {
+          allow read: if request.auth != null;
+          // entryId '{uid}_{date}' formatında olmalı
+          allow write: if request.auth != null && entryId.hasPrefix(request.auth.uid);
+        }
+      }
+
+      // Nudges (Dürtmeler)
+      match /nudges/{nudgeId} {
+        // Sadece gönderen veya alan kişi okuyabilir
+        allow read: if request.auth != null && (resource.data.toUid == request.auth.uid || resource.data.fromUid == request.auth.uid);
+        allow create: if request.auth != null;
+      }
+      
+      // Activity Feed (Posts)
+      match /posts/{postId} {
+        allow read: if request.auth != null;
+        allow create: if request.auth != null;
+        allow update, delete: if request.auth != null && request.auth.uid == resource.data.authorUid;
+      }
+    }
+    
+    // Default rules for other collections
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
