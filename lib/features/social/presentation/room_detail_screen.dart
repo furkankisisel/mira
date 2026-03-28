@@ -23,6 +23,8 @@ import '../../profile/profile_repository.dart';
 import 'room_stats_card.dart';
 import 'room_leaderboard_widget.dart';
 import 'member_profile_screen.dart';
+import '../../../design_system/components/banner_ad_widget.dart';
+
 
 /// Detail view for a social room — live dashboard + notes.
 class RoomDetailScreen extends StatelessWidget {
@@ -452,6 +454,9 @@ class _RoomBody extends StatelessWidget {
 
           // Room Stats Card
           RoomStatsCard(roomId: roomId),
+
+          // Ad Banner (Premium Space)
+          const _AdBanner(),
 
           // Section: Habits Dashboard
           Padding(
@@ -1147,5 +1152,19 @@ class _NoteCard extends StatelessWidget {
     if (diff.inHours < 24) return '${diff.inHours} sa';
     if (diff.inDays < 7) return '${diff.inDays} gün';
     return '${dt.day}.${dt.month}.${dt.year}';
+  }
+}
+
+// ─── Ad Banner Widget ───────────────────────────────────────
+
+class _AdBanner extends StatelessWidget {
+  const _AdBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: BannerAdWidget(),
+    );
   }
 }

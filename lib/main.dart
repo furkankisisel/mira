@@ -23,6 +23,7 @@ import 'features/profile/profile_screen.dart';
 import 'features/schedule/presentation/weekly_schedule_screen.dart';
 
 import 'features/profile/settings_screen.dart';
+
 // Removed Decision Egg feature
 import 'features/gamification/gamification_repository.dart';
 import 'features/notifications/data/notification_settings_repository.dart';
