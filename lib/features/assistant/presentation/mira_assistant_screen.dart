@@ -10,8 +10,6 @@ import '../../games/presentation/games_screen.dart';
 import '../../habit/domain/habit_repository.dart';
 import '../../habit/domain/habit_model.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../reports/domain/report_model.dart';
-import 'mira_premium_report_screen.dart';
 
 /// Message bubble for chat display
 class _ChatMessage {
@@ -19,14 +17,12 @@ class _ChatMessage {
   final bool isUser;
   final List<QuickAction>? actions;
   final List<String>? quickReplies;
-  final WeeklyReport? report;
 
   _ChatMessage({
     required this.text,
     required this.isUser,
     this.actions,
     this.quickReplies,
-    this.report,
   });
 }
 
@@ -152,7 +148,6 @@ class _MiraAssistantScreenState extends State<MiraAssistantScreen> {
             isUser: false,
             actions: response.actions,
             quickReplies: response.quickReplies,
-            report: response.report,
           ),
         );
         _isLoading = false;
@@ -185,20 +180,8 @@ class _MiraAssistantScreenState extends State<MiraAssistantScreen> {
     });
   }
 
-  Future<void> _handleQuickAction(QuickAction action,
-      [WeeklyReport? report]) async {
+  Future<void> _handleQuickAction(QuickAction action) async {
     switch (action.routeId) {
-      case 'open_report':
-        if (report != null) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => MiraPremiumReportScreen(
-                report: report,
-              ),
-            ),
-          );
-        }
-        break;
       case 'create_habit':
         final result = await Navigator.of(
           context,
@@ -312,7 +295,7 @@ class _MiraAssistantScreenState extends State<MiraAssistantScreen> {
               runSpacing: 8,
               children: message.actions!.map((action) {
                 return FilledButton.icon(
-                  onPressed: () => _handleQuickAction(action, message.report),
+                  onPressed: () => _handleQuickAction(action),
                   icon: Icon(action.icon, size: 18),
                   label: Text(action.label),
                   style: FilledButton.styleFrom(

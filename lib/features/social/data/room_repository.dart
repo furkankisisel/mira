@@ -6,6 +6,7 @@ import '../domain/room_model.dart';
 import '../domain/room_member_model.dart';
 import '../domain/room_post_model.dart';
 import '../domain/room_habit_model.dart';
+import '../domain/room_progress_models.dart';
 
 /// Firestore-backed repository for social rooms.
 class RoomRepository {
@@ -156,30 +157,7 @@ class RoomRepository {
         .update(data);
   }
 
-  // ─── Room Habit Sessions (Analytics) ───────────────────────
-
-  /// Adds a new session record for analytics.
-  Future<String> addRoomHabitSession(
-      String roomId, RoomHabitSession session) async {
-    final docRef = await _roomsRef
-        .doc(roomId)
-        .collection('sessions')
-        .add(session.toJson());
-    return docRef.id;
-  }
-
-  /// Fetches all sessions for a room within a time range.
-  Future<List<RoomHabitSession>> getRoomHabitSessions(
-      String roomId, DateTime start, DateTime end) async {
-    final snap = await _roomsRef
-        .doc(roomId)
-        .collection('sessions')
-        .where('startTime', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
-        .where('startTime', isLessThanOrEqualTo: Timestamp.fromDate(end))
-        .get();
-
-    return snap.docs.map((d) => RoomHabitSession.fromFirestore(d)).toList();
-  }
+  // ─── Room Habit Streams ───────────────────────────────────
 
   // ─── Room Habit Streams ───────────────────────────────────
 
@@ -289,5 +267,78 @@ class RoomRepository {
   Future<List<RoomHabit>> getRoomHabits(String roomId) async {
     final snap = await _roomsRef.doc(roomId).collection('habits').get();
     return snap.docs.map(RoomHabit.fromFirestore).toList();
+  }
+
+  // ─── Progress History ──────────────────────────────────
+
+  /// Save a daily progress snapshot for a member.
+  /// Doc ID = "{date}_{uid}" for upsert.
+  Future<void> saveProgressHistory({
+    required String roomId,
+    required String habitId,
+    required ProgressHistoryEntry entry,
+  }) async {
+    final docId = '${entry.date}_${entry.uid}';
+    await _roomsRef
+        .doc(roomId)
+        .collection('habits')
+        .doc(habitId)
+        .collection('progressHistory')
+        .doc(docId)
+        .set(entry.toJson());
+  }
+
+  /// Get progress history for a specific member on a habit.
+  /// Returns sorted by date ascending.
+  Future<List<ProgressHistoryEntry>> getProgressHistory({
+    required String roomId,
+    required String habitId,
+    required String uid,
+    int limit = 365,
+  }) async {
+    final snap = await _roomsRef
+        .doc(roomId)
+        .collection('habits')
+        .doc(habitId)
+        .collection('progressHistory')
+        .where('uid', isEqualTo: uid)
+        .orderBy('date', descending: true)
+        .limit(limit)
+        .get();
+    final entries = snap.docs
+        .map((d) => ProgressHistoryEntry.fromMap(d.data()))
+        .toList();
+    entries.sort((a, b) => a.date.compareTo(b.date));
+    return entries;
+  }
+
+  // ─── Nudges (Dürtme) ───────────────────────────────────
+
+  /// Send a nudge to another room member.
+  Future<void> sendNudge(String roomId, RoomNudge nudge) async {
+    await _roomsRef.doc(roomId).collection('nudges').add(nudge.toJson());
+  }
+
+  /// Stream nudges sent TO the current user in a specific room.
+  Stream<List<RoomNudge>> streamMyNudges(String roomId, String uid) {
+    return _roomsRef
+        .doc(roomId)
+        .collection('nudges')
+        .where('toUid', isEqualTo: uid)
+        .where('isRead', isEqualTo: false)
+        .orderBy('createdAt', descending: true)
+        .limit(20)
+        .snapshots()
+        .map((snap) =>
+            snap.docs.map(RoomNudge.fromFirestore).toList());
+  }
+
+  /// Mark a nudge as read.
+  Future<void> markNudgeRead(String roomId, String nudgeId) async {
+    await _roomsRef
+        .doc(roomId)
+        .collection('nudges')
+        .doc(nudgeId)
+        .update({'isRead': true});
   }
 }

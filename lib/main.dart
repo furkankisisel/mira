@@ -46,7 +46,6 @@ import 'features/backup/auto_backup_service.dart';
 import 'services/home_widget_service.dart';
 import 'package:provider/provider.dart';
 import 'providers/premium_provider.dart';
-import 'features/reports/presentation/reports_screen.dart';
 
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -564,19 +563,6 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
               tooltip: l10n.mood,
               icon: const Icon(Icons.mood_outlined),
               onPressed: () => _habitKey.currentState?.openMoodScreen(),
-            ),
-          // Weekly Schedule screen actions (index 2)
-          if (_currentIndex == 2)
-            IconButton(
-              tooltip: l10n.weeklyReportsTitle,
-              icon: const Icon(Icons.analytics_outlined),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const ReportsScreen(),
-                  ),
-                );
-              },
             ),
           // Vision actions (index 1)
           if (_currentIndex == 1)

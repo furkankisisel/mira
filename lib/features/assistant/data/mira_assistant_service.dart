@@ -5,10 +5,7 @@ import '../../habit/domain/daily_task_repository.dart';
 import '../../mood/data/detailed_mood_repository.dart';
 import '../../habit/data/server_ai_habit_service.dart';
 import '../../../core/config/api_config.dart';
-import '../../reports/domain/report_model.dart';
-import '../../reports/data/report_generation_service.dart';
-import '../../reports/data/report_repository.dart';
-// Removed PremiumReportData - now using WeeklyReport
+
 
 /// Data class for user insights
 class UserInsight {
@@ -52,14 +49,12 @@ class AssistantResponse {
   final List<QuickAction>? actions;
   final List<String>? quickReplies;
   final UserInsight? insight;
-  final WeeklyReport? report; // Changed from reportData
 
   AssistantResponse({
     required this.message,
     this.actions,
     this.quickReplies,
     this.insight,
-    this.report,
   });
 }
 
@@ -293,54 +288,10 @@ Kullanıcı Durumu:
     );
   }
 
-  Future<AssistantResponse> _buildReportResponse(
-      UserInsight insight, ReportType type) async {
-    // Try to generate report
-    WeeklyReport? report =
-        await ReportGenerationService.instance.generateReport(type);
-
-    // If already exists, fetch from repository
-    if (report == null) {
-      // Initialize repo just in case
-      await ReportRepository.instance.initialize();
-      final now = DateTime.now();
-      final weekStart = now.subtract(Duration(days: now.weekday - 1));
-
-      // Find the report for this week/type
-      // Simple lookup - iterate recent reports
-      try {
-        report = ReportRepository.instance.reports.firstWhere((r) =>
-            r.type == type &&
-            r.weekStart.year == weekStart.year &&
-            r.weekStart.month == weekStart.month &&
-            r.weekStart.day == weekStart.day);
-      } catch (_) {
-        // Not found
-      }
-    }
-
-    if (report == null) {
-      return AssistantResponse(
-        message: 'Üzgünüm, rapor oluşturulamadı. Lütfen tekrar dene.',
-        quickReplies: getDefaultQuickReplies(),
-      );
-    }
-
-    final message = '${type.displayName} hazır! ${type.emoji}\n'
-        'Detayları incelemek için tıkla 👇';
-
+  Future<AssistantResponse> _buildReportResponse(UserInsight insight) async {
     return AssistantResponse(
-      message: message,
-      insight: insight,
-      report: report, // Pass the report object
-      actions: [
-        const QuickAction(
-          label: 'Raporu Görüntüle',
-          icon: Icons.bar_chart_rounded,
-          routeId: 'open_report',
-        ),
-      ],
-      quickReplies: ['Bugün ne yapmalıyım?', 'Beni motive et'],
+      message: 'Haftalık raporlar bu sürümde mevcut değil. Bugünkü durumunu görmek için "Bugün ne yapmalıyım?" diyebilirsin! 📊',
+      quickReplies: getDefaultQuickReplies(),
     );
   }
 

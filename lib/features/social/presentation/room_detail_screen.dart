@@ -7,6 +7,7 @@ import '../domain/room_model.dart';
 import '../domain/room_member_model.dart';
 import '../domain/room_habit_model.dart';
 import '../domain/room_post_model.dart';
+import '../domain/room_progress_models.dart';
 import '../../habit/domain/habit_model.dart';
 import '../../habit/domain/habit_types.dart';
 import '../../habit/domain/habit_repository.dart';
@@ -16,8 +17,10 @@ import '../../habit/presentation/simple_habit_screen.dart';
 import '../../habit/presentation/advanced_habit_wizard_screen.dart';
 import '../../habit/presentation/widgets/daily_task_dialog.dart';
 import '../../../ui/premium_gate.dart';
-import 'room_analytics_screen.dart';
 import '../../habit/presentation/advanced_habit_screen.dart';
+import 'room_stats_card.dart';
+import 'room_leaderboard_widget.dart';
+import 'member_profile_screen.dart';
 
 /// Detail view for a social room — live dashboard + notes.
 class RoomDetailScreen extends StatelessWidget {
@@ -43,15 +46,6 @@ class RoomDetailScreen extends StatelessWidget {
           ],
         ),
         actions: [
-          IconButton(
-            tooltip: 'Oda Analizi',
-            icon: const Icon(Icons.analytics_outlined),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => RoomAnalyticsScreen(room: room)),
-              );
-            },
-          ),
           IconButton(
             tooltip: 'Davet Kodu',
             icon: const Icon(Icons.share_outlined),
@@ -447,17 +441,27 @@ class _RoomBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Nudge banner
+          _NudgeBanner(roomId: roomId),
+
           // Members bar
           _MembersBar(roomId: roomId),
           const Divider(height: 1),
 
+          // Room Stats Card
+          RoomStatsCard(roomId: roomId),
+
           // Section: Habits Dashboard
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Text(
-              '🎯 Alışkanlıklar',
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w700),
+            child: Row(
+              children: [
+                Text(
+                  '🏆 Sıralama & Alışkanlıklar',
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w700),
+                ),
+              ],
             ),
           ),
           _HabitsDashboard(roomId: roomId),
@@ -514,31 +518,45 @@ class _MembersBar extends StatelessWidget {
                   const SizedBox(width: 8),
                 ],
               ),
-              ...members.map((m) => Chip(
-                    avatar: m.avatarUrl != null
-                        ? CircleAvatar(
-                            backgroundImage: NetworkImage(m.avatarUrl!),
-                            radius: 12,
-                          )
-                        : CircleAvatar(
-                            radius: 12,
-                            child: Text(
-                              m.displayName.isNotEmpty
-                                  ? m.displayName[0].toUpperCase()
-                                  : '?',
-                              style: const TextStyle(fontSize: 10),
+              ...members.map((m) => GestureDetector(
+                    onTap: () => _openMemberProfile(context, m),
+                    child: Chip(
+                      avatar: m.avatarUrl != null
+                          ? CircleAvatar(
+                              backgroundImage: NetworkImage(m.avatarUrl!),
+                              radius: 12,
+                            )
+                          : CircleAvatar(
+                              radius: 12,
+                              child: Text(
+                                m.displayName.isNotEmpty
+                                    ? m.displayName[0].toUpperCase()
+                                    : '?',
+                                style: const TextStyle(fontSize: 10),
+                              ),
                             ),
-                          ),
-                    label:
-                        Text(m.displayName, style: theme.textTheme.labelSmall),
-                    padding: EdgeInsets.zero,
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    visualDensity: VisualDensity.compact,
+                      label:
+                          Text(m.displayName, style: theme.textTheme.labelSmall),
+                      padding: EdgeInsets.zero,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact,
+                    ),
                   )),
             ],
           ),
         );
       },
+    );
+  }
+
+  void _openMemberProfile(BuildContext context, RoomMember member) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MemberProfileScreen(
+          roomId: roomId,
+          member: member,
+        ),
+      ),
     );
   }
 }
@@ -613,7 +631,7 @@ class _EmptyHabits extends StatelessWidget {
   }
 }
 
-/// Card showing one room habit with all members' progress.
+/// Card showing one room habit with leaderboard ranking.
 class _HabitCard extends StatelessWidget {
   const _HabitCard({required this.roomId, required this.habit});
   final String roomId;
@@ -622,11 +640,20 @@ class _HabitCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final habitColor = habit.color;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       clipBehavior: Clip.antiAlias,
+      elevation: isDark ? 0 : 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: habitColor.withOpacity(isDark ? 0.2 : 0.1),
+          width: 1,
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -635,20 +662,26 @@ class _HabitCard extends StatelessWidget {
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
                 colors: [
-                  habitColor.withOpacity(0.12),
-                  habitColor.withOpacity(0.04),
+                  habitColor.withOpacity(isDark ? 0.15 : 0.10),
+                  habitColor.withOpacity(isDark ? 0.05 : 0.03),
                 ],
               ),
             ),
             child: Row(
               children: [
                 Container(
-                  width: 40,
-                  height: 40,
+                  width: 42,
+                  height: 42,
                   decoration: BoxDecoration(
                     color: habitColor.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: habitColor.withOpacity(0.2),
+                      width: 1,
+                    ),
                   ),
                   alignment: Alignment.center,
                   child: Text(
@@ -658,17 +691,42 @@ class _HabitCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    habit.title,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        habit.title,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      // Show overall completion summary
+                      StreamBuilder<List<MemberProgress>>(
+                        stream: RoomService.instance.streamHabitProgress(roomId, habit.id),
+                        builder: (ctx, snap) {
+                          final progress = snap.data ?? [];
+                          final completed = progress.where((p) => p.isCompleted).length;
+                          final total = progress.length;
+                          if (total == 0) return const SizedBox.shrink();
+                          return Text(
+                            '$completed/$total üye tamamladı',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              fontSize: 11,
+                              color: theme.colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ),
                 // Edit/Delete menu — only visible to creator
                 if (FirebaseAuth.instance.currentUser?.uid == habit.createdBy)
                   PopupMenuButton<String>(
-                    icon: const Icon(Icons.more_vert, size: 18),
+                    icon: Icon(Icons.more_vert, size: 18,
+                        color: theme.colorScheme.onSurfaceVariant),
                     tooltip: 'Düzenle / Sil',
                     onSelected: (val) async {
                       if (val == 'delete') {
@@ -694,7 +752,6 @@ class _HabitCard extends StatelessWidget {
                           await RoomService.instance.deleteRoomHabit(roomId, habit.id);
                         }
                       } else if (val == 'edit') {
-                        // Find the local habit mapped to this room habit
                         final localHabit = HabitRepository.instance.habits
                             .where((h) => h.title == habit.title)
                             .firstOrNull;
@@ -708,7 +765,6 @@ class _HabitCard extends StatelessWidget {
                           return;
                         }
 
-                        // Route to the exact same screen used in "Today" screen
                         if (habit.isAdvanced) {
                           await Navigator.push(
                             context,
@@ -725,8 +781,6 @@ class _HabitCard extends StatelessWidget {
                           );
                         }
 
-                        // Simple/Advanced screens save directly to HabitRepository!
-                        // Get the newly saved data and sync the visual info back to the Room format:
                         final updatedLocal = HabitRepository.instance.findById(localHabit.id);
                         if (updatedLocal != null) {
                           await RoomService.instance.updateRoomHabit(
@@ -735,6 +789,7 @@ class _HabitCard extends StatelessWidget {
                             newTitle: updatedLocal.title,
                             newEmoji: updatedLocal.emoji,
                             newColorValue: updatedLocal.color.value,
+                            newTargetCount: updatedLocal.targetCount,
                           );
                         }
                       }
@@ -763,38 +818,16 @@ class _HabitCard extends StatelessWidget {
               ],
             ),
           ),
-          // Members progress
+          // Leaderboard (replaces old flat progress tiles)
           StreamBuilder<List<MemberProgress>>(
             stream:
                 RoomService.instance.streamHabitProgress(roomId, habit.id),
             builder: (context, snap) {
               final progress = snap.data ?? [];
-              if (progress.isEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Text(
-                    'Henüz ilerleme yok',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                );
-              }
-              // Sort: completed first, then by value desc
-              final sorted = List<MemberProgress>.from(progress);
-              sorted.sort((a, b) {
-                if (a.isCompleted && !b.isCompleted) return -1;
-                if (!a.isCompleted && b.isCompleted) return 1;
-                return b.value.compareTo(a.value);
-              });
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Column(
-                  children: sorted
-                      .map((p) =>
-                          _MemberProgressTile(progress: p, color: habitColor))
-                      .toList(),
-                ),
+              return RoomLeaderboard(
+                progressList: progress,
+                habitColor: habitColor,
+                habitTitle: habit.title,
               );
             },
           ),
@@ -804,80 +837,121 @@ class _HabitCard extends StatelessWidget {
   }
 }
 
-class _MemberProgressTile extends StatelessWidget {
-  const _MemberProgressTile({required this.progress, required this.color});
-  final MemberProgress progress;
-  final Color color;
+// _MemberProgressTile removed — replaced by RoomLeaderboard widget.
+
+// ─── Nudge Banner ────────────────────────────────────────
+
+class _NudgeBanner extends StatelessWidget {
+  const _NudgeBanner({required this.roomId});
+  final String roomId;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final ratio = progress.target > 0
-        ? (progress.value / progress.target).clamp(0.0, 1.0)
-        : 0.0;
+    return StreamBuilder<List<RoomNudge>>(
+      stream: RoomService.instance.streamMyNudges(roomId),
+      builder: (ctx, snap) {
+        final nudges = snap.data ?? [];
+        if (nudges.isEmpty) return const SizedBox.shrink();
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        return Column(
+          children: nudges.map((nudge) => _NudgeCard(
+            nudge: nudge,
+            roomId: roomId,
+          )).toList(),
+        );
+      },
+    );
+  }
+}
+
+class _NudgeCard extends StatelessWidget {
+  const _NudgeCard({required this.nudge, required this.roomId});
+  final RoomNudge nudge;
+  final String roomId;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: isDark
+              ? [
+                  const Color(0xFFFF6B35).withOpacity(0.15),
+                  const Color(0xFFFFB800).withOpacity(0.08),
+                ]
+              : [
+                  const Color(0xFFFF6B35).withOpacity(0.08),
+                  const Color(0xFFFFB800).withOpacity(0.04),
+                ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color(0xFFFF6B35).withOpacity(0.2),
+        ),
+      ),
       child: Row(
         children: [
           // Avatar
-          if (progress.avatarUrl != null)
+          if (nudge.fromAvatarUrl != null)
             CircleAvatar(
-              radius: 14,
-              backgroundImage: NetworkImage(progress.avatarUrl!),
+              radius: 16,
+              backgroundImage: NetworkImage(nudge.fromAvatarUrl!),
             )
           else
             CircleAvatar(
-              radius: 14,
+              radius: 16,
+              backgroundColor: const Color(0xFFFF6B35).withOpacity(0.15),
               child: Text(
-                progress.displayName.isNotEmpty
-                    ? progress.displayName[0].toUpperCase()
+                nudge.fromName.isNotEmpty
+                    ? nudge.fromName[0].toUpperCase()
                     : '?',
-                style:
-                    const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFFFF6B35)),
               ),
             ),
           const SizedBox(width: 10),
-          // Name
-          SizedBox(
-            width: 70,
-            child: Text(
-              progress.displayName,
-              style: theme.textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          const SizedBox(width: 8),
-          // Progress bar
           Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: LinearProgressIndicator(
-                value: ratio,
-                minHeight: 10,
-                backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                color: progress.isCompleted ? Colors.green : color,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '👊 ${nudge.fromName} seni dürtüyüyor!',
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFFFF6B35),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  nudge.message,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurface,
+                    fontSize: 12,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
           ),
-          const SizedBox(width: 10),
-          // Value
-          Text(
-            '${progress.value}/${progress.target}',
-            style: theme.textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: progress.isCompleted
-                  ? Colors.green
-                  : theme.colorScheme.onSurface,
-            ),
+          IconButton(
+            icon: Icon(Icons.close,
+                size: 16,
+                color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5)),
+            onPressed: () {
+              RoomService.instance.markNudgeRead(roomId, nudge.id);
+            },
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
           ),
-          if (progress.isCompleted) ...[
-            const SizedBox(width: 4),
-            const Icon(Icons.check_circle, size: 16, color: Colors.green),
-          ],
         ],
       ),
     );

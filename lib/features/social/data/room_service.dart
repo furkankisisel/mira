@@ -7,6 +7,7 @@ import '../domain/room_model.dart';
 import '../domain/room_post_model.dart';
 import '../domain/room_member_model.dart';
 import '../domain/room_habit_model.dart';
+import '../domain/room_progress_models.dart';
 import 'room_repository.dart';
 import '../../profile/profile_repository.dart';
 import '../../habit/domain/habit_repository.dart';
@@ -116,6 +117,7 @@ class RoomService {
       createdBy: uid,
       createdAt: DateTime.now(),
       isAdvanced: habit.isAdvanced == true,
+      targetCount: habit.targetCount,
     );
     return _repo.addRoomHabit(roomId, roomHabit);
   }
@@ -141,11 +143,13 @@ class RoomService {
     required String newTitle,
     String? newEmoji,
     required int newColorValue,
+    required int newTargetCount,
   }) async {
     await _repo.updateRoomHabit(roomId, habit.id, {
       'title': newTitle,
       'emoji': newEmoji,
       'colorValue': newColorValue,
+      'targetCount': newTargetCount,
     });
     
     // Attempt local sync (matches by OLD title)
@@ -191,37 +195,7 @@ class RoomService {
     return _repo.getRoomHabits(roomId);
   }
 
-  // ─── Room Habit Sessions (Analytics) ───────────────────────
-
-  /// Add a new habit session (time spent vs reported value)
-  Future<String> addRoomHabitSession({
-    required String roomId,
-    required String habitId,
-    required DateTime startTime,
-    required DateTime endTime,
-    required int elapsedSeconds,
-    required int reportedValue,
-  }) async {
-    final uid = _currentUid;
-    if (uid == null) throw StateError('Giriş yapılmamış');
-
-    final session = RoomHabitSession(
-      id: '',
-      habitId: habitId,
-      uid: uid,
-      startTime: startTime,
-      endTime: endTime,
-      elapsedSeconds: elapsedSeconds,
-      reportedValue: reportedValue,
-    );
-    return _repo.addRoomHabitSession(roomId, session);
-  }
-
-  /// Get sessions for a room within a time range
-  Future<List<RoomHabitSession>> getRoomHabitSessions(
-      String roomId, DateTime start, DateTime end) async {
-    return _repo.getRoomHabitSessions(roomId, start, end);
-  }
+  // ─── Room Habit Progress Sync ───────────────────────
 
   /// Sync the current user's progress for a specific room habit.
   /// Finds the matching local habit by title and syncs its progress.
@@ -244,11 +218,40 @@ class RoomService {
       isCompleted = h.isCompleted;
     }
 
-    int previousValue = 0;
+    // ── Streak calculation ──
+    int streak = 0;
     try {
       final prev = await _repo.getMemberProgress(roomId, roomHabit.id, uid);
-      if (prev != null) previousValue = prev.value;
-    } catch (_) {}
+      if (prev != null) {
+        final lastDate = prev.lastUpdated;
+        final now = DateTime.now();
+        final dayDiff = DateTime(now.year, now.month, now.day)
+            .difference(DateTime(lastDate.year, lastDate.month, lastDate.day))
+            .inDays;
+
+        if (isCompleted) {
+          // Same day update — keep the streak
+          if (dayDiff == 0) {
+            streak = prev.streak > 0 ? prev.streak : 1;
+          }
+          // Next day — increment
+          else if (dayDiff == 1) {
+            streak = prev.streak + 1;
+          }
+          // Missed days — reset to 1
+          else {
+            streak = 1;
+          }
+        } else {
+          // Not completed today — keep old streak if same day, else 0
+          streak = dayDiff == 0 ? prev.streak : 0;
+        }
+      } else {
+        streak = isCompleted ? 1 : 0;
+      }
+    } catch (_) {
+      streak = isCompleted ? 1 : 0;
+    }
 
     final progress = MemberProgress(
       uid: uid,
@@ -258,6 +261,7 @@ class RoomService {
       target: target,
       isCompleted: isCompleted,
       lastUpdated: DateTime.now(),
+      streak: streak,
     );
 
     await _repo.updateMemberProgress(
@@ -267,18 +271,25 @@ class RoomService {
       progress: progress,
     );
 
-    // Auto-log a session purely based on positive progress delta
-    if (value > previousValue) {
-      try {
-        await addRoomHabitSession(
-          roomId: roomId,
-          habitId: roomHabit.id,
-          startTime: DateTime.now(),
-          endTime: DateTime.now(),
-          elapsedSeconds: 0,
-          reportedValue: value - previousValue,
-        );
-      } catch (_) {}
+    // ── Save daily progress history (for charts) ──
+    try {
+      final now = DateTime.now();
+      final dayKey =
+          '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+      final historyEntry = ProgressHistoryEntry(
+        uid: uid,
+        date: dayKey,
+        value: value,
+        target: target,
+        isCompleted: isCompleted,
+      );
+      await _repo.saveProgressHistory(
+        roomId: roomId,
+        habitId: roomHabit.id,
+        entry: historyEntry,
+      );
+    } catch (_) {
+      // Best-effort
     }
   }
 
@@ -407,4 +418,57 @@ class RoomService {
 
   Stream<List<RoomPost>> streamPosts(String roomId) =>
       _repo.streamRoomPosts(roomId);
+
+  // ─── Progress History ──────────────────────────────────
+
+  /// Get progress history for a specific member on a habit.
+  Future<List<ProgressHistoryEntry>> getProgressHistory({
+    required String roomId,
+    required String habitId,
+    required String uid,
+  }) {
+    return _repo.getProgressHistory(
+      roomId: roomId,
+      habitId: habitId,
+      uid: uid,
+    );
+  }
+
+  // ─── Nudges (Dürtme) ───────────────────────────────────
+
+  /// Send a nudge to another member.
+  Future<void> sendNudge({
+    required String roomId,
+    required String toUid,
+    required String toName,
+    String message = '',
+  }) async {
+    final uid = _currentUid;
+    if (uid == null) return;
+
+    final nudge = RoomNudge(
+      id: '',
+      fromUid: uid,
+      fromName: _displayName,
+      fromAvatarUrl: _avatarUrl,
+      toUid: toUid,
+      toName: toName,
+      message: message.isEmpty
+          ? '💪 $_displayName seni dürtüyor! Alışkanlıklarını tamamla!'
+          : message,
+      createdAt: DateTime.now(),
+    );
+    await _repo.sendNudge(roomId, nudge);
+  }
+
+  /// Stream nudges sent TO the current user.
+  Stream<List<RoomNudge>> streamMyNudges(String roomId) {
+    final uid = _currentUid;
+    if (uid == null) return const Stream.empty();
+    return _repo.streamMyNudges(roomId, uid);
+  }
+
+  /// Mark a nudge as read.
+  Future<void> markNudgeRead(String roomId, String nudgeId) =>
+      _repo.markNudgeRead(roomId, nudgeId);
 }
