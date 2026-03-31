@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import 'package:mira/l10n/app_localizations.dart';
 
 import '../../design_system/theme/theme_variations.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -523,17 +524,18 @@ class _MoodScreenState extends State<MoodScreen> {
   }
 
   String _getMoodTitle(MoodLevel m) {
+    final l10n = AppLocalizations.of(context);
     switch (m) {
       case MoodLevel.excellent:
-        return "Muhteşem!";
+        return l10n.moodExcellent;
       case MoodLevel.good:
-        return "İyi";
+        return l10n.moodGood;
       case MoodLevel.neutral:
-        return "Ortalama";
+        return l10n.moodNeutral;
       case MoodLevel.bad:
-        return "Kötü";
+        return l10n.moodBad;
       case MoodLevel.terrible:
-        return "Çok kötü";
+        return l10n.moodTerrible;
     }
   }
 

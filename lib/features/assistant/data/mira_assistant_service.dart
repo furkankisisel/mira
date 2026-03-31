@@ -130,13 +130,21 @@ class MiraAssistantService {
   // Removed getWeeklyReportData
 
   /// Predefined quick replies for common questions
-  List<String> getDefaultQuickReplies() {
-    return [
-      'Bugün ne yapmalıyım?',
-      'Beni motive et',
-      '🎮 Oyun oynayalım',
-      'Günün önerisi',
-    ];
+  List<String> getDefaultQuickReplies({String languageCode = 'tr'}) {
+    final isTr = languageCode == 'tr';
+    return isTr
+        ? [
+            'Bugün ne yapmalıyım?',
+            'Beni motive et',
+            '🎮 Oyun oynayalım',
+            'Günün önerisi',
+          ]
+        : [
+            'What should I do today?',
+            'Motivate me',
+            '🎮 Let\'s play a game',
+            'Today\'s suggestion',
+          ];
   }
 
   /// Handles user message and returns structured response
@@ -149,26 +157,71 @@ class MiraAssistantService {
     final lowerMessage = userMessage.toLowerCase();
 
     // Local keyword handling
-    if (_matchesPattern(lowerMessage, ['bugün', 'ne yapmalı', 'durum'])) {
-      return _buildTodayReportResponse(insight);
+    if (_matchesPattern(lowerMessage, [
+      'bugün',
+      'ne yapmalı',
+      'durum',
+      'today',
+      'what should i do',
+      'status',
+    ])) {
+      return _buildTodayReportResponse(insight, languageCode: languageCode);
     }
-    if (_matchesPattern(lowerMessage, ['rapor', 'istatistik', 'haftalık'])) {
-      return _buildReportResponse(insight);
+    if (_matchesPattern(lowerMessage, [
+      'rapor',
+      'istatistik',
+      'haftalık',
+      'report',
+      'stats',
+      'weekly',
+    ])) {
+      return _buildReportResponse(insight, languageCode: languageCode);
     }
-    if (_matchesPattern(lowerMessage, ['motive', 'vazgeç', 'pes'])) {
-      return _buildMotivationResponse(insight);
+    if (_matchesPattern(lowerMessage, [
+      'motive',
+      'vazgeç',
+      'pes',
+      'motivate',
+      'give up',
+    ])) {
+      return _buildMotivationResponse(insight, languageCode: languageCode);
     }
-    if (_matchesPattern(lowerMessage, ['nasıl', 'oluştur', 'ekle'])) {
-      return _buildHowToCreateHabitResponse();
+    if (_matchesPattern(lowerMessage, [
+      'nasıl',
+      'oluştur',
+      'ekle',
+      'how',
+      'create',
+      'add',
+    ])) {
+      return _buildHowToCreateHabitResponse(languageCode: languageCode);
     }
-    if (_matchesPattern(lowerMessage, ['öneri', 'başka', 'ne var'])) {
-      return _buildFeatureSuggestionResponse();
+    if (_matchesPattern(lowerMessage, [
+      'öneri',
+      'başka',
+      'ne var',
+      'suggestion',
+      'what else',
+      'recommend',
+    ])) {
+      return _buildFeatureSuggestionResponse(languageCode: languageCode);
     }
-    if (_matchesPattern(lowerMessage, ['zamanla', 'timer', 'pomodoro'])) {
-      return _buildTimerGuideResponse();
+    if (_matchesPattern(lowerMessage, [
+      'zamanla',
+      'timer',
+      'pomodoro',
+      'focus timer',
+    ])) {
+      return _buildTimerGuideResponse(languageCode: languageCode);
     }
-    if (_matchesPattern(lowerMessage, ['ruh', 'mood', 'nasıl his'])) {
-      return _buildMoodGuideResponse();
+    if (_matchesPattern(lowerMessage, [
+      'ruh',
+      'mood',
+      'nasıl his',
+      'how i feel',
+      'feeling',
+    ])) {
+      return _buildMoodGuideResponse(languageCode: languageCode);
     }
 
     // Fall back to AI for free-form questions
@@ -232,14 +285,15 @@ class MiraAssistantService {
           message: _truncateMessage(messageText),
           actions: actions,
           quickReplies:
-              quickReplies ?? getDefaultQuickReplies().take(3).toList(),
+              quickReplies ??
+                  getDefaultQuickReplies(languageCode: languageCode).take(3).toList(),
         );
       } catch (e) {
-        return _buildFallbackResponse();
+        return _buildFallbackResponse(languageCode: languageCode);
       }
     }
 
-    return _buildFallbackResponse();
+    return _buildFallbackResponse(languageCode: languageCode);
   }
 
   bool _matchesPattern(String text, List<String> keywords) {
@@ -270,27 +324,36 @@ Kullanıcı Durumu:
     return message;
   }
 
-  AssistantResponse _buildTodayReportResponse(UserInsight insight) {
+  AssistantResponse _buildTodayReportResponse(
+    UserInsight insight, {
+    String languageCode = 'tr',
+  }) {
+    final isTr = languageCode == 'tr';
     String message;
     List<QuickAction> actions = [];
 
     if (insight.totalHabits == 0) {
-      message = 'Henüz alışkanlık oluşturmadın. Hadi başlayalım! 🌱';
+      message = isTr
+          ? 'Henüz alışkanlık oluşturmadın. Hadi başlayalım! 🌱'
+          : 'You have not created a habit yet. Let\'s start! 🌱';
       actions = [
-        const QuickAction(
-          label: 'Alışkanlık Oluştur',
+        QuickAction(
+          label: isTr ? 'Alışkanlık Oluştur' : 'Create Habit',
           icon: Icons.add_circle_outline,
           routeId: 'create_habit',
         ),
       ];
     } else if (insight.incompleteToday == 0) {
-      message = 'Harika! Bugün tüm alışkanlıklarını tamamladın! 🎉';
+      message = isTr
+          ? 'Harika! Bugün tüm alışkanlıklarını tamamladın! 🎉'
+          : 'Awesome! You completed all your habits today! 🎉';
     } else {
-      message =
-          '${insight.completedToday}/${insight.totalHabits} alışkanlık tamam. ${insight.incompleteToday} tane kaldı, yapabilirsin! 💪';
+      message = isTr
+          ? '${insight.completedToday}/${insight.totalHabits} alışkanlık tamam. ${insight.incompleteToday} tane kaldı, yapabilirsin! 💪'
+          : '${insight.completedToday}/${insight.totalHabits} habits done. ${insight.incompleteToday} left, you can do it! 💪';
       actions = [
-        const QuickAction(
-          label: 'Alışkanlıklara Git',
+        QuickAction(
+          label: isTr ? 'Alışkanlıklara Git' : 'Go to Habits',
           icon: Icons.eco,
           routeId: 'habits',
         ),
@@ -301,30 +364,50 @@ Kullanıcı Durumu:
       message: message,
       actions: actions,
       insight: insight,
-      quickReplies: ['Beni motive et', 'Günün önerisi'],
+      quickReplies: isTr
+          ? ['Beni motive et', 'Günün önerisi']
+          : ['Motivate me', 'Today\'s suggestion'],
     );
   }
 
-  Future<AssistantResponse> _buildReportResponse(UserInsight insight) async {
+  Future<AssistantResponse> _buildReportResponse(
+    UserInsight insight, {
+    String languageCode = 'tr',
+  }) async {
+    final isTr = languageCode == 'tr';
     return AssistantResponse(
-      message: 'Haftalık raporlar bu sürümde mevcut değil. Bugünkü durumunu görmek için "Bugün ne yapmalıyım?" diyebilirsin! 📊',
-      quickReplies: getDefaultQuickReplies(),
+      message: isTr
+          ? 'Haftalık raporlar bu sürümde mevcut değil. Bugünkü durumunu görmek için "Bugün ne yapmalıyım?" diyebilirsin! 📊'
+          : 'Weekly reports are not available in this version yet. Ask "What should I do today?" to see your status. 📊',
+      quickReplies: getDefaultQuickReplies(languageCode: languageCode),
     );
   }
 
-  AssistantResponse _buildMotivationResponse(UserInsight insight) {
+  AssistantResponse _buildMotivationResponse(
+    UserInsight insight, {
+    String languageCode = 'tr',
+  }) {
+    final isTr = languageCode == 'tr';
     final messages = [
-      'Her küçük adım seni hedefe yaklaştırıyor. Devam et! 🚀',
-      'Dün attığın adımlar bugünü inşa etti. Yarın için de at! 💫',
-      'Mükemmel olmak zorunda değilsin, sadece devam etmen yeterli. 🌟',
-      'Başarı bir maraton, sprint değil. Adım adım ilerliyorsun! 🏃',
-      'Kendine inan, yarı yolu geçtin bile! 💪',
+      if (isTr) ...[
+        'Her küçük adım seni hedefe yaklaştırıyor. Devam et! 🚀',
+        'Dün attığın adımlar bugünü inşa etti. Yarın için de at! 💫',
+        'Mükemmel olmak zorunda değilsin, sadece devam etmen yeterli. 🌟',
+        'Başarı bir maraton, sprint değil. Adım adım ilerliyorsun! 🏃',
+        'Kendine inan, yarı yolu geçtin bile! 💪',
+      ] else ...[
+        'Every small step brings you closer to your goal. Keep going! 🚀',
+        'Yesterday\'s effort built today. Build tomorrow too! 💫',
+        'You do not have to be perfect, just keep moving. 🌟',
+        'Success is a marathon, not a sprint. One step at a time! 🏃',
+        'Believe in yourself, you are already halfway there! 💪',
+      ],
     ];
 
     if (insight.longestStreak > 0) {
-      messages.add(
-        '${insight.longestStreak} günlük serin var! Bu ivmeyi koru 🔥',
-      );
+      messages.add(isTr
+          ? '${insight.longestStreak} günlük serin var! Bu ivmeyi koru 🔥'
+          : 'You have a ${insight.longestStreak}-day streak! Keep the momentum 🔥');
     }
 
     final random = Random();
@@ -332,55 +415,69 @@ Kullanıcı Durumu:
 
     return AssistantResponse(
       message: message,
-      quickReplies: ['Bugün ne yapmalıyım?', 'Günün önerisi'],
+      quickReplies: isTr
+          ? ['Bugün ne yapmalıyım?', 'Günün önerisi']
+          : ['What should I do today?', 'Today\'s suggestion'],
     );
   }
 
-  AssistantResponse _buildHowToCreateHabitResponse() {
+  AssistantResponse _buildHowToCreateHabitResponse({
+    String languageCode = 'tr',
+  }) {
+    final isTr = languageCode == 'tr';
     return AssistantResponse(
-      message:
-          'Alışkanlık oluşturmak için aşağıdaki butona tıkla! Basit veya gelişmiş seçenekler var. 🌱',
+      message: isTr
+          ? 'Alışkanlık oluşturmak için aşağıdaki butona tıkla! Basit veya gelişmiş seçenekler var. 🌱'
+          : 'Tap the button below to create a habit! You can choose simple or advanced. 🌱',
       actions: [
-        const QuickAction(
-          label: 'Alışkanlık Oluştur',
+        QuickAction(
+          label: isTr ? 'Alışkanlık Oluştur' : 'Create Habit',
           icon: Icons.add_circle_outline,
           routeId: 'create_habit',
         ),
       ],
-      quickReplies: ['Zamanlayıcı nasıl kullanırım?', 'Ruh hali takibi nedir?'],
+      quickReplies: isTr
+          ? ['Zamanlayıcı nasıl kullanırım?', 'Ruh hali takibi nedir?']
+          : ['How do I use the timer?', 'What is mood tracking?'],
     );
   }
 
-  AssistantResponse _buildFeatureSuggestionResponse() {
+  AssistantResponse _buildFeatureSuggestionResponse({
+    String languageCode = 'tr',
+  }) {
+    final isTr = languageCode == 'tr';
     final suggestions = [
       AssistantResponse(
-        message:
-            'Zamanlayıcı ile odaklanma seansları yapabilirsin. Pomodoro tekniğini dene! ⏱️',
+        message: isTr
+            ? 'Zamanlayıcı ile odaklanma seansları yapabilirsin. Pomodoro tekniğini dene! ⏱️'
+            : 'Use the timer for focused sessions. Try the Pomodoro technique! ⏱️',
         actions: [
-          const QuickAction(
-            label: 'Zamanlayıcıya Git',
+          QuickAction(
+            label: isTr ? 'Zamanlayıcıya Git' : 'Go to Timer',
             icon: Icons.timer,
             routeId: 'timer',
           ),
         ],
       ),
       AssistantResponse(
-        message:
-            'Ruh halini takip etmek, alışkanlık performansını anlamana yardımcı olur! 😊',
+        message: isTr
+            ? 'Ruh halini takip etmek, alışkanlık performansını anlamana yardımcı olur! 😊'
+            : 'Tracking your mood helps you understand your habit performance! 😊',
         actions: [
-          const QuickAction(
-            label: 'Ruh Hali Kaydet',
+          QuickAction(
+            label: isTr ? 'Ruh Hali Kaydet' : 'Log Mood',
             icon: Icons.mood,
             routeId: 'mood',
           ),
         ],
       ),
       AssistantResponse(
-        message:
-            'Vizyon tahtası oluşturarak büyük hedeflerini görselleştirebilirsin! 🎯',
+        message: isTr
+            ? 'Vizyon tahtası oluşturarak büyük hedeflerini görselleştirebilirsin! 🎯'
+            : 'Create a vision board to visualize your bigger goals! 🎯',
         actions: [
-          const QuickAction(
-            label: 'Vizyon Oluştur',
+          QuickAction(
+            label: isTr ? 'Vizyon Oluştur' : 'Create Vision',
             icon: Icons.terrain,
             routeId: 'vision',
           ),
@@ -392,41 +489,55 @@ Kullanıcı Durumu:
     return suggestions[random.nextInt(suggestions.length)];
   }
 
-  AssistantResponse _buildTimerGuideResponse() {
+  AssistantResponse _buildTimerGuideResponse({
+    String languageCode = 'tr',
+  }) {
+    final isTr = languageCode == 'tr';
     return AssistantResponse(
-      message:
-          'Zamanlayıcı ile odaklanma seansları, geri sayım veya kronometre kullanabilirsin. Hadi dene! ⏱️',
+      message: isTr
+          ? 'Zamanlayıcı ile odaklanma seansları, geri sayım veya kronometre kullanabilirsin. Hadi dene! ⏱️'
+          : 'With the timer, you can run focus sessions, countdowns, or a stopwatch. Give it a try! ⏱️',
       actions: [
-        const QuickAction(
-          label: 'Zamanlayıcıya Git',
+        QuickAction(
+          label: isTr ? 'Zamanlayıcıya Git' : 'Go to Timer',
           icon: Icons.timer,
           routeId: 'timer',
         ),
       ],
-      quickReplies: ['Alışkanlık nasıl oluştururum?', 'Günün önerisi'],
+      quickReplies: isTr
+          ? ['Alışkanlık nasıl oluştururum?', 'Günün önerisi']
+          : ['How do I create a habit?', 'Today\'s suggestion'],
     );
   }
 
-  AssistantResponse _buildMoodGuideResponse() {
+  AssistantResponse _buildMoodGuideResponse({
+    String languageCode = 'tr',
+  }) {
+    final isTr = languageCode == 'tr';
     return AssistantResponse(
-      message:
-          'Günlük ruh halini kaydetmek, kalıpları anlamana yardımcı olur. Bugün nasıl hissediyorsun? 😊',
+      message: isTr
+          ? 'Günlük ruh halini kaydetmek, kalıpları anlamana yardımcı olur. Bugün nasıl hissediyorsun? 😊'
+          : 'Logging your daily mood helps you understand patterns. How are you feeling today? 😊',
       actions: [
-        const QuickAction(
-          label: 'Ruh Hali Kaydet',
+        QuickAction(
+          label: isTr ? 'Ruh Hali Kaydet' : 'Log Mood',
           icon: Icons.mood,
           routeId: 'mood',
         ),
       ],
-      quickReplies: ['Bugün ne yapmalıyım?', 'Beni motive et'],
+      quickReplies: isTr
+          ? ['Bugün ne yapmalıyım?', 'Beni motive et']
+          : ['What should I do today?', 'Motivate me'],
     );
   }
 
-  AssistantResponse _buildFallbackResponse() {
+  AssistantResponse _buildFallbackResponse({String languageCode = 'tr'}) {
+    final isTr = languageCode == 'tr';
     return AssistantResponse(
-      message:
-          'Sana nasıl yardımcı olabilirim? Aşağıdaki seçeneklerden birini seçebilirsin! 😊',
-      quickReplies: getDefaultQuickReplies(),
+      message: isTr
+          ? 'Sana nasıl yardımcı olabilirim? Aşağıdaki seçeneklerden birini seçebilirsin! 😊'
+          : 'How can I help you? You can pick one of the options below! 😊',
+      quickReplies: getDefaultQuickReplies(languageCode: languageCode),
     );
   }
 }

@@ -64,6 +64,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addOptionsToStart => 'Add options to start';
 
   @override
+  String get addRoomButton => 'Add Room';
+
+  @override
   String get addSpecialDays => 'Add special days';
 
   @override
@@ -98,6 +101,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get advancedHabitTitle => 'Advanced Habit';
+
+  @override
+  String get advancedHabitTypeDescription =>
+      'Numeric goals, timers, and detailed tracking.';
 
   @override
   String get advancedTimer => 'Advanced Timer';
@@ -615,6 +622,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmHabits => 'Confirm Habits';
 
   @override
+  String get continueAsGuest => 'Continue as Guest';
+
+  @override
   String get continueButton => 'Continue';
 
   @override
@@ -723,7 +733,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createWithAi => 'Create with AI';
 
   @override
-  String get creatingBackup => 'Yedek oluşturuluyor...';
+  String get creatingBackup => 'Creating backup...';
 
   @override
   String get currentStreak => 'Current Streak';
@@ -1305,6 +1315,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get finance => 'Finance';
 
   @override
+  String get financeAddAiStatementOption => 'Upload Statement/Receipt with AI';
+
+  @override
+  String get financeAddAiStatementSubtitle =>
+      'Automatically adds entries from image or PDF';
+
+  @override
+  String get financeAddManualOption => 'Add Manually';
+
+  @override
   String financeAnalysisTitle(Object month) {
     return 'Finance Analysis · $month';
   }
@@ -1693,6 +1713,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get habitTypeLabel => 'Habit Type';
 
   @override
+  String get habitTypePickerSubtitle =>
+      'What kind of habit do you want to create?';
+
+  @override
+  String get habitTypePickerTitle => 'Choose Habit Type';
+
+  @override
   String get habitUpdatedMessage => 'Habit updated.';
 
   @override
@@ -1869,7 +1896,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String lastBackup(String date) {
-    return 'Son Yedekleme: $date';
+    return 'Last Backup: $date';
   }
 
   @override
@@ -2279,7 +2306,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noActiveHabitsForMember => 'Member has no active habits yet.';
 
   @override
-  String get noBackups => 'Yedek bulunamadı';
+  String get noBackups => 'No backups found';
 
   @override
   String get noBackupsFound => 'No backups found.';
@@ -2693,6 +2720,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get previousYear => 'Previous year';
 
   @override
+  String get prioritizeTaskSubtitle => 'Prioritize this task';
+
+  @override
   String get privacyPolicy => 'Privacy Policy';
 
   @override
@@ -2919,73 +2949,73 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Retry';
 
   @override
-  String get rhythmA1_1 => '05:00 AM – 06:30 AM';
+  String get rhythmA1_1 => '10:00 PM – 11:00 PM';
 
   @override
-  String get rhythmA1_2 => '06:30 AM – 07:45 AM';
+  String get rhythmA1_2 => '11:00 PM – 12:00 AM';
 
   @override
-  String get rhythmA1_3 => '07:45 AM – 09:45 AM';
+  String get rhythmA1_3 => '12:00 AM – 1:00 AM';
 
   @override
-  String get rhythmA1_4 => '09:45 AM – 11:00 AM';
+  String get rhythmA1_4 => '1:00 AM+';
 
   @override
   String get rhythmA1_5 => '11:00 AM – 12:00 PM';
 
   @override
-  String get rhythmA2_1 => 'Very tired';
+  String get rhythmA2_1 => '6:00 AM – 7:00 AM';
 
   @override
-  String get rhythmA2_2 => 'Fairly tired';
+  String get rhythmA2_2 => '7:00 AM – 8:00 AM';
 
   @override
-  String get rhythmA2_3 => 'Fairly rested';
+  String get rhythmA2_3 => '8:00 AM – 9:00 AM';
 
   @override
-  String get rhythmA2_4 => 'Very rested';
+  String get rhythmA2_4 => '9:00 AM+';
 
   @override
-  String get rhythmA3_1 => '08:00 PM – 09:00 PM';
+  String get rhythmA3_1 => 'Early morning';
 
   @override
-  String get rhythmA3_2 => '09:00 PM – 10:15 PM';
+  String get rhythmA3_2 => 'Mid-morning';
 
   @override
-  String get rhythmA3_3 => '10:15 PM – 12:30 AM';
+  String get rhythmA3_3 => 'Afternoon';
 
   @override
-  String get rhythmA3_4 => '12:30 AM – 01:45 AM';
+  String get rhythmA3_4 => 'Evening';
 
   @override
-  String get rhythmA3_5 => '01:45 AM – 03:00 AM';
+  String get rhythmA3_5 => 'No difference';
 
   @override
-  String get rhythmA4_1 => '05:00 AM – 09:00 AM';
+  String get rhythmA4_1 => 'Morning';
 
   @override
-  String get rhythmA4_2 => '09:00 AM – 02:00 PM';
+  String get rhythmA4_2 => 'Noon';
 
   @override
-  String get rhythmA4_3 => '02:00 PM – 05:00 PM';
+  String get rhythmA4_3 => 'Evening';
 
   @override
-  String get rhythmA4_4 => '05:00 PM – 09:00 PM';
+  String get rhythmA4_4 => 'Night';
 
   @override
-  String get rhythmA4_5 => '09:00 PM – 05:00 AM';
+  String get rhythmA4_5 => 'Varies';
 
   @override
-  String get rhythmA5_1 => 'Definitely a morning type';
+  String get rhythmA5_1 => 'Morning';
 
   @override
-  String get rhythmA5_2 => 'Rather more a morning type';
+  String get rhythmA5_2 => 'Noon';
 
   @override
-  String get rhythmA5_3 => 'Rather more an evening type';
+  String get rhythmA5_3 => 'Evening';
 
   @override
-  String get rhythmA5_4 => 'Definitely an evening type';
+  String get rhythmA5_4 => 'None';
 
   @override
   String get rhythmAnalyzing => 'Live Rhythm is analyzing...';
@@ -3025,24 +3055,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rhythmLightHint => 'Emails, social media, small tasks';
 
   @override
-  String get rhythmQ1 =>
-      'Considering only your own \"feeling best\" rhythm, at what time would you get up if you were entirely free to plan your day?';
+  String get rhythmQ1 => 'What time do you usually go to sleep?';
 
   @override
-  String get rhythmQ2 =>
-      'During the first half-hour after having woken in the morning, how tired do you feel?';
+  String get rhythmQ2 => 'What time do you usually wake up?';
 
   @override
-  String get rhythmQ3 =>
-      'At what time would you go to bed if you were entirely free to plan your evening?';
+  String get rhythmQ3 => 'When do you tackle difficult tasks most comfortably?';
 
   @override
-  String get rhythmQ4 =>
-      'At what time of day do you feel your best (most energetic)?';
+  String get rhythmQ4 => 'When do you feel most clear-headed for learning?';
 
   @override
   String get rhythmQ5 =>
-      'Do you consider yourself a \"morning type\" or an \"evening type\"?';
+      'During which part of the day do you feel more energetic?';
 
   @override
   String get rhythmReflectionHint => 'Journal, reading, wind down';
@@ -3281,6 +3307,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sendBackward => 'Send backward';
 
   @override
+  String get setAsTodayFocus => 'Set as Today\'s Focus';
+
+  @override
   String get setVisionTimeline => 'Set the timeline for your vision';
 
   @override
@@ -3414,6 +3443,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get simpleHabitTitle => 'Simple Habit';
+
+  @override
+  String get simpleHabitTypeDescription =>
+      'For daily check-ins. Complete or skip.';
 
   @override
   String get simpleHabitWeekdaysSubtitle => 'Select the active days';
@@ -3949,10 +3982,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get themeSunsetDesc => 'Warm & Golden';
 
   @override
-  String get themeVintageRed => 'Vintage Kırmızı';
+  String get themeVintageRed => 'Vintage Red';
 
   @override
-  String get themeVintageRedDesc => 'Klasik ve zamansız kırmızı';
+  String get themeVintageRedDesc => 'Classic and timeless red';
 
   @override
   String get thisFeatureIsPremium => 'This feature is Premium';

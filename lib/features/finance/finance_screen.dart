@@ -555,7 +555,7 @@ class FinanceScreenState extends State<FinanceScreen>
           children: [
             ListTile(
               leading: const Icon(Icons.edit_note),
-              title: const Text('Manuel Ekle'),
+              title: Text(AppLocalizations.of(context).financeAddManualOption),
               onTap: () {
                 Navigator.pop(ctx);
                 _openAddPageDefault();
@@ -563,8 +563,12 @@ class FinanceScreenState extends State<FinanceScreen>
             ),
             ListTile(
               leading: const Icon(Icons.document_scanner),
-              title: const Text('Yapay Zeka ile Ekstre/Fiş Yükle'),
-              subtitle: const Text('Görsel veya PDF üzerinden otomatik ekler'),
+              title: Text(
+                AppLocalizations.of(context).financeAddAiStatementOption,
+              ),
+              subtitle: Text(
+                AppLocalizations.of(context).financeAddAiStatementSubtitle,
+              ),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickAndAnalyzeStatement();

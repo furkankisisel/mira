@@ -188,22 +188,22 @@ class NotificationService {
       ),
       actions: <AndroidNotificationAction>[
         if (isRunning)
-          const AndroidNotificationAction(
+          AndroidNotificationAction(
             'pause',
-            '⏸️ Duraklat',
+            _l10n?.timerPause ?? '⏸️ Pause',
             showsUserInterface: true,
             cancelNotification: false,
           )
         else
-          const AndroidNotificationAction(
+          AndroidNotificationAction(
             'resume',
-            '▶️ Devam',
+            _l10n?.timerResume ?? '▶️ Resume',
             showsUserInterface: true,
             cancelNotification: false,
           ),
-        const AndroidNotificationAction(
+        AndroidNotificationAction(
           'stop',
-          '⏹️ Bitir',
+          _l10n?.timerStop ?? '⏹️ Stop',
           showsUserInterface: true,
           cancelNotification: false,
         ),
@@ -356,7 +356,7 @@ class NotificationService {
 
     final emoji = habit.emoji ?? '✅';
     final title = '$emoji ${habit.title}';
-    final body = _l10n?.habitReminderBody ?? 'Alışkanlığını tamamlama zamanı!';
+    final body = _l10n?.habitReminderBody ?? 'Time to complete your habit!';
 
     try {
       await _plugin.zonedSchedule(

@@ -230,6 +230,12 @@ abstract class AppLocalizations {
   /// **'Başlamak için seçenek ekle'**
   String get addOptionsToStart;
 
+  /// No description provided for @addRoomButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oda Ekle'**
+  String get addRoomButton;
+
   /// No description provided for @addSpecialDays.
   ///
   /// In tr, this message translates to:
@@ -295,6 +301,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Gelişmiş Alışkanlık'**
   String get advancedHabitTitle;
+
+  /// No description provided for @advancedHabitTypeDescription.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sayısal hedefler, zamanlayıcı ve detaylı takip.'**
+  String get advancedHabitTypeDescription;
 
   /// No description provided for @advancedTimer.
   ///
@@ -1267,6 +1279,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Alışkanlıkları Onayla'**
   String get confirmHabits;
+
+  /// No description provided for @continueAsGuest.
+  ///
+  /// In tr, this message translates to:
+  /// **'Misafir Olarak Devam Et'**
+  String get continueAsGuest;
 
   /// No description provided for @continueButton.
   ///
@@ -2552,6 +2570,24 @@ abstract class AppLocalizations {
   /// **'Finans'**
   String get finance;
 
+  /// No description provided for @financeAddAiStatementOption.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yapay Zeka ile Ekstre/Fis Yukle'**
+  String get financeAddAiStatementOption;
+
+  /// No description provided for @financeAddAiStatementSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gorsel veya PDF uzerinden otomatik ekler'**
+  String get financeAddAiStatementSubtitle;
+
+  /// No description provided for @financeAddManualOption.
+  ///
+  /// In tr, this message translates to:
+  /// **'Manuel Ekle'**
+  String get financeAddManualOption;
+
   /// No description provided for @financeAnalysisTitle.
   ///
   /// In tr, this message translates to:
@@ -3241,6 +3277,18 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Alışkanlık Tipi'**
   String get habitTypeLabel;
+
+  /// No description provided for @habitTypePickerSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Nasıl bir alışkanlık oluşturmak istiyorsun?'**
+  String get habitTypePickerSubtitle;
+
+  /// No description provided for @habitTypePickerTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alışkanlık Türü Seç'**
+  String get habitTypePickerTitle;
 
   /// No description provided for @habitUpdatedMessage.
   ///
@@ -5108,6 +5156,12 @@ abstract class AppLocalizations {
   /// **'Geçen yıl'**
   String get previousYear;
 
+  /// No description provided for @prioritizeTaskSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu görevi önceliklendir'**
+  String get prioritizeTaskSubtitle;
+
   /// No description provided for @privacyPolicy.
   ///
   /// In tr, this message translates to:
@@ -6206,6 +6260,12 @@ abstract class AppLocalizations {
   /// **'Geriye gönder'**
   String get sendBackward;
 
+  /// No description provided for @setAsTodayFocus.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugünün Odağı Yap'**
+  String get setAsTodayFocus;
+
   /// No description provided for @setVisionTimeline.
   ///
   /// In tr, this message translates to:
@@ -6469,6 +6529,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Basit Alışkanlık'**
   String get simpleHabitTitle;
+
+  /// No description provided for @simpleHabitTypeDescription.
+  ///
+  /// In tr, this message translates to:
+  /// **'Günlük yapılacaklar için. Tamamla veya tamamlama.'**
+  String get simpleHabitTypeDescription;
 
   /// No description provided for @simpleHabitWeekdaysSubtitle.
   ///

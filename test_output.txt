@@ -1,0 +1,32 @@
+Key: listCreated
+Value: List created: {title}
+Metadata: {placeholders: {title: {}}}
+---
+Key: listCreatedMessage
+Value: List created successfully
+Metadata: null
+---
+Key: dailyTaskCreated
+Value: null
+Metadata: null
+---
+Key: dailyTaskCreatedMessage
+Value: Daily task created successfully
+Metadata: null
+---
+Key: habitDeleted
+Value: null
+Metadata: null
+---
+Key: habitDeletedMessage
+Value: Habit deleted
+Metadata: null
+---
+Key: habitCreated
+Value: null
+Metadata: null
+---
+Key: habitCreatedMessage
+Value: Habit created successfully: {title}
+Metadata: {placeholders: {title: {}}}
+---

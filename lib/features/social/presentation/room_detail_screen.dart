@@ -501,6 +501,7 @@ class _MembersBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return StreamBuilder<List<RoomMember>>(
       stream: RoomService.instance.streamMembers(roomId),
@@ -517,7 +518,7 @@ class _MembersBar extends StatelessWidget {
                       size: 20, color: theme.colorScheme.primary),
                   const SizedBox(width: 8),
                   Text(
-                    'ODA ÜYELERİ',
+                    l10n.roomMembersLabel,
                     style: theme.textTheme.labelLarge?.copyWith(
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.w900,
@@ -526,7 +527,7 @@ class _MembersBar extends StatelessWidget {
                   ),
                   const Spacer(),
                   Text(
-                    '${members.length} kişi',
+                    l10n.membersCountText(members.length),
                     style: theme.textTheme.labelMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
                       fontWeight: FontWeight.bold,

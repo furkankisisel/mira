@@ -378,6 +378,7 @@ class HabitScreenState extends State<HabitScreen>
         frequency: frequency,
         missedDays: missedDays,
         habitType: habitTypeStr,
+        languageCode: Localizations.localeOf(context).languageCode,
       );
 
       if (habit != null) {
@@ -2328,7 +2329,7 @@ class HabitScreenState extends State<HabitScreen>
 
             // Title
             Text(
-              'Alışkanlık Türü Seç',
+              l10n.habitTypePickerTitle,
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -2336,7 +2337,7 @@ class HabitScreenState extends State<HabitScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Nasıl bir alışkanlık oluşturmak istiyorsun?',
+              l10n.habitTypePickerSubtitle,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
@@ -2347,8 +2348,8 @@ class HabitScreenState extends State<HabitScreen>
             // Simple Habit Option
             _HabitTypeOption(
               icon: Icons.check_circle_outline,
-              title: 'Basit Alışkanlık',
-              description: 'Günlük yapılacaklar için. Tamamla veya tamamlama.',
+              title: l10n.simpleHabitTitle,
+              description: l10n.simpleHabitTypeDescription,
               color: colorScheme.primary,
               onTap: () {
                 Navigator.pop(context);
@@ -2360,8 +2361,8 @@ class HabitScreenState extends State<HabitScreen>
             // Advanced Habit Option
             _HabitTypeOption(
               icon: Icons.auto_graph,
-              title: 'Gelişmiş Alışkanlık',
-              description: 'Sayısal hedefler, zamanlayıcı ve detaylı takip.',
+              title: l10n.advancedHabitTitle,
+              description: l10n.advancedHabitTypeDescription,
               color: colorScheme.secondary,
               onTap: () {
                 Navigator.pop(context);
@@ -3907,7 +3908,7 @@ class HabitScreenState extends State<HabitScreen>
                               children: [
                                 Icon(Icons.add_circle_outline, size: 32, color: colorScheme.primary),
                                 const SizedBox(height: 8),
-                                Text('Oda Ekle', style: theme.textTheme.labelMedium?.copyWith(
+                                Text(AppLocalizations.of(context).addRoomButton, style: theme.textTheme.labelMedium?.copyWith(
                                   color: colorScheme.primary, fontWeight: FontWeight.w600,
                                 )),
                               ],
@@ -3956,7 +3957,7 @@ class HabitScreenState extends State<HabitScreen>
                                   ),
                                 ),
                                 const SizedBox(height: 2),
-                                Text('${room.memberIds.length} üye',
+                                Text(AppLocalizations.of(context).memberCountText(room.memberIds.length),
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: colorScheme.onSurfaceVariant, fontSize: 11,
                                   ),
@@ -4066,8 +4067,8 @@ class _TaskCard extends StatelessWidget {
                                   Icons.center_focus_strong_rounded,
                                   color: Theme.of(ctx).colorScheme.primary,
                                 ),
-                                title: const Text('Bugünün Odağı Yap'),
-                                subtitle: const Text('Bu görevi önceliklendir'),
+                                title: Text(l10n.setAsTodayFocus),
+                                subtitle: Text(l10n.prioritizeTaskSubtitle),
                                 onTap: () => Navigator.pop(ctx, 'focus'),
                               ),
                             if (onDelete != null)

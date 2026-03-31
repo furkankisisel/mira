@@ -30,10 +30,11 @@ class FocusMotivationService {
     String? frequency,
     int missedDays = 0,
     String? habitType,
+    String languageCode = 'tr',
   }) async {
     // If already completed, return a celebration message
     if (isCompleted) {
-      return _getCompletionMessage(focusTitle);
+      return _getCompletionMessage(focusTitle, languageCode: languageCode);
     }
 
     // Build context for AI
@@ -59,11 +60,13 @@ class FocusMotivationService {
         frequency: frequency,
         missedDays: missedDays,
         habitType: habitType,
+        languageCode: languageCode,
       );
 
       // Use sendSupportMessage with a focused motivation request
       final motivationRequest =
-          '''
+          languageCode == 'tr'
+          ? '''
 Sen Mira'sın, kullanıcının kişisel asistanı ve yol arkadaşısın. Aşağıdaki aktivite için kullanıcıya özel, o aktiviteyle doğrudan ilgili, motive edici ve samimi bir mesaj yaz.
 
 ÖNEMLİ KURALLAR:
@@ -82,11 +85,31 @@ Sen Mira'sın, kullanıcının kişisel asistanı ve yol arkadaşısın. Aşağ�
 - Sadece mesajı yaz, tırnak işareti veya ek açıklama kullanma.
 
 $prompt
+'''
+          : '''
+You are Mira, the user's personal assistant and companion. Write a warm, specific motivational message directly related to the activity below.
+
+IMPORTANT RULES:
+- Personalize the message based on title, description, and activity properties.
+- If there is missed-day info, gently acknowledge it and suggest a tiny restart step.
+- If streak is high, praise consistency and encourage continuation.
+- Adapt by habit type:
+  - Timer: suggest minutes/time-based steps
+  - Numerical: suggest small number-based steps
+  - Subtasks: suggest step-by-step momentum
+  - Simple: clear completion encouragement
+- Keep it very short (max 1-2 sentences).
+- Tone should be friendly, supportive, and upbeat.
+- Emojis are allowed.
+- Sound like a close friend, not formal.
+- Return only the message, no quotes or extra text.
+
+$prompt
 ''';
 
       final responseMap = await _aiService.sendSupportMessage([
         {'role': 'user', 'content': motivationRequest},
-      ], languageCode: 'tr');
+      ], languageCode: languageCode);
 
       final message = responseMap['message'] as String? ?? '';
       if (message.isNotEmpty) {
@@ -104,6 +127,7 @@ $prompt
       targetCount: targetCount,
       unit: unitStr,
       progressPercent: progressPercent,
+      languageCode: languageCode,
     );
   }
 
@@ -121,41 +145,53 @@ $prompt
     String? frequency,
     int missedDays = 0,
     String? habitType,
+    String languageCode = 'tr',
   }) {
-    final typeStr = type == 'habit' ? 'alışkanlık' : 'günlük görev';
+    final bool isTr = languageCode == 'tr';
+    final typeStr = type == 'habit'
+        ? (isTr ? 'alışkanlık' : 'habit')
+        : (isTr ? 'günlük görev' : 'daily task');
     final habitTypeStr = habitType ?? 'simple';
 
     final sb = StringBuffer();
-    sb.writeln('Aktivite: "$title"');
-    sb.writeln('Tür: $typeStr');
-    sb.writeln('Alışkanlık Tipi: $habitTypeStr');
+    sb.writeln('${isTr ? 'Aktivite' : 'Activity'}: "$title"');
+    sb.writeln('${isTr ? 'Tür' : 'Type'}: $typeStr');
+    sb.writeln('${isTr ? 'Alışkanlık Tipi' : 'Habit Type'}: $habitTypeStr');
     if (description != null && description.isNotEmpty) {
-      sb.writeln('Detay: $description');
+      sb.writeln('${isTr ? 'Detay' : 'Details'}: $description');
     }
     if (category != null && category.isNotEmpty) {
-      sb.writeln('Kategori: $category');
+      sb.writeln('${isTr ? 'Kategori' : 'Category'}: $category');
     }
 
     sb.writeln(
-      'Durum: ${targetCount > 0 ? '$progressPercent% tamamlandı ($currentProgress/$targetCount $unit)' : 'Henüz başlanmadı'}',
+      '${isTr ? 'Durum' : 'Status'}: ${targetCount > 0 ? '$progressPercent% ${isTr ? 'tamamlandı' : 'completed'} ($currentProgress/$targetCount $unit)' : (isTr ? 'Henüz başlanmadı' : 'Not started yet')}',
     );
 
     if (streak > 0) {
-      sb.writeln('Mevcut Seri (Streak): $streak gün 🔥');
+      sb.writeln(
+        '${isTr ? 'Mevcut Seri (Streak)' : 'Current Streak'}: $streak ${isTr ? 'gün' : 'days'} 🔥',
+      );
     } else {
-      sb.writeln('Mevcut Seri: Henüz seri yok');
+      sb.writeln(
+        '${isTr ? 'Mevcut Seri' : 'Current Streak'}: ${isTr ? 'Henüz seri yok' : 'No streak yet'}',
+      );
     }
 
     if (missedDays > 0) {
-      sb.writeln('Son $missedDays gündür bu alışkanlık yapılmadı ⚠️');
+      sb.writeln(
+        isTr
+            ? 'Son $missedDays gündür bu alışkanlık yapılmadı ⚠️'
+            : 'This habit has not been done for $missedDays days ⚠️',
+      );
     }
 
     if (startDate != null) {
-      sb.writeln('Başlangıç Tarihi: $startDate');
+      sb.writeln('${isTr ? 'Başlangıç Tarihi' : 'Start Date'}: $startDate');
     }
 
     if (frequency != null) {
-      sb.writeln('Sıklık: $frequency');
+      sb.writeln('${isTr ? 'Sıklık' : 'Frequency'}: $frequency');
     }
 
     return sb.toString();
@@ -168,52 +204,89 @@ $prompt
     required int targetCount,
     required String unit,
     required int progressPercent,
+    String languageCode = 'tr',
   }) {
+    final bool isTr = languageCode == 'tr';
     final random = Random();
 
     // Progress-based messages
     if (progressPercent == 0) {
       final messages = [
-        'Harika bir gün için mükemmel bir başlangıç! 🌟',
-        'Bugün "$focusTitle" ile fark yarat!',
-        'Küçük bir adımla başla, gerisi gelir 💪',
-        'Her ustanın bir zamanlar acemi olduğunu unutma!',
-        'Bugün senin günün! Haydi başlayalım 🚀',
+        isTr
+            ? 'Harika bir gün için mükemmel bir başlangıç! 🌟'
+            : 'A perfect start for a great day! 🌟',
+        isTr
+            ? 'Bugün "$focusTitle" ile fark yarat!'
+            : 'Make a difference with "$focusTitle" today!',
+        isTr
+            ? 'Küçük bir adımla başla, gerisi gelir 💪'
+            : 'Start with a tiny step, the rest will follow 💪',
+        isTr
+            ? 'Her ustanın bir zamanlar acemi olduğunu unutma!'
+            : 'Every master was once a beginner!',
+        isTr ? 'Bugün senin günün! Haydi başlayalım 🚀' : 'Today is your day. Let\'s go 🚀',
       ];
       return messages[random.nextInt(messages.length)];
     }
 
     if (progressPercent > 0 && progressPercent < 50) {
       final messages = [
-        'Güzel gidiyorsun! Yarı yola kadar az kaldı 💪',
-        'Her adım seni hedefe yaklaştırıyor!',
-        'Momentumu koru, harika ilerliyorsun!',
-        'Bu tempoda devam et, başarı yakın 🌟',
+        isTr
+            ? 'Güzel gidiyorsun! Yarı yola kadar az kaldı 💪'
+            : 'Great progress! Halfway is close 💪',
+        isTr
+            ? 'Her adım seni hedefe yaklaştırıyor!'
+            : 'Every step brings you closer to your goal!',
+        isTr
+            ? 'Momentumu koru, harika ilerliyorsun!'
+            : 'Keep the momentum, you are doing great!',
+        isTr
+            ? 'Bu tempoda devam et, başarı yakın 🌟'
+            : 'Keep this pace, success is near 🌟',
       ];
       return messages[random.nextInt(messages.length)];
     }
 
     if (progressPercent >= 50 && progressPercent < 100) {
       final messages = [
-        'Yarısından fazlasını tamamladın! Harika gidiyorsun 🔥',
-        'Bitiş çizgisi görünüyor, son hamle senin!',
-        'Bu kadar yol geldin, bırakma! 💪',
-        'Neredeyse tamam, son bir gayret!',
+        isTr
+            ? 'Yarısından fazlasını tamamladın! Harika gidiyorsun 🔥'
+            : 'You are past halfway! Amazing progress 🔥',
+        isTr
+            ? 'Bitiş çizgisi görünüyor, son hamle senin!'
+            : 'The finish line is in sight, one final push!',
+        isTr
+            ? 'Bu kadar yol geldin, bırakma! 💪'
+            : 'You have come this far, do not stop! 💪',
+        isTr
+            ? 'Neredeyse tamam, son bir gayret!'
+            : 'Almost done, one last effort!',
       ];
       return messages[random.nextInt(messages.length)];
     }
 
-    return 'Bugün senin günün! 🌟';
+    return isTr ? 'Bugün senin günün! 🌟' : 'Today is your day! 🌟';
   }
 
-  String _getCompletionMessage(String focusTitle) {
+  String _getCompletionMessage(String focusTitle, {String languageCode = 'tr'}) {
+    final bool isTr = languageCode == 'tr';
     final random = Random();
     final messages = [
-      'Tebrikler! "$focusTitle" hedefini tamamladın! 🎉',
-      'Harika iş! Bugünkü odak noktanı başarıyla bitirdin 🏆',
-      'Bu başarıyı kutla! Hedefine ulaştın ⭐',
-      'Süpersin! "$focusTitle" tamam, kendini ödüllendir 🌟',
-      'Başardın! Bu azim takdire değer 💪🎉',
+      isTr
+          ? 'Tebrikler! "$focusTitle" hedefini tamamladın! 🎉'
+          : 'Congrats! You completed your "$focusTitle" goal! 🎉',
+      isTr
+          ? 'Harika iş! Bugünkü odak noktanı başarıyla bitirdin 🏆'
+          : 'Great work! You successfully finished today\'s focus 🏆',
+      isTr
+          ? 'Bu başarıyı kutla! Hedefine ulaştın ⭐'
+          : 'Celebrate this win! You reached your goal ⭐',
+      isTr
+          ? 'Süpersin! "$focusTitle" tamam, kendini ödüllendir 🌟'
+          : 'Awesome! "$focusTitle" is done, reward yourself 🌟',
+      isTr
+          ? 'Başardın! Bu azim takdire değer 💪🎉'
+          : 'You did it! Your consistency is impressive 💪🎉',
     ];
     return messages[random.nextInt(messages.length)];
   }

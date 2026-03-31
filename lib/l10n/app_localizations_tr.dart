@@ -63,6 +63,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get addOptionsToStart => 'Başlamak için seçenek ekle';
 
   @override
+  String get addRoomButton => 'Oda Ekle';
+
+  @override
   String get addSpecialDays => 'Özel Günler Ekle';
 
   @override
@@ -97,6 +100,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get advancedHabitTitle => 'Gelişmiş Alışkanlık';
+
+  @override
+  String get advancedHabitTypeDescription =>
+      'Sayısal hedefler, zamanlayıcı ve detaylı takip.';
 
   @override
   String get advancedTimer => 'Gelişmiş Timer';
@@ -618,6 +625,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get confirmHabits => 'Alışkanlıkları Onayla';
+
+  @override
+  String get continueAsGuest => 'Misafir Olarak Devam Et';
 
   @override
   String get continueButton => 'Devam Et';
@@ -1312,6 +1322,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get finance => 'Finans';
 
   @override
+  String get financeAddAiStatementOption => 'Yapay Zeka ile Ekstre/Fis Yukle';
+
+  @override
+  String get financeAddAiStatementSubtitle =>
+      'Gorsel veya PDF uzerinden otomatik ekler';
+
+  @override
+  String get financeAddManualOption => 'Manuel Ekle';
+
+  @override
   String financeAnalysisTitle(Object month) {
     return 'Finans Analizi · $month';
   }
@@ -1700,6 +1720,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get habitTypeLabel => 'Alışkanlık Tipi';
+
+  @override
+  String get habitTypePickerSubtitle =>
+      'Nasıl bir alışkanlık oluşturmak istiyorsun?';
+
+  @override
+  String get habitTypePickerTitle => 'Alışkanlık Türü Seç';
 
   @override
   String get habitUpdatedMessage => 'Alışkanlık güncellendi.';
@@ -2704,6 +2731,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get previousYear => 'Geçen yıl';
 
   @override
+  String get prioritizeTaskSubtitle => 'Bu görevi önceliklendir';
+
+  @override
   String get privacyPolicy => 'Gizlilik Politikası';
 
   @override
@@ -3292,6 +3322,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get sendBackward => 'Geriye gönder';
 
   @override
+  String get setAsTodayFocus => 'Bugünün Odağı Yap';
+
+  @override
   String get setVisionTimeline =>
       'Vizyonunuz için zaman çizelgesini belirleyin';
 
@@ -3428,6 +3461,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get simpleHabitTitle => 'Basit Alışkanlık';
+
+  @override
+  String get simpleHabitTypeDescription =>
+      'Günlük yapılacaklar için. Tamamla veya tamamlama.';
 
   @override
   String get simpleHabitWeekdaysSubtitle => 'Aktif olacağı günleri seç';

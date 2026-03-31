@@ -102,7 +102,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: Text(
-                    "Misafir Olarak Devam Et", // TODO: Localize
+                    AppLocalizations.of(context).continueAsGuest,
                     style: TextStyle(
                       color: theme.colorScheme.onSurface,
                       fontWeight: FontWeight.w600,
