@@ -4467,7 +4467,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String xpToNextLevel(Object toNext) {
-    return 'sonraki seviyeye';
+    return '$toNext XP sonraki seviyeye';
   }
 
   @override

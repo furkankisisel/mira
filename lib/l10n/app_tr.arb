@@ -5666,7 +5666,7 @@
   "@xpProgressSummary": {
     "description": "Auto-generated metadata"
   },
-  "xpToNextLevel": "sonraki seviyeye",
+  "xpToNextLevel": "{toNext} XP sonraki seviyeye",
   "@xpToNextLevel": {
     "description": "Auto-generated metadata"
   },

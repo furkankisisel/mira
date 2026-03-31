@@ -458,46 +458,103 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(height: 8),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 48),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    '${repo.xpIntoLevel} XP',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: scheme.primary,
-                                    ),
-                                  ),
-                                  Text(
-                                    '${repo.xpToNextLevel} ${l10n.xpToNextLevel}',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: scheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ],
+                          padding: const EdgeInsets.symmetric(horizontal: 32),
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: scheme.primary.withValues(alpha: 0.05),
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                color: scheme.primary.withValues(alpha: 0.1),
                               ),
-                              const SizedBox(height: 6),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: LinearProgressIndicator(
-                                  value: (repo.xpIntoLevel / repo.xpPerLevel)
-                                      .clamp(
-                                    0.0,
-                                    1.0,
-                                  ),
-                                  minHeight: 12,
-                                  backgroundColor:
-                                      scheme.surfaceContainerHighest,
-                                  color: scheme.primary,
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${repo.xpIntoLevel} / ${repo.xpPerLevel} XP',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w900,
+                                            letterSpacing: -0.5,
+                                            color: scheme.primary,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          l10n.levelLabel(repo.level),
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: scheme.onSurfaceVariant
+                                                .withValues(alpha: 0.7),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: scheme.primary,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        '${(repo.xpIntoLevel / repo.xpPerLevel * 100).toInt()}%',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: scheme.onPrimary,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 16),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: LinearProgressIndicator(
+                                    value: (repo.xpIntoLevel / repo.xpPerLevel)
+                                        .clamp(0.0, 1.0),
+                                    minHeight: 12,
+                                    backgroundColor:
+                                        scheme.surfaceContainerHighest,
+                                    color: scheme.primary,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.auto_awesome,
+                                      size: 14,
+                                      color: scheme.primary.withValues(
+                                        alpha: 0.6,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      l10n.xpToNextLevel(repo.xpToNextLevel),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: scheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         const SizedBox(height: 32),

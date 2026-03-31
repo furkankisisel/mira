@@ -8423,7 +8423,7 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'sonraki seviyeye'**
+  /// **'{toNext} XP sonraki seviyeye'**
   String xpToNextLevel(Object toNext);
 
   /// Auto-generated metadata
