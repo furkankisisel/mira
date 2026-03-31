@@ -5778,6 +5778,26 @@
   "socialRoomsTitle": "الغرف الاجتماعية",
   "@socialRoomsTitle": {
     "description": "Social rooms section title"
+  },
+  "analyzingHabit": "🔍 جاري تحليل عادتك...",
+  "@analyzingHabit": {
+    "description": "AI Analysis status"
+  },
+  "calculatingLifeRhythm": "🧠 جاري حساب إيقاع حياتك...",
+  "@calculatingLifeRhythm": {
+    "description": "AI Analysis status"
+  },
+  "determiningBestReminder": "⏰ جاري تحديد أفضل وقت للتذكير...",
+  "@determiningBestReminder": {
+    "description": "AI Analysis status"
+  },
+  "finalizingSettingsProgress": "✨ جاري وضع اللمسات الأخيرة...",
+  "@finalizingSettingsProgress": {
+    "description": "AI Analysis status"
+  },
+  "determiningBestSettings": "نحدد لك أفضل الإعدادات",
+  "@determiningBestSettings": {
+    "description": "AI Analysis secondary text"
   }
 }
 

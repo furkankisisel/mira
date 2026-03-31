@@ -4514,4 +4514,21 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get wizardOptional => 'İsteğe bağlı';
+
+  @override
+  String get analyzingHabit => '🔍 Alışkanlığınız analiz ediliyor...';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 Canlı Ritminiz hesaplanıyor...';
+
+  @override
+  String get determiningBestReminder =>
+      '⏰ En uygun hatırlatıcı zamanı belirleniyor...';
+
+  @override
+  String get finalizingSettingsProgress => '✨ Son ayarlamalar yapılıyor...';
+
+  @override
+  String get determiningBestSettings =>
+      'Sizin için en iyi ayarları belirliyoruz';
 }

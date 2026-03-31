@@ -4397,4 +4397,19 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get wizardOptional => '선택 사항';
+
+  @override
+  String get analyzingHabit => '🔍 습관을 분석하는 중...';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 생활 리듬을 계산하는 중...';
+
+  @override
+  String get determiningBestReminder => '⏰ 최적의 알림 시간을 결정하는 중...';
+
+  @override
+  String get finalizingSettingsProgress => '✨ 최종 설정을 마무리하는 중...';
+
+  @override
+  String get determiningBestSettings => '당신을 위한 최적의 설정을 결정하고 있습니다';
 }

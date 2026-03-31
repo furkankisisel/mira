@@ -5765,5 +5765,25 @@
   "socialRoomsTitle": "Social Rooms",
   "@socialRoomsTitle": {
     "description": "Social rooms section title"
+  },
+  "analyzingHabit": "🔍 Analyzing your habit...",
+  "@analyzingHabit": {
+    "description": "AI Analysis status"
+  },
+  "calculatingLifeRhythm": "🧠 Calculating your Life Rhythm...",
+  "@calculatingLifeRhythm": {
+    "description": "AI Analysis status"
+  },
+  "determiningBestReminder": "⏰ Determining best reminder time...",
+  "@determiningBestReminder": {
+    "description": "AI Analysis status"
+  },
+  "finalizingSettingsProgress": "✨ Finalizing settings...",
+  "@finalizingSettingsProgress": {
+    "description": "AI Analysis status"
+  },
+  "determiningBestSettings": "Determining the best settings for you",
+  "@determiningBestSettings": {
+    "description": "AI Analysis secondary text"
   }
 }

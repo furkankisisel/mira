@@ -4511,4 +4511,22 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get wizardOptional => 'वैकल्पिक';
+
+  @override
+  String get analyzingHabit => '🔍 आपकी आदत का विश्लेषण किया जा रहा है...';
+
+  @override
+  String get calculatingLifeRhythm =>
+      '🧠 आपके जीवन की लय की गणना की जा रही है...';
+
+  @override
+  String get determiningBestReminder =>
+      '⏰ सर्वोत्तम अनुस्मारक समय निर्धारित किया जा रहा है...';
+
+  @override
+  String get finalizingSettingsProgress => '✨ अंतिम समायोजन किए जा रहे हैं...';
+
+  @override
+  String get determiningBestSettings =>
+      'हम आपके लिए सर्वोत्तम सेटिंग्स निर्धारित कर रहे हैं';
 }

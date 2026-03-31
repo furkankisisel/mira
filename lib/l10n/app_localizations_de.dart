@@ -4551,4 +4551,23 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get wizardOptional => 'Optional';
+
+  @override
+  String get analyzingHabit => '🔍 Deine Gewohnheit wird analysiert...';
+
+  @override
+  String get calculatingLifeRhythm =>
+      '🧠 Dein Lebensrhythmus wird berechnet...';
+
+  @override
+  String get determiningBestReminder =>
+      '⏰ Beste Erinnerungszeit wird ermittelt...';
+
+  @override
+  String get finalizingSettingsProgress =>
+      '✨ Letzte Anpassungen werden vorgenommen...';
+
+  @override
+  String get determiningBestSettings =>
+      'Wir ermitteln die besten Einstellungen für dich';
 }

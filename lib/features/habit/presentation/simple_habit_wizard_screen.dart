@@ -111,11 +111,12 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
   }
 
   Future<void> _showAiAnalysisDialog() async {
+    final l10n = AppLocalizations.of(context);
     final statusTexts = [
-      '🔍 Alışkanlığınız analiz ediliyor...',
-      '🧠 Canlı Ritminiz hesaplanıyor...',
-      '⏰ En uygun hatırlatıcı zamanı belirleniyor...',
-      '✨ Son ayarlamalar yapılıyor...',
+      l10n.analyzingHabit,
+      l10n.calculatingLifeRhythm,
+      l10n.determiningBestReminder,
+      l10n.finalizingSettingsProgress,
     ];
 
     int currentStatus = 0;
@@ -191,7 +192,7 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Sizin için en iyi ayarları belirliyoruz',
+                      l10n.determiningBestSettings,
                       style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
                             color: Theme.of(ctx)
                                 .colorScheme

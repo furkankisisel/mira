@@ -5774,6 +5774,26 @@
   "socialRoomsTitle": "Sociale Ruimtes",
   "@socialRoomsTitle": {
     "description": "Social rooms section title"
+  },
+  "analyzingHabit": "🔍 Je gewoonte wordt geanalyseerd...",
+  "@analyzingHabit": {
+    "description": "AI Analysis status"
+  },
+  "calculatingLifeRhythm": "🧠 Je levensritme wordt berekend...",
+  "@calculatingLifeRhythm": {
+    "description": "AI Analysis status"
+  },
+  "determiningBestReminder": "⏰ Beste herinneringstijd wordt bepaald...",
+  "@determiningBestReminder": {
+    "description": "AI Analysis status"
+  },
+  "finalizingSettingsProgress": "✨ Laatste aanpassingen worden gemaakt...",
+  "@finalizingSettingsProgress": {
+    "description": "AI Analysis status"
+  },
+  "determiningBestSettings": "We bepalen de beste instellingen voor jou",
+  "@determiningBestSettings": {
+    "description": "AI Analysis secondary text"
   }
 }
 

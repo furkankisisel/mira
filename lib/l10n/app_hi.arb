@@ -5774,6 +5774,26 @@
   "socialRoomsTitle": "सामाजिक कमरे",
   "@socialRoomsTitle": {
     "description": "Social rooms section title"
+  },
+  "analyzingHabit": "🔍 आपकी आदत का विश्लेषण किया जा रहा है...",
+  "@analyzingHabit": {
+    "description": "AI Analysis status"
+  },
+  "calculatingLifeRhythm": "🧠 आपके जीवन की लय की गणना की जा रही है...",
+  "@calculatingLifeRhythm": {
+    "description": "AI Analysis status"
+  },
+  "determiningBestReminder": "⏰ सर्वोत्तम अनुस्मारक समय निर्धारित किया जा रहा है...",
+  "@determiningBestReminder": {
+    "description": "AI Analysis status"
+  },
+  "finalizingSettingsProgress": "✨ अंतिम समायोजन किए जा रहे हैं...",
+  "@finalizingSettingsProgress": {
+    "description": "AI Analysis status"
+  },
+  "determiningBestSettings": "हम आपके लिए सर्वोत्तम सेटिंग्स निर्धारित कर रहे हैं",
+  "@determiningBestSettings": {
+    "description": "AI Analysis secondary text"
   }
 }
 

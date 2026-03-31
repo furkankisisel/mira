@@ -4377,4 +4377,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get wizardOptional => '可选';
+
+  @override
+  String get analyzingHabit => '🔍 正在分析您的习惯...';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 正在计算您的生活节奏...';
+
+  @override
+  String get determiningBestReminder => '⏰ 正在确定最佳提醒时间...';
+
+  @override
+  String get finalizingSettingsProgress => '✨ 正在进行最后调整...';
+
+  @override
+  String get determiningBestSettings => '我们正在为您确定最佳设置';
 }

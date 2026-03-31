@@ -5774,6 +5774,26 @@
   "socialRoomsTitle": "소셜룸",
   "@socialRoomsTitle": {
     "description": "Social rooms section title"
+  },
+  "analyzingHabit": "🔍 습관을 분석하는 중...",
+  "@analyzingHabit": {
+    "description": "AI Analysis status"
+  },
+  "calculatingLifeRhythm": "🧠 생활 리듬을 계산하는 중...",
+  "@calculatingLifeRhythm": {
+    "description": "AI Analysis status"
+  },
+  "determiningBestReminder": "⏰ 최적의 알림 시간을 결정하는 중...",
+  "@determiningBestReminder": {
+    "description": "AI Analysis status"
+  },
+  "finalizingSettingsProgress": "✨ 최종 설정을 마무리하는 중...",
+  "@finalizingSettingsProgress": {
+    "description": "AI Analysis status"
+  },
+  "determiningBestSettings": "당신을 위한 최적의 설정을 결정하고 있습니다",
+  "@determiningBestSettings": {
+    "description": "AI Analysis secondary text"
   }
 }
 

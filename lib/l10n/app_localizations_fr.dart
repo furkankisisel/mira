@@ -4467,4 +4467,21 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get wizardOptional => 'Facultatif';
+
+  @override
+  String get analyzingHabit => '🔍 Analyse de votre habitude...';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 Calcul de votre rythme de vie...';
+
+  @override
+  String get determiningBestReminder =>
+      '⏰ Détermination du meilleur moment pour le rappel...';
+
+  @override
+  String get finalizingSettingsProgress => '✨ Finalisation des paramètres...';
+
+  @override
+  String get determiningBestSettings =>
+      'Nous déterminons les meilleurs paramètres pour vous';
 }

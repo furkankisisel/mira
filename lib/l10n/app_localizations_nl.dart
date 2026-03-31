@@ -4519,4 +4519,22 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get wizardOptional => 'Optioneel';
+
+  @override
+  String get analyzingHabit => '🔍 Je gewoonte wordt geanalyseerd...';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 Je levensritme wordt berekend...';
+
+  @override
+  String get determiningBestReminder =>
+      '⏰ Beste herinneringstijd wordt bepaald...';
+
+  @override
+  String get finalizingSettingsProgress =>
+      '✨ Laatste aanpassingen worden gemaakt...';
+
+  @override
+  String get determiningBestSettings =>
+      'We bepalen de beste instellingen voor jou';
 }

@@ -8515,6 +8515,36 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'İsteğe bağlı'**
   String get wizardOptional;
+
+  /// AI Analysis status
+  ///
+  /// In tr, this message translates to:
+  /// **'🔍 Alışkanlığınız analiz ediliyor...'**
+  String get analyzingHabit;
+
+  /// AI Analysis status
+  ///
+  /// In tr, this message translates to:
+  /// **'🧠 Canlı Ritminiz hesaplanıyor...'**
+  String get calculatingLifeRhythm;
+
+  /// AI Analysis status
+  ///
+  /// In tr, this message translates to:
+  /// **'⏰ En uygun hatırlatıcı zamanı belirleniyor...'**
+  String get determiningBestReminder;
+
+  /// AI Analysis status
+  ///
+  /// In tr, this message translates to:
+  /// **'✨ Son ayarlamalar yapılıyor...'**
+  String get finalizingSettingsProgress;
+
+  /// AI Analysis secondary text
+  ///
+  /// In tr, this message translates to:
+  /// **'Sizin için en iyi ayarları belirliyoruz'**
+  String get determiningBestSettings;
 }
 
 class _AppLocalizationsDelegate

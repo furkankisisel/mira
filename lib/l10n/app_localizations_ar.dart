@@ -4469,4 +4469,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get wizardOptional => 'اختياري';
+
+  @override
+  String get analyzingHabit => '🔍 جاري تحليل عادتك...';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 جاري حساب إيقاع حياتك...';
+
+  @override
+  String get determiningBestReminder => '⏰ جاري تحديد أفضل وقت للتذكير...';
+
+  @override
+  String get finalizingSettingsProgress => '✨ جاري وضع اللمسات الأخيرة...';
+
+  @override
+  String get determiningBestSettings => 'نحدد لك أفضل الإعدادات';
 }

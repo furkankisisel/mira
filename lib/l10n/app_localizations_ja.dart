@@ -4395,4 +4395,19 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get wizardOptional => 'オプション';
+
+  @override
+  String get analyzingHabit => '🔍 習慣を分析しています...';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 生活リズムを計算しています...';
+
+  @override
+  String get determiningBestReminder => '⏰ 最適なリマインダー時間を決定しています...';
+
+  @override
+  String get finalizingSettingsProgress => '✨ 最終調整を行っています...';
+
+  @override
+  String get determiningBestSettings => 'あなたに最適な設定を決定しています';
 }

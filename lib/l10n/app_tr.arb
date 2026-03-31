@@ -5741,5 +5741,25 @@
   "socialRoomsTitle": "Sosyal Odalar",
   "@socialRoomsTitle": {
     "description": "Social rooms section title"
+  },
+  "analyzingHabit": "🔍 Alışkanlığınız analiz ediliyor...",
+  "@analyzingHabit": {
+    "description": "AI Analysis status"
+  },
+  "calculatingLifeRhythm": "🧠 Canlı Ritminiz hesaplanıyor...",
+  "@calculatingLifeRhythm": {
+    "description": "AI Analysis status"
+  },
+  "determiningBestReminder": "⏰ En uygun hatırlatıcı zamanı belirleniyor...",
+  "@determiningBestReminder": {
+    "description": "AI Analysis status"
+  },
+  "finalizingSettingsProgress": "✨ Son ayarlamalar yapılıyor...",
+  "@finalizingSettingsProgress": {
+    "description": "AI Analysis status"
+  },
+  "determiningBestSettings": "Sizin için en iyi ayarları belirliyoruz",
+  "@determiningBestSettings": {
+    "description": "AI Analysis secondary text"
   }
 }

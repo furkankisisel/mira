@@ -1369,31 +1369,41 @@ Future<DateTime?> showCustomMonthPicker({
                     }),
                   ),
                   const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(null),
-                        child: Text(AppLocalizations.of(context).cancel),
-                      ),
-                      Row(
-                        children: <Widget>[
-                          TextButton(
-                            onPressed:
-                                () => setState(() => year = DateTime.now().year),
-                            child: Text(AppLocalizations.of(context).select),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: OverflowBar(
+                      alignment: MainAxisAlignment.end,
+                      overflowAlignment: OverflowBarAlignment.end,
+                      spacing: 8,
+                      overflowSpacing: 8,
+                      children: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(null),
+                          child: Text(
+                            AppLocalizations.of(context).cancel,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(width: 8),
-                          FilledButton(
-                            onPressed:
-                                () => Navigator.of(
-                                  context,
-                                ).pop(DateTime.now()),
-                            child: Text(AppLocalizations.of(context).select),
+                        ),
+                        TextButton(
+                          onPressed: () =>
+                              setState(() => year = DateTime.now().year),
+                          child: Text(
+                            AppLocalizations.of(context).select,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ],
-                      ),
-                    ],
+                        ),
+                        FilledButton(
+                          onPressed: () => Navigator.of(context).pop(DateTime.now()),
+                          child: Text(
+                            AppLocalizations.of(context).select,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

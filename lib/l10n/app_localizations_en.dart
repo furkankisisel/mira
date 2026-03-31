@@ -4493,4 +4493,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wizardOptional => 'Optional';
+
+  @override
+  String get analyzingHabit => '🔍 Analyzing your habit...';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 Calculating your Life Rhythm...';
+
+  @override
+  String get determiningBestReminder => '⏰ Determining best reminder time...';
+
+  @override
+  String get finalizingSettingsProgress => '✨ Finalizing settings...';
+
+  @override
+  String get determiningBestSettings => 'Determining the best settings for you';
 }

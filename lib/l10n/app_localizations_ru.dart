@@ -4501,4 +4501,21 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get wizardOptional => 'Необязательно';
+
+  @override
+  String get analyzingHabit => '🔍 Анализ вашей привычки...';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 Расчет вашего жизненного ритма...';
+
+  @override
+  String get determiningBestReminder =>
+      '⏰ Определение лучшего времени для напоминания...';
+
+  @override
+  String get finalizingSettingsProgress => '✨ Выполнение последних настроек...';
+
+  @override
+  String get determiningBestSettings =>
+      'Мы определяем лучшие настройки для вас';
 }

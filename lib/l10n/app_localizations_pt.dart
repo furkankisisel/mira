@@ -4522,4 +4522,21 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get wizardOptional => 'Opcional';
+
+  @override
+  String get analyzingHabit => '🔍 Analisando seu hábito...';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 Calculando seu ritmo de vida...';
+
+  @override
+  String get determiningBestReminder =>
+      '⏰ Determinando o melhor horário para o lembrete...';
+
+  @override
+  String get finalizingSettingsProgress => '✨ Finalizando as configurações...';
+
+  @override
+  String get determiningBestSettings =>
+      'Estamos determinando as melhores configurações para você';
 }

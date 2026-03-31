@@ -5693,11 +5693,17 @@
   },
   "xpProgressSummary": "{current} / {total} XP • {toNext} XP bis zum nächsten Level",
   "@xpProgressSummary": {
-    "description": "Auto-generated metadata"
+    "placeholders": {
+      "current": {},
+      "total": {},
+      "toNext": {}
+    }
   },
   "xpToNextLevel": "{toNext} XP bis zum nächsten Level",
   "@xpToNextLevel": {
-    "description": "Auto-generated metadata"
+    "placeholders": {
+      "toNext": {}
+    }
   },
   "yearly": "Jährlich",
   "@yearly": {
@@ -5770,5 +5776,25 @@
   "socialRoomsTitle": "Soziale Räume",
   "@socialRoomsTitle": {
     "description": "Social rooms section title"
+  },
+  "analyzingHabit": "🔍 Deine Gewohnheit wird analysiert...",
+  "@analyzingHabit": {
+    "description": "AI Analysis status"
+  },
+  "calculatingLifeRhythm": "🧠 Dein Lebensrhythmus wird berechnet...",
+  "@calculatingLifeRhythm": {
+    "description": "AI Analysis status"
+  },
+  "determiningBestReminder": "⏰ Beste Erinnerungszeit wird ermittelt...",
+  "@determiningBestReminder": {
+    "description": "AI Analysis status"
+  },
+  "finalizingSettingsProgress": "✨ Letzte Anpassungen werden vorgenommen...",
+  "@finalizingSettingsProgress": {
+    "description": "AI Analysis status"
+  },
+  "determiningBestSettings": "Wir ermitteln die besten Einstellungen für dich",
+  "@determiningBestSettings": {
+    "description": "AI Analysis secondary text"
   }
 } 

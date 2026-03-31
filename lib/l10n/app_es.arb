@@ -5774,6 +5774,26 @@
   "socialRoomsTitle": "Salas Sociales",
   "@socialRoomsTitle": {
     "description": "Social rooms section title"
+  },
+  "analyzingHabit": "🔍 Analizando tu hábito...",
+  "@analyzingHabit": {
+    "description": "AI Analysis status"
+  },
+  "calculatingLifeRhythm": "🧠 Calculando tu ritmo de vida...",
+  "@calculatingLifeRhythm": {
+    "description": "AI Analysis status"
+  },
+  "determiningBestReminder": "⏰ Determinando el mejor momento para el recordatorio...",
+  "@determiningBestReminder": {
+    "description": "AI Analysis status"
+  },
+  "finalizingSettingsProgress": "✨ Realizando los últimos ajustes...",
+  "@finalizingSettingsProgress": {
+    "description": "AI Analysis status"
+  },
+  "determiningBestSettings": "Estamos determinando los mejores ajustes para ti",
+  "@determiningBestSettings": {
+    "description": "AI Analysis secondary text"
   }
 }
 
