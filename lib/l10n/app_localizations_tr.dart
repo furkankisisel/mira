@@ -92,6 +92,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get advancedAnalysisAndReports => 'İleri seviye analiz ve raporlar';
 
   @override
+  String get simpleHabit => 'Basit Alışkanlık';
+
+  @override
   String get advancedHabit => 'Gelişmiş Alışkanlık';
 
   @override
@@ -4511,7 +4514,4 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get wizardOptional => 'İsteğe bağlı';
-
-  @override
-  String get simpleHabit => 'Basit Alışkanlık';
 }

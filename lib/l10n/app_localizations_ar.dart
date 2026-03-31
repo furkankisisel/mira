@@ -92,6 +92,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get advancedAnalysisAndReports => 'تحليلات وتقارير متقدمة';
 
   @override
+  String get simpleHabit => 'عادة بسيطة';
+
+  @override
   String get advancedHabit => 'عادة متقدمة';
 
   @override
@@ -3470,7 +3473,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get socialFeedTitle => 'الخلاصة';
 
   @override
-  String get socialRoomsTitle => 'غرف اجتماعية';
+  String get socialRoomsTitle => 'الغرف الاجتماعية';
 
   @override
   String get softCloud => 'سحابة ناعمة';
@@ -4466,7 +4469,4 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get wizardOptional => 'اختياري';
-
-  @override
-  String get simpleHabit => 'عادة بسيطة';
 }

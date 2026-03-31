@@ -5770,6 +5770,10 @@
   "advancedHabit": "Geavanceerde gewoonte",
   "@advancedHabit": {
     "description": "Advanced habit label"
+  },
+  "socialRoomsTitle": "Sociale Ruimtes",
+  "@socialRoomsTitle": {
+    "description": "Social rooms section title"
   }
 }
 

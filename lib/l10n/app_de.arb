@@ -5766,5 +5766,9 @@
   "advancedHabit": "Fortschrittliche Gewohnheit",
   "@advancedHabit": {
     "description": "Advanced habit label"
+  },
+  "socialRoomsTitle": "Soziale Räume",
+  "@socialRoomsTitle": {
+    "description": "Social rooms section title"
   }
 } 

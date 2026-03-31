@@ -93,6 +93,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get advancedAnalysisAndReports => 'Advanced analysis and reports';
 
   @override
+  String get simpleHabit => 'Simple Habit';
+
+  @override
   String get advancedHabit => 'Advanced Habit';
 
   @override
@@ -4490,7 +4493,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wizardOptional => 'Optional';
-
-  @override
-  String get simpleHabit => 'Simple Habit';
 }

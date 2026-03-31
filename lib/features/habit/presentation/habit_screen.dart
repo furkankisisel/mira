@@ -2608,6 +2608,7 @@ class HabitScreenState extends State<HabitScreen>
   void _showHabitTypeDialog() {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     showDialog(
       context: context,
@@ -2622,7 +2623,7 @@ class HabitScreenState extends State<HabitScreen>
               // Simple habit option
               _buildDialogOption(
                 icon: Icons.check_circle_outline,
-                label: 'Temel Alışkanlık',
+                label: l10n.simpleHabit,
                 color: colorScheme.primary,
                 onTap: () {
                   Navigator.pop(ctx);
@@ -2633,7 +2634,7 @@ class HabitScreenState extends State<HabitScreen>
               // Advanced habit option
               _buildDialogOption(
                 icon: Icons.auto_graph,
-                label: 'Gelişmiş Alışkanlık',
+                label: l10n.advancedHabit,
                 color: colorScheme.secondary,
                 onTap: () {
                   Navigator.pop(ctx);
@@ -3854,6 +3855,7 @@ class HabitScreenState extends State<HabitScreen>
   Widget _buildRoomsSection() {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -3861,7 +3863,7 @@ class HabitScreenState extends State<HabitScreen>
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
           child: Text(
-            '👥 Odalarım',
+            l10n.socialRoomsTitle,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,
             ),
@@ -3908,9 +3910,13 @@ class HabitScreenState extends State<HabitScreen>
                               children: [
                                 Icon(Icons.add_circle_outline, size: 32, color: colorScheme.primary),
                                 const SizedBox(height: 8),
-                                Text(AppLocalizations.of(context).addRoomButton, style: theme.textTheme.labelMedium?.copyWith(
-                                  color: colorScheme.primary, fontWeight: FontWeight.w600,
-                                )),
+                                Text(AppLocalizations.of(context).addRoomButton,
+                                  textAlign: TextAlign.center,
+                                  style: theme.textTheme.labelMedium?.copyWith(
+                                    color: colorScheme.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ],
                             ),
                           ),

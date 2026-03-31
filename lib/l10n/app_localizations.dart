@@ -284,6 +284,12 @@ abstract class AppLocalizations {
   /// **'İleri seviye analiz ve raporlar'**
   String get advancedAnalysisAndReports;
 
+  /// Simple habit label
+  ///
+  /// In tr, this message translates to:
+  /// **'Basit Alışkanlık'**
+  String get simpleHabit;
+
   /// Advanced habit label
   ///
   /// In tr, this message translates to:
@@ -6608,7 +6614,7 @@ abstract class AppLocalizations {
   /// **'Akış'**
   String get socialFeedTitle;
 
-  /// Auto-generated metadata
+  /// Social rooms section title
   ///
   /// In tr, this message translates to:
   /// **'Sosyal Odalar'**
@@ -8509,12 +8515,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'İsteğe bağlı'**
   String get wizardOptional;
-
-  /// Simple habit label
-  ///
-  /// In tr, this message translates to:
-  /// **'Basit Alışkanlık'**
-  String get simpleHabit;
 }
 
 class _AppLocalizationsDelegate

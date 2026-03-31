@@ -92,6 +92,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get advancedAnalysisAndReports => '高级分析与报告';
 
   @override
+  String get simpleHabit => '简单习惯';
+
+  @override
   String get advancedHabit => '高级习惯';
 
   @override
@@ -4374,7 +4377,4 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get wizardOptional => '可选';
-
-  @override
-  String get simpleHabit => '简单习惯';
 }

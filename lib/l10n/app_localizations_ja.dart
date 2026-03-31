@@ -92,6 +92,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get advancedAnalysisAndReports => '高度な分析とレポート';
 
   @override
+  String get simpleHabit => 'シンプルな習慣';
+
+  @override
   String get advancedHabit => '高度な習慣';
 
   @override
@@ -4392,7 +4395,4 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get wizardOptional => 'オプション';
-
-  @override
-  String get simpleHabit => 'シンプルな習慣';
 }

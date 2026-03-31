@@ -93,6 +93,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get advancedAnalysisAndReports => 'Análisis e informes avanzados';
 
   @override
+  String get simpleHabit => 'Hábito simple';
+
+  @override
   String get advancedHabit => 'Hábito avanzado';
 
   @override
@@ -4537,7 +4540,4 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get wizardOptional => 'Opcional';
-
-  @override
-  String get simpleHabit => 'Hábito simple';
 }

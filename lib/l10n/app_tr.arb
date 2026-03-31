@@ -108,9 +108,13 @@
   "@advancedAnalysisAndReports": {
     "description": "Auto-generated metadata"
   },
+  "simpleHabit": "Basit Alışkanlık",
+  "@simpleHabit": {
+    "description": "Simple habit label"
+  },
   "advancedHabit": "Gelişmiş Alışkanlık",
   "@advancedHabit": {
-    "description": "Auto-generated metadata"
+    "description": "Advanced habit label"
   },
   "advancedHabitSubtitle": "Premium • Detaylı ayarlarla alışkanlık oluştur",
   "@advancedHabitSubtitle": {
@@ -5733,5 +5737,9 @@
   "advancedHabit": "Gelişmiş Alışkanlık",
   "@advancedHabit": {
     "description": "Advanced habit label"
+  },
+  "socialRoomsTitle": "Sosyal Odalar",
+  "@socialRoomsTitle": {
+    "description": "Social rooms section title"
   }
 }

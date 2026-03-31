@@ -93,6 +93,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get advancedAnalysisAndReports => 'Geavanceerde analyse en rapporten';
 
   @override
+  String get simpleHabit => 'Eenvoudige gewoonte';
+
+  @override
   String get advancedHabit => 'Geavanceerde gewoonte';
 
   @override
@@ -3508,7 +3511,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get socialFeedTitle => 'Feed';
 
   @override
-  String get socialRoomsTitle => 'Sociale Kamers';
+  String get socialRoomsTitle => 'Sociale Ruimtes';
 
   @override
   String get softCloud => 'Zachte Wolk';
@@ -4516,7 +4519,4 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get wizardOptional => 'Optioneel';
-
-  @override
-  String get simpleHabit => 'Eenvoudige gewoonte';
 }

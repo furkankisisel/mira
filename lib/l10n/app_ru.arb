@@ -5770,6 +5770,10 @@
   "advancedHabit": "Продвинутая привычка",
   "@advancedHabit": {
     "description": "Advanced habit label"
+  },
+  "socialRoomsTitle": "Социальные комнаты",
+  "@socialRoomsTitle": {
+    "description": "Social rooms section title"
   }
 }
 

@@ -5770,6 +5770,10 @@
   "advancedHabit": "高度な習慣",
   "@advancedHabit": {
     "description": "Advanced habit label"
-  }
+  },
+  "socialRoomsTitle": "ソーシャルルーム",
+  "@socialRoomsTitle": {
+    "description": "Social rooms section title"
+  }    
 }
 

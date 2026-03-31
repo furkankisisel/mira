@@ -108,9 +108,13 @@
   "@advancedAnalysisAndReports": {
     "description": "Auto-generated metadata"
   },
+  "simpleHabit": "عادة بسيطة",
+  "@simpleHabit": {
+    "description": "Simple habit label"
+  },
   "advancedHabit": "عادة متقدمة",
   "@advancedHabit": {
-    "description": "Auto-generated metadata"
+    "description": "Advanced habit label"
   },
   "advancedHabitSubtitle": "بريميوم • إنشاء عادة بإعدادات مفصلة",
   "@advancedHabitSubtitle": {
@@ -5770,6 +5774,10 @@
   "advancedHabit": "عادة متقدمة",
   "@advancedHabit": {
     "description": "Advanced habit label"
+  },
+  "socialRoomsTitle": "الغرف الاجتماعية",
+  "@socialRoomsTitle": {
+    "description": "Social rooms section title"
   }
 }
 

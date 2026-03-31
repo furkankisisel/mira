@@ -93,6 +93,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get advancedAnalysisAndReports => 'Расширенный анализ и отчеты';
 
   @override
+  String get simpleHabit => 'Простая привычка';
+
+  @override
   String get advancedHabit => 'Продвинутая привычка';
 
   @override
@@ -3501,7 +3504,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get socialFeedTitle => 'Лента';
 
   @override
-  String get socialRoomsTitle => 'Комнаты';
+  String get socialRoomsTitle => 'Социальные комнаты';
 
   @override
   String get softCloud => 'Нежное облако';
@@ -4498,7 +4501,4 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get wizardOptional => 'Необязательно';
-
-  @override
-  String get simpleHabit => 'Простая привычка';
 }

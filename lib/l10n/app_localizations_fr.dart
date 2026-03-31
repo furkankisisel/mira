@@ -93,6 +93,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get advancedAnalysisAndReports => 'Analyses et rapports avancés';
 
   @override
+  String get simpleHabit => 'Habitude simple';
+
+  @override
   String get advancedHabit => 'Habitude avancée';
 
   @override
@@ -3477,7 +3480,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get socialFeedTitle => 'Flux';
 
   @override
-  String get socialRoomsTitle => 'Salles Sociales';
+  String get socialRoomsTitle => 'Salons Sociaux';
 
   @override
   String get softCloud => 'Nuage Doux';
@@ -4464,7 +4467,4 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get wizardOptional => 'Facultatif';
-
-  @override
-  String get simpleHabit => 'Habitude simple';
 }

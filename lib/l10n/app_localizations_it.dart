@@ -93,6 +93,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get advancedAnalysisAndReports => 'Analisi e report avanzati';
 
   @override
+  String get simpleHabit => 'Hábito simples';
+
+  @override
   String get advancedHabit => 'Hábito avanzado';
 
   @override
@@ -3523,7 +3526,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get socialFeedTitle => 'Feed';
 
   @override
-  String get socialRoomsTitle => 'Stanze Sociali';
+  String get socialRoomsTitle => 'Salas Sociales';
 
   @override
   String get softCloud => 'Nuvola Soffice';
@@ -4531,7 +4534,4 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get wizardOptional => 'Facoltativo';
-
-  @override
-  String get simpleHabit => 'Hábito simples';
 }

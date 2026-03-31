@@ -92,6 +92,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get advancedAnalysisAndReports => '고급 분석 및 보고서';
 
   @override
+  String get simpleHabit => '간단한 습관';
+
+  @override
   String get advancedHabit => '고급 습관';
 
   @override
@@ -3407,7 +3410,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get socialFeedTitle => '피드';
 
   @override
-  String get socialRoomsTitle => '소셜 방';
+  String get socialRoomsTitle => '소셜룸';
 
   @override
   String get softCloud => '소프트 클라우드';
@@ -4394,7 +4397,4 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get wizardOptional => '선택 사항';
-
-  @override
-  String get simpleHabit => '간단한 습관';
 }

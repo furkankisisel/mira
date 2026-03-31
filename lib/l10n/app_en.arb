@@ -5762,13 +5762,8 @@
   "@wizardOptional": {
     "description": "Optional selection label"
   },
-  "simpleHabit": "Simple Habit",
-  "@simpleHabit": {
-    "description": "Simple habit label"
-  },
-  "advancedHabit": "Advanced Habit",
-  "@advancedHabit": {
-    "description": "Advanced habit label"
+  "socialRoomsTitle": "Social Rooms",
+  "@socialRoomsTitle": {
+    "description": "Social rooms section title"
   }
 }
-
