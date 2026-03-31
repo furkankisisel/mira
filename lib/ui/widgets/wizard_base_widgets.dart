@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../l10n/app_localizations.dart';
 import '../../design_system/components/primary_gradient_button.dart';
+
 
 /// Tüm wizard ekranları için ortak scaffold yapısı
 class WizardScaffold extends StatelessWidget {
@@ -244,7 +246,7 @@ class WizardPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        'İsteğe bağlı',
+                        AppLocalizations.of(context).wizardOptional,
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: colorScheme.onSecondaryContainer,
                         ),
@@ -335,7 +337,10 @@ class WizardNavigationButtons extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  nextLabel ?? (isLastStep ? 'Tamamla' : 'Devam'),
+                  nextLabel ??
+                      (isLastStep
+                          ? AppLocalizations.of(context).wizardFinish
+                          : AppLocalizations.of(context).wizardNext),
                 ),
                 if (!isLastStep) ...[
                   const SizedBox(width: 8),
@@ -355,7 +360,7 @@ class WizardNavigationButtons extends StatelessWidget {
               onSkip!();
             },
             child: Text(
-              skipLabel ?? 'Atla',
+              skipLabel ?? AppLocalizations.of(context).wizardSkip,
               style: TextStyle(color: colorScheme.onSurface.withOpacity(0.6)),
             ),
           ),

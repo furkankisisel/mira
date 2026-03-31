@@ -976,7 +976,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get deleteVisionMessage => 'Delete this vision?';
+  String get deleteVisionMessage => 'Bu vizyonu sil?';
 
   @override
   String get deleteVisionTitle => 'Delete vision';
@@ -1200,7 +1200,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get entrySaved => 'Entry saved successfully!';
 
   @override
-  String get errorPrefix => 'Error: ';
+  String get errorPrefix => 'Error:';
 
   @override
   String get eventDescription => 'Description';
@@ -2875,7 +2875,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get repeatEveryDay => 'Repeats every day';
 
   @override
-  String get repeatEveryNDays => 'Repeat Every N Days';
+  String repeatEveryNDays(Object days) {
+    return 'Repeat Every N Days';
+  }
 
   @override
   String get reportAlreadyExists => 'Report already exists for this week.';
@@ -3064,11 +3066,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rhythmQ3 => 'When do you tackle difficult tasks most comfortably?';
 
   @override
-  String get rhythmQ4 => 'When do you feel most clear-headed for learning?';
+  String get rhythmQ4 =>
+      'At what time of day do you feel your best (most energetic)?';
 
   @override
   String get rhythmQ5 =>
-      'During which part of the day do you feel more energetic?';
+      'Do you consider yourself a \"morning type\" or an \"evening type\"?';
 
   @override
   String get rhythmReflectionHint => 'Journal, reading, wind down';
@@ -4327,7 +4330,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get visionStartFailed => 'Could not start the vision.';
 
   @override
-  String get visionStartLabel => 'Vision start: ';
+  String get visionStartLabel => 'Vision start:  ';
 
   @override
   String visionStartedMessage(Object title) {
@@ -4475,4 +4478,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get yourMoodToday => 'Your Mood Today';
+
+  @override
+  String get wizardFinish => 'Finish';
+
+  @override
+  String get wizardNext => 'Next';
+
+  @override
+  String get wizardSkip => 'Skip';
+
+  @override
+  String get wizardOptional => 'Optional';
+
+  @override
+  String get simpleHabit => 'Simple Habit';
 }

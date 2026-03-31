@@ -1229,8 +1229,16 @@ class _PeriodPickerButton extends StatelessWidget {
           if (pickedYear != null) onChanged(DateTime(pickedYear, 1, 1));
         }
       },
-      icon: const Icon(Icons.calendar_month),
-      label: Text(label),
+      style: FilledButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      ),
+      icon: const Icon(Icons.calendar_month, size: 20),
+      label: Text(
+        label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        softWrap: false,
+      ),
     );
   }
 }
@@ -1261,117 +1269,137 @@ Future<DateTime?> showCustomMonthPicker({
   required BuildContext context,
   required DateTime initial,
 }) async {
-  int year = initial.year;
   return showDialog<DateTime>(
     context: context,
     builder: (ctx) {
-      return Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Row(
+      int year = initial.year;
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            insetPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  IconButton(
-                    icon: const Icon(Icons.chevron_left),
-                    onPressed: () => year = year - 1,
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          year.toString(),
-                          style: Theme.of(ctx).textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          AppLocalizations.of(ctx).select,
-                          style: Theme.of(ctx).textTheme.bodySmall,
-                        ),
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.chevron_right),
-                    onPressed: () => year = year + 1,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              GridView.count(
-                crossAxisCount: 3,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                childAspectRatio: 2.6,
-                children: List.generate(12, (i) {
-                  final m = i + 1;
-                  final label = DateFormat.MMM(
-                    Localizations.localeOf(ctx).toString(),
-                  ).format(DateTime(year, m, 1));
-                  final selected = (year == initial.year && m == initial.month);
-                  return GestureDetector(
-                    onTap: () => Navigator.of(ctx).pop(DateTime(year, m, 1)),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: selected
-                            ? Theme.of(ctx).colorScheme.primary
-                            : Theme.of(ctx).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: selected
-                              ? Theme.of(ctx).colorScheme.primary
-                              : Theme.of(ctx).dividerColor,
-                        ),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        label,
-                        style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
-                              color: selected
-                                  ? Theme.of(ctx).colorScheme.onPrimary
-                                  : null,
-                            ),
-                      ),
-                    ),
-                  );
-                }),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.of(ctx).pop(null),
-                    child: Text(AppLocalizations.of(ctx).cancel),
-                  ),
                   Row(
                     children: <Widget>[
-                      TextButton(
-                        onPressed: () => year = DateTime.now().year,
-                        child: Text(AppLocalizations.of(ctx).select),
+                      IconButton(
+                        icon: const Icon(Icons.chevron_left),
+                        onPressed: () => setState(() => year = year - 1),
                       ),
-                      const SizedBox(width: 8),
-                      FilledButton(
-                        onPressed: () => Navigator.of(ctx).pop(DateTime.now()),
-                        child: Text(AppLocalizations.of(ctx).select),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              year.toString(),
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              AppLocalizations.of(context).select,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.chevron_right),
+                        onPressed: () => setState(() => year = year + 1),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  GridView.count(
+                    crossAxisCount: 3,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    childAspectRatio: 2.6,
+                    children: List.generate(12, (i) {
+                      final m = i + 1;
+                      final label = DateFormat.MMM(
+                        Localizations.localeOf(context).toString(),
+                      ).format(DateTime(year, m, 1));
+                      final selected = (year == initial.year &&
+                          m == initial.month);
+                      return GestureDetector(
+                        onTap:
+                            () => Navigator.of(
+                              context,
+                            ).pop(DateTime(year, m, 1)),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: selected
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.surface,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: selected
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).dividerColor,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            label,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: selected
+                                      ? Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimary
+                                      : null,
+                                ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(null),
+                        child: Text(AppLocalizations.of(context).cancel),
+                      ),
+                      Row(
+                        children: <Widget>[
+                          TextButton(
+                            onPressed:
+                                () => setState(() => year = DateTime.now().year),
+                            child: Text(AppLocalizations.of(context).select),
+                          ),
+                          const SizedBox(width: 8),
+                          FilledButton(
+                            onPressed:
+                                () => Navigator.of(
+                                  context,
+                                ).pop(DateTime.now()),
+                            child: Text(AppLocalizations.of(context).select),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       );
     },
   );

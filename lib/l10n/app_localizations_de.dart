@@ -9,7 +9,7 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
-  String get about => 'About';
+  String get about => 'Über uns';
 
   @override
   String get account => 'Konto';
@@ -18,68 +18,68 @@ class AppLocalizationsDe extends AppLocalizations {
   String get achievements => 'Erfolge';
 
   @override
-  String get active => 'Active';
+  String get active => 'Aktiv';
 
   @override
   String get activeDays => 'Aktive Tage';
 
   @override
-  String get adFreeExperience => 'Ad-Free Experience';
+  String get adFreeExperience => 'Werbefreie Nutzung';
 
   @override
-  String get add => 'Add';
+  String get add => 'Hinzufügen';
 
   @override
-  String get addDate => 'Add Date';
+  String get addDate => 'Datum hinzufügen';
 
   @override
-  String get addEvent => 'Add Event';
+  String get addEvent => 'Ereignis hinzufügen';
 
   @override
   String get addFabTooltip => 'Hinzufügen';
 
   @override
-  String get addFirstTransaction => 'Add first transaction';
+  String get addFirstTransaction => 'Erste Transaktion hinzufügen';
 
   @override
-  String get addHabit => 'Add Habit';
+  String get addHabit => 'Gewohnheit hinzufügen';
 
   @override
   String get addHabitToRoomPrompt =>
       'Fügen Sie mit der +-Taste eine Gewohnheit zum Raum hinzu!';
 
   @override
-  String get addImage => 'Add image';
+  String get addImage => 'Bild hinzufügen';
 
   @override
-  String get addNew => 'Add New';
+  String get addNew => 'Neu hinzufügen';
 
   @override
-  String get addNewHabit => 'Add New Habit';
+  String get addNewHabit => 'Neue Gewohnheit hinzufügen';
 
   @override
-  String get addOptionHint => 'Add option...';
+  String get addOptionHint => 'Option hinzufügen...';
 
   @override
-  String get addOptionsToStart => 'Add options to start';
+  String get addOptionsToStart => 'Optionen zum Starten hinzufügen';
 
   @override
-  String get addRoomButton => 'Add Room';
+  String get addRoomButton => 'Raum hinzufügen';
 
   @override
-  String get addSpecialDays => 'Add special days';
+  String get addSpecialDays => 'Spezielle Tage hinzufügen';
 
   @override
-  String get addSubtask => 'Add Subtask';
+  String get addSubtask => 'Unteraufgabe hinzufügen';
 
   @override
-  String get addTask => 'Add Task';
+  String get addTask => 'Aufgabe hinzufügen';
 
   @override
-  String get addText => 'Add text';
+  String get addText => 'Text hinzufügen';
 
   @override
-  String get addToList => 'Add to list';
+  String get addToList => 'Zur Liste hinzufügen';
 
   @override
   String addedToRoomSnackbar(Object title) {
@@ -87,27 +87,27 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get advancedAnalysis => 'Advanced Analysis';
+  String get advancedAnalysis => 'Erweiterte Analyse';
 
   @override
-  String get advancedAnalysisAndReports => 'Advanced analysis and reports';
+  String get advancedAnalysisAndReports => 'Detaillierte Analysen und Berichte';
 
   @override
-  String get advancedHabit => 'Erweiterte Gewohnheit';
+  String get advancedHabit => 'Fortschrittliche Gewohnheit';
 
   @override
   String get advancedHabitSubtitle =>
       'Premium • Gewohnheit mit detaillierten Einstellungen erstellen';
 
   @override
-  String get advancedHabitTitle => 'Advanced Habit';
+  String get advancedHabitTitle => 'Erweiterte Gewohnheit';
 
   @override
   String get advancedHabitTypeDescription =>
-      'Numeric goals, timers, and detailed tracking.';
+      'Numerische Ziele, Timer und detaillierte Verfolgung.';
 
   @override
-  String get advancedTimer => 'Advanced Timer';
+  String get advancedTimer => 'Erweiterter Timer';
 
   @override
   String get aiAssistantOnline => 'Online';
@@ -117,19 +117,20 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String aiContextMessage(Object tip) {
-    return 'Hello! I noticed you are interested in this tip:\n\n\"$tip\"\n\nWould you like me to show you how to apply this in Mira?';
+    return 'Hallo! Mir ist aufgefallen, dass Sie sich für diesen Tipp interessieren:\n\n\"$tip\"\n\nMöchten Sie, dass ich Ihnen zeige, wie Sie dies in Mira umsetzen können?';
   }
 
   @override
   String aiHabitAddedMessage(int count) {
-    return '$count habits added via AI';
+    return '$count Gewohnheiten per KI hinzugefügt';
   }
 
   @override
-  String get aiInputHint => 'Describe the habit you want to build...';
+  String get aiInputHint =>
+      'Beschreiben Sie die Gewohnheit, die Sie aufbauen möchten...';
 
   @override
-  String get aiPoweredRecommendations => 'AI powered recommendations';
+  String get aiPoweredRecommendations => 'KI-gestützte Empfehlungen';
 
   @override
   String get aiPreviewTitle => 'KI-Vorschläge';
@@ -150,7 +151,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get aiQuickMotivation => 'Gib mir Motivation';
 
   @override
-  String get aiQuickProfile => 'Mein AI-Charakter';
+  String get aiQuickProfile => 'Mein KI-Charakter';
 
   @override
   String get aiQuickTimer => 'Wie benutze ich den Timer?';
@@ -166,10 +167,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get aiTip0 =>
-      'Did you know? You can create a Vision Board for your long-term goals.';
+      'Wussten Sie schon? Sie können ein Vision Board für Ihre langfristigen Ziele erstellen.';
 
   @override
-  String get aiTip1 => 'Tip: Use the Timer for focused work sessions.';
+  String get aiTip1 =>
+      'Tipp: Nutzen Sie den Timer für konzentrierte Arbeitssitzungen.';
 
   @override
   String get aiTip2 =>
@@ -177,7 +179,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get aiTip3 =>
-      'Habits stick better when you do them at the same time every day.';
+      'Gewohnheiten festigen sich besser, wenn man sie jeden Tag zur gleichen Zeit ausführt.';
 
   @override
   String get aiTip4 =>
@@ -192,14 +194,15 @@ class AppLocalizationsDe extends AppLocalizations {
       'Brauchst du Hilfe? Tippe hier, um den KI-Assistenten zu fragen!';
 
   @override
-  String get aiTip7 => 'Consistency is key! Don\'t break the chain';
+  String get aiTip7 =>
+      'Beständigkeit ist der Schlüssel! Unterbrechen Sie die Kette nicht.';
 
   @override
   String get aiWelcomeMessage =>
       'Hallo! Ich bin dein Mira-Assistent. Wie kann ich dir heute helfen? Du kannst mich zu Visionen, Gewohnheiten, Timern oder anderen Funktionen fragen.';
 
   @override
-  String get allDataDeleted => 'All data deleted';
+  String get allDataDeleted => 'Alle Daten gelöscht';
 
   @override
   String get allHabitsLabel => 'Alle Gewohnheiten';
@@ -208,7 +211,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get allLabel => 'Alle';
 
   @override
-  String get alsoDeleteLinkedHabits => 'Also delete linked habits';
+  String get alsoDeleteLinkedHabits => 'Auch verknüpfte Gewohnheiten löschen';
 
   @override
   String get amount => 'Menge';
@@ -220,10 +223,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get analysis => 'Analyse';
 
   @override
-  String get analysisTooltip => 'Analysis';
+  String get analysisTooltip => 'Analyse';
 
   @override
-  String get annualPlanDesc => 'Uninterrupted access for 12 months';
+  String get annualPlanDesc => 'Ununterbrochener Zugriff für 12 Monate';
 
   @override
   String get appTitle => 'Mira';
@@ -235,10 +238,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get apply => 'Anwenden';
 
   @override
-  String get applyCode => 'Apply Code';
+  String get applyCode => 'Code anwenden';
 
   @override
-  String get applying => 'Applying...';
+  String get applying => 'Wird angewendet...';
 
   @override
   String approxVisionDurationDays(Object days) {
@@ -253,7 +256,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get atLeast => 'Mindestens';
 
   @override
-  String get atMost => 'At Most';
+  String get atMost => 'Höchstens';
 
   @override
   String get autoBackupSubtitle =>
@@ -266,19 +269,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get averageMood => 'Durchschnittliche Stimmung';
 
   @override
-  String get back => 'Back';
+  String get back => 'Zurück';
 
   @override
   String get backgroundPlate => 'Hintergrundplatte';
 
   @override
-  String get backupError => 'Backup Error';
+  String get backupError => 'Fehler bei der Sicherung';
 
   @override
   String get backupFailed => 'Sicherung fehlgeschlagen';
 
   @override
-  String get backupNow => 'Backup Now';
+  String get backupNow => 'Jetzt sichern';
 
   @override
   String get backupRestore => 'Sichern & Wiederherstellen';
@@ -289,10 +292,10 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get backupTitle => 'Backup';
+  String get backupTitle => 'Sicherung';
 
   @override
-  String get backupToDrive => 'Backup to Drive';
+  String get backupToDrive => 'Auf Drive sichern';
 
   @override
   String get badgeActive100dDesc => 'Sei an 100 verschiedenen Tagen aktiv';
@@ -415,7 +418,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get badgeVision5Title => 'Visions-Meister';
 
   @override
-  String get badgeVisionHabits3Desc => 'Link 3 habits to a vision';
+  String get badgeVisionHabits3Desc =>
+      'Verknüpfen Sie 3 Gewohnheiten mit einer Vision';
 
   @override
   String get badgeVisionHabits3Title => 'Verbinder';
@@ -441,54 +445,54 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get becomePremium => 'Become Premium';
+  String get becomePremium => 'Premium werden';
 
   @override
-  String get becomePremiumShort => 'Get Premium';
+  String get becomePremiumShort => 'Premium holen';
 
   @override
   String get between1And360 => 'Zwischen 1 und 360';
 
   @override
-  String get billingHistory => 'Billing History';
+  String get billingHistory => 'Rechnungsverlauf';
 
   @override
   String get bio => 'Bio';
 
   @override
-  String get bioHint => 'A short biography about yourself';
+  String get bioHint => 'Eine kurze Biografie über dich selbst';
 
   @override
-  String get breakLabel => 'BREAK';
+  String get breakLabel => 'PAUSE';
 
   @override
   String get breakTime => 'Pause';
 
   @override
-  String get breakdownByCategory => 'Breakdown by category';
+  String get breakdownByCategory => 'Aufschlüsselung nach Kategorie';
 
   @override
   String get bringForward => 'Nach vorne bringen';
 
   @override
   String bugReportFailedError(Object error) {
-    return 'Failed to send bug report: $error';
+    return 'Fehlerbericht konnte nicht gesendet werden: $error';
   }
 
   @override
   String bugReportFailedStatus(Object statusCode) {
-    return 'Failed to send bug report: $statusCode';
+    return 'Fehlerbericht konnte nicht gesendet werden: $statusCode';
   }
 
   @override
   String get bugReportSentSuccess =>
-      'Your bug report has been sent successfully. Thank you!';
+      'Ihr Fehlerbericht wurde erfolgreich gesendet. Vielen Dank!';
 
   @override
-  String get buyPremium => 'Buy Premium';
+  String get buyPremium => 'Premium kaufen';
 
   @override
-  String get canIGetRefund => 'Can I get a refund?';
+  String get canIGetRefund => 'Kann ich eine Rückerstattung erhalten?';
 
   @override
   String get cancel => 'Abbrechen';
@@ -498,14 +502,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get cancelEffect =>
-      'You continue to enjoy premium features until your subscription ends.';
+      'Sie können die Premium-Funktionen weiterhin nutzen, bis Ihr Abonnement endet.';
 
   @override
   String get cancelInstructions =>
-      'Google Play Store → Subscriptions → Mira Plus → Cancel';
+      'Google Play Store → Abonnements → Mira Plus → Kündigen';
 
   @override
-  String get cannotOpenPlayStore => 'Cannot open Play Store';
+  String get cannotOpenPlayStore => 'Play Store kann nicht geöffnet werden';
 
   @override
   String get category => 'Kategorie';
@@ -515,43 +519,44 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get characterDescBalancedMindful =>
-      'You\'re calm, stable, and value inner peace. You excel at maintaining balance and approaching life with mindfulness and composure.';
+      'Du bist ruhig, stabil und schätzt den inneren Frieden. Du zeichnest dich dadurch aus, das Gleichgewicht zu bewahren und dem Leben mit Achtsamkeit und Gelassenheit zu begegnen.';
 
   @override
   String get characterDescExplorer =>
-      'You\'re curious, creative, and love variety. You thrive on learning new things and trying different approaches to life\'s challenges.';
+      'Du bist neugierig, kreativ und liebst die Abwechslung. Du blühst auf, wenn du neue Dinge lernst und verschiedene Ansätze für die Herausforderungen des Lebens ausprobierst.';
 
   @override
   String get characterDescPlanner =>
-      'You\'re organized, goal-oriented, and thrive on structure. You excel at turning dreams into actionable plans and following through with discipline.';
+      'Du bist organisiert, zielorientiert und liebst Struktur. Du verstehst es hervorragend, Träume in umsetzbare Pläne zu verwandeln und diese mit Disziplin zu verfolgen.';
 
   @override
   String get characterDescSocialConnector =>
-      'You\'re warm, empathetic, and energized by relationships. You find meaning in connecting with others and building strong communities.';
+      'Du bist herzlich, empathisch und ziehst Energie aus Beziehungen. Du findest Erfüllung darin, dich mit anderen zu verbinden und starke Gemeinschaften aufzubauen.';
 
   @override
-  String get characterTypeBalancedMindful => 'The Balanced Mindful';
+  String get characterTypeBalancedMindful => 'Der achtsame Ausgeglichene';
 
   @override
-  String get characterTypeExplorer => 'The Explorer';
+  String get characterTypeExplorer => 'Der Entdecker';
 
   @override
-  String get characterTypePlanner => 'The Planner';
+  String get characterTypePlanner => 'Der Planer';
 
   @override
-  String get characterTypeSocialConnector => 'The Social Connector';
+  String get characterTypeSocialConnector => 'Der soziale Verbinder';
 
   @override
-  String get checkboxType => 'Checkbox';
+  String get checkboxType => 'Kontrollkästchen';
 
   @override
-  String get checkboxTypeDesc => 'Simple check';
+  String get checkboxTypeDesc => 'Einfaches Häkchen';
 
   @override
-  String get checkingPurchases => 'Checking purchases...';
+  String get checkingPurchases => 'Käufe werden überprüft...';
 
   @override
-  String get chooseBestCategory => 'Choose the best category for your habit';
+  String get chooseBestCategory =>
+      'Wählen Sie die beste Kategorie für Ihre Gewohnheit';
 
   @override
   String get chooseColor => 'Farbe wählen:';
@@ -569,13 +574,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get choosePhotoSubtitle => 'Wählen Sie ein Foto, das Sie motiviert';
 
   @override
-  String get clear => 'Clear';
+  String get clear => 'Löschen';
 
   @override
-  String get clearFilters => 'Clear Filters';
+  String get clearFilters => 'Filter löschen';
 
   @override
-  String get clearHistory => 'Clear History';
+  String get clearHistory => 'Verlauf löschen';
 
   @override
   String get close => 'Schließen';
@@ -584,16 +589,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get closeButton => 'Schließen';
 
   @override
-  String get cloudBackup => 'Cloud Backup';
+  String get cloudBackup => 'Cloud-Sicherung';
 
   @override
   String get coinFlipDescription => 'Entscheide zwischen zwei Optionen';
 
   @override
-  String get coinFlipInstruction => 'Enter two options and flip the coin!';
+  String get coinFlipInstruction =>
+      'Geben Sie zwei Optionen ein und werfen Sie die Münze!';
 
   @override
-  String get coinFlipTitle => 'Coin Flip';
+  String get coinFlipTitle => 'Münzwurf';
 
   @override
   String get colorLabel => 'Farbe';
@@ -602,7 +608,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get colorTheme => 'Farbdesign';
 
   @override
-  String get completeAllSubtasksToFinish => 'complete all to finish habit';
+  String get completeAllSubtasksToFinish =>
+      'Alles abschließen, um Gewohnheit zu beenden';
 
   @override
   String get completedSelectedDay => 'Abgeschlossen (ausgewählter Tag)';
@@ -615,20 +622,20 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String completionsCount(Object count) {
-    return '$count completions';
+    return '$count Abschlüsse';
   }
 
   @override
-  String get confirmDeleteAccount => 'Confirm Account Deletion';
+  String get confirmDeleteAccount => 'Kontolöschung bestätigen';
 
   @override
   String get confirmHabits => 'Gewohnheiten bestätigen';
 
   @override
-  String get continueAsGuest => 'Continue as Guest';
+  String get continueAsGuest => 'Als Gast fortfahren';
 
   @override
-  String get continueButton => 'Continue';
+  String get continueButton => 'Fortfahren';
 
   @override
   String get continueText => 'Fortfahren';
@@ -660,13 +667,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get cozyJournal => 'Cozy Journal';
 
   @override
-  String get cozyJournalDesc => 'Brown tones & timeline';
+  String get cozyJournalDesc => 'Brauntöne & Zeitachse';
 
   @override
-  String get crashReports => 'Crash reports';
+  String get crashReports => 'Absturzberichte';
 
   @override
-  String get crashReportsSubtitle => 'Send anonymous reports on app crashes';
+  String get crashReportsSubtitle =>
+      'Anonyme Berichte bei App-Abstürzen senden';
 
   @override
   String get create => 'Erstellen';
@@ -691,10 +699,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get createFirstVision => 'Erstelle deine erste Vision';
 
   @override
-  String get createHabit => 'Create Habit';
+  String get createHabit => 'Gewohnheit erstellen';
 
   @override
-  String get createHabitAction => 'Create Habit';
+  String get createHabitAction => 'Gewohnheit erstellen';
 
   @override
   String get createHabitTemplateTitle => 'Gewohnheitsvorlage erstellen';
@@ -737,7 +745,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get createWithAi => 'Mit KI erstellen';
 
   @override
-  String get creatingBackup => 'Creating Backup';
+  String get creatingBackup => 'Sicherung wird erstellt...';
 
   @override
   String get currentStreak => 'Aktuelle Serie';
@@ -749,7 +757,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get customCategories => 'Benutzerdefinierte Kategorien';
 
   @override
-  String get customEmoji => 'Custom Emoji';
+  String get customEmoji => 'Benutzerdefiniertes Emoji';
 
   @override
   String get customEmojiHint => 'Bsp.: ✨';
@@ -764,7 +772,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get customFrequency => 'Benutzerdefiniert';
 
   @override
-  String get customUnit => 'Custom Unit';
+  String get customUnit => 'Eigene Einheit';
 
   @override
   String get customUnitHint => 'Bsp: Portion, Satz, km...';
@@ -773,7 +781,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get daily => 'Täglich';
 
   @override
-  String get dailyCheck => 'Daily check';
+  String get dailyCheck => 'Täglicher Check';
 
   @override
   String get dailyDesc => 'Jeden Tag';
@@ -812,7 +820,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get date => 'Datum';
 
   @override
-  String get dateRangeLabel => 'Date Range';
+  String get dateRangeLabel => 'Zeitraum';
 
   @override
   String get dayFriShort => 'Fr';
@@ -850,7 +858,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String daysAgo(Object days) {
-    return '$days days ago';
+    return 'vor $days Tagen';
   }
 
   @override
@@ -864,21 +872,21 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get daysInterval => 'days';
+  String get daysInterval => 'Tage';
 
   @override
-  String get daysIntervalLabel => 'days';
+  String get daysIntervalLabel => 'Tage';
 
   @override
   String daysLater(Object days) {
-    return '$days days later';
+    return 'in $days Tagen';
   }
 
   @override
-  String get daysLeft => 'days left';
+  String get daysLeft => 'Tage verbleibend';
 
   @override
-  String get daysRemaining => 'Days Remaining';
+  String get daysRemaining => 'Verbleibende Tage';
 
   @override
   String get daysSuffixShort => 'T';
@@ -893,70 +901,72 @@ class AppLocalizationsDe extends AppLocalizations {
   String get defaultUnit => 'Stück';
 
   @override
-  String get delete => 'Delete';
+  String get delete => 'Löschen';
 
   @override
-  String get deleteAccountFailed => 'Account deletion failed';
+  String get deleteAccountFailed => 'Kontolöschung fehlgeschlagen';
 
   @override
   String get deleteAccountRequestSuccess =>
-      'Your account deletion request has been successfully received';
+      'Ihre Anfrage zur Kontolöschung wurde erfolgreich entgegengenommen';
 
   @override
   String get deleteAccountSubtitle =>
-      'Request deletion of your account and data';
+      'Löschung Ihres Kontos und Ihrer Daten beantragen';
 
   @override
   String get deleteAccountWarning =>
-      'This action cannot be undone. Please confirm the email associated with your account.';
+      'Dieser Vorgang kann nicht rückgängig gemacht werden. Bitte bestätigen Sie die mit Ihrem Konto verknüpfte E-Mail-Adresse.';
 
   @override
-  String get deleteAction => 'Delete';
+  String get deleteAction => 'Löschen';
 
   @override
-  String get deleteAllData => 'Delete all data';
+  String get deleteAllData => 'Alle Daten löschen';
 
   @override
   String get deleteAllDataConfirmContent =>
-      'Are you sure you want to delete all your app data? This action cannot be undone.';
+      'Sind Sie sicher, dass Sie alle Ihre App-Daten löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden.';
 
   @override
-  String get deleteButton => 'Delete';
+  String get deleteButton => 'Löschen';
 
   @override
   String deleteCategoryConfirmNamed(Object name) {
-    return 'Delete the category \"$name\"?';
+    return 'Kategorie \"$name\" löschen?';
   }
 
   @override
-  String get deleteCategoryTitle => 'Delete category';
+  String get deleteCategoryTitle => 'Kategorie löschen';
 
   @override
-  String get deleteCustomCategoryConfirm => 'Delete this custom category?';
+  String get deleteCustomCategoryConfirm =>
+      'Diese benutzerdefinierte Kategorie löschen?';
 
   @override
   String get deleteEntryConfirm =>
-      'Are you sure you want to delete this entry?';
+      'Sind Sie sicher, dass Sie diesen Eintrag löschen möchten?';
 
   @override
-  String get deleteEvent => 'Delete Event';
+  String get deleteEvent => 'Ereignis löschen';
 
   @override
   String deleteHabitConfirm(Object title) {
-    return 'Delete \'$title\' from room?';
+    return 'Soll \'$title\' aus dem Raum gelöscht werden?';
   }
 
   @override
-  String get deleteHabitTitle => 'Delete Habit';
+  String get deleteHabitTitle => 'Gewohnheit löschen';
 
   @override
-  String get deleteListMessage => 'Are you sure you want to delete this list?';
+  String get deleteListMessage =>
+      'Sind Sie sicher, dass Sie diese Liste löschen möchten?';
 
   @override
-  String get deleteListTitle => 'Delete List';
+  String get deleteListTitle => 'Liste löschen';
 
   @override
-  String get deleteMyAccount => 'Delete My Account';
+  String get deleteMyAccount => 'Mein Konto löschen';
 
   @override
   String get deleteRoomTitle => 'Raum löschen';
@@ -966,49 +976,50 @@ class AppLocalizationsDe extends AppLocalizations {
       'Dieser Raum und sein gesamter Inhalt werden dauerhaft gelöscht. Möchten Sie fortfahren?';
 
   @override
-  String get deleteTaskConfirm => 'Are you sure you want to delete this task?';
+  String get deleteTaskConfirm =>
+      'Sind Sie sicher, dass Sie diese Aufgabe löschen möchten?';
 
   @override
   String get deleteTaskConfirmMessage =>
-      'Are you sure you want to delete this task?';
+      'Sind Sie sicher, dass Sie diese Aufgabe löschen möchten?';
 
   @override
-  String get deleteTaskConfirmTitle => 'Delete Task';
+  String get deleteTaskConfirmTitle => 'Aufgabe löschen';
 
   @override
   String deleteTransactionConfirm(Object title) {
-    return 'Delete the record \"$title\"?';
+    return 'Datensatz \"$title\" löschen?';
   }
 
   @override
-  String get deleteVisionMessage => 'Delete this vision?';
+  String get deleteVisionMessage => 'Diese Vision löschen?';
 
   @override
-  String get deleteVisionTitle => 'Delete vision';
+  String get deleteVisionTitle => 'Vision löschen';
 
   @override
   String get descHint => 'Details zu deiner Gewohnheit (optional)';
 
   @override
-  String get descriptionHintOptional => 'Add description (optional)';
+  String get descriptionHintOptional => 'Beschreibung hinzufügen (optional)';
 
   @override
-  String get descriptionLabel => 'Description';
+  String get descriptionLabel => 'Beschreibung';
 
   @override
-  String get detailedCharts => 'Detailed charts and statistics';
+  String get detailedCharts => 'Detaillierte Diagramme und Statistiken';
 
   @override
-  String get diagnosticsData => 'Diagnostics data';
+  String get diagnosticsData => 'Diagnosedaten';
 
   @override
-  String get diagnosticsDataSubtitle => 'Share anonymous usage statistics';
+  String get diagnosticsDataSubtitle => 'Anonyme Nutzungsstatistiken teilen';
 
   @override
   String get difficulty => 'Schwierigkeitsgrad';
 
   @override
-  String get drinkWater => 'Drink Water';
+  String get drinkWater => 'Wasser trinken';
 
   @override
   String get duration => 'Dauer';
@@ -1017,11 +1028,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get durationAutoLabel => 'Dauer (automatisch)';
 
   @override
-  String get durationIndefinite => 'Indefinite';
+  String get durationIndefinite => 'Unbefristet';
 
   @override
   String durationMonths(Object count) {
-    return '$count months';
+    return '$count Monate';
   }
 
   @override
@@ -1049,7 +1060,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get editCategory => 'Kategorie bearbeiten';
 
   @override
-  String get editDeleteTooltip => 'Edit / Delete';
+  String get editDeleteTooltip => 'Bearbeiten / Löschen';
 
   @override
   String get editEvent => 'Ereignis bearbeiten';
@@ -1062,7 +1073,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get editOnlyPersonalHabits =>
-      'You can only edit habits that are added to your personal list.';
+      'Sie können nur Gewohnheiten bearbeiten, die Ihrer persönlichen Liste hinzugefügt wurden.';
 
   @override
   String get education => 'Bildung';
@@ -1077,28 +1088,28 @@ class AppLocalizationsDe extends AppLocalizations {
   String get emojiAndColor => 'Emoji & Farbe';
 
   @override
-  String get emojiCategoryAnimals => 'Animals';
+  String get emojiCategoryAnimals => 'Tiere';
 
   @override
-  String get emojiCategoryCare => 'Care';
+  String get emojiCategoryCare => 'Pflege';
 
   @override
-  String get emojiCategoryFood => 'Food';
+  String get emojiCategoryFood => 'Essen';
 
   @override
-  String get emojiCategoryHealth => 'Health';
+  String get emojiCategoryHealth => 'Gesundheit';
 
   @override
-  String get emojiCategoryLife => 'Life';
+  String get emojiCategoryLife => 'Leben';
 
   @override
-  String get emojiCategoryNature => 'Nature';
+  String get emojiCategoryNature => 'Natur';
 
   @override
-  String get emojiCategoryPopular => 'Popular';
+  String get emojiCategoryPopular => 'Beliebt';
 
   @override
-  String get emojiCategoryProductivity => 'Productivity';
+  String get emojiCategoryProductivity => 'Produktivität';
 
   @override
   String get emojiCategorySport => 'Sport';
@@ -1140,7 +1151,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get emotionNumb => 'Taub';
 
   @override
-  String get emotionOverwhelmed => 'Overwhelmed';
+  String get emotionOverwhelmed => 'Überwältigt';
 
   @override
   String get emotionProud => 'Stolz';
@@ -1168,7 +1179,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get endDate => 'Enddatum';
 
   @override
-  String get endDateLabel => 'End';
+  String get endDateLabel => 'Ende';
 
   @override
   String get endDayOptionalLabel => 'Endtag (optional)';
@@ -1177,7 +1188,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get endTime => 'Endzeit';
 
   @override
-  String get enterBothOptions => 'Please enter both options';
+  String get enterBothOptions => 'Bitte geben Sie beide Optionen ein';
 
   @override
   String get enterMonthlyPlanToComputeDailyLimit =>
@@ -1188,7 +1199,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Gib den Namen und die Beschreibung deiner Gewohnheit ein';
 
   @override
-  String get enterPromoCode => 'Please enter a promo code';
+  String get enterPromoCode => 'Bitte geben Sie einen Aktionscode ein';
 
   @override
   String get enterValueTitle => 'Wert eingeben';
@@ -1203,10 +1214,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get entryCountLabel => 'Anzahl der Einträge';
 
   @override
-  String get entrySaved => 'Entry saved successfully!';
+  String get entrySaved => 'Eintrag erfolgreich gespeichert!';
 
   @override
-  String get errorPrefix => 'Error: ';
+  String get errorPrefix => 'Fehler: ';
 
   @override
   String get eventDescription => 'Beschreibung';
@@ -1218,13 +1229,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get eventTitle => 'Ereignistitel';
 
   @override
-  String get every => 'Every';
+  String get every => 'Alle';
 
   @override
-  String get everyDay => 'Every day';
+  String get everyDay => 'Jeden Tag';
 
   @override
-  String get everyLabel => 'Every';
+  String get everyLabel => 'Alle';
 
   @override
   String everyNDays(Object days) {
@@ -1241,7 +1252,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String everyXDays(Object periodicDays) {
-    return 'Every $periodicDays days';
+    return 'Alle $periodicDays Tage';
   }
 
   @override
@@ -1279,37 +1290,37 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get featureAdvancedFinance => 'Advanced Finance Features';
+  String get featureAdvancedFinance => 'Erweiterte Finanzfunktionen';
 
   @override
-  String get featureAdvancedHabits => 'Advanced Habit Creation';
+  String get featureAdvancedHabits => 'Detaillierte Gewohnheitserstellung';
 
   @override
-  String get featureAiBioClock => 'AI Powered Biological Clock';
+  String get featureAiBioClock => 'KI-gestützte biologische Uhr';
 
   @override
   String get featureAiBioClockDesc =>
       'Optimales Timing basierend auf Ihrem biologischen Rhythmus';
 
   @override
-  String get featureAiWeeklyReport => 'AI Powered Weekly Report';
+  String get featureAiWeeklyReport => 'KI-gestützter Wochenbericht';
 
   @override
   String get featureAiWeeklyReportDesc =>
       'Detaillierte KI-Analyse Ihres Fortschritts';
 
   @override
-  String get featureBackup => 'Backup Feature';
+  String get featureBackup => 'Sicherungsfunktion';
 
   @override
   String get featurePremiumThemes => 'Premium-Themes';
 
   @override
-  String get featureVisionCreation => 'Vision Creation';
+  String get featureVisionCreation => 'Visionserstellung';
 
   @override
   String get feelingMoreSpecific =>
-      'Let\'s describe this feeling more specifically';
+      'Lassen Sie uns dieses Gefühl genauer beschreiben';
 
   @override
   String get filterTitle => 'Filter';
@@ -1325,10 +1336,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get financeAddAiStatementSubtitle =>
-      'Fugt Eintrage automatisch aus Bild oder PDF hinzu';
+      'Fügt Einträge automatisch aus Bild oder PDF hinzu';
 
   @override
-  String get financeAddManualOption => 'Manuell hinzufugen';
+  String get financeAddManualOption => 'Manuell hinzufügen';
 
   @override
   String financeAnalysisTitle(Object month) {
@@ -1351,19 +1362,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get fixedDuration => 'Fest';
 
   @override
-  String get flexiblePlan => 'Flexible plan, cancel anytime';
+  String get flexiblePlan => 'Flexibler Plan, jederzeit kündbar';
 
   @override
-  String get flipCoin => 'Flip Coin';
+  String get flipCoin => 'Münze werfen';
 
   @override
-  String get focusLabel => 'FOCUS';
+  String get focusLabel => 'FOKUS';
 
   @override
-  String get focusedZen => 'Focused Zen';
+  String get focusedZen => 'Fokussiertes Zen';
 
   @override
-  String get focusedZenDesc => 'Minimalist, single focus point';
+  String get focusedZenDesc => 'Minimalistisch, ein einzelner Fokuspunkt';
 
   @override
   String get font => 'Schriftart';
@@ -1372,21 +1383,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get forestTheme => 'Wald';
 
   @override
-  String get forestThemeDesc => 'Natural green theme';
+  String get forestThemeDesc => 'Natürliches grünes Design';
 
   @override
-  String get forever => 'Forever';
+  String get forever => 'Ewig';
 
   @override
   String get fortuneDisclaimer => 'Wahrsagerei dient nur der Unterhaltung';
 
   @override
   String fortuneEggSemantic(int index) {
-    return 'Egg $index';
+    return 'Ei $index';
   }
 
   @override
-  String get fortuneEggsSubtitle => 'Pick one egg below';
+  String get fortuneEggsSubtitle => 'Wählen Sie unten ein Ei aus';
 
   @override
   String get fortuneNoQuestion => 'Sie haben noch keine Frage gestellt';
@@ -1395,32 +1406,33 @@ class AppLocalizationsDe extends AppLocalizations {
   String get fortunePlay => 'Spielen';
 
   @override
-  String get fortuneProceedToEggs => 'Proceed to Eggs';
+  String get fortuneProceedToEggs => 'Weiter zu den Eiern';
 
   @override
-  String get fortuneQuestionHint => 'Ex: Should I try something new this week?';
+  String get fortuneQuestionHint =>
+      'Bsp: Sollte ich diese Woche etwas Neues ausprobieren?';
 
   @override
   String get fortuneQuestionPrompt => 'Stellen Sie Ihre Frage';
 
   @override
-  String get fortuneResultTitle => 'Your answer';
+  String get fortuneResultTitle => 'Deine Antwort';
 
   @override
   String get fortuneSwipeInstruction =>
-      'Swipe left/right to change the egg, tap to reveal the answer';
+      'Nach links/rechts wischen zum Wechseln, tippen zum Enthüllen';
 
   @override
-  String get fortuneTitle => 'Fortune Eggs';
+  String get fortuneTitle => 'Glückseier';
 
   @override
-  String get freeTrial14Days => '14-day free trial';
+  String get freeTrial14Days => '14-tägige kostenlose Testversion';
 
   @override
   String get frequency => 'Häufigkeit';
 
   @override
-  String get frequencyLabel => 'Frequency';
+  String get frequencyLabel => 'Häufigkeit';
 
   @override
   String get fridayShort => 'Fr';
@@ -1436,7 +1448,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get gamesDescription =>
-      'Having trouble deciding? Let fun games help you decide!';
+      'Schwierigkeiten bei der Entscheidung? Lassen Sie sich von lustigen Spielen helfen!';
 
   @override
   String get gamesTitle => 'Spiele';
@@ -1465,7 +1477,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get glasses => 'Gläser';
 
   @override
-  String get goToPlayStore => 'Go to Play Store';
+  String get goToPlayStore => 'Zum Play Store';
 
   @override
   String get goldenTheme => 'Golden';
@@ -1474,7 +1486,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get goldenThemeDesc => 'Warmes goldenes Design';
 
   @override
-  String get goodMorning => 'Good morning! ☀️';
+  String get goodMorning => 'Guten Morgen! ☀️';
 
   @override
   String get googleDrive => 'Google Drive';
@@ -1483,7 +1495,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get granted => 'Gewährt';
 
   @override
-  String get greatDayAhead => 'Today is a great day, you got this!';
+  String get greatDayAhead => 'Heute ist ein großartiger Tag, du schaffst das!';
 
   @override
   String get greetingAfternoon => 'Guten Tag';
@@ -1501,14 +1513,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get guidedJourney => 'Geführte Reise';
 
   @override
-  String get guidedJourneyDesc => 'Step-by-step guided flow';
+  String get guidedJourneyDesc => 'Geführter Ablauf Schritt für Schritt';
 
   @override
   String get habit => 'Gewohnheit';
 
   @override
   String habitAddError(Object error) {
-    return 'Error adding habits: $error';
+    return 'Fehler beim Hinzufügen von Gewohnheiten: $error';
   }
 
   @override
@@ -1516,9 +1528,9 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count habits added',
-      one: '1 habit added',
-      zero: 'No habits added',
+      other: '$count Gewohnheiten hinzugefügt',
+      one: '1 Gewohnheit hinzugefügt',
+      zero: 'Keine Gewohnheiten hinzugefügt',
     );
     return '$_temp0';
   }
@@ -1533,93 +1545,93 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String habitDeletedMessage(Object title) {
-    return 'Habit deleted';
+    return 'Gewohnheit gelöscht';
   }
 
   @override
   String get habitDescription => 'Beschreibung';
 
   @override
-  String get habitDescriptionHint => 'Add a short description...';
+  String get habitDescriptionHint => 'Kurze Beschreibung hinzufügen...';
 
   @override
   String get habitDetails => 'Gewohnheitsdetails';
 
   @override
-  String get habitExplorerCreativeProject => 'Creative Project Time';
+  String get habitExplorerCreativeProject => 'Zeit für kreative Projekte';
 
   @override
   String get habitExplorerCreativeProjectDesc =>
-      'Work on a creative project that sparks your imagination.';
+      'Arbeite an einem kreativen Projekt, das deine Fantasie anregt.';
 
   @override
-  String get habitExplorerExplorePlace => 'Explore a New Place';
+  String get habitExplorerExplorePlace => 'Einen neuen Ort erkunden';
 
   @override
   String get habitExplorerExplorePlaceDesc =>
-      'Visit a new neighborhood, park, or location in your area.';
+      'Besuche ein neues Viertel, einen Park oder einen Ort in deiner Nähe.';
 
   @override
-  String get habitExplorerLearnNewSkill => 'Learn Something New';
+  String get habitExplorerLearnNewSkill => 'Etwas Neues lernen';
 
   @override
   String get habitExplorerLearnNewSkillDesc =>
-      'Dedicate time each week to learning a new skill or subject.';
+      'Widme jede Woche Zeit dem Erlernen einer neuen Fähigkeit oder eines neuen Themas.';
 
   @override
-  String get habitExplorerReadDiverse => 'Read Diverse Content';
+  String get habitExplorerReadDiverse => 'Vielfältige Inhalte lesen';
 
   @override
   String get habitExplorerReadDiverseDesc =>
-      'Read books, articles, or content from different genres and perspectives.';
+      'Lies Bücher, Artikel oder Inhalte aus verschiedenen Genres und Perspektiven.';
 
   @override
-  String get habitExplorerTryNewActivity => 'Try a New Activity';
+  String get habitExplorerTryNewActivity => 'Eine neue Aktivität ausprobieren';
 
   @override
   String get habitExplorerTryNewActivityDesc =>
-      'Step out of your comfort zone and experience something different.';
+      'Verlasse deine Komfortzone und mache eine neue Erfahrung.';
 
   @override
-  String get habitMindfulBreathing => 'Deep Breathing Exercise';
+  String get habitMindfulBreathing => 'Tiefenatmungsübung';
 
   @override
   String get habitMindfulBreathingDesc =>
-      'Practice deep breathing techniques to center yourself.';
+      'Praktiziere Techniken zur tiefen Atmung, um dich zu zentrieren.';
 
   @override
-  String get habitMindfulGratitude => 'Gratitude Practice';
+  String get habitMindfulGratitude => 'Dankbarkeitspraxis';
 
   @override
   String get habitMindfulGratitudeDesc =>
-      'Write down three things you\'re grateful for today.';
+      'Schreibe drei Dinge auf, für die du heute dankbar bist.';
 
   @override
-  String get habitMindfulJournaling => 'Reflective Journaling';
+  String get habitMindfulJournaling => 'Reflektierendes Tagebuchschreiben';
 
   @override
   String get habitMindfulJournalingDesc =>
-      'Journal your thoughts and reflections for self-awareness.';
+      'Halte deine Gedanken und Reflexionen zur Selbstwahrnehmung fest.';
 
   @override
   String get habitMindfulMeditation => 'Meditation';
 
   @override
   String get habitMindfulMeditationDesc =>
-      'Practice mindfulness meditation for 10-15 minutes.';
+      'Praktiziere Achtsamkeitsmeditation für 10-15 Minuten.';
 
   @override
-  String get habitMindfulNatureWalk => 'Nature Walk';
+  String get habitMindfulNatureWalk => 'Naturspaziergang';
 
   @override
   String get habitMindfulNatureWalkDesc =>
-      'Take a mindful walk in nature, paying attention to your surroundings.';
+      'Mache einen achtsamen Spaziergang in der Natur und achte auf deine Umgebung.';
 
   @override
   String get habitName => 'Gewohnheitsname';
 
   @override
-  String get habitNameHint => 'Ex: Drink water, Read book...';
+  String get habitNameHint => 'Bsp: Wasser trinken, Buch lesen...';
 
   @override
   String get habitNameHintNumerical => 'Bsp: Wasser trinken, Seiten lesen...';
@@ -1628,7 +1640,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get habitNameHintTimer => 'Bsp: Meditation, Sport...';
 
   @override
-  String get habitNamePlaceholder => 'Habit Name';
+  String get habitNamePlaceholder => 'Name der Gewohnheit';
 
   @override
   String get habitNotFound => 'Gewohnheit nicht gefunden.';
@@ -1637,93 +1649,94 @@ class AppLocalizationsDe extends AppLocalizations {
   String get habitOfThisVision => 'Gewohnheit dieser Vision';
 
   @override
-  String get habitPlannerGoalSetting => 'Monthly Goal Setting';
+  String get habitPlannerGoalSetting => 'Monatliche Zielsetzung';
 
   @override
   String get habitPlannerGoalSettingDesc =>
-      'Set specific, measurable goals for the month ahead.';
+      'Setzen Sie sich spezifische, messbare Ziele für den kommenden Monat.';
 
   @override
-  String get habitPlannerMorningRoutine => 'Morning Routine';
+  String get habitPlannerMorningRoutine => 'Morgenroutine';
 
   @override
   String get habitPlannerMorningRoutineDesc =>
-      'Start each day with a structured morning routine to set the tone for productivity.';
+      'Beginnen Sie jeden Tag mit einer strukturierten Morgenroutine, um die Weichen für Produktivität zu stellen.';
 
   @override
-  String get habitPlannerTaskPrioritization => 'Daily Task Prioritization';
+  String get habitPlannerTaskPrioritization => 'Tägliche Aufgabenpriorisierung';
 
   @override
   String get habitPlannerTaskPrioritizationDesc =>
-      'Identify your top 3 priorities for the day each morning.';
+      'Identifizieren Sie jeden Morgen Ihre 3 wichtigsten Prioritäten für den Tag.';
 
   @override
   String get habitPlannerTimeBlocking => 'Time Blocking';
 
   @override
   String get habitPlannerTimeBlockingDesc =>
-      'Schedule your day in focused time blocks for deep work.';
+      'Planen Sie Ihren Tag in konzentrierten Zeitblöcken für vertiefte Arbeit ein.';
 
   @override
-  String get habitPlannerWeeklyReview => 'Weekly Review';
+  String get habitPlannerWeeklyReview => 'Wochenrückblick';
 
   @override
   String get habitPlannerWeeklyReviewDesc =>
-      'Review your week\'s progress and plan for the next week every Sunday.';
+      'Überprüfen Sie jeden Sonntag Ihren Fortschritt der Woche und planen Sie die nächste Woche.';
 
   @override
-  String get habitReminderBody => 'Time to complete your habit!';
+  String get habitReminderBody => 'Zeit, deine Gewohnheit abzuschließen!';
 
   @override
   String get habitReminders => 'Gewohnheitserinnerungen';
 
   @override
-  String get habitRemindersSubtitle => 'Daily reminders for your habits';
+  String get habitRemindersSubtitle =>
+      'Tägliche Erinnerungen für Ihre Gewohnheiten';
 
   @override
-  String get habitSocialCallFriend => 'Call a Friend';
+  String get habitSocialCallFriend => 'Einen Freund anrufen';
 
   @override
   String get habitSocialCallFriendDesc =>
-      'Reach out to a friend or family member for a meaningful conversation.';
+      'Kontaktieren Sie einen Freund oder ein Familienmitglied für ein bedeutungsvolles Gespräch.';
 
   @override
-  String get habitSocialCompliment => 'Give a Genuine Compliment';
+  String get habitSocialCompliment => 'Ein ehrliches Kompliment machen';
 
   @override
   String get habitSocialComplimentDesc =>
-      'Brighten someone\'s day with a sincere compliment.';
+      'Verschönern Sie jemandem den Tag mit einem aufrichtigen Kompliment.';
 
   @override
-  String get habitSocialFamilyTime => 'Quality Family Time';
+  String get habitSocialFamilyTime => 'Qualitätszeit mit der Familie';
 
   @override
   String get habitSocialFamilyTimeDesc =>
-      'Spend dedicated time with family members without distractions.';
+      'Verbringen Sie bewusst Zeit mit Familienmitgliedern ohne Ablenkungen.';
 
   @override
-  String get habitSocialGroupActivity => 'Join Group Activity';
+  String get habitSocialGroupActivity => 'An einer Gruppenaktivität teilnehmen';
 
   @override
   String get habitSocialGroupActivityDesc =>
-      'Participate in a group activity or social event.';
+      'Nehmen Sie an einer Gruppenaktivität oder einem sozialen Ereignis teil.';
 
   @override
-  String get habitSocialVolunteer => 'Volunteer';
+  String get habitSocialVolunteer => 'Freiwilligenarbeit';
 
   @override
   String get habitSocialVolunteerDesc =>
-      'Give back to your community through volunteer work.';
+      'Geben Sie Ihrer Gemeinschaft durch Freiwilligenarbeit etwas zurück.';
 
   @override
-  String get habitTypeLabel => 'Habit Type';
+  String get habitTypeLabel => 'Gewohnheitstyp';
 
   @override
   String get habitTypePickerSubtitle =>
-      'What kind of habit do you want to create?';
+      'Welche Art von Gewohnheit möchten Sie erstellen?';
 
   @override
-  String get habitTypePickerTitle => 'Choose Habit Type';
+  String get habitTypePickerTitle => 'Gewohnheitstyp wählen';
 
   @override
   String get habitUpdatedMessage => 'Gewohnheit aktualisiert.';
@@ -1753,13 +1766,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get health => 'Gesundheit';
 
   @override
-  String get helpAndSupport => 'Help & Support';
+  String get helpAndSupport => 'Hilfe & Support';
 
   @override
-  String get history => 'History';
+  String get history => 'Verlauf';
 
   @override
-  String get historyTitle => 'History';
+  String get historyTitle => 'Verlauf';
 
   @override
   String get hourShort => 'Std.';
@@ -1771,16 +1784,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get hoursSuffixShort => 'Std';
 
   @override
-  String get howAreYouFeeling => 'How are you feeling?';
+  String get howAreYouFeeling => 'Wie fühlst du dich?';
 
   @override
-  String get howDoYouFeel => 'How do you feel today?';
+  String get howDoYouFeel => 'Wie fühlen Sie sich heute?';
 
   @override
-  String get howOftenDoHabit => 'Decide how often you\'ll do your habit';
+  String get howOftenDoHabit =>
+      'Entscheide, wie oft du deine Gewohnheit ausübst';
 
   @override
-  String get howToCancel => 'How to cancel?';
+  String get howToCancel => 'Wie kann ich kündigen?';
 
   @override
   String get howToEarn => 'Wie man verdient';
@@ -1793,7 +1807,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get ifCondition => 'Wenn';
 
   @override
-  String get ifTrialCancelled => 'If free trial is cancelled?';
+  String get ifTrialCancelled =>
+      'Was passiert, wenn die Testphase gekündigt wird?';
 
   @override
   String get importFromLink => 'Aus Link importieren';
@@ -1802,7 +1817,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get importantNotice => 'Wichtiger Hinweis';
 
   @override
-  String get inactive => 'Inactive';
+  String get inactive => 'Inaktiv';
 
   @override
   String get incomeDelta => 'Einkommens-Δ';
@@ -1823,20 +1838,20 @@ class AppLocalizationsDe extends AppLocalizations {
   String get input => 'Eingabe';
 
   @override
-  String get insights => 'Insights';
+  String get insights => 'Erkenntnisse';
 
   @override
   String get insufficientTokensWatchAd =>
-      'Insufficient tokens! Watch an ad to earn tokens.';
+      'Nicht genügend Tokens! Schauen Sie sich eine Anzeige an, um Tokens zu verdienen.';
 
   @override
   String get invalidCodeLengthError => 'Der Code muss 6 Zeichen lang sein';
 
   @override
-  String get invalidLink => 'Invalid link.';
+  String get invalidLink => 'Ungültiger Link.';
 
   @override
-  String get invalidValue => 'Invalid value';
+  String get invalidValue => 'Ungültiger Wert';
 
   @override
   String get inviteCodeCopiedSnackbar => 'Einladungscode kopiert!';
@@ -1845,10 +1860,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get inviteCodeTooltip => 'Einladungscode';
 
   @override
-  String get issueDescription => 'Issue Description';
+  String get issueDescription => 'Beschreibung der Problemstellung';
 
   @override
-  String get issueDescriptionHint => 'Describe the issue in detail...';
+  String get issueDescriptionHint => 'Beschreiben Sie das Problem im Detail...';
 
   @override
   String get joinButton => 'Beitreten';
@@ -1875,17 +1890,17 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get journalEntry => 'Journal Entry';
+  String get journalEntry => 'Tagebucheintrag';
 
   @override
   String get journalEntryDesc =>
-      'Is there anything you\'d like to write about today?';
+      'Gibt es heute etwas, über das du schreiben möchtest?';
 
   @override
-  String get journalHint => 'Something you\'d like to write about today...';
+  String get journalHint => 'Etwas, über das du heute schreiben möchtest...';
 
   @override
-  String get jsonDataExample => 'JSON Data (example):';
+  String get jsonDataExample => 'JSON-Daten (Beispiel):';
 
   @override
   String get justNow => 'Gerade eben';
@@ -1908,13 +1923,13 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get later => 'Later';
+  String get later => 'Später';
 
   @override
   String get lavenderDreams => 'Lavendel-Träume';
 
   @override
-  String get lavenderDreamsDesc => 'Elegant lavender & purple tones';
+  String get lavenderDreamsDesc => 'Elegante Lavendel- & Lilatöne';
 
   @override
   String get leaderboardDetailsTitle => 'Ranking-Details';
@@ -1961,14 +1976,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get likertStronglyAgree => 'Stimme voll zu';
 
   @override
-  String get likertStronglyDisagree => 'Strongly Disagree';
+  String get likertStronglyDisagree => 'Stimme überhaupt nicht zu';
 
   @override
-  String get linkHabits => 'Link habits';
+  String get linkHabits => 'Gewohnheiten verknüpfen';
 
   @override
   String listCreated(Object title) {
-    return 'List created: $title';
+    return 'Liste erstellt: $title';
   }
 
   @override
@@ -2001,30 +2016,31 @@ class AppLocalizationsDe extends AppLocalizations {
   String get manageLists => 'Listen verwalten';
 
   @override
-  String get manageListsSubtitle => 'Organize your habits and tasks';
+  String get manageListsSubtitle =>
+      'Organisieren Sie Ihre Gewohnheiten und Aufgaben';
 
   @override
-  String get manageOnGooglePlay => 'Manage on Google Play';
+  String get manageOnGooglePlay => 'Auf Google Play verwalten';
 
   @override
   String get manageSubscription => 'Abonnement verwalten';
 
   @override
   String get manageSubscriptionDesc =>
-      'Change plan, cancel or view billing info';
+      'Plan ändern, kündigen oder Rechnungsinfos ansehen';
 
   @override
   String get manageSubscriptionSubtitle =>
-      'Manage Mira Plus subscription via Google Play';
+      'Mira Plus Abonnement über Google Play verwalten';
 
   @override
-  String get manageVisionTasks => 'Manage Tasks';
+  String get manageVisionTasks => 'Aufgaben verwalten';
 
   @override
   String get manualFallback => 'Manuell erstellen';
 
   @override
-  String get maxOptionsReached => 'Maximum 12 options allowed';
+  String get maxOptionsReached => 'Maximal 12 Optionen erlaubt';
 
   @override
   String get meditation => 'Meditation';
@@ -2066,7 +2082,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mintFresh => 'Frische Minze';
 
   @override
-  String get mintFreshDesc => 'Fresh mint & turquoise tones';
+  String get mintFreshDesc => 'Frische Minze & Türkistöne';
 
   @override
   String get minutes => 'Minuten';
@@ -2075,10 +2091,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get minutesSuffixShort => 'min';
 
   @override
-  String get miraPlusActive => 'Mira Plus Active';
+  String get miraPlusActive => 'Mira Plus aktiv';
 
   @override
-  String get miraPlusInactive => 'Mira Plus Inactive';
+  String get miraPlusInactive => 'Mira Plus inaktiv';
 
   @override
   String get miraPremium => 'Mira Premium';
@@ -2100,11 +2116,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String monthlyDays(Object days) {
-    return 'Days $days of the month';
+    return 'Tag $days des Monats';
   }
 
   @override
-  String get monthlyDesc => 'On specific days of the month';
+  String get monthlyDesc => 'An bestimmten Tagen des Monats';
 
   @override
   String get monthlyProgress => 'Monatlicher Fortschritt';
@@ -2119,7 +2135,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mood => 'Stimmung';
 
   @override
-  String get moodAnalytics => 'Mood Analytics';
+  String get moodAnalytics => 'Stimmungsanalysen';
 
   @override
   String get moodBad => 'Schlecht';
@@ -2128,43 +2144,43 @@ class AppLocalizationsDe extends AppLocalizations {
   String get moodBadDesc => 'Habe eine schwere Zeit';
 
   @override
-  String get moodDeclining => 'Your mood seems to be declining';
+  String get moodDeclining => 'Deine Stimmung scheint sich zu verschlechtern';
 
   @override
-  String get moodDistribution => 'Mood Distribution';
+  String get moodDistribution => 'Stimmungsverteilung';
 
   @override
   String get moodExcellent => 'Ausgezeichnet';
 
   @override
-  String get moodExcellentDesc => 'I feel excellent';
+  String get moodExcellentDesc => 'Ich fühle mich ausgezeichnet';
 
   @override
-  String get moodFlow => 'Mood';
+  String get moodFlow => 'Stimmung';
 
   @override
   String get moodFlowSubtitle => 'Verfolgen Sie Ihr emotionales Wohlbefinden';
 
   @override
-  String get moodFlowTitle => 'How Are You Feeling?';
+  String get moodFlowTitle => 'Wie fühlen Sie sich?';
 
   @override
   String get moodGood => 'Gut';
 
   @override
-  String get moodGoodDesc => 'I feel good';
+  String get moodGoodDesc => 'Ich fühle mich gut';
 
   @override
   String get moodGreat => 'Großartig';
 
   @override
-  String get moodImproving => 'Your mood is improving!';
+  String get moodImproving => 'Deine Stimmung verbessert sich!';
 
   @override
   String get moodNeutral => 'Neutral';
 
   @override
-  String get moodNeutralDesc => 'I feel neutral';
+  String get moodNeutralDesc => 'Ich fühle mich neutral';
 
   @override
   String get moodOk => 'Okay';
@@ -2173,19 +2189,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get moodSelection => 'Stimmungsauswahl';
 
   @override
-  String get moodStable => 'Your mood is relatively stable';
+  String get moodStable => 'Deine Stimmung ist relativ stabil';
 
   @override
-  String get moodTerrible => 'Saugt';
+  String get moodTerrible => 'Schrecklich';
 
   @override
-  String get moodTerribleDesc => 'I feel terrible';
+  String get moodTerribleDesc => 'Ich fühle mich schrecklich';
 
   @override
-  String get moodTracker => 'Mood Tracker';
+  String get moodTracker => 'Stimmungs-Tracker';
 
   @override
-  String get moodTrend => 'Mood Trend (Last 30 Days)';
+  String get moodTrend => 'Stimmungstrend (Letzte 30 Tage)';
 
   @override
   String get moreChartsButton => 'Mehr Diagramme';
@@ -2194,13 +2210,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mostActiveMemberLabel => 'Aktivstes Mitglied';
 
   @override
-  String get mostCommonEmotion => 'Most Common Emotion';
+  String get mostCommonEmotion => 'Häufigste Emotion';
 
   @override
-  String get mostCommonMood => 'Most Common Mood';
+  String get mostCommonMood => 'Häufigste Stimmung';
 
   @override
-  String get mostCommonReason => 'Most Common Reason';
+  String get mostCommonReason => 'Häufigste Ursache';
 
   @override
   String get motivation => 'Motivation';
@@ -2212,7 +2228,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String motivationDayStart(Object title) {
-    return 'Great day for $title! 🌟';
+    return 'Großartiger Tag für $title! 🌟';
   }
 
   @override
@@ -2235,20 +2251,20 @@ class AppLocalizationsDe extends AppLocalizations {
   String get multiple => 'Mehrere';
 
   @override
-  String get multipleSubItems => 'Multiple sub-items';
+  String get multipleSubItems => 'Mehrere Unterelemente';
 
   @override
-  String get multipleSubItemsDesc => 'Multiple sub-items';
+  String get multipleSubItemsDesc => 'Mehrere Unterelemente';
 
   @override
   String get mustBePremiumToUse =>
-      'You must be a Premium subscriber to use this feature.';
+      'Sie müssen Mira Plus Abonnent sein, um diese Funktion zu nutzen.';
 
   @override
   String get myBigGoal => 'Mein großes Ziel';
 
   @override
-  String get myBoard => 'My Board';
+  String get myBoard => 'Meine Tafel';
 
   @override
   String get mysticTheme => 'Mystisch';
@@ -2292,7 +2308,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get newCategory => 'Neue Kategorie';
 
   @override
-  String get newHabit => 'New Habit';
+  String get newHabit => 'Neue Gewohnheit';
 
   @override
   String get newHabits => 'Neue Gewohnheiten';
@@ -2317,19 +2333,19 @@ class AppLocalizationsDe extends AppLocalizations {
       'Mitglied hat noch keine aktiven Gewohnheiten.';
 
   @override
-  String get noBackups => 'No Backups';
+  String get noBackups => 'Keine Sicherungen';
 
   @override
-  String get noBackupsFound => 'No backups found.';
+  String get noBackupsFound => 'Keine Sicherungen gefunden.';
 
   @override
   String get noBadgesEarned => 'Noch keine Abzeichen verdient.';
 
   @override
-  String get noDataLast7Days => 'No data for last 7 days';
+  String get noDataLast7Days => 'Keine Daten für die letzten 7 Tage';
 
   @override
-  String get noDataThisMonth => 'No data for this month';
+  String get noDataThisMonth => 'Keine Daten für diesen Monat';
 
   @override
   String get noEndDate => 'Kein Enddatum';
@@ -2351,13 +2367,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noExpenses => 'Keine Ausgaben';
 
   @override
-  String get noExpensesThisMonth => 'No expenses for this month';
+  String get noExpensesThisMonth => 'Keine Ausgaben in diesem Monat';
 
   @override
-  String get noHabitsAdded => 'No habits added yet';
+  String get noHabitsAdded => 'Noch keine Gewohnheiten hinzugefügt';
 
   @override
-  String get noHabitsAddedYet => 'No habits added yet.';
+  String get noHabitsAddedYet =>
+      'Bisher wurden noch keine Gewohnheiten hinzugefügt.';
 
   @override
   String get noHabitsInRoom => 'Noch keine Gewohnheiten hinzugefügt';
@@ -2366,7 +2383,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noHistory => 'Kein Verlauf';
 
   @override
-  String get noIncomeThisMonth => 'No income for this month';
+  String get noIncomeThisMonth => 'Kein Einkommen in diesem Monat';
 
   @override
   String get noItemsMatchFilters =>
@@ -2376,7 +2393,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noLeaderboardData => 'Keine Ranking-Daten';
 
   @override
-  String get noLinkedHabitsInVision => 'No habits linked to this vision.';
+  String get noLinkedHabitsInVision =>
+      'Keine Gewohnheiten mit dieser Vision verknüpft.';
 
   @override
   String get noMeasurableDataForMember =>
@@ -2386,13 +2404,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noMemberDataYet => 'Noch keine Mitgliederdaten.';
 
   @override
-  String get noMoodData => 'No mood data yet';
+  String get noMoodData => 'Noch keine Stimmungsdaten vorhanden';
 
   @override
   String get noNotesYet => 'Noch keine Notizen';
 
   @override
-  String get noPlansAvailable => 'No plans available at the moment.';
+  String get noPlansAvailable => 'Derzeit sind keine Pläne verfügbar.';
 
   @override
   String get noProgressYet => 'Noch kein Fortschritt';
@@ -2401,7 +2419,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noReadyVisionsFound => 'Keine fertigen Visionen gefunden.';
 
   @override
-  String get noRecordsThisMonth => 'No records for this month';
+  String get noRecordsThisMonth => 'Keine Einträge für diesen Monat';
 
   @override
   String get noReportsYet => 'Noch keine Berichte';
@@ -2417,19 +2435,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noStatsAvailable => 'Keine Statistiken verfügbar';
 
   @override
-  String get noTasksYet => 'No tasks added yet';
+  String get noTasksYet => 'Noch keine Aufgaben hinzugefügt';
 
   @override
-  String get noTrendData => 'Not enough data for trends';
+  String get noTrendData => 'Nicht genügend Daten für Trends';
 
   @override
-  String get notAddedYet => 'Not added yet.';
+  String get notAddedYet => 'Noch nicht hinzugefügt.';
 
   @override
   String get notGranted => 'Nicht gewährt';
 
   @override
-  String get notSelected => 'Not selected';
+  String get notSelected => 'Nicht ausgewählt';
 
   @override
   String get notUnlocked => 'Nicht freigeschaltet';
@@ -2458,7 +2476,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get notificationTroubleshooting =>
-      'For notifications to work properly:\n\n• Turn OFF battery optimization (Settings → Apps → Mira → Battery → Unrestricted)\n• ALLOW background activity\n• Ensure notification permissions are ON\n• Check \'Do Not Disturb\' mode';
+      'Damit Benachrichtigungen korrekt funktionieren:\n\n• Batterieoptimierung AUSSCHALTEN (Einstellungen → Apps → Mira → Akku → Nicht eingeschränkt)\n• Hintergrundaktivität ZULASSEN\n• Sicherstellen, dass Benachrichtigungsberechtigungen EINGESCHALTET sind\n• \'Nicht stören\'-Modus überprüfen';
 
   @override
   String get notificationTypes => 'Benachrichtigungstypen';
@@ -2502,7 +2520,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get numericSettings => 'Numerische Zieleinstellungen';
 
   @override
-  String get numericTypeDesc => 'Number tracking';
+  String get numericTypeDesc => 'Zahlenverfolgung';
 
   @override
   String get numericalDescription => 'Numerische Zielverfolgung';
@@ -2520,10 +2538,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get oceanThemeDesc => 'Ruhiges blaues Design';
 
   @override
-  String get off => 'Off';
+  String get off => 'Aus';
 
   @override
-  String get offLabel => 'Off';
+  String get offLabel => 'Aus';
 
   @override
   String get ok => 'OK';
@@ -2557,7 +2575,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onboardingQ12 =>
-      'I stay calm under pressure and bounce back quickly from setbacks.';
+      'Ich bleibe unter Druck ruhig und erhole mich schnell von Rückschlägen.';
 
   @override
   String get onboardingQ2 =>
@@ -2565,7 +2583,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onboardingQ3 =>
-      'I feel energized when I\'m around other people and enjoy social gatherings.';
+      'Ich fühle mich voller Energie, wenn ich von anderen Menschen umgeben bin, und genieße gesellschaftliche Zusammenkünfte.';
 
   @override
   String get onboardingQ4 =>
@@ -2573,7 +2591,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onboardingQ5 =>
-      'I handle stressful situations calmly and rarely feel anxious.';
+      'Ich gehe gelassen mit stressigen Situationen um und fühle mich selten ängstlich.';
 
   @override
   String get onboardingQ6 =>
@@ -2585,19 +2603,19 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get onboardingQ8 =>
-      'I prefer group activities over spending time alone.';
+      'Ich bevorzuge Gruppenaktivitäten gegenüber dem Alleinsein.';
 
   @override
   String get onboardingQ9 =>
-      'I often consider other people\'s feelings before making decisions.';
+      'Ich berücksichtige oft die Gefühle anderer Menschen, bevor ich Entscheidungen treffe.';
 
   @override
   String get onboardingQuizIntro =>
-      'Answer a few questions to help us understand your personality better. This is based on scientifically validated psychological research.';
+      'Beantworten Sie ein paar Fragen, damit wir Ihre Persönlichkeit besser verstehen können. Dies basiert auf wissenschaftlich validierter psychologischer Forschung.';
 
   @override
   String get onboardingWelcomeDesc =>
-      'Your personal habit tracker that grows with you. Let\'s discover your unique personality and suggest habits tailored just for you.';
+      'Dein persönlicher Habit-Tracker, der mit dir mitwächst. Lass uns deine einzigartige Persönlichkeit entdecken und dir maßgeschneiderte Gewohnheiten vorschlagen.';
 
   @override
   String get onboardingWelcomeTitle => 'Willkommen bei Mira';
@@ -2606,16 +2624,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get once => 'Einmal';
 
   @override
-  String get open => 'Open';
+  String get open => 'Öffnen';
 
   @override
-  String get openBatteryOptimization => 'Open battery optimization';
+  String get openBatteryOptimization => 'Akku-Optimierung öffnen';
 
   @override
-  String get openNotificationSettings => 'Open notification settings';
+  String get openNotificationSettings =>
+      'Benachrichtigungseinstellungen öffnen';
 
   @override
-  String get openSystemSettings => 'Open system settings';
+  String get openSystemSettings => 'Systemeinstellungen öffnen';
 
   @override
   String get option1 => 'Option 1';
@@ -2645,7 +2664,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get overallProgress => 'Gesamtfortschritt';
 
   @override
-  String get overview => 'Overview';
+  String get overview => 'Übersicht';
 
   @override
   String get pages => 'Seiten';
@@ -2657,10 +2676,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get pause => 'Pause';
 
   @override
-  String get perMonth => '/mo';
+  String get perMonth => '/Monat';
 
   @override
-  String get perYear => '/yr';
+  String get perYear => '/Jahr';
 
   @override
   String get periodic => 'Periodisch';
@@ -2672,7 +2691,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get periodicSelection => 'Periodische Auswahl';
 
   @override
-  String get personalizedInsights => 'Personalized Insights';
+  String get personalizedInsights => 'Personalisierte Erkenntnisse';
 
   @override
   String get photo => 'Foto';
@@ -2681,7 +2700,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get pickFromCalendar => 'Vom Kalender wählen';
 
   @override
-  String get pickTime => 'Pick Time';
+  String get pickTime => 'Zeit wählen';
 
   @override
   String get pickTodaysMood => 'Wähle die heutige Stimmung';
@@ -2701,40 +2720,40 @@ class AppLocalizationsDe extends AppLocalizations {
   String get playAgain => 'Nochmal spielen';
 
   @override
-  String get pleaseEnterEmail => 'Please enter email';
+  String get pleaseEnterEmail => 'Bitte E-Mail eingeben';
 
   @override
-  String get pleaseFillAllFields => 'Please fill all fields';
+  String get pleaseFillAllFields => 'Bitte alle Felder ausfüllen';
 
   @override
   String get pointsTableHeader => 'PUNKTE';
 
   @override
-  String get pomodoroAndCustomTimers => 'Pomodoro and custom timers';
+  String get pomodoroAndCustomTimers => 'Pomodoro und eigene Timer';
 
   @override
-  String get premiumBenefits => 'Premium benefits:';
+  String get premiumBenefits => 'Vorteile von Mira Plus:';
 
   @override
-  String get premiumFeature => 'Premium Feature';
+  String get premiumFeature => 'Mira Plus Funktion';
 
   @override
   String get premiumFeatureLabel => 'Premium-Funktion';
 
   @override
-  String get premiumFeatures => 'Premium Features';
+  String get premiumFeatures => 'Mira Plus Funktionen';
 
   @override
-  String get premiumPlans => 'Premium Plans';
+  String get premiumPlans => 'Mira Plus Abonnements';
 
   @override
-  String get previous => 'Previous';
+  String get previous => 'Vorheriges';
 
   @override
   String get previousYear => 'Vorheriges Jahr';
 
   @override
-  String get prioritizeTaskSubtitle => 'Prioritize this task';
+  String get prioritizeTaskSubtitle => 'Diese Aufgabe prioritär behandeln';
 
   @override
   String get privacyPolicy => 'Datenschutzerklärung';
@@ -2747,10 +2766,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get privacySecuritySubtitle =>
-      'Manage settings and data deletion options';
+      'Einstellungen und Datenlöschungsoptionen verwalten';
 
   @override
-  String get processingWait => 'Processing, please wait...';
+  String get processingWait => 'Verarbeitung läuft, bitte warten...';
 
   @override
   String get productivity => 'Produktivität';
@@ -2773,25 +2792,25 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get promoCodeActiveMessage =>
-      'Your Premium access is activated via promo code ✨';
+      'Dein Premium-Zugang wurde über einen Aktionscode aktiviert ✨';
 
   @override
   String get promoCodeAlreadyUsed =>
-      'A promo code has already been used on this account.';
+      'Für dieses Konto wurde bereits ein Aktionscode verwendet.';
 
   @override
-  String get promoCodeHint => 'Enter your promo code';
+  String get promoCodeHint => 'Aktionscode eingeben';
 
   @override
   String get promoCodeInvalid =>
-      'Invalid promo code. Please check and try again.';
+      'Ungültiger Aktionscode. Bitte überprüfen und erneut versuchen.';
 
   @override
-  String get promoCodeLabel => 'Promo Code';
+  String get promoCodeLabel => 'Aktionscode';
 
   @override
   String get promoCodeSuccess =>
-      '🎉 Promo code applied successfully! Premium access activated.';
+      '🎉 Aktionscode erfolgreich angewendet! Premium-Zugang aktiviert.';
 
   @override
   String get quickSuggestions => 'Schnelle Vorschläge';
@@ -2807,10 +2826,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Fertige Visionen konnten nicht geladen werden.';
 
   @override
-  String get reasonAcademic => 'Academic';
+  String get reasonAcademic => 'Akademisch';
 
   @override
-  String get reasonFinance => 'Finance';
+  String get reasonFinance => 'Finanzen';
 
   @override
   String get reasonHealth => 'Gesundheit';
@@ -2819,42 +2838,42 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reasonOther => 'Sonstiges';
 
   @override
-  String get reasonPersonalGrowth => 'Personal Growth';
+  String get reasonPersonalGrowth => 'Persönliches Wachstum';
 
   @override
-  String get reasonRelationship => 'Relationship';
+  String get reasonRelationship => 'Beziehungen';
 
   @override
-  String get reasonSelection => 'What\'s the reason for this state?';
+  String get reasonSelection => 'Was ist der Grund für diesen Zustand?';
 
   @override
-  String get reasonSocial => 'Social';
+  String get reasonSocial => 'Sozial';
 
   @override
   String get reasonTitle => 'Grund';
 
   @override
-  String get reasonWeather => 'Weather';
+  String get reasonWeather => 'Wetter';
 
   @override
   String get reasonWork => 'Arbeit';
 
   @override
-  String get recommendedHabits => 'Recommended Habits for You';
+  String get recommendedHabits => 'Für dich empfohlene Gewohnheiten';
 
   @override
   String get recurringMonthlyDesc =>
-      'Automatically add every month on the selected date';
+      'Jeden Monat automatisch am gewählten Datum hinzufügen';
 
   @override
   String get recurringMonthlyTitle => 'Wiederkehrend (monatlich)';
 
   @override
-  String get refreshList => 'Refresh List';
+  String get refreshList => 'Liste aktualisieren';
 
   @override
   String get refundPolicy =>
-      'Refund requests are subject to Google Play policies. You can apply from Play Store.';
+      'Rückerstattungsanträge unterliegen den Richtlinien von Google Play. Sie können diese über den Play Store beantragen.';
 
   @override
   String get reload => 'Neu laden';
@@ -2875,7 +2894,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reminderFrequency => 'Erinnerungshäufigkeit';
 
   @override
-  String get reminderLabel => 'Reminder';
+  String get reminderLabel => 'Erinnerung';
 
   @override
   String get reminderSettings => 'Erinnerungseinstellungen';
@@ -2890,54 +2909,57 @@ class AppLocalizationsDe extends AppLocalizations {
   String get repeatEveryDay => 'Wiederholt sich jeden Tag';
 
   @override
-  String get repeatEveryNDays => 'Alle N Tage wiederholen';
+  String repeatEveryNDays(Object days) {
+    return 'Alle N Tage wiederholen';
+  }
 
   @override
-  String get reportAlreadyExists => 'Report already exists for this week.';
+  String get reportAlreadyExists =>
+      'Für diese Woche existiert bereits ein Bericht.';
 
   @override
-  String get reportBug => 'Report Bug';
+  String get reportBug => 'Fehler melden';
 
   @override
   String get reportBugDescription =>
-      'Describe the issue you encountered in detail below.';
+      'Beschreiben Sie das aufgetretene Problem detailliert.';
 
   @override
-  String get reportBugSubtitle => 'Report issues you encounter';
+  String get reportBugSubtitle => 'Melden Sie aufgetretene Probleme';
 
   @override
   String get reportCreatedSuccess => 'Bericht erstellt! ✨';
 
   @override
-  String get reset => 'Reset';
+  String get reset => 'Zurücksetzen';
 
   @override
-  String get resetAction => 'Reset';
+  String get resetAction => 'Zurücksetzen';
 
   @override
-  String get resetOnboarding => 'Reset Onboarding';
+  String get resetOnboarding => 'Onboarding zurücksetzen';
 
   @override
   String get resetOnboardingDescription =>
-      'This will clear your current personality results and let you retake the quiz.';
+      'Dies löscht Ihre aktuellen Persönlichkeitsergebnisse ve ermöglicht es Ihnen, den Test erneut zu machen.';
 
   @override
-  String get resetOnboardingTitle => 'Reset Onboarding?';
+  String get resetOnboardingTitle => 'Onboarding zurücksetzen?';
 
   @override
-  String get restore => 'Restore';
+  String get restore => 'Wiederherstellen';
 
   @override
-  String get restoreError => 'Restore Error';
+  String get restoreError => 'Wiederherstellungsfehler';
 
   @override
   String get restoreFailed => 'Wiederherstellung fehlgeschlagen';
 
   @override
-  String get restoreLatest => 'Restore Latest';
+  String get restoreLatest => 'Neueste wiederherstellen';
 
   @override
-  String get restorePurchases => 'Restore Purchases';
+  String get restorePurchases => 'Käufe wiederherstellen';
 
   @override
   String restoreSuccess(Object content) {
@@ -2946,22 +2968,23 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get restoreSuccessMessage =>
-      'Your data has been successfully restored. We recommend restarting the app for changes to take full effect.';
+      'Ihre Daten wurden erfolgreich wiederhergestellt. Wir empfehlen, die App neu zu starten, damit die Änderungen voll wirksam werden.';
 
   @override
-  String get retakePersonalityTest => 'Retake Personality Test';
+  String get retakePersonalityTest => 'Persönlichkeitstest wiederholen';
 
   @override
   String get retakePersonalityTestDesc => 'Entdecke deinen Charaktertyp neu';
 
   @override
-  String get retakeRhythmTest => 'Rhythmus-Test wiederholen';
+  String get retakeRhythmTest => 'Rhythmustest wiederholen';
 
   @override
-  String get retakeRhythmTestDesc => 'Biologische Uhr neu konfigurieren';
+  String get retakeRhythmTestDesc =>
+      'Konfigurieren Sie Ihre biologische Uhr neu';
 
   @override
-  String get retry => 'Erneut versuchen';
+  String get retry => 'Wiederholen';
 
   @override
   String get rhythmA1_1 => '22:00 – 23:00';
@@ -2991,7 +3014,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get rhythmA2_4 => '09:00+';
 
   @override
-  String get rhythmA3_1 => '08:00 PM – 09:00 PM';
+  String get rhythmA3_1 => 'Früher Morgen';
 
   @override
   String get rhythmA3_2 => 'Vormittag';
@@ -3039,91 +3062,92 @@ class AppLocalizationsDe extends AppLocalizations {
   String get rhythmBenefit1 => 'Richtige Aufgabe zur richtigen Zeit';
 
   @override
-  String get rhythmBenefit2 => 'No decision fatigue';
+  String get rhythmBenefit2 => 'Keine Entscheidungsmüdigkeit';
 
   @override
-  String get rhythmBenefit3 => 'Personalization every week';
+  String get rhythmBenefit3 => 'Personalisierung jede Woche';
 
   @override
   String get rhythmChronoEvening => 'Abendtyp (Nachteule)';
 
   @override
-  String get rhythmChronoIntermediate => 'Zwischentyp (Ausgeglichen)';
+  String get rhythmChronoIntermediate => 'Intermediärer Typ (Ausgeglichen)';
 
   @override
-  String get rhythmChronoMorning => 'Morning Type (Early Bird)';
+  String get rhythmChronoMorning => 'Morgentyp (Frühaufsteher)';
 
   @override
   String get rhythmDisclaimer =>
-      'These are not definitive results. Live Rhythm will adjust as it gets to know you.';
+      'Dies sind keine endgültigen Ergebnisse. Live Rhythm passt sich an, während es Sie besser kennenlernt.';
 
   @override
-  String get rhythmEnergyHint => 'Workout, physical activity';
+  String get rhythmEnergyHint => 'Training, körperliche Aktivität';
 
   @override
-  String get rhythmFocusHint => 'Mentale Arbeit, Analyse, Lernen';
+  String get rhythmFocusHint => 'Geistige Arbeit, Analyse, Lernen';
 
   @override
-  String get rhythmHabitSuggestionTitle => 'Recommended Time Blocks:';
+  String get rhythmHabitSuggestionTitle => 'Empfohlene Zeitblöcke:';
 
   @override
   String get rhythmLightHint => 'E-Mails, soziale Medien, kleine Aufgaben';
 
   @override
-  String get rhythmQ1 => 'Wann gehst du normalerweise schlafen?';
+  String get rhythmQ1 => 'Wann gehen Sie normalerweise schlafen?';
 
   @override
-  String get rhythmQ2 => 'Wann wachst du normalerweise auf?';
+  String get rhythmQ2 => 'Wann stehen Sie normalerweise auf?';
 
   @override
-  String get rhythmQ3 => 'Wann erledigst du schwierige Aufgaben am liebsten?';
+  String get rhythmQ3 =>
+      'Wann fallen Ihnen schwierige Aufgaben am leichtesten?';
 
   @override
   String get rhythmQ4 =>
-      'At what time of day do you feel your best (most energetic)?';
+      'Zu welcher Tageszeit fühlen Sie sich am besten (am energiegeladensten)?';
 
   @override
   String get rhythmQ5 =>
-      'Do you consider yourself a \"morning type\" or an \"evening type\"?';
+      'Betrachten Sie sich als \"Morgentyp\" oder \"Abendtyp\"?';
 
   @override
-  String get rhythmReflectionHint => 'Tagebuch, Lesen, Herunterfahren';
+  String get rhythmReflectionHint => 'Tagebuch, Lesen, Entspannen';
 
   @override
   String get rhythmResultGotIt => 'Verstanden, fangen wir an';
 
   @override
   String get rhythmResultSubtitle =>
-      'We\'ve mapped out your day based on your natural rhythm.';
+      'Wir haben Ihren Tag basierend auf Ihrem natürlichen Rhythmus geplant.';
 
   @override
-  String get rhythmResultTitle => 'Ihr biologisches Uhrenprofil';
+  String get rhythmResultTitle => 'Profil Ihrer biologischen Uhr';
 
   @override
-  String get rhythmTeaserCta => 'Pakete anzeigen';
+  String get rhythmTeaserCta => 'Pakete ansehen';
 
   @override
-  String get rhythmTeaserSkip => 'Skip';
+  String get rhythmTeaserSkip => 'Überspringen';
 
   @override
   String get rhythmTeaserSubtitle =>
-      'Live Rhythm lernt deine produktivsten Momente und platziert Gewohnheiten zur richtigen Zeit.';
+      'Live Rhythm lernt Ihre produktivsten Momente kennen und platziert Gewohnheiten zur richtigen Zeit.';
 
   @override
   String get rhythmTeaserTitle =>
-      'Maximiere deine Gewohnheiten basierend auf deiner biologischen Uhr';
+      'Maximieren Sie Ihre Gewohnheiten basierend auf Ihrer biologischen Uhr';
 
   @override
   String get rhythmWindowEnergy => 'Energie-Zeit';
 
   @override
-  String get rhythmWindowEnergyDesc => 'Bewegung, Aktion, Sport';
+  String get rhythmWindowEnergyDesc => 'Bewegung, Action, Sport';
 
   @override
   String get rhythmWindowFocus => 'Fokus-Zeit';
 
   @override
-  String get rhythmWindowFocusDesc => 'Geistige Klarheit, Lernen, Analyse';
+  String get rhythmWindowFocusDesc => 'Mentale Klarheit, Lernen, Analyse';
 
   @override
   String get rhythmWindowLight => 'Leichte Zeit';
@@ -3133,20 +3157,21 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get rhythmWindowNoProfileHint =>
-      'Schließe den Rhythmus-Test ab, um personalisierte Vorschläge zu erhalten';
+      'Schließen Sie den Rhythmustest ab, um personalisierte Vorschläge zu erhalten';
 
   @override
-  String get rhythmWindowReflection => 'Reflexions-Zeit';
+  String get rhythmWindowReflection => 'Reflexionszeit';
 
   @override
-  String get rhythmWindowReflectionDesc => 'Tagebuch, Besinnung, Abschluss';
+  String get rhythmWindowReflectionDesc =>
+      'Tagebuchschreiben, Kontemplation, Abschluss';
 
   @override
   String get rhythmWindowStepSubtitle =>
-      'When would you like to do this habit?';
+      'Wann möchten Sie diese Gewohnheit ausüben?';
 
   @override
-  String get rhythmWindowStepTitle => 'Beste Zeitfenster';
+  String get rhythmWindowStepTitle => 'Bestes Zeitfenster';
 
   @override
   String get roomFabLabel => 'Raum';
@@ -3155,7 +3180,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get roomMembersLabel => 'RAUMMITGLIEDER';
 
   @override
-  String get roomNameHint => 'z. B. Morgenroutine-Team';
+  String get roomNameHint => 'z. B. Team Morgenroutine';
 
   @override
   String get roomNameLabel => 'Raumname';
@@ -3164,10 +3189,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get roomNotFoundError => 'Kein Raum mit diesem Code gefunden';
 
   @override
-  String get roomSummaryHeader => 'ROOM SUMMARY';
+  String get roomSummaryHeader => 'RAUMZUSAMMENFASSUNG';
 
   @override
-  String get roundCorners => 'Round Corners';
+  String get roundCorners => 'Abgerundete Ecken';
 
   @override
   String ruleEnteredDurationAtLeast(Object target) {
@@ -3200,7 +3225,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get runningLabel => 'RUNNING';
+  String get runningLabel => 'LÄUFT';
 
   @override
   String get saturdayShort => 'Sa';
@@ -3212,40 +3237,40 @@ class AppLocalizationsDe extends AppLocalizations {
   String get saveButton => 'Speichern';
 
   @override
-  String get saveChanges => 'Save Changes';
+  String get saveChanges => 'Änderungen speichern';
 
   @override
-  String get saveEntry => 'Save Entry';
+  String get saveEntry => 'Eintrag speichern';
 
   @override
-  String get saveError => 'An error occurred while saving';
+  String get saveError => 'Ein Fehler ist beim Speichern aufgetreten';
 
   @override
   String get saved => 'Gespeichert';
 
   @override
-  String get saving => 'Saving...';
+  String get saving => 'Wird gespeichert...';
 
   @override
   String get savingsBudgetPlan => 'Spar- / Budgetplan';
 
   @override
-  String get scheduleHabit => 'Set your habit\'s schedule';
+  String get scheduleHabit => 'Zeitplan Ihrer Gewohnheit festlegen';
 
   @override
   String get scheduleLabel => 'Zeitplan';
 
   @override
-  String get schedulingOptions => 'Planungsoptionen';
+  String get schedulingOptions => 'Zeitplanoptionen';
 
   @override
   String get seconds => 'Sekunden';
 
   @override
-  String get seeFullSubscriptionInfo => 'See full subscription info';
+  String get seeFullSubscriptionInfo => 'Vollständige Abonnement-Infos ansehen';
 
   @override
-  String get select => 'Auswählen';
+  String get select => 'Wählen';
 
   @override
   String get selectAll => 'Alle auswählen';
@@ -3254,80 +3279,81 @@ class AppLocalizationsDe extends AppLocalizations {
   String get selectAtLeastOneDay => 'Bitte wählen Sie mindestens einen Tag aus';
 
   @override
-  String get selectCategory => 'Kategorie auswählen';
+  String get selectCategory => 'Kategorie wählen';
 
   @override
-  String get selectDate => 'Datum auswählen';
+  String get selectDate => 'Datum wählen';
 
   @override
-  String get selectDay => 'Tag auswählen';
+  String get selectDay => 'Tag wählen';
 
   @override
-  String get selectDuration => 'Select Duration';
+  String get selectDuration => 'Dauer wählen';
 
   @override
-  String get selectEmoji => 'Select Emoji';
+  String get selectEmoji => 'Emoji wählen';
 
   @override
-  String get selectEndDate => 'Enddatum auswählen';
+  String get selectEndDate => 'Enddatum wählen';
 
   @override
-  String get selectFrequency => 'Häufigkeit auswählen';
+  String get selectFrequency => 'Häufigkeit wählen';
 
   @override
-  String get selectHabitLabel => 'Gewohnheit auswählen';
+  String get selectHabitLabel => 'Gewohnheit wählen';
 
   @override
-  String get selectHabitType => 'Gewohnheitstyp auswählen';
+  String get selectHabitType => 'Gewohnheitstyp wählen';
 
   @override
   String get selectHabitsToAdd =>
-      'Select habits you\'d like to add to your daily routine:';
+      'Wählen Sie Gewohnheiten aus, die Sie Ihrem Alltag hinzufügen möchten:';
 
   @override
-  String get selectMonthTooltip => 'Select month';
+  String get selectMonthTooltip => 'Monat wählen';
 
   @override
-  String get selectReason => 'Select reason';
+  String get selectReason => 'Grund wählen';
 
   @override
   String get selectReasonDesc =>
-      'Wählen Sie aus, was Ihre Stimmung beeinflusst';
+      'Welcher Faktor hat Ihren Tag am meisten beeinflusst?';
 
   @override
   String get selectReportType => 'Berichtstyp wählen:';
 
   @override
-  String get selectSubEmotion => 'Unter-Emotion auswählen';
+  String get selectSubEmotion => 'Spezifisches Gefühl wählen';
 
   @override
-  String get selectSubEmotionDesc => 'Wählen Sie eine spezifischere Emotion';
+  String get selectSubEmotionDesc =>
+      'Welches Untergefühl beschreibt Sie am besten?';
 
   @override
-  String get selectTime => 'Zeit auswählen';
+  String get selectTime => 'Zeit wählen';
 
   @override
-  String get selectYourCurrentMood => 'Wählen Sie Ihre aktuelle Stimmung';
+  String get selectYourCurrentMood => 'Wähle deine aktuelle Stimmung';
 
   @override
-  String get selectYourMood => 'Wählen Sie Ihre Stimmung';
+  String get selectYourMood => 'Wähle deine Stimmung';
 
   @override
   String selectedDaysOfMonth(Object sorted) {
-    return 'Days $sorted of the month';
+    return 'Tag $sorted des Monats';
   }
 
   @override
-  String get send => 'Send';
+  String get send => 'Senden';
 
   @override
-  String get sendBackward => 'Nach hinten senden';
+  String get sendBackward => 'Nach hinten bringen';
 
   @override
-  String get setAsTodayFocus => 'Set as Today\'s Focus';
+  String get setAsTodayFocus => 'Als heutigen Fokus festlegen';
 
   @override
-  String get setVisionTimeline => 'Set the timeline for your vision';
+  String get setVisionTimeline => 'Zeitplan für Ihre Vision festlegen';
 
   @override
   String get settings => 'Einstellungen';
@@ -3336,23 +3362,23 @@ class AppLocalizationsDe extends AppLocalizations {
   String get shareAsLink => 'Als Link teilen';
 
   @override
-  String get shareBoard => 'Share board';
+  String get shareBoard => 'Tafel teilen';
 
   @override
   String get shareButton => 'Teilen';
 
   @override
-  String get shareDashboard => 'Share Dashboard';
+  String get shareDashboard => 'Dashboard teilen';
 
   @override
   String get shareInviteCodeMessage =>
       'Teilen Sie diesen Code mit Ihren Freunden:';
 
   @override
-  String get shareLinkCopied => 'Teilen-Link in die Zwischenablage kopiert.';
+  String get shareLinkCopied => 'Teilungslink in die Zwischenablage kopiert.';
 
   @override
-  String get shareNoteHint => 'Teilen Sie Ihre Gedanken...';
+  String get shareNoteHint => 'Teile deine Gedanken...';
 
   @override
   String get shareNoteTitle => 'Notiz teilen';
@@ -3364,96 +3390,99 @@ class AppLocalizationsDe extends AppLocalizations {
   String get shareVision => 'Vision teilen';
 
   @override
-  String get showProgress => 'Show progress';
+  String get showProgress => 'Fortschritt anzeigen';
 
   @override
-  String get showText => 'Show text';
+  String get showText => 'Text anzeigen';
 
   @override
   String get shuffle => 'Mischen';
 
   @override
-  String get signInFailed => 'Sign in failed. Please try again.';
+  String get signInFailed =>
+      'Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.';
 
   @override
-  String get signInToSaveData => 'Anmelden, um Daten zu speichern';
+  String get signInToSaveData => 'Anmelden zum Speichern der Daten';
 
   @override
-  String get signInWithGoogle => 'Sign in with Google';
+  String get signInWithGoogle => 'Mit Google anmelden';
 
   @override
-  String get signInWithGoogleButton => 'Sign in with Google';
+  String get signInWithGoogleButton => 'Mit Google anmelden';
 
   @override
   String get signInWithGoogleDesc =>
-      'Connect your Google account to continue. Your profile info will be filled automatically.';
+      'Verbinden Sie Ihr Google-Konto, um fortzufahren. Ihre Profil-Infos werden automatisch ausgefüllt.';
 
   @override
-  String get signInWithGoogleTitle => 'Sign in with Google';
+  String get signInWithGoogleTitle => 'Mit Google anmelden';
 
   @override
   String get signOut => 'Abmelden';
 
   @override
-  String get signOutConfirmation => 'Are you sure you want to sign out?';
+  String get signOutConfirmation => 'Möchten Sie sich wirklich abmelden?';
 
   @override
-  String get simpleHabitColorSubtitle => 'Reflect your habit\'s personality';
+  String get simpleHabitColorSubtitle =>
+      'Spiegeln Sie den Charakter Ihrer Gewohnheit wider';
 
   @override
-  String get simpleHabitColorTitle => 'Wähle eine Farbe';
+  String get simpleHabitColorTitle => 'Wählen Sie eine Farbe';
 
   @override
   String get simpleHabitEmojiSubtitle =>
-      'Mach deine Gewohnheit unterhaltsamer!';
+      'Machen Sie Ihre Gewohnheit unterhaltsamer!';
 
   @override
-  String get simpleHabitEmojiTitle => 'Wähle ein Emoji, das sie repräsentiert';
+  String get simpleHabitEmojiTitle => 'Wählen Sie ein Emoji';
 
   @override
-  String get simpleHabitFrequencySubtitle => 'Setzen Sie Ihre Ziele';
+  String get simpleHabitFrequencySubtitle => 'Legen Sie Ihre Ziele fest';
 
   @override
-  String get simpleHabitFrequencyTitle => 'How often do you want to do it?';
+  String get simpleHabitFrequencyTitle => 'Wie oft möchten Sie es tun?';
 
   @override
-  String get simpleHabitMonthDaysSubtitle => 'Wähle die aktiven Tage';
+  String get simpleHabitMonthDaysSubtitle => 'Wählen Sie die aktiven Tage aus';
 
   @override
-  String get simpleHabitMonthDaysTitle => 'An welchen Tagen des Monats?';
+  String get simpleHabitMonthDaysTitle => 'An welchen Monatstagen?';
 
   @override
-  String get simpleHabitNameSubtitle => 'What do you want to make a habit of?';
+  String get simpleHabitNameSubtitle =>
+      'Was möchten Sie sich zur Gewohnheit machen?';
 
   @override
-  String get simpleHabitNameTitle => 'Gib der Gewohnheit einen Namen';
+  String get simpleHabitNameTitle => 'Geben Sie Ihrer Gewohnheit einen Namen';
 
   @override
   String get simpleHabitPeriodicSubtitle =>
-      'Lege das Wiederholungsintervall fest';
+      'Legen Sie das Wiederholungsintervall fest';
 
   @override
-  String get simpleHabitPeriodicTitle => 'Alle wie viele Tage?';
+  String get simpleHabitPeriodicTitle => 'Wie viele Tage Abstand?';
 
   @override
   String get simpleHabitPreviewSubtitle => 'Sieht alles richtig aus?';
 
   @override
-  String get simpleHabitPreviewTitle => 'Großartig! Hier ist deine Gewohnheit';
+  String get simpleHabitPreviewTitle => 'Großartig! Hier ist Ihre Gewohnheit';
 
   @override
   String get simpleHabitReminderSubtitle =>
-      'Verpasse deine Gewohnheit nicht mit einer täglichen Erinnerung';
+      'Verpassen Sie Ihre Gewohnheit nicht mit täglichen Erinnerungen';
 
   @override
-  String get simpleHabitReminderTitle => 'Soll ich dich erinnern?';
+  String get simpleHabitReminderTitle => 'Soll ich Sie erinnern?';
 
   @override
   String get simpleHabitStartDateSubtitle =>
-      'Choose a starting point for your journey';
+      'Wählen Sie einen Startpunkt für Ihre Reise';
 
   @override
-  String get simpleHabitStartDateTitle => 'Wann wirst du anfangen?';
+  String get simpleHabitStartDateTitle => 'Wann fangen Sie an?';
 
   @override
   String get simpleHabitSubtitle => 'Schnell eine Gewohnheit erstellen';
@@ -3466,40 +3495,39 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get simpleHabitTypeDescription =>
-      'For daily check-ins. Complete or skip.';
+      'Für tägliche Check-ins. Abschließen oder überspringen.';
 
   @override
-  String get simpleHabitWeekdaysSubtitle => 'Wähle die aktiven Tage';
+  String get simpleHabitWeekdaysSubtitle => 'Wählen Sie die aktiven Tage aus';
 
   @override
   String get simpleHabitWeekdaysTitle => 'An welchen Tagen?';
 
   @override
   String get simpleHabitWizardDesc =>
-      'I\'ll guide you step by step. Let\'s create an amazing habit together!';
+      'Ich führe Sie Schritt für Schritt. Lassen Sie uns gemeinsam eine tolle Gewohnheit erstellen!';
 
   @override
-  String get simpleHabitWizardTitle =>
-      'Bereit, eine neue Gewohnheit zu beginnen?';
+  String get simpleHabitWizardTitle => 'Bereit für eine neue Gewohnheit?';
 
   @override
   String get simpleTypeShort => 'Einfach';
 
   @override
-  String get skip => 'Skip';
+  String get skip => 'Überspringen';
 
   @override
-  String get skipOnboarding => 'Skip';
+  String get skipOnboarding => 'Überspringen';
 
   @override
-  String get skipTest => 'Skip Test';
+  String get skipTest => 'Test überspringen';
 
   @override
   String get social => 'Sozial';
 
   @override
   String get socialFeaturesGuestMessage =>
-      'Sie müssen sich mit Google anmelden, um Räume zu erstellen und den Fortschritt mit Freunden zu verfolgen.';
+      'Sie müssen sich mit Google anmelden, um Räume zu erstellen ve den Fortschritt mit Freunden zu verfolgen.';
 
   @override
   String get socialFeaturesTitle => 'Soziale Funktionen';
@@ -3511,34 +3539,34 @@ class AppLocalizationsDe extends AppLocalizations {
   String get socialRoomsTitle => 'Soziale Räume';
 
   @override
-  String get softCloud => 'Weiche Wolke';
+  String get softCloud => 'Sanfte Wolke';
 
   @override
-  String get softCloudDesc => 'Weich wie eine Wolke, traumhaft';
+  String get softCloudDesc => 'Wolkenähnlich, verträumt weich';
 
   @override
   String get softPeach => 'Sanfter Pfirsich';
 
   @override
-  String get softPeachDesc => 'Warm peach & cream tones';
+  String get softPeachDesc => 'Warme Pfirsich- & Cremetöne';
 
   @override
   String get sound => 'Ton';
 
   @override
-  String get soundAlerts => 'Akustische Warnungen';
+  String get soundAlerts => 'Tonbenachrichtigungen';
 
   @override
   String get soundSubtitle => 'Ton bei Benachrichtigungen abspielen';
 
   @override
-  String get specificDaysOfMonth => 'Bestimmte Tage des Monats';
+  String get specificDaysOfMonth => 'Bestimmte Monatstage';
 
   @override
-  String get specificDaysOfWeek => 'Bestimmte Tage der Woche';
+  String get specificDaysOfWeek => 'Bestimmte Wochentage';
 
   @override
-  String get specificDaysOfYear => 'Bestimmte Tage des Jahres';
+  String get specificDaysOfYear => 'Bestimmte Jahrestage';
 
   @override
   String get spendingAdvisorNoBudget =>
@@ -3546,14 +3574,15 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get spendingAdvisorOnTrack =>
-      'Großartig! Sie liegen mit Ihrem Budget im Plan.';
+      'Großartig! Sie liegen im Rahmen Ihres Budgets.';
 
   @override
-  String get spendingAdvisorOverBudget => 'You are over budget. Stop spending.';
+  String get spendingAdvisorOverBudget =>
+      'Sie haben Ihr Budget überschritten. Stoppen Sie die Ausgaben.';
 
   @override
   String spendingAdvisorSafe(Object amount) {
-    return 'You can spend $amount per day.';
+    return 'Sie können $amount pro Tag ausgeben.';
   }
 
   @override
@@ -3561,21 +3590,21 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String spendingAdvisorWarning(Object amount) {
-    return 'Reduzieren Sie die täglichen Ausgaben um $amount, um im Plan zu bleiben.';
+    return 'Reduzieren Sie Ihre täglichen Ausgaben um $amount, um im Plan zu bleiben.';
   }
 
   @override
   String spendingLessThanDailyAvg(Object amount) {
-    return 'Großartig! Du gibst $amount weniger aus als der Tagesdurchschnitt.';
+    return 'Großartig! Sie geben $amount weniger aus als der Tagesdurchschnitt.';
   }
 
   @override
   String spendingMoreThanDailyAvg(Object amount) {
-    return 'Warnung! Du gibst $amount mehr aus als der Tagesdurchschnitt.';
+    return 'Warnung! Sie geben $amount mehr aus als der Tagesdurchschnitt.';
   }
 
   @override
-  String get spin => 'Drehen';
+  String get spin => 'DREHEN';
 
   @override
   String get spinAgain => 'Nochmal drehen';
@@ -3596,27 +3625,28 @@ class AppLocalizationsDe extends AppLocalizations {
   String get startJourney => 'Starte deine Reise';
 
   @override
-  String get startTest => 'Start Test';
+  String get startTest => 'Test starten';
 
   @override
   String get startTestDesc =>
-      'If you complete the test, you will get personalized suggestions and habit recommendations. You can skip this step if you wish.';
+      'Wenn Sie den Test abschließen, erhalten Sie personalisierte Vorschläge ve Empfehlungen für Gewohnheiten. Sie können diesen Schritt überspringen, wenn Sie möchten.';
 
   @override
-  String get startTestTitle => 'Do you want to start the personality test?';
+  String get startTestTitle => 'Möchten Sie den Persönlichkeitstest starten?';
 
   @override
   String get startTime => 'Startzeit';
 
   @override
   String get startTrackingFinances =>
-      'Beginne deine Finanzen zu verfolgen und kontrolliere deine Ausgaben.';
+      'Fangen Sie an, Ihre Finanzen zu verfolgen ve übernehmen Sie die Kontrolle über Ihre Ausgaben.';
 
   @override
-  String get startTrackingMood => 'Start tracking your mood to see analytics';
+  String get startTrackingMood =>
+      'Fangen Sie an, Ihre Stimmung zu verfolgen, um Analysen zu sehen';
 
   @override
-  String get startsOn => 'Starts on';
+  String get startsOn => 'Beginnt am';
 
   @override
   String get statsActiveDays => 'Aktive Tage';
@@ -3636,45 +3666,45 @@ class AppLocalizationsDe extends AppLocalizations {
   String get steps => 'Schritte';
 
   @override
-  String get stopwatchLabel => 'STOPWATCH';
+  String get stopwatchLabel => 'STOPPUHR';
 
   @override
   String streakDays(Object count) {
-    return '$count Tage Serie';
+    return '$count Tage';
   }
 
   @override
   String get streakIndicator => 'Serienanzeige';
 
   @override
-  String get streakIndicatorDesc => 'Flammen- und Eiseffekte anzeigen';
+  String get streakIndicatorDesc => 'Flammen- ve Eiseffekte anzeigen';
 
   @override
-  String get subEmotionAmazing => 'Amazing';
+  String get subEmotionAmazing => 'Fantastisch';
 
   @override
-  String get subEmotionAngry => 'Angry';
+  String get subEmotionAngry => 'Wütend';
 
   @override
   String get subEmotionAnxious => 'Ängstlich';
 
   @override
-  String get subEmotionBlessed => 'Blessed';
+  String get subEmotionBlessed => 'Gesegnet';
 
   @override
-  String get subEmotionBored => 'Bored';
+  String get subEmotionBored => 'Gelangweilt';
 
   @override
   String get subEmotionCalm => 'Ruhig';
 
   @override
-  String get subEmotionCheerful => 'Cheerful';
+  String get subEmotionCheerful => 'Heiter';
 
   @override
-  String get subEmotionConfident => 'Selbstbewusst';
+  String get subEmotionConfident => 'Zuversichtlich';
 
   @override
-  String get subEmotionConfused => 'Confused';
+  String get subEmotionConfused => 'Verwirrt';
 
   @override
   String get subEmotionDemoralized => 'Demoralisiert';
@@ -3683,37 +3713,37 @@ class AppLocalizationsDe extends AppLocalizations {
   String get subEmotionDetermined => 'Entschlossen';
 
   @override
-  String get subEmotionDistracted => 'Distracted';
+  String get subEmotionDistracted => 'Abgelenkt';
 
   @override
-  String get subEmotionDrained => 'Ausgelaugt';
+  String get subEmotionDrained => 'Erschöpft';
 
   @override
   String get subEmotionEmpty => 'Leer';
 
   @override
-  String get subEmotionEnergetic => 'Energetic';
+  String get subEmotionEnergetic => 'Energetisch';
 
   @override
-  String get subEmotionEnthusiastic => 'Enthusiastisch';
+  String get subEmotionEnthusiastic => 'Begeistert';
 
   @override
-  String get subEmotionEuphoric => 'Euphoric';
+  String get subEmotionEuphoric => 'Euphorisch';
 
   @override
   String get subEmotionExcited => 'Aufgeregt';
 
   @override
-  String get subEmotionExhausted => 'Exhausted';
+  String get subEmotionExhausted => 'Erschöpft';
 
   @override
-  String get subEmotionGrateful => 'Grateful';
+  String get subEmotionGrateful => 'Dankbar';
 
   @override
-  String get subEmotionGuilty => 'Guilty';
+  String get subEmotionGuilty => 'Schuldig';
 
   @override
-  String get subEmotionHappy => 'Happy';
+  String get subEmotionHappy => 'Glücklich';
 
   @override
   String get subEmotionHelpless => 'Hilflos';
@@ -3731,52 +3761,54 @@ class AppLocalizationsDe extends AppLocalizations {
   String get subEmotionIndecisive => 'Unentschlossen';
 
   @override
-  String get subEmotionInsecure => 'Insecure';
+  String get subEmotionInsecure => 'Unsicher';
 
   @override
-  String get subEmotionLonely => 'Lonely';
+  String get subEmotionLonely => 'Einsam';
 
   @override
-  String get subEmotionLoving => 'Loving';
+  String get subEmotionLoving => 'Liebevoll';
 
   @override
   String get subEmotionMotivated => 'Motiviert';
 
   @override
-  String get subEmotionNumb => 'Gefühllos';
+  String get subEmotionNumb => 'Taub';
 
   @override
-  String get subEmotionOrdinary => 'Ordinary';
+  String get subEmotionOrdinary => 'Ganz gewöhnlich';
 
   @override
-  String get subEmotionOverwhelmed => 'Overwhelmed';
+  String get subEmotionOverwhelmed => 'Überwältigt';
 
   @override
-  String get subEmotionPeaceful => 'Peaceful';
+  String get subEmotionPeaceful => 'Friedlich';
 
   @override
   String get subEmotionProud => 'Stolz';
 
   @override
-  String get subEmotionRegretful => 'Regretful';
+  String get subEmotionRegretful => 'Reuevoll';
 
   @override
   String get subEmotionSad => 'Traurig';
 
   @override
-  String get subEmotionSelection => 'Unter-Emotions-Auswahl';
+  String get subEmotionSelection =>
+      'Lassen Sie uns dieses Gefühl im Detail beschreiben';
 
   @override
   String get subEmotionStressed => 'Gestresst';
 
   @override
-  String get subEmotionTired => 'Tired';
+  String get subEmotionTired => 'Müde';
 
   @override
   String get subEmotionUnstoppable => 'Unaufhaltsam';
 
   @override
-  String get subscribeToEnjoyPremium => 'Subscribe to enjoy premium features';
+  String get subscribeToEnjoyPremium =>
+      'Abonnieren Sie, um Premium-Funktionen zu nutzen';
 
   @override
   String get subscription => 'Abonnement';
@@ -3786,20 +3818,20 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String subtaskIndex(Object index) {
-    return 'Subtask $index';
+    return 'Unteraufgabe $index';
   }
 
   @override
-  String get subtasks => 'Subtasks';
+  String get subtasks => 'Unteraufgaben';
 
   @override
-  String get subtasksTitle => 'Subtasks';
+  String get subtasksTitle => 'Unteraufgaben';
 
   @override
-  String get subtasksType => 'Subtasks';
+  String get subtasksType => 'Unteraufgaben';
 
   @override
-  String get subtasksTypeDesc => 'Multi-task';
+  String get subtasksTypeDesc => 'Mehrfachaufgabe';
 
   @override
   String get success => 'Erfolg';
@@ -3822,13 +3854,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get systemTheme => 'Systemdesign';
 
   @override
-  String get tapFabToCreate => 'Tippe auf +, um zu beginnen';
+  String get tapFabToCreate => 'Tippen Sie auf +, um zu beginnen';
 
   @override
-  String get tapSpinToStart => 'Tippe in die Mitte, um zu drehen';
+  String get tapSpinToStart => 'Tippen Sie auf Drehen, um zu beginnen';
 
   @override
-  String get tapToPickImage => 'Tippe, um ein Bild zu wählen';
+  String get tapToPickImage => 'Tippen, um Bild zu wählen';
 
   @override
   String get target => 'Ziel';
@@ -3851,7 +3883,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get targetValueLabel => 'Zielwert';
 
   @override
-  String get taskAdded => 'Task added';
+  String get taskAdded => 'Aufgabe hinzugefügt';
 
   @override
   String taskAddedSnackbar(Object title) {
@@ -3859,18 +3891,18 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get taskCompleted => 'Completed';
+  String get taskCompleted => 'Abgeschlossen';
 
   @override
   String taskDeletedMessage(Object title) {
-    return 'Task deleted';
+    return 'Aufgabe gelöscht';
   }
 
   @override
-  String get taskDescription => 'Beschreibung (Optional)';
+  String get taskDescription => 'Beschreibung (optional)';
 
   @override
-  String get taskPending => 'Pending';
+  String get taskPending => 'Ausstehend';
 
   @override
   String get taskTitle => 'Aufgabentitel';
@@ -3880,10 +3912,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get tellMeYourDream =>
-      'Erzähl mir deinen Traum. Ich helfe dir, ein Vision Board zu erstellen.';
+      'Erzählen Sie mir von Ihrem Traum. Ich helfe Ihnen bei der Erstellung eines Vision Boards.';
 
   @override
-  String get tellUsMore => 'Tell us more';
+  String get tellUsMore => 'Erzählen Sie uns mehr';
 
   @override
   String get templateDetailsNotFound => 'Vorlagendetails nicht gefunden';
@@ -3892,7 +3924,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get templatesTabManual => 'Manuell';
 
   @override
-  String get templatesTabReady => 'Fertig';
+  String get templatesTabReady => 'Bereit';
 
   @override
   String get testsSection => 'Tests';
@@ -3910,13 +3942,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get themeAbyss => 'Abgrund';
 
   @override
-  String get themeAbyssDesc => 'Dunkel und anspruchsvoll';
+  String get themeAbyssDesc => 'Dunkel & Raffiniert';
 
   @override
   String get themeBlush => 'Rouge';
 
   @override
-  String get themeBlushDesc => 'Sweet & Feminine';
+  String get themeBlushDesc => 'Süß & Feminin';
 
   @override
   String get themeCotton => 'Baumwolle';
@@ -3928,76 +3960,76 @@ class AppLocalizationsDe extends AppLocalizations {
   String get themeCream => 'Creme';
 
   @override
-  String get themeCreamDesc => 'Warm und weich';
+  String get themeCreamDesc => 'Warm & Weich';
 
   @override
-  String get themeCrimson => 'Purpur';
+  String get themeCrimson => 'Karmoisin';
 
   @override
-  String get themeCrimsonDesc => 'Mutig und leidenschaftlich';
+  String get themeCrimsonDesc => 'Mutig & Leidenschaftlich';
 
   @override
-  String get themeDetails => 'Design-Details';
+  String get themeDetails => 'Designdetails';
 
   @override
-  String get themeForest => 'Forest';
+  String get themeForest => 'Wald';
 
   @override
-  String get themeForestDesc => 'Rich & Organic';
+  String get themeForestDesc => 'Reichhaltig & Organisch';
 
   @override
   String get themeLavender => 'Lavendel';
 
   @override
-  String get themeLavenderDesc => 'Calm & Dreamy';
+  String get themeLavenderDesc => 'Ruhig & Verträumt';
 
   @override
   String get themeMatcha => 'Matcha';
 
   @override
-  String get themeMatchaDesc => 'Fresh & Natural';
+  String get themeMatchaDesc => 'Frisch & Natürlich';
 
   @override
   String get themeMauve => 'Malve';
 
   @override
-  String get themeMauveDesc => 'Elegant und romantisch';
+  String get themeMauveDesc => 'Elegant & Romantisch';
 
   @override
   String get themeMidnight => 'Mitternacht';
 
   @override
-  String get themeMidnightDesc => 'Tief und geheimnisvoll';
+  String get themeMidnightDesc => 'Tief & Geheimnisvoll';
 
   @override
-  String get themeOcean => 'Ocean';
+  String get themeOcean => 'Ozean';
 
   @override
-  String get themeOceanDesc => 'Deep & Serene';
+  String get themeOceanDesc => 'Tief & Gelassen';
 
   @override
   String get themeRose => 'Rose';
 
   @override
-  String get themeRoseDesc => 'Soft & Warm';
+  String get themeRoseDesc => 'Sanft & Warm';
 
   @override
-  String get themeSelection => 'Design-Auswahl';
+  String get themeSelection => 'Designauswahl';
 
   @override
   String get themeSky => 'Himmel';
 
   @override
-  String get themeSkyDesc => 'Airy & Light';
+  String get themeSkyDesc => 'Luftig & Leicht';
 
   @override
   String get themeSlate => 'Schiefer';
 
   @override
-  String get themeSlateDesc => 'Modern & Cool';
+  String get themeSlateDesc => 'Modern & Kühl';
 
   @override
-  String get themeSunset => 'Sunset';
+  String get themeSunset => 'Sonnenuntergang';
 
   @override
   String get themeSunsetDesc => 'Warm & Golden';
@@ -4006,13 +4038,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get themeVintageRed => 'Vintage Rot';
 
   @override
-  String get themeVintageRedDesc => 'Klassisches und zeitloses Rot';
+  String get themeVintageRedDesc => 'Klassisches ve zeitloses Rot';
 
   @override
-  String get thisFeatureIsPremium => 'This feature is Premium';
+  String get thisFeatureIsPremium => 'Dies ist eine Mira Plus Funktion';
 
   @override
-  String get thisMonth => 'Dieser Monat';
+  String get thisMonth => 'Diesen Monat';
 
   @override
   String get thisWeek => 'Diese Woche';
@@ -4028,13 +4060,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get timerCreateTimerHabitFirst =>
-      'Erstelle zuerst eine Timer-Gewohnheit';
+      'Erstellen Sie zuerst eine Timer-Gewohnheit';
 
   @override
-  String get timerDescription => 'Zeitbasiertes Tracking';
+  String get timerDescription => 'Zeitbasierte Verfolgung';
 
   @override
-  String get timerExample => 'Do a 30-minute workout';
+  String get timerExample => 'Machen Sie ein 30-minütiges Training';
 
   @override
   String get timerHabitLabel => 'Timer-Gewohnheit';
@@ -4062,7 +4094,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get timerPomodoroLongBreakIntervalLabel =>
-      'Langer Pausenzyklus (z. B. 4)';
+      'Zyklus für lange Pause (z. B. 4)';
 
   @override
   String get timerPomodoroLongBreakMinutesLabel => 'Lange Pause (min)';
@@ -4074,7 +4106,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get timerPomodoroShortBreakMinutesLabel => 'Kurze Pause (min)';
 
   @override
-  String get timerPomodoroSkipPhase => 'Skip Phase';
+  String get timerPomodoroSkipPhase => 'Phase überspringen';
 
   @override
   String get timerPomodoroWorkMinutesLabel => 'Arbeit (min)';
@@ -4083,10 +4115,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get timerPomodoroWorkPhase => 'Arbeit';
 
   @override
-  String get timerQuickPresets => 'Quick Presets';
+  String get timerQuickPresets => 'Schnell-Presets';
 
   @override
-  String get timerResume => 'Resume';
+  String get timerResume => 'Fortsetzen';
 
   @override
   String get timerSaveDurationTitle => 'Dauer speichern';
@@ -4096,16 +4128,16 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get timerSessionAlreadySaved =>
-      'Diese Sitzung ist bereits gespeichert';
+      'Diese Sitzung wurde bereits gespeichert';
 
   @override
-  String get timerSetDurationFirst => 'Zuerst Dauer einstellen';
+  String get timerSetDurationFirst => 'Dauer zuerst festlegen';
 
   @override
   String get timerSettings => 'Timer-Einstellungen';
 
   @override
-  String get timerStop => 'Stop';
+  String get timerStop => 'Stopp';
 
   @override
   String get timerTabCountdown => 'Countdown';
@@ -4117,7 +4149,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get timerTabStopwatch => 'Stoppuhr';
 
   @override
-  String get timerTracking => 'Timer tracking';
+  String get timerTracking => 'Timer-Verfolgung';
 
   @override
   String get timerType => 'Timer';
@@ -4129,13 +4161,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get timezone => 'Zeitzone';
 
   @override
-  String get titleHint => 'Bsp.: Lebensmittel, Freiberuflich, etc.';
+  String get titleHint => 'z. B. Lebensmittel, Freelance etc.';
 
   @override
   String get titleOptional => 'Titel (optional)';
 
   @override
-  String get today => 'Today';
+  String get today => 'Heute';
 
   @override
   String get todaysHabits => 'Heutige Gewohnheiten';
@@ -4144,53 +4176,54 @@ class AppLocalizationsDe extends AppLocalizations {
   String get tokenEarnedSuccess => '+1 Token verdient! 🎉';
 
   @override
-  String get tomorrow => 'Tomorrow';
+  String get tomorrow => 'Morgen';
 
   @override
-  String get topCategories => 'Top Categories';
+  String get topCategories => 'Top-Kategorien';
 
   @override
   String get totalDuration => 'Gesamtdauer';
 
   @override
-  String get totalEntries => 'Total Entries';
+  String get totalEntries => 'Einträge insgesamt';
 
   @override
-  String get totalMembersLabel => 'Gesamtmitglieder';
+  String get totalMembersLabel => 'Mitglieder insgesamt';
 
   @override
   String get totalProgress => 'Gesamtfortschritt';
 
   @override
-  String get totalSuccessfulDays => 'Gesamte erfolgreiche Tage';
+  String get totalSuccessfulDays => 'Gesamtzahl erfolgreicher Tage';
 
   @override
-  String get totalUnsuccessfulDays => 'Gesamte erfolglose Tage';
+  String get totalUnsuccessfulDays => 'Gesamtzahl erfolgloser Tage';
 
   @override
-  String get trackEarnings => 'Einnahmen verfolgen';
+  String get trackEarnings => 'Verfolgen Sie Ihre Einnahmen';
 
   @override
-  String get trackSpending => 'Ausgaben verfolgen';
+  String get trackSpending => 'Verfolgen Sie Ihre Ausgaben';
 
   @override
   String get trends => 'Trends';
 
   @override
   String get trialCancelEffect =>
-      'If you cancel during the free trial, you won\'t be charged immediately.';
+      'Wenn Sie während der kostenlosen Testphase kündigen, wird Ihnen nicht sofort etwas berechnet.';
 
   @override
-  String get trialInfo => '14-day free trial, cancel anytime.';
+  String get trialInfo =>
+      '14-tägige kostenlose Testversion, jederzeit kündbar.';
 
   @override
   String get tuesdayShort => 'Di';
 
   @override
-  String get typeEmoji => 'Type an emoji from keyboard';
+  String get typeEmoji => 'Emoji eingeben';
 
   @override
-  String get typeEmojiHint => 'Type an emoji from keyboard';
+  String get typeEmojiHint => 'Geben Sie ein Emoji über die Tastatur ein';
 
   @override
   String get typeLabel => 'Typ';
@@ -4199,16 +4232,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get typeNotChangeable => 'Typ kann nicht geändert werden';
 
   @override
-  String get unassignLinkedDailyTasks => 'Unassign linked daily tasks';
+  String get unassignLinkedDailyTasks =>
+      'Verknüpfte tägliche Aufgaben aufheben';
 
   @override
-  String get unassignLinkedHabits => 'Unassign linked habits';
+  String get unassignLinkedHabits => 'Verknüpfte Gewohnheiten aufheben';
 
   @override
-  String get undo => 'Undo';
+  String get undo => 'Rückgängig';
 
   @override
-  String get uninterruptedUsage => 'Uninterrupted usage';
+  String get uninterruptedUsage => 'Unterbrechungsfreie Nutzung';
 
   @override
   String get unit => 'Einheit';
@@ -4229,7 +4263,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get unitKalori => 'kcal';
 
   @override
-  String get unitKez => 'mal';
+  String get unitKez => 'Mal';
 
   @override
   String get unitKm => 'km';
@@ -4241,29 +4275,30 @@ class AppLocalizationsDe extends AppLocalizations {
   String get unitSayfa => 'Seite';
 
   @override
-  String get unknownList => 'Unknown List';
+  String get unknownList => 'Unbekannte Liste';
 
   @override
-  String get unlimitedDataStorage => 'Unlimited data storage';
+  String get unlimitedDataStorage => 'Unbegrenzter Datenspeicher';
 
   @override
-  String get unlistedItems => 'Unlisted Items';
+  String get unlistedItems => 'Nicht gelistete Elemente';
 
   @override
-  String get unlockAllFeatures => 'Unlock all features and remove limits.';
+  String get unlockAllFeatures =>
+      'Schalten Sie alle Funktionen frei ve entfernen Sie Limits.';
 
   @override
-  String get unnamedBackup => 'unnamed';
+  String get unnamedBackup => 'unbenannt';
 
   @override
   String get update => 'Aktualisieren';
 
   @override
   String get usePlayStoreToManage =>
-      'Use Google Play Store to manage your subscription.';
+      'Nutzen Sie den Google Play Store, um Ihr Abonnement zu verwalten.';
 
   @override
-  String get validity => 'Validity';
+  String get validity => 'Gültigkeit';
 
   @override
   String get valueLabel => 'Wert';
@@ -4276,25 +4311,25 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get viewInvoicesOnPlayStore =>
-      'View your invoices on Google Play Store';
+      'Rechnungen im Google Play Store ansehen';
 
   @override
   String get vision => 'Vision';
 
   @override
   String visionAutoDurationInfo(Object day) {
-    return 'Diese Vision verwendet den letzten Tag in der Vorlage: $day.';
+    return 'Diese Vision nutzt den letzten Tag in der Vorlage: $day.';
   }
 
   @override
-  String get visionBoard => 'Visionstafel';
+  String get visionBoard => 'Vision Board';
 
   @override
   String get visionBoardDesc =>
-      'Erstelle eine Vision, um deine Ziele zu organisieren und deine Reise zu verfolgen';
+      'Erstellen Sie eine Vision, um Ihre Ziele zu organisieren ve Ihre Reise zu verfolgen';
 
   @override
-  String get visionBoardViewTooltip => 'Board view';
+  String get visionBoardViewTooltip => 'Tafel-Ansicht';
 
   @override
   String get visionCreateTitle => 'Vision erstellen';
@@ -4304,53 +4339,55 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get visionDurationNote =>
-      'Note: When the vision starts, a total duration is set; if the end day exceeds this duration it will be shortened automatically.';
+      'Hinweis: Wenn die Vision beginnt, wird eine Gesamtdauer festgelegt; wenn der Endtag diese Dauer überschreitet, wird er automatisch gekürzt.';
 
   @override
   String get visionEditTitle => 'Vision bearbeiten';
 
   @override
   String get visionEmptyDescription =>
-      'Visualize your goals and add your first vision to turn your dreams into reality.';
+      'Visualisieren Sie Ihre Ziele ve fügen Sie Ihre erste Vision hinzu, um Ihre Träume Wirklichkeit werden zu lassen.';
 
   @override
-  String get visionEndDayInvalid => 'Endtag muss zwischen 1 und 365 liegen';
+  String get visionEndDayInvalid => 'Der Endtag muss zwischen 1 ve 365 liegen';
 
   @override
-  String get visionEndDayLess => 'Endtag darf nicht vor dem Starttag liegen';
+  String get visionEndDayLess =>
+      'Der Endtag kann nicht vor dem Starttag liegen';
 
   @override
   String get visionEndDayQuestion =>
       'An welchem Tag der Vision soll sie enden?';
 
   @override
-  String get visionEndDayRequired => 'Gib den Endtag ein';
+  String get visionEndDayRequired => 'Geben Sie den Endtag ein';
 
   @override
-  String get visionFreeformTooltip => 'Freeform board';
+  String get visionFreeformTooltip => 'Freiform-Tafel';
 
   @override
   String get visionNoEndDurationInfo =>
-      'Kein Endtag angegeben. Die Vision beginnt unbefristet.';
+      'Kein Endtag angegeben. Die Vision startet offen.';
 
   @override
   String get visionPlural => 'Visionen';
 
   @override
-  String get visionSettingsTooltip => 'Freeform board settings';
+  String get visionSettingsTooltip => 'Einstellungen für Freiform-Tafel';
 
   @override
-  String get visionStartDayInvalid => 'Starttag muss zwischen 1 und 365 liegen';
+  String get visionStartDayInvalid =>
+      'Der Starttag muss zwischen 1 ve 365 liegen';
 
   @override
   String get visionStartDayQuestion =>
       'An welchem Tag der Vision soll sie beginnen?';
 
   @override
-  String get visionStartFailed => 'Die Vision konnte nicht gestartet werden.';
+  String get visionStartFailed => 'Vision konnte nicht gestartet werden.';
 
   @override
-  String get visionStartLabel => 'Vision start: ';
+  String get visionStartLabel => 'Visionsstart:  ';
 
   @override
   String visionStartedMessage(Object title) {
@@ -4358,25 +4395,25 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get visionTasks => 'Tasks';
+  String get visionTasks => 'Visionsaufgaben';
 
   @override
   String get visual => 'Visuell';
 
   @override
-  String get warmJournal => 'Warmes Journal';
+  String get warmJournal => 'Warmes Tagebuch';
 
   @override
-  String get warmJournalDesc => 'Warmes Journal & Stimmungstracking';
+  String get warmJournalDesc => 'Warmes Tagebuch & Stimmungsverfolgung';
 
   @override
-  String get watchAdForToken => 'Werbung ansehen (+1 Token)';
+  String get watchAdForToken => 'Anzeige ansehen (+1 Token)';
 
   @override
-  String get wednesdayShort => 'Wed';
+  String get wednesdayShort => 'Mi';
 
   @override
-  String get weekDaysShort => 'Mon,Tue,Wed,Thu,Fri,Sat,Sun';
+  String get weekDaysShort => 'Mo,Di,Mi,Do,Fr,Sa,So';
 
   @override
   String get weekdaysShortFri => 'Fr';
@@ -4400,52 +4437,53 @@ class AppLocalizationsDe extends AppLocalizations {
   String get weekdaysShortWed => 'Mi';
 
   @override
-  String get weekly => 'Weekly';
+  String get weekly => 'Wöchentlich';
 
   @override
   String get weeklyDesc => 'An bestimmten Wochentagen';
 
   @override
-  String get weeklyEmailSummary => 'Weekly email summary';
+  String get weeklyEmailSummary => 'Wöchentliche E-Mail-Zusammenfassung';
 
   @override
-  String get weeklyProgress => 'Weekly progress';
+  String get weeklyProgress => 'Wöchentlicher Fortschritt';
 
   @override
   String get weeklyReportsTitle => 'Wochenberichte';
 
   @override
-  String get weeklySchedule => 'Weekly';
+  String get weeklySchedule => 'Wöchentlich';
 
   @override
-  String get weeklySummaryEmail => 'Weekly summary email';
+  String get weeklySummaryEmail => 'Wöchentliche Zusammenfassungs-E-Mail';
 
   @override
-  String get whatHappensIfCancel => 'What happens if I cancel?';
+  String get whatHappensIfCancel => 'Was passiert bei einer Kündigung?';
 
   @override
-  String get whatsTheCause => 'Was ist die Ursache?';
+  String get whatsTheCause => 'Was ist die Ursache für diesen Zustand?';
 
   @override
-  String get wheelOfFortuneDescription => 'Schreibe Optionen und drehe das Rad';
+  String get wheelOfFortuneDescription =>
+      'Optionen hinzufügen ve das Rad drehen';
 
   @override
-  String get wheelOfFortuneTitle => 'Wheel of Fortune';
+  String get wheelOfFortuneTitle => 'Glücksrad';
 
   @override
-  String get whichDays => 'Welche Tage?';
+  String get whichDays => 'An welchen Tagen';
 
   @override
-  String get whichDaysActive => 'Welche Tage sollen aktiv sein?';
+  String get whichDaysActive => 'An welchen Tagen soll sie aktiv sein?';
 
   @override
-  String get whichMonthDays => 'Welche Tage des Monats?';
+  String get whichMonthDays => 'An welchen Monatstagen?';
 
   @override
-  String get whichWeekdays => 'Welche Wochentage?';
+  String get whichWeekdays => 'An welchen Wochentagen?';
 
   @override
-  String get whichYearDays => 'Welche Tage des Jahres?';
+  String get whichYearDays => 'An welchen Jahrestagen';
 
   @override
   String get worldTheme => 'Welt';
@@ -4458,12 +4496,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String xpProgressSummary(Object current, Object toNext, Object total) {
-    return '$current / $total XP • $toNext XP zum nächsten Level';
+    return '$current / $total XP • $toNext XP bis zum nächsten Level';
   }
 
   @override
   String xpToNextLevel(Object toNext) {
-    return 'bis zum nächsten Level';
+    return '$toNext XP bis zum nächsten Level';
   }
 
   @override
@@ -4482,20 +4520,35 @@ class AppLocalizationsDe extends AppLocalizations {
   String get yesNoType => 'Ja/Nein';
 
   @override
-  String get yesterday => 'Yesterday';
+  String get yesterday => 'Gestern';
 
   @override
   String get youLabel => 'Du';
 
   @override
-  String get yourCharacterType => 'Your Character Type';
+  String get yourCharacterType => 'Dein Charaktertyp';
 
   @override
   String get yourEmail => 'Ihre E-Mail';
 
   @override
-  String get yourEmailAddress => 'Your Email Address';
+  String get yourEmailAddress => 'Ihre E-Mail-Adresse';
 
   @override
-  String get yourMoodToday => 'Your Mood Today';
+  String get yourMoodToday => 'Deine heutige Stimmung';
+
+  @override
+  String get wizardFinish => 'Abschließen';
+
+  @override
+  String get wizardNext => 'Weiter';
+
+  @override
+  String get wizardSkip => 'Überspringen';
+
+  @override
+  String get wizardOptional => 'Optional';
+
+  @override
+  String get simpleHabit => 'Einfache Gewohnheit';
 }

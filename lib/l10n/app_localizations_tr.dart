@@ -1194,7 +1194,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get enterPromoCode => 'Lütfen bir promosyon kodu girin';
 
   @override
-  String get enterValueTitle => 'Değer Gir';
+  String get enterValueTitle => 'Değer girin';
 
   @override
   String get enterYourName => 'Adınızı girin';
@@ -1322,11 +1322,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get finance => 'Finans';
 
   @override
-  String get financeAddAiStatementOption => 'Yapay Zeka ile Ekstre/Fis Yukle';
+  String get financeAddAiStatementOption => 'Yapay Zeka ile Ekstre/Fiş Yükle';
 
   @override
   String get financeAddAiStatementSubtitle =>
-      'Gorsel veya PDF uzerinden otomatik ekler';
+      'Görsel veya PDF üzerinden otomatik ekler';
 
   @override
   String get financeAddManualOption => 'Manuel Ekle';
@@ -2886,7 +2886,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get repeatEveryDay => 'Her gün tekrarlanır';
 
   @override
-  String get repeatEveryNDays => 'Her N Günde Bir Tekrarla';
+  String repeatEveryNDays(Object days) {
+    return 'Her N Günde Bir Tekrarla';
+  }
 
   @override
   String get reportAlreadyExists => 'Bu hafta için rapor zaten mevcut.';
@@ -4497,4 +4499,19 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get yourMoodToday => 'Bugünkü Ruh Halin';
+
+  @override
+  String get wizardFinish => 'Tamamla';
+
+  @override
+  String get wizardNext => 'Devam';
+
+  @override
+  String get wizardSkip => 'Atla';
+
+  @override
+  String get wizardOptional => 'İsteğe bağlı';
+
+  @override
+  String get simpleHabit => 'Basit Alışkanlık';
 }

@@ -2622,7 +2622,7 @@ class HabitScreenState extends State<HabitScreen>
               // Simple habit option
               _buildDialogOption(
                 icon: Icons.check_circle_outline,
-                label: 'Basit Alışkanlık',
+                label: 'Temel Alışkanlık',
                 color: colorScheme.primary,
                 onTap: () {
                   Navigator.pop(ctx);

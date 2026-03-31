@@ -122,8369 +122,8399 @@ abstract class AppLocalizations {
     Locale('zh')
   ];
 
-  /// No description provided for @about.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hakkında'**
   String get about;
 
-  /// No description provided for @account.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hesap'**
   String get account;
 
-  /// No description provided for @achievements.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Başarılar'**
   String get achievements;
 
-  /// No description provided for @active.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aktif'**
   String get active;
 
-  /// No description provided for @activeDays.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aktif günler'**
   String get activeDays;
 
-  /// No description provided for @adFreeExperience.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Reklamsız Deneyim'**
   String get adFreeExperience;
 
-  /// No description provided for @add.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ekle'**
   String get add;
 
-  /// No description provided for @addDate.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tarih ekle'**
   String get addDate;
 
-  /// No description provided for @addEvent.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Etkinlik Ekle'**
   String get addEvent;
 
-  /// No description provided for @addFabTooltip.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ekle'**
   String get addFabTooltip;
 
-  /// No description provided for @addFirstTransaction.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İlk işlemi ekle'**
   String get addFirstTransaction;
 
-  /// No description provided for @addHabit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık Ekle'**
   String get addHabit;
 
-  /// No description provided for @addHabitToRoomPrompt.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'+ butonuyla odaya bir alışkanlık ekle!'**
   String get addHabitToRoomPrompt;
 
-  /// No description provided for @addImage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Resim Ekle'**
   String get addImage;
 
-  /// No description provided for @addNew.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeni Ekle'**
   String get addNew;
 
-  /// No description provided for @addNewHabit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeni Alışkanlık Ekle'**
   String get addNewHabit;
 
-  /// No description provided for @addOptionHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Seçenek ekle...'**
   String get addOptionHint;
 
-  /// No description provided for @addOptionsToStart.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Başlamak için seçenek ekle'**
   String get addOptionsToStart;
 
-  /// No description provided for @addRoomButton.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Oda Ekle'**
   String get addRoomButton;
 
-  /// No description provided for @addSpecialDays.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Özel Günler Ekle'**
   String get addSpecialDays;
 
-  /// No description provided for @addSubtask.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alt Görev Ekle'**
   String get addSubtask;
 
-  /// No description provided for @addTask.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Görev Ekle'**
   String get addTask;
 
-  /// No description provided for @addText.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Metin Ekle'**
   String get addText;
 
-  /// No description provided for @addToList.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Listeye ekle'**
   String get addToList;
 
-  /// No description provided for @addedToRoomSnackbar.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'{title} odaya eklendi! 🎯'**
   String addedToRoomSnackbar(Object title);
 
-  /// No description provided for @advancedAnalysis.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İleri Seviye Analiz'**
   String get advancedAnalysis;
 
-  /// No description provided for @advancedAnalysisAndReports.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İleri seviye analiz ve raporlar'**
   String get advancedAnalysisAndReports;
 
-  /// No description provided for @advancedHabit.
+  /// Advanced habit label
   ///
   /// In tr, this message translates to:
   /// **'Gelişmiş Alışkanlık'**
   String get advancedHabit;
 
-  /// No description provided for @advancedHabitSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Premium • Detaylı ayarlarla alışkanlık oluştur'**
   String get advancedHabitSubtitle;
 
-  /// No description provided for @advancedHabitTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gelişmiş Alışkanlık'**
   String get advancedHabitTitle;
 
-  /// No description provided for @advancedHabitTypeDescription.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sayısal hedefler, zamanlayıcı ve detaylı takip.'**
   String get advancedHabitTypeDescription;
 
-  /// No description provided for @advancedTimer.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gelişmiş Timer'**
   String get advancedTimer;
 
-  /// No description provided for @aiAssistantOnline.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çevrimiçi'**
   String get aiAssistantOnline;
 
-  /// No description provided for @aiAssistantTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Mira Asistan'**
   String get aiAssistantTitle;
 
-  /// No description provided for @aiContextMessage.
+  /// Mira asistanının bir ipucu hakkında bağlam sağladığı mesaj
   ///
   /// In tr, this message translates to:
   /// **'Merhaba! Bu ipucuyla ilgilendiğinizi fark ettim:\n\n\"{tip}\"\n\nBunu Mira\'da nasıl uygulayacağınızı göstermemi ister misiniz?'**
   String aiContextMessage(Object tip);
 
-  /// No description provided for @aiHabitAddedMessage.
+  /// AI tarafından eklenen alışkanlık sayısını gösteren mesaj
   ///
   /// In tr, this message translates to:
   /// **'AI ile {count} alışkanlık eklendi'**
   String aiHabitAddedMessage(int count);
 
-  /// No description provided for @aiInputHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kazanmak istediğiniz alışkanlığı tarif edin...'**
   String get aiInputHint;
 
-  /// No description provided for @aiPoweredRecommendations.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'AI destekli öneriler'**
   String get aiPoweredRecommendations;
 
-  /// No description provided for @aiPreviewTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'AI Önerileri'**
   String get aiPreviewTitle;
 
-  /// No description provided for @aiQuickFinance.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bütçe önerileri'**
   String get aiQuickFinance;
 
-  /// No description provided for @aiQuickGamification.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'XP sistemi nedir?'**
   String get aiQuickGamification;
 
-  /// No description provided for @aiQuickHabit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeni alışkanlık oluştur'**
   String get aiQuickHabit;
 
-  /// No description provided for @aiQuickMood.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ruh halimi analiz et'**
   String get aiQuickMood;
 
-  /// No description provided for @aiQuickMotivation.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bana motivasyon ver'**
   String get aiQuickMotivation;
 
-  /// No description provided for @aiQuickProfile.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yapay Zeka Karakterim'**
   String get aiQuickProfile;
 
-  /// No description provided for @aiQuickTimer.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Zamanlayıcı nasıl kullanılır?'**
   String get aiQuickTimer;
 
-  /// No description provided for @aiQuickVision.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyon Panosu yardımı'**
   String get aiQuickVision;
 
-  /// No description provided for @aiRetry.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tekrar Dene (Sıkı Kurallar)'**
   String get aiRetry;
 
-  /// No description provided for @aiShowMeHow.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Evet, nasıl yapacağımı göster'**
   String get aiShowMeHow;
 
-  /// No description provided for @aiTip0.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Biliyor muydunuz? Uzun vadeli hedefleriniz için bir Vizyon Panosu oluşturabilirsiniz.'**
   String get aiTip0;
 
-  /// No description provided for @aiTip1.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İpucu: Odaklanmış çalışma oturumları için Zamanlayıcıyı kullanın.'**
   String get aiTip1;
 
-  /// No description provided for @aiTip2.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Zaman içindeki değişimleri görmek için günlük ruh halinizi takip edin.'**
   String get aiTip2;
 
-  /// No description provided for @aiTip3.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlıklar her gün aynı saatte yapıldığında daha kalıcı olur.'**
   String get aiTip3;
 
-  /// No description provided for @aiTip4.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Büyük Vizyonları daha küçük, yönetilebilir Görevlere bölün.'**
   String get aiTip4;
 
-  /// No description provided for @aiTip5.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük harcamalarınızı takip etmek için Finans sekmesini kullanın.'**
   String get aiTip5;
 
-  /// No description provided for @aiTip6.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yardıma mı ihtiyacınız var? AI asistana sormak için buraya dokunun!'**
   String get aiTip6;
 
-  /// No description provided for @aiTip7.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İstikrar anahtardır! Zinciri kırmayın.'**
   String get aiTip7;
 
-  /// No description provided for @aiWelcomeMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Merhaba! Ben Mira asistanınızım. Size bugün nasıl yardımcı olabilirim? Vizyonlar, alışkanlıklar, zamanlayıcılar veya diğer özellikler hakkında soru sorabilirsiniz.'**
   String get aiWelcomeMessage;
 
-  /// No description provided for @allDataDeleted.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tüm veriler silindi'**
   String get allDataDeleted;
 
-  /// No description provided for @allHabitsLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tüm Alışkanlıklar'**
   String get allHabitsLabel;
 
-  /// No description provided for @allLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tümü'**
   String get allLabel;
 
-  /// No description provided for @alsoDeleteLinkedHabits.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bağlı alışkanlıkları da sil'**
   String get alsoDeleteLinkedHabits;
 
-  /// No description provided for @amount.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Miktar'**
   String get amount;
 
-  /// No description provided for @amountLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tutar'**
   String get amountLabel;
 
-  /// No description provided for @analysis.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Analiz'**
   String get analysis;
 
-  /// No description provided for @analysisTooltip.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Analiz'**
   String get analysisTooltip;
 
-  /// No description provided for @annualPlanDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'12 ay boyunca kesintisiz erişim'**
   String get annualPlanDesc;
 
-  /// No description provided for @appTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Mira'**
   String get appTitle;
 
-  /// No description provided for @appearance.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Görünüm'**
   String get appearance;
 
-  /// No description provided for @apply.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Uygula'**
   String get apply;
 
-  /// No description provided for @applyCode.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kodu Uygula'**
   String get applyCode;
 
-  /// No description provided for @applying.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Uygulanıyor...'**
   String get applying;
 
-  /// No description provided for @approxVisionDurationDays.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu vizyon yaklaşık {days} gün sürer'**
   String approxVisionDurationDays(Object days);
 
-  /// No description provided for @assetsReloadHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bazı varlıkların yüklenmesi için uygulamanın tamamen yeniden başlatılması gerekebilir.'**
   String get assetsReloadHint;
 
-  /// No description provided for @atLeast.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'En Az'**
   String get atLeast;
 
-  /// No description provided for @atMost.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'En Çok'**
   String get atMost;
 
-  /// No description provided for @autoBackupSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Verilerinizi her 24 saatte bir otomatik olarak Google Drive\'a yedekleyin.'**
   String get autoBackupSubtitle;
 
-  /// No description provided for @autoBackupTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Otomatik Yedekleme'**
   String get autoBackupTitle;
 
-  /// No description provided for @averageMood.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ortalama Duygu'**
   String get averageMood;
 
-  /// No description provided for @back.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geri'**
   String get back;
 
-  /// No description provided for @backgroundPlate.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Arka plan plakası'**
   String get backgroundPlate;
 
-  /// No description provided for @backupError.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yedekleme hatası'**
   String get backupError;
 
-  /// No description provided for @backupFailed.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yedekleme başarısız'**
   String get backupFailed;
 
-  /// No description provided for @backupNow.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hemen yedekle'**
   String get backupNow;
 
-  /// No description provided for @backupRestore.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yedekleme & Geri Yükleme'**
   String get backupRestore;
 
-  /// No description provided for @backupSuccess.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yedeklendi: {id}'**
   String backupSuccess(Object id);
 
-  /// No description provided for @backupTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yedekleme'**
   String get backupTitle;
 
-  /// No description provided for @backupToDrive.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Drive\'a Yedekle'**
   String get backupToDrive;
 
-  /// No description provided for @badgeActive100dDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'100 farklı günde aktif ol'**
   String get badgeActive100dDesc;
 
-  /// No description provided for @badgeActive100dTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'100 Gün Aktif'**
   String get badgeActive100dTitle;
 
-  /// No description provided for @badgeActive30dDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'30 farklı günde aktif ol'**
   String get badgeActive30dDesc;
 
-  /// No description provided for @badgeActive30dTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'30 Gün Aktif'**
   String get badgeActive30dTitle;
 
-  /// No description provided for @badgeActive7dDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'7 farklı günde aktif ol'**
   String get badgeActive7dDesc;
 
-  /// No description provided for @badgeActive7dTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'7 Gün Aktif'**
   String get badgeActive7dTitle;
 
-  /// No description provided for @badgeCategoryActivity.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aktivite'**
   String get badgeCategoryActivity;
 
-  /// No description provided for @badgeCategoryFinance.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Finans'**
   String get badgeCategoryFinance;
 
-  /// No description provided for @badgeCategoryHabit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık'**
   String get badgeCategoryHabit;
 
-  /// No description provided for @badgeCategoryLevel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Seviye'**
   String get badgeCategoryLevel;
 
-  /// No description provided for @badgeCategoryVision.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyon'**
   String get badgeCategoryVision;
 
-  /// No description provided for @badgeCategoryXp.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'XP'**
   String get badgeCategoryXp;
 
-  /// No description provided for @badgeFin100Desc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'100 işlem kaydet'**
   String get badgeFin100Desc;
 
-  /// No description provided for @badgeFin100Title.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Finansçı 100'**
   String get badgeFin100Title;
 
-  /// No description provided for @badgeFin10Desc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'10 işlem kaydet'**
   String get badgeFin10Desc;
 
-  /// No description provided for @badgeFin10Title.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Finansçı 10'**
   String get badgeFin10Title;
 
-  /// No description provided for @badgeFin250Desc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'250 işlem kaydet'**
   String get badgeFin250Desc;
 
-  /// No description provided for @badgeFin250Title.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Finansçı 250'**
   String get badgeFin250Title;
 
-  /// No description provided for @badgeFin50Desc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'50 işlem kaydet'**
   String get badgeFin50Desc;
 
-  /// No description provided for @badgeFin50Title.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Finansçı 50'**
   String get badgeFin50Title;
 
-  /// No description provided for @badgeHabit100Desc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Toplamda 100 alışkanlık tamamla'**
   String get badgeHabit100Desc;
 
-  /// No description provided for @badgeHabit100Title.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık 100'**
   String get badgeHabit100Title;
 
-  /// No description provided for @badgeHabit10Desc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Toplamda 10 alışkanlık tamamla'**
   String get badgeHabit10Desc;
 
-  /// No description provided for @badgeHabit10Title.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık 10'**
   String get badgeHabit10Title;
 
-  /// No description provided for @badgeHabit200Desc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Toplamda 200 alışkanlık tamamla'**
   String get badgeHabit200Desc;
 
-  /// No description provided for @badgeHabit200Title.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık 200'**
   String get badgeHabit200Title;
 
-  /// No description provided for @badgeHabit50Desc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Toplamda 50 alışkanlık tamamla'**
   String get badgeHabit50Desc;
 
-  /// No description provided for @badgeHabit50Title.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık 50'**
   String get badgeHabit50Title;
 
-  /// No description provided for @badgeLevel10Desc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'10. seviyeye ulaş'**
   String get badgeLevel10Desc;
 
-  /// No description provided for @badgeLevel10Title.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Seviye 10'**
   String get badgeLevel10Title;
 
-  /// No description provided for @badgeLevel20Desc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'20. seviyeye ulaş'**
   String get badgeLevel20Desc;
 
-  /// No description provided for @badgeLevel20Title.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Seviye 20'**
   String get badgeLevel20Title;
 
-  /// No description provided for @badgeLevel5Desc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'5. seviyeye ulaş'**
   String get badgeLevel5Desc;
 
-  /// No description provided for @badgeLevel5Title.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Seviye 5'**
   String get badgeLevel5Title;
 
-  /// No description provided for @badgeVision10Desc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'10 vizyon oluştur'**
   String get badgeVision10Desc;
 
-  /// No description provided for @badgeVision10Title.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyon Büyükustası'**
   String get badgeVision10Title;
 
-  /// No description provided for @badgeVision1Desc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İlk vizyonunu oluştur'**
   String get badgeVision1Desc;
 
-  /// No description provided for @badgeVision1Title.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyoner'**
   String get badgeVision1Title;
 
-  /// No description provided for @badgeVision5Desc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'5 vizyon oluştur'**
   String get badgeVision5Desc;
 
-  /// No description provided for @badgeVision5Title.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyon Ustası'**
   String get badgeVision5Title;
 
-  /// No description provided for @badgeVisionHabits3Desc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bir vizyona 3+ alışkanlık bağla'**
   String get badgeVisionHabits3Desc;
 
-  /// No description provided for @badgeVisionHabits3Title.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bağlayıcı'**
   String get badgeVisionHabits3Title;
 
-  /// No description provided for @badgeXp1000Desc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Toplam 1000 XP kazan'**
   String get badgeXp1000Desc;
 
-  /// No description provided for @badgeXp1000Title.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'1000 XP'**
   String get badgeXp1000Title;
 
-  /// No description provided for @badgeXp500Desc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Toplam 500 XP kazan'**
   String get badgeXp500Desc;
 
-  /// No description provided for @badgeXp500Title.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'500 XP'**
   String get badgeXp500Title;
 
-  /// No description provided for @badges.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Rozetler'**
   String get badges;
 
-  /// No description provided for @balanceParenthesis.
+  /// Kalan bakiye miktarını parantez içinde gösterir
   ///
   /// In tr, this message translates to:
   /// **'(Bakiye: {balance})'**
   String balanceParenthesis(Object balance);
 
-  /// No description provided for @becomePremium.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Premium Olun'**
   String get becomePremium;
 
-  /// No description provided for @becomePremiumShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Premium Ol'**
   String get becomePremiumShort;
 
-  /// No description provided for @between1And360.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'1 ile 360 arasında'**
   String get between1And360;
 
-  /// No description provided for @billingHistory.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Fatura Geçmişi'**
   String get billingHistory;
 
-  /// No description provided for @bio.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Biyografi'**
   String get bio;
 
-  /// No description provided for @bioHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kendiniz hakkında kısa bir biyografi'**
   String get bioHint;
 
-  /// No description provided for @breakLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'MOLA'**
   String get breakLabel;
 
-  /// No description provided for @breakTime.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Mola'**
   String get breakTime;
 
-  /// No description provided for @breakdownByCategory.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kategoriye göre döküm'**
   String get breakdownByCategory;
 
-  /// No description provided for @bringForward.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Öne getir'**
   String get bringForward;
 
-  /// No description provided for @bugReportFailedError.
+  /// Hata raporu gönderimi başarısız olduğunda gösterilen hata mesajı
   ///
   /// In tr, this message translates to:
   /// **'Hata raporu gönderilemedi: {error}'**
   String bugReportFailedError(Object error);
 
-  /// No description provided for @bugReportFailedStatus.
+  /// Hata raporu gönderimi durum kodu ile başarısız olduğunda gösterilen mesaj
   ///
   /// In tr, this message translates to:
   /// **'Hata raporu gönderilemedi: {statusCode}'**
   String bugReportFailedStatus(Object statusCode);
 
-  /// No description provided for @bugReportSentSuccess.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hata raporunuz başarıyla gönderildi. Teşekkür ederiz!'**
   String get bugReportSentSuccess;
 
-  /// No description provided for @buyPremium.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Premium Satın Al'**
   String get buyPremium;
 
-  /// No description provided for @canIGetRefund.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geri ödeme alabilir miyim?'**
   String get canIGetRefund;
 
-  /// No description provided for @cancel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İptal'**
   String get cancel;
 
-  /// No description provided for @cancelButton.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İptal'**
   String get cancelButton;
 
-  /// No description provided for @cancelEffect.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Abonelik süreniz bitene kadar premium özelliklerden faydalanmaya devam edersiniz.'**
   String get cancelEffect;
 
-  /// No description provided for @cancelInstructions.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Google Play Store → Abonelikler → Mira Plus → İptal Et'**
   String get cancelInstructions;
 
-  /// No description provided for @cannotOpenPlayStore.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Play Store açılamıyor'**
   String get cannotOpenPlayStore;
 
-  /// No description provided for @category.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kategori'**
   String get category;
 
-  /// No description provided for @categoryName.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kategori Adı'**
   String get categoryName;
 
-  /// No description provided for @characterDescBalancedMindful.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sakin, istikrarlı ve iç huzura değer veren birisin. Denge sağlamakta ve hayata bilinçlilik ve soğukkanlılıkla yaklaşmakta başarılısın.'**
   String get characterDescBalancedMindful;
 
-  /// No description provided for @characterDescExplorer.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Meraklı, yaratıcı ve çeşitliliği seven birisin. Yeni şeyler öğrenmekten ve hayatın zorluklarına farklı yaklaşımlar denemekten keyif alırsın.'**
   String get characterDescExplorer;
 
-  /// No description provided for @characterDescPlanner.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Düzenli, hedef odaklı ve yapıdan beslenen birisin. Hayalleri eyleme dönüştürmekte ve disiplinle takip etmekte başarılısın.'**
   String get characterDescPlanner;
 
-  /// No description provided for @characterDescSocialConnector.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sıcakkanlı, empatik ve ilişkilerden enerji alan birisin. Başkalarıyla bağlantı kurmakta ve güçlü topluluklar oluşturmakta anlam bulursun.'**
   String get characterDescSocialConnector;
 
-  /// No description provided for @characterTypeBalancedMindful.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Dengeli Bilinçli'**
   String get characterTypeBalancedMindful;
 
-  /// No description provided for @characterTypeExplorer.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kaşif'**
   String get characterTypeExplorer;
 
-  /// No description provided for @characterTypePlanner.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Planlayıcı'**
   String get characterTypePlanner;
 
-  /// No description provided for @characterTypeSocialConnector.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sosyal Bağlayıcı'**
   String get characterTypeSocialConnector;
 
-  /// No description provided for @checkboxType.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Onay Kutusu'**
   String get checkboxType;
 
-  /// No description provided for @checkboxTypeDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Basit işaretle'**
   String get checkboxTypeDesc;
 
-  /// No description provided for @checkingPurchases.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Satın almalar kontrol ediliyor...'**
   String get checkingPurchases;
 
-  /// No description provided for @chooseBestCategory.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlığınız için en iyi kategoriyi seçin'**
   String get chooseBestCategory;
 
-  /// No description provided for @chooseColor.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Renk Seç:'**
   String get chooseColor;
 
-  /// No description provided for @chooseEmoji.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Emoji Seç:'**
   String get chooseEmoji;
 
-  /// No description provided for @choosePhoto.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Fotoğraf Seç'**
   String get choosePhoto;
 
-  /// No description provided for @choosePhotoDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Size ilham veren bir fotoğraf seçin'**
   String get choosePhotoDesc;
 
-  /// No description provided for @choosePhotoSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Seni motive eden bir fotoğraf seç'**
   String get choosePhotoSubtitle;
 
-  /// No description provided for @clear.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Temizle'**
   String get clear;
 
-  /// No description provided for @clearFilters.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Filtreleri temizle'**
   String get clearFilters;
 
-  /// No description provided for @clearHistory.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geçmişi Temizle'**
   String get clearHistory;
 
-  /// No description provided for @close.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kapat'**
   String get close;
 
-  /// No description provided for @closeButton.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kapat'**
   String get closeButton;
 
-  /// No description provided for @cloudBackup.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bulut Yedekleme'**
   String get cloudBackup;
 
-  /// No description provided for @coinFlipDescription.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İki seçenek arasında karar ver'**
   String get coinFlipDescription;
 
-  /// No description provided for @coinFlipInstruction.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İki seçeneği yaz ve parayı çevir!'**
   String get coinFlipInstruction;
 
-  /// No description provided for @coinFlipTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yazı Tura'**
   String get coinFlipTitle;
 
-  /// No description provided for @colorLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Renk'**
   String get colorLabel;
 
-  /// No description provided for @colorTheme.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Renk teması'**
   String get colorTheme;
 
-  /// No description provided for @completeAllSubtasksToFinish.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'tümünü tamamlayınca alışkanlık tamamlanır'**
   String get completeAllSubtasksToFinish;
 
-  /// No description provided for @completedSelectedDay.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tamamlandı (seçilen gün)'**
   String get completedSelectedDay;
 
-  /// No description provided for @completedTableHeader.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'TAMAM'**
   String get completedTableHeader;
 
-  /// No description provided for @completionPercentLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tamamlanma %'**
   String get completionPercentLabel;
 
-  /// No description provided for @completionsCount.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'{count} tamamlandı'**
   String completionsCount(Object count);
 
-  /// No description provided for @confirmDeleteAccount.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hesabı silmeyi onayla'**
   String get confirmDeleteAccount;
 
-  /// No description provided for @confirmHabits.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlıkları Onayla'**
   String get confirmHabits;
 
-  /// No description provided for @continueAsGuest.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Misafir Olarak Devam Et'**
   String get continueAsGuest;
 
-  /// No description provided for @continueButton.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Devam Et'**
   String get continueButton;
 
-  /// No description provided for @continueText.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Devam Et'**
   String get continueText;
 
-  /// No description provided for @copyButton.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kopyala'**
   String get copyButton;
 
-  /// No description provided for @copyCodeTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kodu Kopyala'**
   String get copyCodeTitle;
 
-  /// No description provided for @costTokens.
+  /// Bir işlemin jeton maliyetini gösterir
   ///
   /// In tr, this message translates to:
   /// **'Maliyet: {cost} jeton'**
   String costTokens(Object cost);
 
-  /// No description provided for @cottonCandy.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Pamuk Şeker'**
   String get cottonCandy;
 
-  /// No description provided for @cottonCandyDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Pamuk şeker - pembe ve mavi'**
   String get cottonCandyDesc;
 
-  /// No description provided for @countdownConfigureTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geri Sayımı Yapılandır'**
   String get countdownConfigureTitle;
 
-  /// No description provided for @countdownLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'GERİ SAYIM'**
   String get countdownLabel;
 
-  /// No description provided for @cozyJournal.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Rahat Günlük'**
   String get cozyJournal;
 
-  /// No description provided for @cozyJournalDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kahverengi tonlar ve zaman çizelgesi'**
   String get cozyJournalDesc;
 
-  /// No description provided for @crashReports.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çökme raporları'**
   String get crashReports;
 
-  /// No description provided for @crashReportsSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Uygulama çökmelerinde anonim rapor gönder'**
   String get crashReportsSubtitle;
 
-  /// No description provided for @create.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Oluştur'**
   String get create;
 
-  /// No description provided for @createAdvancedHabit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gelişmiş Alışkanlık Oluştur'**
   String get createAdvancedHabit;
 
-  /// No description provided for @createButton.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Oluştur'**
   String get createButton;
 
-  /// No description provided for @createDailyTask.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük Görev Oluştur'**
   String get createDailyTask;
 
-  /// No description provided for @createFirstHabit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık Oluştur'**
   String get createFirstHabit;
 
-  /// No description provided for @createFirstReportPrompt.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İlk haftalık raporunuzu oluşturmak için + butonuna tıklayın'**
   String get createFirstReportPrompt;
 
-  /// No description provided for @createFirstVision.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İlk Vizyonunuzu Oluşturun'**
   String get createFirstVision;
 
-  /// No description provided for @createHabit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlığı Oluştur'**
   String get createHabit;
 
-  /// No description provided for @createHabitAction.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık Oluştur'**
   String get createHabitAction;
 
-  /// No description provided for @createHabitTemplateTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık Şablonu Oluştur'**
   String get createHabitTemplateTitle;
 
-  /// No description provided for @createHabitTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık Oluştur'**
   String get createHabitTitle;
 
-  /// No description provided for @createList.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Liste Oluştur'**
   String get createList;
 
-  /// No description provided for @createNewCategory.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeni Kategori Oluştur'**
   String get createNewCategory;
 
-  /// No description provided for @createNewList.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeni liste oluştur'**
   String get createNewList;
 
-  /// No description provided for @createReport.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Rapor Oluştur'**
   String get createReport;
 
-  /// No description provided for @createRoomSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeni bir oda oluştur ve arkadaşlarını davet et'**
   String get createRoomSubtitle;
 
-  /// No description provided for @createRoomSuccessSnackbar.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Oda oluşturuldu! 🎉'**
   String get createRoomSuccessSnackbar;
 
-  /// No description provided for @createRoomTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Oda Oluştur'**
   String get createRoomTitle;
 
-  /// No description provided for @createVision.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyon Oluştur'**
   String get createVision;
 
-  /// No description provided for @createVisionTemplateTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyon Şablonu Oluştur'**
   String get createVisionTemplateTitle;
 
-  /// No description provided for @createVisionWithAI.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yapay Zeka ile Vizyon Oluştur'**
   String get createVisionWithAI;
 
-  /// No description provided for @createWithAi.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'AI ile Oluştur'**
   String get createWithAi;
 
-  /// No description provided for @creatingBackup.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yedek oluşturuluyor...'**
   String get creatingBackup;
 
-  /// No description provided for @currentStreak.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Mevcut Seri'**
   String get currentStreak;
 
-  /// No description provided for @custom.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Özel'**
   String get custom;
 
-  /// No description provided for @customCategories.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Özel Kategoriler'**
   String get customCategories;
 
-  /// No description provided for @customEmoji.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Özel Emoji'**
   String get customEmoji;
 
-  /// No description provided for @customEmojiHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Örn: ✨'**
   String get customEmojiHint;
 
-  /// No description provided for @customEmojiOptional.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Özel emoji (isteğe bağlı)'**
   String get customEmojiOptional;
 
-  /// No description provided for @customEvent.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Özel Etkinlik'**
   String get customEvent;
 
-  /// No description provided for @customFrequency.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Özel'**
   String get customFrequency;
 
-  /// No description provided for @customUnit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Özel Birim'**
   String get customUnit;
 
-  /// No description provided for @customUnitHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Örn: porsiyon, set, km...'**
   String get customUnitHint;
 
-  /// No description provided for @daily.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük'**
   String get daily;
 
-  /// No description provided for @dailyCheck.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük kontrol'**
   String get dailyCheck;
 
-  /// No description provided for @dailyDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Her gün yapılacak'**
   String get dailyDesc;
 
-  /// No description provided for @dailyHabitInfo.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük'**
   String get dailyHabitInfo;
 
-  /// No description provided for @dailyLimit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük limit'**
   String get dailyLimit;
 
-  /// No description provided for @dailyTask.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük Görev'**
   String get dailyTask;
 
-  /// No description provided for @dailyTaskCreatedMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük görev oluşturuldu: {title}'**
   String dailyTaskCreatedMessage(Object title);
 
-  /// No description provided for @dailyTaskSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bugüne özel bir görev ekle'**
   String get dailyTaskSubtitle;
 
-  /// No description provided for @dailyTaskTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük Görev'**
   String get dailyTaskTitle;
 
-  /// No description provided for @dailyTasksSection.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük Görevler'**
   String get dailyTasksSection;
 
-  /// No description provided for @darkTheme.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Karanlık tema'**
   String get darkTheme;
 
-  /// No description provided for @dashboard.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Panel'**
   String get dashboard;
 
-  /// No description provided for @date.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tarih'**
   String get date;
 
-  /// No description provided for @dateRangeLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tarih Aralığı'**
   String get dateRangeLabel;
 
-  /// No description provided for @dayFriShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Cum'**
   String get dayFriShort;
 
-  /// No description provided for @dayMonShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Pzt'**
   String get dayMonShort;
 
-  /// No description provided for @dayRangeShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gün {start}–{end}'**
   String dayRangeShort(Object end, Object start);
 
-  /// No description provided for @daySatShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Cmt'**
   String get daySatShort;
 
-  /// No description provided for @dayShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gün {day}'**
   String dayShort(Object day);
 
-  /// No description provided for @daySunShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Paz'**
   String get daySunShort;
 
-  /// No description provided for @dayThuShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Per'**
   String get dayThuShort;
 
-  /// No description provided for @dayTueShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sal'**
   String get dayTueShort;
 
-  /// No description provided for @dayWedShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çar'**
   String get dayWedShort;
 
-  /// No description provided for @days.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'gün'**
   String get days;
 
-  /// No description provided for @daysAgo.
+  /// Geçmiş bir zaman dilimini gün bazında ifade eder
   ///
   /// In tr, this message translates to:
   /// **'{days} gün önce'**
   String daysAgo(Object days);
 
-  /// No description provided for @daysAverageShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'{days}g ort.'**
   String daysAverageShort(Object days);
 
-  /// No description provided for @daysCount.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'{count} gün'**
   String daysCount(Object count);
 
-  /// No description provided for @daysInterval.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'günde bir'**
   String get daysInterval;
 
-  /// No description provided for @daysIntervalLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'günde bir'**
   String get daysIntervalLabel;
 
-  /// No description provided for @daysLater.
+  /// Gelecek bir zaman dilimini gün bazında ifade eder
   ///
   /// In tr, this message translates to:
   /// **'{days} gün sonra'**
   String daysLater(Object days);
 
-  /// No description provided for @daysLeft.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'gün kaldı'**
   String get daysLeft;
 
-  /// No description provided for @daysRemaining.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kalan Gün'**
   String get daysRemaining;
 
-  /// No description provided for @daysSuffixShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'gün'**
   String get daysSuffixShort;
 
-  /// No description provided for @decisionEggDescription.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Mistik yumurtalardan birini seç'**
   String get decisionEggDescription;
 
-  /// No description provided for @decisionEggTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Karar Yumurtası'**
   String get decisionEggTitle;
 
-  /// No description provided for @defaultUnit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'adet'**
   String get defaultUnit;
 
-  /// No description provided for @delete.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sil'**
   String get delete;
 
-  /// No description provided for @deleteAccountFailed.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hesap silme başarısız'**
   String get deleteAccountFailed;
 
-  /// No description provided for @deleteAccountRequestSuccess.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hesap silme talebiniz başarıyla alındı'**
   String get deleteAccountRequestSuccess;
 
-  /// No description provided for @deleteAccountSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hesabınızın ve verilerinizin silinmesini talep edin'**
   String get deleteAccountSubtitle;
 
-  /// No description provided for @deleteAccountWarning.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu işlem geri alınamaz. Lütfen hesabınızla ilişkili e-posta adresini onaylayın.'**
   String get deleteAccountWarning;
 
-  /// No description provided for @deleteAction.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sil'**
   String get deleteAction;
 
-  /// No description provided for @deleteAllData.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tüm verileri sil'**
   String get deleteAllData;
 
-  /// No description provided for @deleteAllDataConfirmContent.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tüm uygulama verilerinizi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.'**
   String get deleteAllDataConfirmContent;
 
-  /// No description provided for @deleteButton.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sil'**
   String get deleteButton;
 
-  /// No description provided for @deleteCategoryConfirmNamed.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'\"{name}\" kategorisini sil?'**
   String deleteCategoryConfirmNamed(Object name);
 
-  /// No description provided for @deleteCategoryTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kategoriyi sil'**
   String get deleteCategoryTitle;
 
-  /// No description provided for @deleteCustomCategoryConfirm.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu özel kategoriyi sil?'**
   String get deleteCustomCategoryConfirm;
 
-  /// No description provided for @deleteEntryConfirm.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu kaydı silmek istediğinden emin misin?'**
   String get deleteEntryConfirm;
 
-  /// No description provided for @deleteEvent.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Etkinliği Sil'**
   String get deleteEvent;
 
-  /// No description provided for @deleteHabitConfirm.
+  /// Bir alışkanlığı silmeden önce onay isteyen soru mesajı
   ///
   /// In tr, this message translates to:
   /// **'\'{title}\' odadan silinsin mi?'**
   String deleteHabitConfirm(Object title);
 
-  /// No description provided for @deleteHabitTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlığı Sil'**
   String get deleteHabitTitle;
 
-  /// No description provided for @deleteListMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu liste silinecek. Bağlı öğeler için işlemi seçin:'**
   String get deleteListMessage;
 
-  /// No description provided for @deleteListTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Listeyi Sil'**
   String get deleteListTitle;
 
-  /// No description provided for @deleteMyAccount.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hesabımı sil'**
   String get deleteMyAccount;
 
-  /// No description provided for @deleteRoomTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Odayı Sil'**
   String get deleteRoomTitle;
 
-  /// No description provided for @deleteRoomWarning.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu oda ve tüm içeriği kalıcı olarak silinecek. Devam etmek istiyor musun?'**
   String get deleteRoomWarning;
 
-  /// No description provided for @deleteTaskConfirm.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu görevi silmek istediğinize emin misiniz?'**
   String get deleteTaskConfirm;
 
-  /// No description provided for @deleteTaskConfirmMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu günlük görev silinsin mi? Bu işlem geri alınabilir.'**
   String get deleteTaskConfirmMessage;
 
-  /// No description provided for @deleteTaskConfirmTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Görev silinsin mi?'**
   String get deleteTaskConfirmTitle;
 
-  /// No description provided for @deleteTransactionConfirm.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'\"{title}\" kaydını sil?'**
   String deleteTransactionConfirm(Object title);
 
-  /// No description provided for @deleteVisionMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu vizyonu sil?'**
   String get deleteVisionMessage;
 
-  /// No description provided for @deleteVisionTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyonu sil'**
   String get deleteVisionTitle;
 
-  /// No description provided for @descHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlığınızla ilgili ayrıntılar (isteğe bağlı)'**
   String get descHint;
 
-  /// No description provided for @descriptionHintOptional.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Açıklama ekle (isteğe bağlı)'**
   String get descriptionHintOptional;
 
-  /// No description provided for @descriptionLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Açıklama'**
   String get descriptionLabel;
 
-  /// No description provided for @detailedCharts.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Detaylı grafikler ve istatistikler'**
   String get detailedCharts;
 
-  /// No description provided for @diagnosticsData.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tanılama verileri'**
   String get diagnosticsData;
 
-  /// No description provided for @diagnosticsDataSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Uygulama kullanımına dair anonim istatistikleri paylaş'**
   String get diagnosticsDataSubtitle;
 
-  /// No description provided for @difficulty.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Zorluk Seviyesi'**
   String get difficulty;
 
-  /// No description provided for @drinkWater.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Su İç'**
   String get drinkWater;
 
-  /// No description provided for @duration.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Süre'**
   String get duration;
 
-  /// No description provided for @durationAutoLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Süre (otomatik)'**
   String get durationAutoLabel;
 
-  /// No description provided for @durationIndefinite.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Süresiz'**
   String get durationIndefinite;
 
-  /// No description provided for @durationMonths.
+  /// Aylık süreyi ifade eder
   ///
   /// In tr, this message translates to:
   /// **'{count} ay'**
   String durationMonths(Object count);
 
-  /// No description provided for @durationSelection.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Süre seçimi'**
   String get durationSelection;
 
-  /// No description provided for @durationType.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Süre Tipi'**
   String get durationType;
 
-  /// No description provided for @earthTheme.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Toprak'**
   String get earthTheme;
 
-  /// No description provided for @earthThemeDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Toprak renkleri'**
   String get earthThemeDesc;
 
-  /// No description provided for @easy.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kolay'**
   String get easy;
 
-  /// No description provided for @edit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Düzenle'**
   String get edit;
 
-  /// No description provided for @editButton.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Düzenle'**
   String get editButton;
 
-  /// No description provided for @editCategory.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kategoriyi Düzenle'**
   String get editCategory;
 
-  /// No description provided for @editDeleteTooltip.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Düzenle / Sil'**
   String get editDeleteTooltip;
 
-  /// No description provided for @editEvent.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Etkinliği Düzenle'**
   String get editEvent;
 
-  /// No description provided for @editHabit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlığı Düzenle'**
   String get editHabit;
 
-  /// No description provided for @editListTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Listeyi Düzenle'**
   String get editListTitle;
 
-  /// No description provided for @editOnlyPersonalHabits.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sadece kişisel listenize eklenmiş alışkanlıkları düzenleyebilirsiniz.'**
   String get editOnlyPersonalHabits;
 
-  /// No description provided for @education.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Eğitim'**
   String get education;
 
-  /// No description provided for @eggRevealMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Mistik yumurta cevabını verdi! ✨'**
   String get eggRevealMessage;
 
-  /// No description provided for @eggSelectMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aklından bir soru tut ve bir yumurtaya dokun 🥚'**
   String get eggSelectMessage;
 
-  /// No description provided for @emojiAndColor.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Emoji & Renk'**
   String get emojiAndColor;
 
-  /// No description provided for @emojiCategoryAnimals.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hayvanlar'**
   String get emojiCategoryAnimals;
 
-  /// No description provided for @emojiCategoryCare.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bakım'**
   String get emojiCategoryCare;
 
-  /// No description provided for @emojiCategoryFood.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yiyecek'**
   String get emojiCategoryFood;
 
-  /// No description provided for @emojiCategoryHealth.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sağlık'**
   String get emojiCategoryHealth;
 
-  /// No description provided for @emojiCategoryLife.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yaşam'**
   String get emojiCategoryLife;
 
-  /// No description provided for @emojiCategoryNature.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Doğa'**
   String get emojiCategoryNature;
 
-  /// No description provided for @emojiCategoryPopular.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Popüler'**
   String get emojiCategoryPopular;
 
-  /// No description provided for @emojiCategoryProductivity.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Üretkenlik'**
   String get emojiCategoryProductivity;
 
-  /// No description provided for @emojiCategorySport.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Spor'**
   String get emojiCategorySport;
 
-  /// No description provided for @emojiLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Emoji'**
   String get emojiLabel;
 
-  /// No description provided for @emotionBlessed.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Şanslı/Kutsanmış'**
   String get emotionBlessed;
 
-  /// No description provided for @emotionBored.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sıkılmış'**
   String get emotionBored;
 
-  /// No description provided for @emotionConfident.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kendinden Emin'**
   String get emotionConfident;
 
-  /// No description provided for @emotionConfused.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kafası Karışık'**
   String get emotionConfused;
 
-  /// No description provided for @emotionDistracted.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Dikkati Dağınık'**
   String get emotionDistracted;
 
-  /// No description provided for @emotionEuphoric.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Coşkulu'**
   String get emotionEuphoric;
 
-  /// No description provided for @emotionGuilty.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Suçlu'**
   String get emotionGuilty;
 
-  /// No description provided for @emotionHopeful.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Umutlu'**
   String get emotionHopeful;
 
-  /// No description provided for @emotionInsecure.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Güvensiz'**
   String get emotionInsecure;
 
-  /// No description provided for @emotionLonely.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yalnız'**
   String get emotionLonely;
 
-  /// No description provided for @emotionNumb.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hissiz'**
   String get emotionNumb;
 
-  /// No description provided for @emotionOverwhelmed.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bunalmış'**
   String get emotionOverwhelmed;
 
-  /// No description provided for @emotionProud.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gururlu'**
   String get emotionProud;
 
-  /// No description provided for @emotionRegretful.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Pişman'**
   String get emotionRegretful;
 
-  /// No description provided for @emotionUnstoppable.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Durdurulamaz'**
   String get emotionUnstoppable;
 
-  /// No description provided for @emptyHabitSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İlerlemeni takip etmek için ilk alışkanlığını oluştur.'**
   String get emptyHabitSubtitle;
 
-  /// No description provided for @emptyHabitTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yolculuğuna Başla'**
   String get emptyHabitTitle;
 
-  /// No description provided for @enableNotifications.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bildirimleri Etkinleştir'**
   String get enableNotifications;
 
-  /// No description provided for @enableReminder.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hatırlatıcıyı Etkinleştir'**
   String get enableReminder;
 
-  /// No description provided for @endDate.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bitiş Tarihi'**
   String get endDate;
 
-  /// No description provided for @endDateLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bitiş'**
   String get endDateLabel;
 
-  /// No description provided for @endDayOptionalLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bitiş günü (isteğe bağlı)'**
   String get endDayOptionalLabel;
 
-  /// No description provided for @endTime.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bitiş Saati'**
   String get endTime;
 
-  /// No description provided for @enterBothOptions.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Lütfen her iki seçeneği de girin'**
   String get enterBothOptions;
 
-  /// No description provided for @enterMonthlyPlanToComputeDailyLimit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük bir limit hesaplamak için aylık bir plan girin.'**
   String get enterMonthlyPlanToComputeDailyLimit;
 
-  /// No description provided for @enterNameAndDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlığınızın adını ve açıklamasını girin'**
   String get enterNameAndDesc;
 
-  /// No description provided for @enterPromoCode.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Lütfen bir promosyon kodu girin'**
   String get enterPromoCode;
 
-  /// No description provided for @enterValueTitle.
+  /// Title for value entry dialog
   ///
   /// In tr, this message translates to:
-  /// **'Değer Gir'**
+  /// **'Değer girin'**
   String get enterValueTitle;
 
-  /// No description provided for @enterYourName.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Adınızı girin'**
   String get enterYourName;
 
-  /// No description provided for @entries.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Girişler'**
   String get entries;
 
-  /// No description provided for @entryCountLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Giriş Sayısı'**
   String get entryCountLabel;
 
-  /// No description provided for @entrySaved.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Giriş başarıyla kaydedildi!'**
   String get entrySaved;
 
-  /// No description provided for @errorPrefix.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hata: '**
   String get errorPrefix;
 
-  /// No description provided for @eventDescription.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Açıklama'**
   String get eventDescription;
 
-  /// No description provided for @eventDetails.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Etkinlik Detayı'**
   String get eventDetails;
 
-  /// No description provided for @eventTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Etkinlik Başlığı'**
   String get eventTitle;
 
-  /// No description provided for @every.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Her'**
   String get every;
 
-  /// No description provided for @everyDay.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Her gün'**
   String get everyDay;
 
-  /// No description provided for @everyLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Her'**
   String get everyLabel;
 
-  /// No description provided for @everyNDays.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Her {days} günde bir'**
   String everyNDays(Object days);
 
-  /// No description provided for @everyNDaysInfo.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Her {days} günde bir gerçekleşir'**
   String everyNDaysInfo(Object days);
 
-  /// No description provided for @everyNDaysQuestion.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kaç günde bir?'**
   String get everyNDaysQuestion;
 
-  /// No description provided for @everyXDays.
+  /// Periyodik gün aralığını ifade eder
   ///
   /// In tr, this message translates to:
   /// **'Her {periodicDays} günde bir'**
   String everyXDays(Object periodicDays);
 
-  /// No description provided for @everyday.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Her Gün'**
   String get everyday;
 
-  /// No description provided for @exact.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tam'**
   String get exact;
 
-  /// No description provided for @exactAlarmPermission.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kesin Alarm İzni (Android 12+)'**
   String get exactAlarmPermission;
 
-  /// No description provided for @examplePrefix.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Örnek: {example}'**
   String examplePrefix(Object example);
 
-  /// No description provided for @expenseDelta.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gider Δ'**
   String get expenseDelta;
 
-  /// No description provided for @expenseDistributionPie.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gider dağılımı (pasta)'**
   String get expenseDistributionPie;
 
-  /// No description provided for @expenseEditTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gideri Düzenle'**
   String get expenseEditTitle;
 
-  /// No description provided for @expenseLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gider'**
   String get expenseLabel;
 
-  /// No description provided for @expenseNewTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeni Gider'**
   String get expenseNewTitle;
 
-  /// No description provided for @failedToLoad.
+  /// Veri yüklenemediğinde gösterilen genel hata mesajı
   ///
   /// In tr, this message translates to:
   /// **'Yüklenemedi: {error}'**
   String failedToLoad(Object error);
 
-  /// No description provided for @featureAdvancedFinance.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gelişmiş Finans Özellikleri'**
   String get featureAdvancedFinance;
 
-  /// No description provided for @featureAdvancedHabits.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gelişmiş Alışkanlık Oluşturma'**
   String get featureAdvancedHabits;
 
-  /// No description provided for @featureAiBioClock.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'AI Destekli Biyolojik Saat'**
   String get featureAiBioClock;
 
-  /// No description provided for @featureAiBioClockDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Biyolojik ritminize göre optimum zamanlama'**
   String get featureAiBioClockDesc;
 
-  /// No description provided for @featureAiWeeklyReport.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'AI Destekli Haftalık Rapor'**
   String get featureAiWeeklyReport;
 
-  /// No description provided for @featureAiWeeklyReportDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İlerlemenizin detaylı AI analizi'**
   String get featureAiWeeklyReportDesc;
 
-  /// No description provided for @featureBackup.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yedekleme Özelliği'**
   String get featureBackup;
 
-  /// No description provided for @featurePremiumThemes.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Premium Temalar'**
   String get featurePremiumThemes;
 
-  /// No description provided for @featureVisionCreation.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyon Oluşturma'**
   String get featureVisionCreation;
 
-  /// No description provided for @feelingMoreSpecific.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu duyguyu daha ayrıntılı tarif edelim'**
   String get feelingMoreSpecific;
 
-  /// No description provided for @filterTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Filtrele'**
   String get filterTitle;
 
-  /// No description provided for @filterTooltip.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Filtrele'**
   String get filterTooltip;
 
-  /// No description provided for @finance.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Finans'**
   String get finance;
 
-  /// No description provided for @financeAddAiStatementOption.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Yapay Zeka ile Ekstre/Fis Yukle'**
+  /// **'Yapay Zeka ile Ekstre/Fiş Yükle'**
   String get financeAddAiStatementOption;
 
-  /// No description provided for @financeAddAiStatementSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Gorsel veya PDF uzerinden otomatik ekler'**
+  /// **'Görsel veya PDF üzerinden otomatik ekler'**
   String get financeAddAiStatementSubtitle;
 
-  /// No description provided for @financeAddManualOption.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Manuel Ekle'**
   String get financeAddManualOption;
 
-  /// No description provided for @financeAnalysisTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Finans Analizi · {month}'**
   String financeAnalysisTitle(Object month);
 
-  /// No description provided for @financeLast7Days.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Finans · Son 7 gün'**
   String get financeLast7Days;
 
-  /// No description provided for @financeNet.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Net'**
   String get financeNet;
 
-  /// No description provided for @finish.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bitir'**
   String get finish;
 
-  /// No description provided for @fitness.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Fitness'**
   String get fitness;
 
-  /// No description provided for @fixedDuration.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sabit'**
   String get fixedDuration;
 
-  /// No description provided for @flexiblePlan.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Esnek plan, istediğin zaman iptal et'**
   String get flexiblePlan;
 
-  /// No description provided for @flipCoin.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Parayı Çevir'**
   String get flipCoin;
 
-  /// No description provided for @focusLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'ODAK'**
   String get focusLabel;
 
-  /// No description provided for @focusedZen.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Odaklanmış Zen'**
   String get focusedZen;
 
-  /// No description provided for @focusedZenDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Minimalist, tek odak noktası'**
   String get focusedZenDesc;
 
-  /// No description provided for @font.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yazı Tipi'**
   String get font;
 
-  /// No description provided for @forestTheme.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Orman'**
   String get forestTheme;
 
-  /// No description provided for @forestThemeDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Doğal yeşil tema'**
   String get forestThemeDesc;
 
-  /// No description provided for @forever.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sonsuza kadar'**
   String get forever;
 
-  /// No description provided for @fortuneDisclaimer.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Eğlence amaçlıdır.'**
   String get fortuneDisclaimer;
 
-  /// No description provided for @fortuneEggSemantic.
+  /// Karar yumurtası için erişilebilirlik açıklaması
   ///
   /// In tr, this message translates to:
   /// **'Yumurta {index}'**
   String fortuneEggSemantic(int index);
 
-  /// No description provided for @fortuneEggsSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aşağıdan bir yumurta seç'**
   String get fortuneEggsSubtitle;
 
-  /// No description provided for @fortuneNoQuestion.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bir soru yazmadın'**
   String get fortuneNoQuestion;
 
-  /// No description provided for @fortunePlay.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Karar Yumurtaları'**
   String get fortunePlay;
 
-  /// No description provided for @fortuneProceedToEggs.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yumurtalara Geç'**
   String get fortuneProceedToEggs;
 
-  /// No description provided for @fortuneQuestionHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Örn: Bu hafta yeni bir şey denemeli miyim?'**
   String get fortuneQuestionHint;
 
-  /// No description provided for @fortuneQuestionPrompt.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aklındaki soruyu yaz'**
   String get fortuneQuestionPrompt;
 
-  /// No description provided for @fortuneResultTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Cevabın'**
   String get fortuneResultTitle;
 
-  /// No description provided for @fortuneSwipeInstruction.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yumurtayı sağa/sola kaydırarak değiştirin, üzerine dokununca cevap görünür'**
   String get fortuneSwipeInstruction;
 
-  /// No description provided for @fortuneTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Karar Yumurtaları'**
   String get fortuneTitle;
 
-  /// No description provided for @freeTrial14Days.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'14 gün ücretsiz deneme'**
   String get freeTrial14Days;
 
-  /// No description provided for @frequency.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sıklık'**
   String get frequency;
 
-  /// No description provided for @frequencyLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sıklık'**
   String get frequencyLabel;
 
-  /// No description provided for @fridayShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Cum'**
   String get fridayShort;
 
-  /// No description provided for @fullName.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tam Ad'**
   String get fullName;
 
-  /// No description provided for @fullScreen.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tam ekran'**
   String get fullScreen;
 
-  /// No description provided for @gallery.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Galeri'**
   String get gallery;
 
-  /// No description provided for @gamesDescription.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Karar vermekte zorlanıyor musun? Eğlenceli oyunlarla kararını ver!'**
   String get gamesDescription;
 
-  /// No description provided for @gamesTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Oyunlar'**
   String get gamesTitle;
 
-  /// No description provided for @general.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Genel'**
   String get general;
 
-  /// No description provided for @generalNotifications.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Genel bildirimler'**
   String get generalNotifications;
 
-  /// No description provided for @generalRoomStatsHeader.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'GENEL ODA İSTATİSTİKLERİ'**
   String get generalRoomStatsHeader;
 
-  /// No description provided for @generate.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Oluştur'**
   String get generate;
 
-  /// No description provided for @generatedAtDate.
+  /// İçeriğin oluşturulma tarihini gösterir
   ///
   /// In tr, this message translates to:
   /// **'Oluşturulma: {date}'**
   String generatedAtDate(Object date);
 
-  /// No description provided for @generating.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Oluşturuluyor...'**
   String get generating;
 
-  /// No description provided for @glasses.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bardak'**
   String get glasses;
 
-  /// No description provided for @goToPlayStore.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Play Store\'a Git'**
   String get goToPlayStore;
 
-  /// No description provided for @goldenTheme.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Altın'**
   String get goldenTheme;
 
-  /// No description provided for @goldenThemeDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sıcak altın tema'**
   String get goldenThemeDesc;
 
-  /// No description provided for @goodMorning.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günaydın! ☀️'**
   String get goodMorning;
 
-  /// No description provided for @googleDrive.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Google Drive'**
   String get googleDrive;
 
-  /// No description provided for @granted.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Verildi'**
   String get granted;
 
-  /// No description provided for @greatDayAhead.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bugün harika bir gün, başarabilirsin!'**
   String get greatDayAhead;
 
-  /// No description provided for @greetingAfternoon.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tünaydın'**
   String get greetingAfternoon;
 
-  /// No description provided for @greetingEvening.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İyi akşamlar'**
   String get greetingEvening;
 
-  /// No description provided for @greetingMorning.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günaydın'**
   String get greetingMorning;
 
-  /// No description provided for @guestAccount.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Misafir Hesabı'**
   String get guestAccount;
 
-  /// No description provided for @guidedJourney.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Rehberli Yolculuk'**
   String get guidedJourney;
 
-  /// No description provided for @guidedJourneyDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Adım adım rehberli akış'**
   String get guidedJourneyDesc;
 
-  /// No description provided for @habit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık'**
   String get habit;
 
-  /// No description provided for @habitAddError.
+  /// Alışkanlık eklenirken oluşan hata mesajı
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlıklar eklenirken hata: {error}'**
   String habitAddError(Object error);
 
-  /// No description provided for @habitAddSuccess.
+  /// Alışkanlıkların başarıyla eklendiğini gösteren çoğul destekli mesaj
   ///
   /// In tr, this message translates to:
   /// **'{count, plural, =0{Hiç alışkanlık eklenmedi} =1{1 alışkanlık eklendi} other{{count} alışkanlık eklendi}}'**
   String habitAddSuccess(int count);
 
-  /// No description provided for @habitBlock.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık'**
   String get habitBlock;
 
-  /// No description provided for @habitCreatedMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık oluşturuldu: {title}'**
   String habitCreatedMessage(Object title);
 
-  /// No description provided for @habitDeletedMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık silindi: {title}'**
   String habitDeletedMessage(Object title);
 
-  /// No description provided for @habitDescription.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Açıklama'**
   String get habitDescription;
 
-  /// No description provided for @habitDescriptionHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kısa bir açıklama ekle...'**
   String get habitDescriptionHint;
 
-  /// No description provided for @habitDetails.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık Detayları'**
   String get habitDetails;
 
-  /// No description provided for @habitExplorerCreativeProject.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yaratıcı Proje Zamanı'**
   String get habitExplorerCreativeProject;
 
-  /// No description provided for @habitExplorerCreativeProjectDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hayal gücünüzü ateşleyen bir yaratıcı proje üzerinde çalışın.'**
   String get habitExplorerCreativeProjectDesc;
 
-  /// No description provided for @habitExplorerExplorePlace.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeni Bir Yer Keşfet'**
   String get habitExplorerExplorePlace;
 
-  /// No description provided for @habitExplorerExplorePlaceDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bölgenizdeki yeni bir mahalle, park veya yeri ziyaret edin.'**
   String get habitExplorerExplorePlaceDesc;
 
-  /// No description provided for @habitExplorerLearnNewSkill.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeni Bir Şey Öğren'**
   String get habitExplorerLearnNewSkill;
 
-  /// No description provided for @habitExplorerLearnNewSkillDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Her hafta yeni bir beceri veya konuya vakit ayırın.'**
   String get habitExplorerLearnNewSkillDesc;
 
-  /// No description provided for @habitExplorerReadDiverse.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çeşitli İçerik Oku'**
   String get habitExplorerReadDiverse;
 
-  /// No description provided for @habitExplorerReadDiverseDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Farklı türlerde ve bakış açılarında kitaplar, makaleler veya içerik okuyun.'**
   String get habitExplorerReadDiverseDesc;
 
-  /// No description provided for @habitExplorerTryNewActivity.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeni Bir Aktivite Dene'**
   String get habitExplorerTryNewActivity;
 
-  /// No description provided for @habitExplorerTryNewActivityDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Konfor alanınızın dışına çıkın ve farklı bir deneyim yaşayın.'**
   String get habitExplorerTryNewActivityDesc;
 
-  /// No description provided for @habitMindfulBreathing.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Derin Nefes Egzersizi'**
   String get habitMindfulBreathing;
 
-  /// No description provided for @habitMindfulBreathingDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kendinizi merkezlemek için derin nefes alma teknikleri uygulayın.'**
   String get habitMindfulBreathingDesc;
 
-  /// No description provided for @habitMindfulGratitude.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Şükür Pratiği'**
   String get habitMindfulGratitude;
 
-  /// No description provided for @habitMindfulGratitudeDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bugün minnettar olduğunuz üç şeyi yazın.'**
   String get habitMindfulGratitudeDesc;
 
-  /// No description provided for @habitMindfulJournaling.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yansıtıcı Günlük Tutma'**
   String get habitMindfulJournaling;
 
-  /// No description provided for @habitMindfulJournalingDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Öz farkındalık için düşüncelerinizi ve yansımalarınızı günlüğe yazın.'**
   String get habitMindfulJournalingDesc;
 
-  /// No description provided for @habitMindfulMeditation.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Meditasyon'**
   String get habitMindfulMeditation;
 
-  /// No description provided for @habitMindfulMeditationDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'10-15 dakika bilinçli meditasyon yapın.'**
   String get habitMindfulMeditationDesc;
 
-  /// No description provided for @habitMindfulNatureWalk.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Doğa Yürüyüşü'**
   String get habitMindfulNatureWalk;
 
-  /// No description provided for @habitMindfulNatureWalkDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çevrenize dikkat ederek doğada bilinçli bir yürüyüş yapın.'**
   String get habitMindfulNatureWalkDesc;
 
-  /// No description provided for @habitName.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık Adı'**
   String get habitName;
 
-  /// No description provided for @habitNameHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Örn: Kitap oku, Su iç...'**
   String get habitNameHint;
 
-  /// No description provided for @habitNameHintNumerical.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Örn: Su içmek, Sayfa okumak...'**
   String get habitNameHintNumerical;
 
-  /// No description provided for @habitNameHintTimer.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Örn: Meditasyon, Egzersiz...'**
   String get habitNameHintTimer;
 
-  /// No description provided for @habitNamePlaceholder.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık Adı'**
   String get habitNamePlaceholder;
 
-  /// No description provided for @habitNotFound.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık bulunamadı.'**
   String get habitNotFound;
 
-  /// No description provided for @habitOfThisVision.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu vizyonun alışkanlığı'**
   String get habitOfThisVision;
 
-  /// No description provided for @habitPlannerGoalSetting.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aylık Hedef Belirleme'**
   String get habitPlannerGoalSetting;
 
-  /// No description provided for @habitPlannerGoalSettingDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gelecek ay için spesifik, ölçülebilir hedefler belirleyin.'**
   String get habitPlannerGoalSettingDesc;
 
-  /// No description provided for @habitPlannerMorningRoutine.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sabah Rutini'**
   String get habitPlannerMorningRoutine;
 
-  /// No description provided for @habitPlannerMorningRoutineDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Her günü verimliliğe uygun bir sabah rutiyle başlatın.'**
   String get habitPlannerMorningRoutineDesc;
 
-  /// No description provided for @habitPlannerTaskPrioritization.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük Görev Önceliklendirme'**
   String get habitPlannerTaskPrioritization;
 
-  /// No description provided for @habitPlannerTaskPrioritizationDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Her sabah gün içindeki en öncelikli 3 görevinizi belirleyin.'**
   String get habitPlannerTaskPrioritizationDesc;
 
-  /// No description provided for @habitPlannerTimeBlocking.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Zaman Blokları'**
   String get habitPlannerTimeBlocking;
 
-  /// No description provided for @habitPlannerTimeBlockingDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Derin çalışma için gününüzü odaklı zaman bloklarına ayırın.'**
   String get habitPlannerTimeBlockingDesc;
 
-  /// No description provided for @habitPlannerWeeklyReview.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Haftalık İnceleme'**
   String get habitPlannerWeeklyReview;
 
-  /// No description provided for @habitPlannerWeeklyReviewDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Her Pazar haftanın ilerlemenizi inceleyin ve gelecek haftayı planlayın.'**
   String get habitPlannerWeeklyReviewDesc;
 
-  /// No description provided for @habitReminderBody.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlığını tamamlama zamanı!'**
   String get habitReminderBody;
 
-  /// No description provided for @habitReminders.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık Hatırlatıcıları'**
   String get habitReminders;
 
-  /// No description provided for @habitRemindersSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlıklarınız için günlük hatırlatıcılar'**
   String get habitRemindersSubtitle;
 
-  /// No description provided for @habitSocialCallFriend.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bir Arkadaşı Ara'**
   String get habitSocialCallFriend;
 
-  /// No description provided for @habitSocialCallFriendDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Anlamlı bir sohbet için bir arkadaşınızla veya aile üyenizle iletişime geçin.'**
   String get habitSocialCallFriendDesc;
 
-  /// No description provided for @habitSocialCompliment.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Samimi Bir İltifat Yap'**
   String get habitSocialCompliment;
 
-  /// No description provided for @habitSocialComplimentDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İçten bir iltifatla birinin gününü aydınlatın.'**
   String get habitSocialComplimentDesc;
 
-  /// No description provided for @habitSocialFamilyTime.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kaliteli Aile Zamanı'**
   String get habitSocialFamilyTime;
 
-  /// No description provided for @habitSocialFamilyTimeDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aile üyeleriyle dikkat dağıtıcı şeyler olmadan özel vakit geçirin.'**
   String get habitSocialFamilyTimeDesc;
 
-  /// No description provided for @habitSocialGroupActivity.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Grup Aktivitesine Katıl'**
   String get habitSocialGroupActivity;
 
-  /// No description provided for @habitSocialGroupActivityDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bir grup aktivitesine veya sosyal etkinliğe katılın.'**
   String get habitSocialGroupActivityDesc;
 
-  /// No description provided for @habitSocialVolunteer.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gönüllü Ol'**
   String get habitSocialVolunteer;
 
-  /// No description provided for @habitSocialVolunteerDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gönüllü çalışma yoluyla topluluğunuza katkıda bulunun.'**
   String get habitSocialVolunteerDesc;
 
-  /// No description provided for @habitTypeLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık Tipi'**
   String get habitTypeLabel;
 
-  /// No description provided for @habitTypePickerSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Nasıl bir alışkanlık oluşturmak istiyorsun?'**
   String get habitTypePickerSubtitle;
 
-  /// No description provided for @habitTypePickerTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık Türü Seç'**
   String get habitTypePickerTitle;
 
-  /// No description provided for @habitUpdatedMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık güncellendi.'**
   String get habitUpdatedMessage;
 
-  /// No description provided for @habits.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlıklar'**
   String get habits;
 
-  /// No description provided for @habitsSection.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlıklar'**
   String get habitsSection;
 
-  /// No description provided for @hard.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Zor'**
   String get hard;
 
-  /// No description provided for @hardMode.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Zor Mod'**
   String get hardMode;
 
-  /// No description provided for @headerFocusLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Odak'**
   String get headerFocusLabel;
 
-  /// No description provided for @headerFocusReady.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hazır'**
   String get headerFocusReady;
 
-  /// No description provided for @headerHabitsLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık'**
   String get headerHabitsLabel;
 
-  /// No description provided for @health.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sağlık'**
   String get health;
 
-  /// No description provided for @helpAndSupport.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yardım ve Destek'**
   String get helpAndSupport;
 
-  /// No description provided for @history.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geçmiş'**
   String get history;
 
-  /// No description provided for @historyTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geçmiş'**
   String get historyTitle;
 
-  /// No description provided for @hourShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'sa'**
   String get hourShort;
 
-  /// No description provided for @hours.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Saat'**
   String get hours;
 
-  /// No description provided for @hoursSuffixShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'sa'**
   String get hoursSuffixShort;
 
-  /// No description provided for @howAreYouFeeling.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kendini nasıl hissediyorsun?'**
   String get howAreYouFeeling;
 
-  /// No description provided for @howDoYouFeel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bugün nasıl hissediyorsun?'**
   String get howDoYouFeel;
 
-  /// No description provided for @howOftenDoHabit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlığınızı ne sıklıkla yapacağınıza karar verin'**
   String get howOftenDoHabit;
 
-  /// No description provided for @howToCancel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Nasıl iptal ederim?'**
   String get howToCancel;
 
-  /// No description provided for @howToEarn.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Nasıl kazanılır'**
   String get howToEarn;
 
-  /// No description provided for @howToTrackHabit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlığınızın nasıl izleneceğini seçin'**
   String get howToTrackHabit;
 
-  /// No description provided for @ifCondition.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Eğer'**
   String get ifCondition;
 
-  /// No description provided for @ifTrialCancelled.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ücretsiz deneme iptal edilirse?'**
   String get ifTrialCancelled;
 
-  /// No description provided for @importFromLink.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bağlantıdan içe aktar'**
   String get importFromLink;
 
-  /// No description provided for @importantNotice.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Önemli Uyarı'**
   String get importantNotice;
 
-  /// No description provided for @inactive.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İnaktif'**
   String get inactive;
 
-  /// No description provided for @incomeDelta.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gelir Δ'**
   String get incomeDelta;
 
-  /// No description provided for @incomeEditTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geliri Düzenle'**
   String get incomeEditTitle;
 
-  /// No description provided for @incomeLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gelir'**
   String get incomeLabel;
 
-  /// No description provided for @incomeNewTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeni Gelir'**
   String get incomeNewTitle;
 
-  /// No description provided for @incompleteSelectedDay.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tamamlanmadı (seçilen gün)'**
   String get incompleteSelectedDay;
 
-  /// No description provided for @input.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Giriş'**
   String get input;
 
-  /// No description provided for @insights.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İçgörüler'**
   String get insights;
 
-  /// No description provided for @insufficientTokensWatchAd.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yetersiz jeton! Reklam izleyerek jeton kazanın.'**
   String get insufficientTokensWatchAd;
 
-  /// No description provided for @invalidCodeLengthError.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kod 6 karakter olmalıdır'**
   String get invalidCodeLengthError;
 
-  /// No description provided for @invalidLink.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geçersiz bağlantı.'**
   String get invalidLink;
 
-  /// No description provided for @invalidValue.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geçersiz değer'**
   String get invalidValue;
 
-  /// No description provided for @inviteCodeCopiedSnackbar.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Davet kodu kopyalandı!'**
   String get inviteCodeCopiedSnackbar;
 
-  /// No description provided for @inviteCodeTooltip.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Davet Kodu'**
   String get inviteCodeTooltip;
 
-  /// No description provided for @issueDescription.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sorun Açıklaması'**
   String get issueDescription;
 
-  /// No description provided for @issueDescriptionHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sorunu detaylı olarak açıklayın...'**
   String get issueDescriptionHint;
 
-  /// No description provided for @joinButton.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Katıl'**
   String get joinButton;
 
-  /// No description provided for @joinRoomCodeMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Arkadaşından aldığın 6 haneli davet kodunu gir:'**
   String get joinRoomCodeMessage;
 
-  /// No description provided for @joinRoomSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Davet koduyla mevcut bir odaya katıl'**
   String get joinRoomSubtitle;
 
-  /// No description provided for @joinRoomSuccessSnackbar.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'{roomName} odasına katıldın! 🎉'**
   String joinRoomSuccessSnackbar(Object roomName);
 
-  /// No description provided for @joinRoomTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Odaya Katıl'**
   String get joinRoomTitle;
 
-  /// No description provided for @joinedAtLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Katılım: {date}'**
   String joinedAtLabel(Object date);
 
-  /// No description provided for @journalEntry.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük Girişi'**
   String get journalEntry;
 
-  /// No description provided for @journalEntryDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bugün hakkında yazmak istediğin var mı?'**
   String get journalEntryDesc;
 
-  /// No description provided for @journalHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bugün hakkında yazmak istediğin bir şey...'**
   String get journalHint;
 
-  /// No description provided for @jsonDataExample.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'JSON Veri (örnek):'**
   String get jsonDataExample;
 
-  /// No description provided for @justNow.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Az önce'**
   String get justNow;
 
-  /// No description provided for @keepItUp.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Harika! Aynen devam! 💪'**
   String get keepItUp;
 
-  /// No description provided for @language.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Dil'**
   String get language;
 
-  /// No description provided for @languageSelection.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Dil Seçimi'**
   String get languageSelection;
 
-  /// No description provided for @last7DaysProgressLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Son 7 Günlük İlerleme'**
   String get last7DaysProgressLabel;
 
-  /// No description provided for @lastBackup.
+  /// Son başarılı yedekleme zamanını gösterir
   ///
   /// In tr, this message translates to:
   /// **'Son Yedekleme: {date}'**
   String lastBackup(String date);
 
-  /// No description provided for @later.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Daha Sonra'**
   String get later;
 
-  /// No description provided for @lavenderDreams.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Lavanta Rüyaları'**
   String get lavenderDreams;
 
-  /// No description provided for @lavenderDreamsDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Zarif lavanta ve mor tonları'**
   String get lavenderDreamsDesc;
 
-  /// No description provided for @leaderboardDetailsTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sıralama Detayları'**
   String get leaderboardDetailsTitle;
 
-  /// No description provided for @leaveButton.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çık'**
   String get leaveButton;
 
-  /// No description provided for @leaveRoomTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Odadan Çık'**
   String get leaveRoomTitle;
 
-  /// No description provided for @leaveRoomWarning.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu odadan çıkmak istediğine emin misin?'**
   String get leaveRoomWarning;
 
-  /// No description provided for @letsPlayGame.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hadi oynayalım! 🎮'**
   String get letsPlayGame;
 
-  /// No description provided for @letsStart.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hadi Başlayalım'**
   String get letsStart;
 
-  /// No description provided for @levelLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Seviye {level}'**
   String levelLabel(Object level);
 
-  /// No description provided for @levelShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'S{level}'**
   String levelShort(Object level);
 
-  /// No description provided for @lightTheme.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Açık tema'**
   String get lightTheme;
 
-  /// No description provided for @likertAgree.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Katılıyorum'**
   String get likertAgree;
 
-  /// No description provided for @likertDisagree.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Katılmıyorum'**
   String get likertDisagree;
 
-  /// No description provided for @likertNeutral.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kararsızım'**
   String get likertNeutral;
 
-  /// No description provided for @likertStronglyAgree.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kesinlikle Katılıyorum'**
   String get likertStronglyAgree;
 
-  /// No description provided for @likertStronglyDisagree.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kesinlikle Katılmıyorum'**
   String get likertStronglyDisagree;
 
-  /// No description provided for @linkHabits.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlıkları bağla'**
   String get linkHabits;
 
-  /// No description provided for @listCreated.
+  /// Yeni bir liste oluşturulduğunda gösterilen bildirim
   ///
   /// In tr, this message translates to:
   /// **'Liste oluşturuldu: {title}'**
   String listCreated(Object title);
 
-  /// No description provided for @listCreatedMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Liste oluşturuldu: {title}'**
   String listCreatedMessage(Object title);
 
-  /// No description provided for @listLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Liste'**
   String get listLabel;
 
-  /// No description provided for @listNameHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Örn: Sağlık'**
   String get listNameHint;
 
-  /// No description provided for @listNameLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Liste Adı'**
   String get listNameLabel;
 
-  /// No description provided for @loadingHabits.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlıklar yükleniyor...'**
   String get loadingHabits;
 
-  /// No description provided for @logout.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çıkış yap'**
   String get logout;
 
-  /// No description provided for @longestStreak.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'En uzun seri'**
   String get longestStreak;
 
-  /// No description provided for @longestStreakLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'En Uzun Seri'**
   String get longestStreakLabel;
 
-  /// No description provided for @manageLists.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Listeleri yönet'**
   String get manageLists;
 
-  /// No description provided for @manageListsSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeni listeler ekleyin, adlarını değiştirin veya silin.'**
   String get manageListsSubtitle;
 
-  /// No description provided for @manageOnGooglePlay.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aboneliği Google Play\'de Yönet'**
   String get manageOnGooglePlay;
 
-  /// No description provided for @manageSubscription.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aboneliği Yönet'**
   String get manageSubscription;
 
-  /// No description provided for @manageSubscriptionDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Plan değiştir, iptal et veya fatura bilgilerini gör'**
   String get manageSubscriptionDesc;
 
-  /// No description provided for @manageSubscriptionSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Mira Plus aboneliğini Google Play üzerinden düzenle'**
   String get manageSubscriptionSubtitle;
 
-  /// No description provided for @manageVisionTasks.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Görevleri Yönet'**
   String get manageVisionTasks;
 
-  /// No description provided for @manualFallback.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Manuel Oluştur'**
   String get manualFallback;
 
-  /// No description provided for @maxOptionsReached.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Maksimum 12 seçenek ekleyebilirsin'**
   String get maxOptionsReached;
 
-  /// No description provided for @meditation.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Meditasyon'**
   String get meditation;
 
-  /// No description provided for @medium.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Orta'**
   String get medium;
 
-  /// No description provided for @memberCountText.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'{count} üye'**
   String memberCountText(Object count);
 
-  /// No description provided for @memberHabitsLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Üyenin Alışkanlıkları'**
   String get memberHabitsLabel;
 
-  /// No description provided for @memberProfileTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Üye Profili'**
   String get memberProfileTitle;
 
-  /// No description provided for @memberTableHeader.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'ÜYE'**
   String get memberTableHeader;
 
-  /// No description provided for @membersCompletedStatus.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'{completed}/{total} üye tamamladı'**
   String membersCompletedStatus(Object completed, Object total);
 
-  /// No description provided for @membersCountText.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'{count} kişi'**
   String membersCountText(Object count);
 
-  /// No description provided for @minLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'dk'**
   String get minLabel;
 
-  /// No description provided for @mindfulness.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Farkındalık'**
   String get mindfulness;
 
-  /// No description provided for @mintFresh.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Taze Nane'**
   String get mintFresh;
 
-  /// No description provided for @mintFreshDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Taze nane ve turkuaz tonları'**
   String get mintFreshDesc;
 
-  /// No description provided for @minutes.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Dakika'**
   String get minutes;
 
-  /// No description provided for @minutesSuffixShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'dk'**
   String get minutesSuffixShort;
 
-  /// No description provided for @miraPlusActive.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Mira Plus Aktif'**
   String get miraPlusActive;
 
-  /// No description provided for @miraPlusInactive.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Mira Plus Aktif Değil'**
   String get miraPlusInactive;
 
-  /// No description provided for @miraPremium.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Mira Premium'**
   String get miraPremium;
 
-  /// No description provided for @mondayShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Pzt'**
   String get mondayShort;
 
-  /// No description provided for @monthCount.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ay sayısı'**
   String get monthCount;
 
-  /// No description provided for @monthCountHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Örn: 12'**
   String get monthCountHint;
 
-  /// No description provided for @monthSuffixShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'ay'**
   String get monthSuffixShort;
 
-  /// No description provided for @monthly.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aylık'**
   String get monthly;
 
-  /// No description provided for @monthlyDays.
+  /// Ayın belirli günlerini ifade eden metin
   ///
   /// In tr, this message translates to:
   /// **'Ayın {days}. günleri'**
   String monthlyDays(Object days);
 
-  /// No description provided for @monthlyDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ayın belirli günlerinde'**
   String get monthlyDesc;
 
-  /// No description provided for @monthlyProgress.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aylık ilerleme'**
   String get monthlyProgress;
 
-  /// No description provided for @monthlyTrend.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aylık trend'**
   String get monthlyTrend;
 
-  /// No description provided for @monthsShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Oca,Şub,Mar,Nis,May,Haz,Tem,Ağu,Eyl,Eki,Kas,Ara'**
   String get monthsShort;
 
-  /// No description provided for @mood.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ruh Hali'**
   String get mood;
 
-  /// No description provided for @moodAnalytics.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Duygu Analizi'**
   String get moodAnalytics;
 
-  /// No description provided for @moodBad.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kötü'**
   String get moodBad;
 
-  /// No description provided for @moodBadDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kötü hissediyorum'**
   String get moodBadDesc;
 
-  /// No description provided for @moodDeclining.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Duygu durumun düşüşte'**
   String get moodDeclining;
 
-  /// No description provided for @moodDistribution.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Duygu Dağılımı'**
   String get moodDistribution;
 
-  /// No description provided for @moodExcellent.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Mükemmel'**
   String get moodExcellent;
 
-  /// No description provided for @moodExcellentDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Harika hissediyorum'**
   String get moodExcellentDesc;
 
-  /// No description provided for @moodFlow.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ruh Hali'**
   String get moodFlow;
 
-  /// No description provided for @moodFlowSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bugünkü ruh halini seç'**
   String get moodFlowSubtitle;
 
-  /// No description provided for @moodFlowTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ruh Halin Nasıl?'**
   String get moodFlowTitle;
 
-  /// No description provided for @moodGood.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İyi'**
   String get moodGood;
 
-  /// No description provided for @moodGoodDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İyi hissediyorum'**
   String get moodGoodDesc;
 
-  /// No description provided for @moodGreat.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Harika'**
   String get moodGreat;
 
-  /// No description provided for @moodImproving.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Duygu durumun iyileşiyor!'**
   String get moodImproving;
 
-  /// No description provided for @moodNeutral.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Normal'**
   String get moodNeutral;
 
-  /// No description provided for @moodNeutralDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Normal hissediyorum'**
   String get moodNeutralDesc;
 
-  /// No description provided for @moodOk.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Normal'**
   String get moodOk;
 
-  /// No description provided for @moodSelection.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ruh Hali Seçimi'**
   String get moodSelection;
 
-  /// No description provided for @moodStable.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Duygu durumun nispeten dengeli'**
   String get moodStable;
 
-  /// No description provided for @moodTerrible.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Berbat'**
   String get moodTerrible;
 
-  /// No description provided for @moodTerribleDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çok kötü hissediyorum'**
   String get moodTerribleDesc;
 
-  /// No description provided for @moodTracker.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ruh Hali Takibi'**
   String get moodTracker;
 
-  /// No description provided for @moodTrend.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Duygu Trendi (Son 30 Gün)'**
   String get moodTrend;
 
-  /// No description provided for @moreChartsButton.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Daha Fazla Grafik'**
   String get moreChartsButton;
 
-  /// No description provided for @mostActiveMemberLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'En Aktif Üye'**
   String get mostActiveMemberLabel;
 
-  /// No description provided for @mostCommonEmotion.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'En Yaygın His'**
   String get mostCommonEmotion;
 
-  /// No description provided for @mostCommonMood.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'En Yaygın Duygu'**
   String get mostCommonMood;
 
-  /// No description provided for @mostCommonReason.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'En Yaygın Sebep'**
   String get mostCommonReason;
 
-  /// No description provided for @motivation.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Motivasyon'**
   String get motivation;
 
-  /// No description provided for @motivationBody.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tebrikler! {period} içinde başarı oranınız {percent}%. Harika bir ilerleme kaydettiniz.'**
   String motivationBody(Object percent, Object period);
 
-  /// No description provided for @motivationDayStart.
+  /// Güne başlarken verilen motivasyon mesajı
   ///
   /// In tr, this message translates to:
   /// **'{title} için harika bir gün! 🌟'**
   String motivationDayStart(Object title);
 
-  /// No description provided for @motivationJourneyStart.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Her yolculuk tek bir adımla başlar!'**
   String get motivationJourneyStart;
 
-  /// No description provided for @motivationSmallSteps.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Büyük hedeflere ulaşmak için küçük adımlarla başla 💪'**
   String get motivationSmallSteps;
 
-  /// No description provided for @motivationWaiting.
+  /// Tamamlanmayı bekleyen bir görev için hatırlatıcı mesaj
   ///
   /// In tr, this message translates to:
   /// **'{title} seni bekliyor 🚀'**
   String motivationWaiting(Object title);
 
-  /// No description provided for @mtdAverageShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'AYB ort.'**
   String get mtdAverageShort;
 
-  /// No description provided for @multiple.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Birden fazla'**
   String get multiple;
 
-  /// No description provided for @multipleSubItems.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Birden fazla alt öğe'**
   String get multipleSubItems;
 
-  /// No description provided for @multipleSubItemsDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Birden fazla alt öğe'**
   String get multipleSubItemsDesc;
 
-  /// No description provided for @mustBePremiumToUse.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu özelliği kullanmak için Premium abonesi olmalısınız.'**
   String get mustBePremiumToUse;
 
-  /// No description provided for @myBigGoal.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Büyük Hedefim'**
   String get myBigGoal;
 
-  /// No description provided for @myBoard.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Panom'**
   String get myBoard;
 
-  /// No description provided for @mysticTheme.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Mistik'**
   String get mysticTheme;
 
-  /// No description provided for @mysticThemeDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Mistik mor tema'**
   String get mysticThemeDesc;
 
-  /// No description provided for @nDays.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'{days} gün'**
   String nDays(Object days);
 
-  /// No description provided for @nDaysLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'{count} gün'**
   String nDaysLabel(Object count);
 
-  /// No description provided for @nameHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Örn: Günlük antrenman'**
   String get nameHint;
 
-  /// No description provided for @nameLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İsim'**
   String get nameLabel;
 
-  /// No description provided for @nameRequired.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ad gerekli'**
   String get nameRequired;
 
-  /// No description provided for @nameYourVision.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyonunuza İsim Verin'**
   String get nameYourVision;
 
-  /// No description provided for @nameYourVisionDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyonunuza anlamlı bir isim verin'**
   String get nameYourVisionDesc;
 
-  /// No description provided for @nameYourVisionSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyonuna anlamlı bir isim ver'**
   String get nameYourVisionSubtitle;
 
-  /// No description provided for @needAtLeastTwoOptions.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'En az 2 seçenek gerekli'**
   String get needAtLeastTwoOptions;
 
-  /// No description provided for @newCategory.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeni kategori'**
   String get newCategory;
 
-  /// No description provided for @newHabit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeni Alışkanlık'**
   String get newHabit;
 
-  /// No description provided for @newHabits.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeni alışkanlıklar'**
   String get newHabits;
 
-  /// No description provided for @newList.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeni Liste'**
   String get newList;
 
-  /// No description provided for @next.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İleri'**
   String get next;
 
-  /// No description provided for @nextLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sonraki'**
   String get nextLabel;
 
-  /// No description provided for @nextWeek.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gelecek Hafta'**
   String get nextWeek;
 
-  /// No description provided for @nextYear.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gelecek yıl'**
   String get nextYear;
 
-  /// No description provided for @noActiveHabitsForMember.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Üyenin henüz aktif alışkanlığı yok.'**
   String get noActiveHabitsForMember;
 
-  /// No description provided for @noBackups.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yedek bulunamadı'**
   String get noBackups;
 
-  /// No description provided for @noBackupsFound.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yedek bulunamadı.'**
   String get noBackupsFound;
 
-  /// No description provided for @noBadgesEarned.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Henüz rozet kazanılmamış.'**
   String get noBadgesEarned;
 
-  /// No description provided for @noDataLast7Days.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Son 7 gün için veri yok'**
   String get noDataLast7Days;
 
-  /// No description provided for @noDataThisMonth.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu ay için veri yok'**
   String get noDataThisMonth;
 
-  /// No description provided for @noEndDate.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bitiş tarihi yok'**
   String get noEndDate;
 
-  /// No description provided for @noEndDayDefaultsDaily.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bitiş günü belirlenmediğinde, bu alışkanlık varsayılan olarak her gün görünecektir.'**
   String get noEndDayDefaultsDaily;
 
-  /// No description provided for @noEntriesYet.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Henüz giriş yok'**
   String get noEntriesYet;
 
-  /// No description provided for @noEvents.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Henüz etkinlik yok'**
   String get noEvents;
 
-  /// No description provided for @noExpenseInThisCategory.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu kategoride hiç harcama yok'**
   String get noExpenseInThisCategory;
 
-  /// No description provided for @noExpenses.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Harcama yok'**
   String get noExpenses;
 
-  /// No description provided for @noExpensesThisMonth.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu ay hiç harcama yok'**
   String get noExpensesThisMonth;
 
-  /// No description provided for @noHabitsAdded.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Henüz alışkanlık eklenmemiş'**
   String get noHabitsAdded;
 
-  /// No description provided for @noHabitsAddedYet.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Henüz alışkanlık eklenmedi.'**
   String get noHabitsAddedYet;
 
-  /// No description provided for @noHabitsInRoom.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Henüz alışkanlık eklenmemiş'**
   String get noHabitsInRoom;
 
-  /// No description provided for @noHistory.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geçmiş kaydı yok'**
   String get noHistory;
 
-  /// No description provided for @noIncomeThisMonth.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu ay hiç gelir yok'**
   String get noIncomeThisMonth;
 
-  /// No description provided for @noItemsMatchFilters.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Seçilen filtrelerle eşleşen öğe yok'**
   String get noItemsMatchFilters;
 
-  /// No description provided for @noLeaderboardData.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sıralama Bulunmuyor'**
   String get noLeaderboardData;
 
-  /// No description provided for @noLinkedHabitsInVision.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu vizyona bağlı alışkanlık yok.'**
   String get noLinkedHabitsInVision;
 
-  /// No description provided for @noMeasurableDataForMember.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu üye için henüz ölçülebilir veri bulunmamaktadır.'**
   String get noMeasurableDataForMember;
 
-  /// No description provided for @noMemberDataYet.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Henüz üye verisi yok.'**
   String get noMemberDataYet;
 
-  /// No description provided for @noMoodData.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Henüz duygu verisi yok'**
   String get noMoodData;
 
-  /// No description provided for @noNotesYet.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Henüz not yok'**
   String get noNotesYet;
 
-  /// No description provided for @noPlansAvailable.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Şu anda görüntülenecek plan yok.'**
   String get noPlansAvailable;
 
-  /// No description provided for @noProgressYet.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Henüz ilerleme yok'**
   String get noProgressYet;
 
-  /// No description provided for @noReadyVisionsFound.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hazır vizyon bulunamadı.'**
   String get noReadyVisionsFound;
 
-  /// No description provided for @noRecordsThisMonth.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu ay için kayıt yok'**
   String get noRecordsThisMonth;
 
-  /// No description provided for @noReportsYet.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Henüz rapor yok'**
   String get noReportsYet;
 
-  /// No description provided for @noRoomsJoinedMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bir oda oluştur veya davet koduyla bir odaya katıl.\nArkadaşlarınla birlikte hedeflerine ulaş!'**
   String get noRoomsJoinedMessage;
 
-  /// No description provided for @noRoomsJoinedTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Henüz bir odaya katılmadın'**
   String get noRoomsJoinedTitle;
 
-  /// No description provided for @noStatsAvailable.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İstatistik Bulunmuyor'**
   String get noStatsAvailable;
 
-  /// No description provided for @noTasksYet.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Henüz görev yok'**
   String get noTasksYet;
 
-  /// No description provided for @noTrendData.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Trend için yeterli veri yok'**
   String get noTrendData;
 
-  /// No description provided for @notAddedYet.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Henüz eklenmedi.'**
   String get notAddedYet;
 
-  /// No description provided for @notGranted.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Verilmedi'**
   String get notGranted;
 
-  /// No description provided for @notSelected.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Seçilmedi'**
   String get notSelected;
 
-  /// No description provided for @notUnlocked.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kilidi açılmadı'**
   String get notUnlocked;
 
-  /// No description provided for @noteOptional.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Not (isteğe bağlı)'**
   String get noteOptional;
 
-  /// No description provided for @noteSharedSnackbar.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Not paylaşıldı! ✨'**
   String get noteSharedSnackbar;
 
-  /// No description provided for @notesSection.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'📝 Notlar'**
   String get notesSection;
 
-  /// No description provided for @notificationBehavior.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bildirim Davranışı'**
   String get notificationBehavior;
 
-  /// No description provided for @notificationPermission.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bildirim İzni'**
   String get notificationPermission;
 
-  /// No description provided for @notificationSettings.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bildirim ayarları'**
   String get notificationSettings;
 
-  /// No description provided for @notificationSettingsSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bildirim tercihlerini yapılandırın'**
   String get notificationSettingsSubtitle;
 
-  /// No description provided for @notificationTroubleshooting.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bildirimlerin düzgün çalışması için:\n\n• Pil optimizasyonunu KAPATIN (Ayarlar → Uygulamalar → Mira → Pil → Sınırsız)\n• Arka planda çalışmaya İZİN VERİN\n• Bildirim izinlerinin AÇIK olduğundan emin olun\n• \'Rahatsız etmeyin\' modunu kontrol edin'**
   String get notificationTroubleshooting;
 
-  /// No description provided for @notificationTypes.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bildirim Türleri'**
   String get notificationTypes;
 
-  /// No description provided for @notifications.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bildirimler'**
   String get notifications;
 
-  /// No description provided for @notificationsMasterSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tüm uygulama bildirimlerini kontrol et'**
   String get notificationsMasterSubtitle;
 
-  /// No description provided for @nudgeButtonLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Dürt'**
   String get nudgeButtonLabel;
 
-  /// No description provided for @nudgeDefaultMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'👊 Hadi dostum, bugün biraz daha gayret! Alışkanlıklarını tamamla.'**
   String get nudgeDefaultMessage;
 
-  /// No description provided for @nudgeNotification.
+  /// Bir arkadaşın kullanıcıyı dürttüğünde aldığı bildirim
   ///
   /// In tr, this message translates to:
   /// **'👊 {name} seni dürtüyor!'**
   String nudgeNotification(Object name);
 
-  /// No description provided for @nudgeSuccessSnackbar.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'{displayName} dürtüldü! 👊'**
   String nudgeSuccessSnackbar(Object displayName);
 
-  /// No description provided for @nudgeTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'{displayName} kişisini dürt 👊'**
   String nudgeTitle(Object displayName);
 
-  /// No description provided for @numberLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sayı'**
   String get numberLabel;
 
-  /// No description provided for @numericExample.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günde 8 bardak su iç'**
   String get numericExample;
 
-  /// No description provided for @numericSettings.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sayısal Hedef Ayarları'**
   String get numericSettings;
 
-  /// No description provided for @numericTypeDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sayı takibi'**
   String get numericTypeDesc;
 
-  /// No description provided for @numericalDescription.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sayısal hedef takibi'**
   String get numericalDescription;
 
-  /// No description provided for @numericalGoalShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sayısal hedef'**
   String get numericalGoalShort;
 
-  /// No description provided for @numericalType.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sayısal Değer'**
   String get numericalType;
 
-  /// No description provided for @oceanTheme.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Okyanus'**
   String get oceanTheme;
 
-  /// No description provided for @oceanThemeDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sakin mavi tema'**
   String get oceanThemeDesc;
 
-  /// No description provided for @off.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kapalı'**
   String get off;
 
-  /// No description provided for @offLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kapalı'**
   String get offLabel;
 
-  /// No description provided for @ok.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tamam'**
   String get ok;
 
-  /// No description provided for @onDailyLimit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük limitinizdesiniz.'**
   String get onDailyLimit;
 
-  /// No description provided for @onPeriodic.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Belirli aralıklarla'**
   String get onPeriodic;
 
-  /// No description provided for @onSpecificMonthDays.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ayın belirli günlerinde'**
   String get onSpecificMonthDays;
 
-  /// No description provided for @onSpecificWeekdays.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Haftanın belirli günlerinde'**
   String get onSpecificWeekdays;
 
-  /// No description provided for @onSpecificYearDays.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yılın belirli günlerinde'**
   String get onSpecificYearDays;
 
-  /// No description provided for @onboardingQ1.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeni deneyimler yaşamaktan ve tanımadığım şeyleri keşfetmekten hoşlanırım.'**
   String get onboardingQ1;
 
-  /// No description provided for @onboardingQ10.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Önemli etkinlikler ve görevler için önceden plan yaparım.'**
   String get onboardingQ10;
 
-  /// No description provided for @onboardingQ11.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tek bir yönteme bağlı kalmaktansa farklı yaklaşımlar denemeyi severim.'**
   String get onboardingQ11;
 
-  /// No description provided for @onboardingQ12.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Baskı altında sakin kalırım ve aksiliklerden çabuk toparlanırım.'**
   String get onboardingQ12;
 
-  /// No description provided for @onboardingQ2.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alanımı düzenli tutarım ve yapılandırılmış bir günlük rutine sahip olmayı tercih ederim.'**
   String get onboardingQ2;
 
-  /// No description provided for @onboardingQ3.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İnsanların yanında olduğumda enerjilenirim ve sosyal etkinliklerden keyif alırım.'**
   String get onboardingQ3;
 
-  /// No description provided for @onboardingQ4.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Başkalarıyla çalışmayı tercih ederim ve işbirliğinin rekabetten daha etkili olduğuna inanırım.'**
   String get onboardingQ4;
 
-  /// No description provided for @onboardingQ5.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Stresli durumlarla sakin bir şekilde başa çıkarım ve nadiren endişelenirim.'**
   String get onboardingQ5;
 
-  /// No description provided for @onboardingQ6.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sanat, müzik veya yazma gibi yaratıcı aktivitelerden hoşlanırım.'**
   String get onboardingQ6;
 
-  /// No description provided for @onboardingQ7.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kendime net hedefler koyarım ve bunları gerçekleştirmek için gayretle çalışırım.'**
   String get onboardingQ7;
 
-  /// No description provided for @onboardingQ8.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Grup aktivitelerini yalnız vakit geçirmeye tercih ederim.'**
   String get onboardingQ8;
 
-  /// No description provided for @onboardingQ9.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Karar vermeden önce genellikle başkalarının duygularını dikkate alırım.'**
   String get onboardingQ9;
 
-  /// No description provided for @onboardingQuizIntro.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kişiliğini daha iyi anlayabilmemiz için birkaç soruyu cevaplayın. Bu, bilimsel olarak doğrulanmış psikolojik araştırmalara dayanmaktadır.'**
   String get onboardingQuizIntro;
 
-  /// No description provided for @onboardingWelcomeDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Seninle birlikte büyüyen kişisel alışkanlık takipçin. Benzersiz kişiliğini keşfedelim ve sana özel alışkanlıklar önerelim.'**
   String get onboardingWelcomeDesc;
 
-  /// No description provided for @onboardingWelcomeTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Mira\'ya Hoş Geldin'**
   String get onboardingWelcomeTitle;
 
-  /// No description provided for @once.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bir kez'**
   String get once;
 
-  /// No description provided for @open.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aç'**
   String get open;
 
-  /// No description provided for @openBatteryOptimization.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Pil optimizasyonunu aç'**
   String get openBatteryOptimization;
 
-  /// No description provided for @openNotificationSettings.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bildirim ayarlarını aç'**
   String get openNotificationSettings;
 
-  /// No description provided for @openSystemSettings.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sistem ayarlarını aç'**
   String get openSystemSettings;
 
-  /// No description provided for @option1.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Seçenek 1'**
   String get option1;
 
-  /// No description provided for @option2.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Seçenek 2'**
   String get option2;
 
-  /// No description provided for @optional.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'isteğe bağlı'**
   String get optional;
 
-  /// No description provided for @optionalLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'opsiyonel'**
   String get optionalLabel;
 
-  /// No description provided for @other.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Diğer'**
   String get other;
 
-  /// No description provided for @outline.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Anahat'**
   String get outline;
 
-  /// No description provided for @outlineColor.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Anahat rengi'**
   String get outlineColor;
 
-  /// No description provided for @overall.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Genel'**
   String get overall;
 
-  /// No description provided for @overallProgress.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Genel ilerleme'**
   String get overallProgress;
 
-  /// No description provided for @overview.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Genel Bakış'**
   String get overview;
 
-  /// No description provided for @pages.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sayfa'**
   String get pages;
 
-  /// No description provided for @pastelColors.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Pastel Tonlar'**
   String get pastelColors;
 
-  /// No description provided for @pause.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Duraklat'**
   String get pause;
 
-  /// No description provided for @perMonth.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'/ay'**
   String get perMonth;
 
-  /// No description provided for @perYear.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'/yıl'**
   String get perYear;
 
-  /// No description provided for @periodic.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Periyodik'**
   String get periodic;
 
-  /// No description provided for @periodicDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Belirli gün aralıklarıyla'**
   String get periodicDesc;
 
-  /// No description provided for @periodicSelection.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Periyodik Seçim'**
   String get periodicSelection;
 
-  /// No description provided for @personalizedInsights.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kişiselleştirilmiş İçgörüler'**
   String get personalizedInsights;
 
-  /// No description provided for @photo.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Fotoğraf'**
   String get photo;
 
-  /// No description provided for @pickFromCalendar.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Takvimden Seç'**
   String get pickFromCalendar;
 
-  /// No description provided for @pickTime.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Saat Seç'**
   String get pickTime;
 
-  /// No description provided for @pickTodaysMood.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bugünün ruh halini seç'**
   String get pickTodaysMood;
 
-  /// No description provided for @plannedMonthlySpend.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Planlanan aylık harcama'**
   String get plannedMonthlySpend;
 
-  /// No description provided for @plansLoadError.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Planlar yüklenirken hata oluştu: {error}'**
   String plansLoadError(Object error);
 
-  /// No description provided for @plateColor.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Plaka rengi'**
   String get plateColor;
 
-  /// No description provided for @playAgain.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tekrar Oyna'**
   String get playAgain;
 
-  /// No description provided for @pleaseEnterEmail.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Lütfen e-posta girin'**
   String get pleaseEnterEmail;
 
-  /// No description provided for @pleaseFillAllFields.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Lütfen tüm alanları doldurun'**
   String get pleaseFillAllFields;
 
-  /// No description provided for @pointsTableHeader.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'PUAN'**
   String get pointsTableHeader;
 
-  /// No description provided for @pomodoroAndCustomTimers.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Pomodoro ve özel zamanlayıcılar'**
   String get pomodoroAndCustomTimers;
 
-  /// No description provided for @premiumBenefits.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Premium avantajları:'**
   String get premiumBenefits;
 
-  /// No description provided for @premiumFeature.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Premium Özellik'**
   String get premiumFeature;
 
-  /// No description provided for @premiumFeatureLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Premium Özellik'**
   String get premiumFeatureLabel;
 
-  /// No description provided for @premiumFeatures.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Premium Özellikler'**
   String get premiumFeatures;
 
-  /// No description provided for @premiumPlans.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Premium Planlar'**
   String get premiumPlans;
 
-  /// No description provided for @previous.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Önceki'**
   String get previous;
 
-  /// No description provided for @previousYear.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geçen yıl'**
   String get previousYear;
 
-  /// No description provided for @prioritizeTaskSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu görevi önceliklendir'**
   String get prioritizeTaskSubtitle;
 
-  /// No description provided for @privacyPolicy.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gizlilik Politikası'**
   String get privacyPolicy;
 
-  /// No description provided for @privacyPolicyTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gizlilik Politikası'**
   String get privacyPolicyTitle;
 
-  /// No description provided for @privacySecurity.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gizlilik ve güvenlik'**
   String get privacySecurity;
 
-  /// No description provided for @privacySecuritySubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ayarları ve veri silme seçeneklerini yönetin'**
   String get privacySecuritySubtitle;
 
-  /// No description provided for @processingWait.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İşlem başlatılıyor, lütfen bekleyin...'**
   String get processingWait;
 
-  /// No description provided for @productivity.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Üretkenlik'**
   String get productivity;
 
-  /// No description provided for @profile.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Profil'**
   String get profile;
 
-  /// No description provided for @profileInfo.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Profil bilgileri'**
   String get profileInfo;
 
-  /// No description provided for @profileUpdated.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Profil güncellendi'**
   String get profileUpdated;
 
-  /// No description provided for @progressJourneyMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlıklarını tamamladıkça bu grafik senin başarınla şekillenecek ✨'**
   String get progressJourneyMessage;
 
-  /// No description provided for @progressJourneyStarts.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İlerleme Yolculuğu Başlıyor'**
   String get progressJourneyStarts;
 
-  /// No description provided for @promoCodeActiveMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Premium erişiminiz promosyon kodu ile aktifleştirildi ✨'**
   String get promoCodeActiveMessage;
 
-  /// No description provided for @promoCodeAlreadyUsed.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu hesapta daha önce bir promosyon kodu kullanılmış.'**
   String get promoCodeAlreadyUsed;
 
-  /// No description provided for @promoCodeHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Promosyon kodunuzu girin'**
   String get promoCodeHint;
 
-  /// No description provided for @promoCodeInvalid.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geçersiz promosyon kodu. Lütfen kontrol edip tekrar deneyin.'**
   String get promoCodeInvalid;
 
-  /// No description provided for @promoCodeLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Promosyon Kodu'**
   String get promoCodeLabel;
 
-  /// No description provided for @promoCodeSuccess.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'🎉 Promosyon kodu başarıyla uygulandı! Premium erişiminiz aktifleştirildi.'**
   String get promoCodeSuccess;
 
-  /// No description provided for @quickSuggestions.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hızlı Öneriler'**
   String get quickSuggestions;
 
-  /// No description provided for @rankingAndHabitsSection.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'🏆 Sıralama & Alışkanlıklar'**
   String get rankingAndHabitsSection;
 
-  /// No description provided for @readBook.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kitap Oku'**
   String get readBook;
 
-  /// No description provided for @readyVisionsLoadFailed.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hazır vizyonlar yüklenemedi.'**
   String get readyVisionsLoadFailed;
 
-  /// No description provided for @reasonAcademic.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Akademik'**
   String get reasonAcademic;
 
-  /// No description provided for @reasonFinance.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Finans'**
   String get reasonFinance;
 
-  /// No description provided for @reasonHealth.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sağlık'**
   String get reasonHealth;
 
-  /// No description provided for @reasonOther.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Diğer'**
   String get reasonOther;
 
-  /// No description provided for @reasonPersonalGrowth.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kişisel Gelişim'**
   String get reasonPersonalGrowth;
 
-  /// No description provided for @reasonRelationship.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İlişki'**
   String get reasonRelationship;
 
-  /// No description provided for @reasonSelection.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu durumun sebebi nedir?'**
   String get reasonSelection;
 
-  /// No description provided for @reasonSocial.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sosyal'**
   String get reasonSocial;
 
-  /// No description provided for @reasonTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Neden'**
   String get reasonTitle;
 
-  /// No description provided for @reasonWeather.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hava Durumu'**
   String get reasonWeather;
 
-  /// No description provided for @reasonWork.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İş'**
   String get reasonWork;
 
-  /// No description provided for @recommendedHabits.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Senin İçin Önerilen Alışkanlıklar'**
   String get recommendedHabits;
 
-  /// No description provided for @recurringMonthlyDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Seçilen tarihte her ay otomatik olarak ekle'**
   String get recurringMonthlyDesc;
 
-  /// No description provided for @recurringMonthlyTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yinelenen (aylık)'**
   String get recurringMonthlyTitle;
 
-  /// No description provided for @refreshList.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Listeyi Yenile'**
   String get refreshList;
 
-  /// No description provided for @refundPolicy.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geri ödeme talepleri Google Play politikalarına tabidir. Play Store\'dan başvurabilirsiniz.'**
   String get refundPolicy;
 
-  /// No description provided for @reload.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeniden Yükle'**
   String get reload;
 
-  /// No description provided for @remainingToday.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bugün kalan'**
   String get remainingToday;
 
-  /// No description provided for @reminder.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hatırlatıcı'**
   String get reminder;
 
-  /// No description provided for @reminderDisabled.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hatırlatıcı Kapalı'**
   String get reminderDisabled;
 
-  /// No description provided for @reminderEnabled.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hatırlatıcı Açık'**
   String get reminderEnabled;
 
-  /// No description provided for @reminderFrequency.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hatırlatma Sıklığı'**
   String get reminderFrequency;
 
-  /// No description provided for @reminderLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hatırlatıcı'**
   String get reminderLabel;
 
-  /// No description provided for @reminderSettings.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hatırlatıcı Ayarları'**
   String get reminderSettings;
 
-  /// No description provided for @reminderTime.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hatırlatma Zamanı'**
   String get reminderTime;
 
-  /// No description provided for @removeFromList.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Listeden kaldır'**
   String get removeFromList;
 
-  /// No description provided for @repeatEveryDay.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Her gün tekrarlanır'**
   String get repeatEveryDay;
 
-  /// No description provided for @repeatEveryNDays.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Her N Günde Bir Tekrarla'**
-  String get repeatEveryNDays;
+  String repeatEveryNDays(Object days);
 
-  /// No description provided for @reportAlreadyExists.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu hafta için rapor zaten mevcut.'**
   String get reportAlreadyExists;
 
-  /// No description provided for @reportBug.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hata Bildir'**
   String get reportBug;
 
-  /// No description provided for @reportBugDescription.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Karşılaştığınız sorunu aşağıya detaylı olarak yazın.'**
   String get reportBugDescription;
 
-  /// No description provided for @reportBugSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Karşılaştığınız sorunları bildirin'**
   String get reportBugSubtitle;
 
-  /// No description provided for @reportCreatedSuccess.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Rapor oluşturuldu! ✨'**
   String get reportCreatedSuccess;
 
-  /// No description provided for @reset.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sıfırla'**
   String get reset;
 
-  /// No description provided for @resetAction.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sıfırla'**
   String get resetAction;
 
-  /// No description provided for @resetOnboarding.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tanıtımı sıfırla'**
   String get resetOnboarding;
 
-  /// No description provided for @resetOnboardingDescription.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu işlem mevcut kişilik testi sonuçlarınızı silecek ve testi tekrar yapmanızı sağlayacaktır.'**
   String get resetOnboardingDescription;
 
-  /// No description provided for @resetOnboardingTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tanıtımı Sıfırla?'**
   String get resetOnboardingTitle;
 
-  /// No description provided for @restore.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geri Yükle'**
   String get restore;
 
-  /// No description provided for @restoreError.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geri yükleme hatası'**
   String get restoreError;
 
-  /// No description provided for @restoreFailed.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geri yükleme başarısız'**
   String get restoreFailed;
 
-  /// No description provided for @restoreLatest.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Son yedеği geri yükle'**
   String get restoreLatest;
 
-  /// No description provided for @restorePurchases.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Satın Almaları Geri Yükle'**
   String get restorePurchases;
 
-  /// No description provided for @restoreSuccess.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İndirildi: {content}'**
   String restoreSuccess(Object content);
 
-  /// No description provided for @restoreSuccessMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Verileriniz başarıyla geri yüklendi. Değişikliklerin tam olarak uygulanması için uygulamayı yeniden başlatmanızı öneririz.'**
   String get restoreSuccessMessage;
 
-  /// No description provided for @retakePersonalityTest.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kişilik Testini Yeniden Yap'**
   String get retakePersonalityTest;
 
-  /// No description provided for @retakePersonalityTestDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Karakter tipini tekrar keşfet'**
   String get retakePersonalityTestDesc;
 
-  /// No description provided for @retakeRhythmTest.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Canlı Ritim Testini Yeniden Yap'**
   String get retakeRhythmTest;
 
-  /// No description provided for @retakeRhythmTestDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Biyolojik saatini tekrar belirle'**
   String get retakeRhythmTestDesc;
 
-  /// No description provided for @retry.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tekrar dene'**
   String get retry;
 
-  /// No description provided for @rhythmA1_1.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'05:00 – 06:30'**
   String get rhythmA1_1;
 
-  /// No description provided for @rhythmA1_2.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'06:30 – 07:45'**
   String get rhythmA1_2;
 
-  /// No description provided for @rhythmA1_3.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'07:45 – 09:45'**
   String get rhythmA1_3;
 
-  /// No description provided for @rhythmA1_4.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'09:45 – 11:00'**
   String get rhythmA1_4;
 
-  /// No description provided for @rhythmA1_5.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'11:00 – 12:00'**
   String get rhythmA1_5;
 
-  /// No description provided for @rhythmA2_1.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çok yorgun'**
   String get rhythmA2_1;
 
-  /// No description provided for @rhythmA2_2.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Oldukça yorgun'**
   String get rhythmA2_2;
 
-  /// No description provided for @rhythmA2_3.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Biraz yorgun'**
   String get rhythmA2_3;
 
-  /// No description provided for @rhythmA2_4.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hiç yorgun değil'**
   String get rhythmA2_4;
 
-  /// No description provided for @rhythmA3_1.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'20:00 – 21:00'**
   String get rhythmA3_1;
 
-  /// No description provided for @rhythmA3_2.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'21:00 – 22:15'**
   String get rhythmA3_2;
 
-  /// No description provided for @rhythmA3_3.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'22:15 – 00:30'**
   String get rhythmA3_3;
 
-  /// No description provided for @rhythmA3_4.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'00:30 – 01:45'**
   String get rhythmA3_4;
 
-  /// No description provided for @rhythmA3_5.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'01:45 – 03:00'**
   String get rhythmA3_5;
 
-  /// No description provided for @rhythmA4_1.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'05:00 – 09:00'**
   String get rhythmA4_1;
 
-  /// No description provided for @rhythmA4_2.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'09:00 – 14:00'**
   String get rhythmA4_2;
 
-  /// No description provided for @rhythmA4_3.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'14:00 – 17:00'**
   String get rhythmA4_3;
 
-  /// No description provided for @rhythmA4_4.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'17:00 – 21:00'**
   String get rhythmA4_4;
 
-  /// No description provided for @rhythmA4_5.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'21:00 – 05:00'**
   String get rhythmA4_5;
 
-  /// No description provided for @rhythmA5_1.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kesinlikle sabah insanı'**
   String get rhythmA5_1;
 
-  /// No description provided for @rhythmA5_2.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Daha çok sabah insanı'**
   String get rhythmA5_2;
 
-  /// No description provided for @rhythmA5_3.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Daha çok akşam insanı'**
   String get rhythmA5_3;
 
-  /// No description provided for @rhythmA5_4.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kesinlikle akşam insanı'**
   String get rhythmA5_4;
 
-  /// No description provided for @rhythmAnalyzing.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Canlı Ritim analiz ediyor...'**
   String get rhythmAnalyzing;
 
-  /// No description provided for @rhythmBenefit1.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Doğru zamanda doğru iş'**
   String get rhythmBenefit1;
 
-  /// No description provided for @rhythmBenefit2.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Karar yorgunluğu yok'**
   String get rhythmBenefit2;
 
-  /// No description provided for @rhythmBenefit3.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Her hafta kişiselleşme'**
   String get rhythmBenefit3;
 
-  /// No description provided for @rhythmChronoEvening.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Akşam İnsanı (Gece Kuşu)'**
   String get rhythmChronoEvening;
 
-  /// No description provided for @rhythmChronoIntermediate.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ara Tip (Dengeli)'**
   String get rhythmChronoIntermediate;
 
-  /// No description provided for @rhythmChronoMorning.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sabah İnsanı (Erkenci Kuş)'**
   String get rhythmChronoMorning;
 
-  /// No description provided for @rhythmDisclaimer.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bunlar kesin sonuçlar değil. Canlı Ritim seni tanıdıkça ayarlanacak.'**
   String get rhythmDisclaimer;
 
-  /// No description provided for @rhythmEnergyHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Antrenman, fiziksel aktivite'**
   String get rhythmEnergyHint;
 
-  /// No description provided for @rhythmFocusHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Zihinsel çalışma, analiz, öğrenme'**
   String get rhythmFocusHint;
 
-  /// No description provided for @rhythmHabitSuggestionTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sizin İçin Önerilen Saatler:'**
   String get rhythmHabitSuggestionTitle;
 
-  /// No description provided for @rhythmLightHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'E-postalar, sosyal medya, ufak işler'**
   String get rhythmLightHint;
 
-  /// No description provided for @rhythmQ1.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tamamen kendi isteğinize bırakılsaydı ve ertesi gün zorunlu bir işiniz olmasaydı, saat kaçta kalkardınız?'**
   String get rhythmQ1;
 
-  /// No description provided for @rhythmQ2.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sabah uyandıktan sonraki ilk yarım saatte kendinizi genelde ne kadar yorgun hissedersiniz?'**
   String get rhythmQ2;
 
-  /// No description provided for @rhythmQ3.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Akşamları tamamen serbestsiniz ve ertesi gün bir zorunluluğunuz yok. Saat kaçta uyurdunuz?'**
   String get rhythmQ3;
 
-  /// No description provided for @rhythmQ4.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günün hangi saatinde kendinizi en iyi (enerjik) hissedersiniz?'**
   String get rhythmQ4;
 
-  /// No description provided for @rhythmQ5.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'\"Sabah insanı\" mı yoksa \"Akşam insanı\" mı olduğunuzu düşünüyorsunuz?'**
   String get rhythmQ5;
 
-  /// No description provided for @rhythmReflectionHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük, kitap, uykuya hazırlık'**
   String get rhythmReflectionHint;
 
-  /// No description provided for @rhythmResultGotIt.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Harika, Başlayalım'**
   String get rhythmResultGotIt;
 
-  /// No description provided for @rhythmResultSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Verilerinize dayanarak gününüzü sizin için bölümlere ayırdık.'**
   String get rhythmResultSubtitle;
 
-  /// No description provided for @rhythmResultTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Biyolojik Saat Profiliniz'**
   String get rhythmResultTitle;
 
-  /// No description provided for @rhythmTeaserCta.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Paketleri İncele'**
   String get rhythmTeaserCta;
 
-  /// No description provided for @rhythmTeaserSkip.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Atla'**
   String get rhythmTeaserSkip;
 
-  /// No description provided for @rhythmTeaserSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Canlı Ritim, en verimli anlarınızı öğrenir ve alışkanlıklarınızı doğru zamana yerleştirir.'**
   String get rhythmTeaserSubtitle;
 
-  /// No description provided for @rhythmTeaserTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Biyolojik Saatinize Göre Alışkanlıkları Maksimum Verimle Kazanın'**
   String get rhythmTeaserTitle;
 
-  /// No description provided for @rhythmWindowEnergy.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Enerji Zamanı'**
   String get rhythmWindowEnergy;
 
-  /// No description provided for @rhythmWindowEnergyDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hareket, aksiyon, spor'**
   String get rhythmWindowEnergyDesc;
 
-  /// No description provided for @rhythmWindowFocus.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Odak Zamanı'**
   String get rhythmWindowFocus;
 
-  /// No description provided for @rhythmWindowFocusDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Zihinsel netlik, öğrenme, analiz'**
   String get rhythmWindowFocusDesc;
 
-  /// No description provided for @rhythmWindowLight.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hafif Zaman'**
   String get rhythmWindowLight;
 
-  /// No description provided for @rhythmWindowLightDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Düşük efor, küçük işler'**
   String get rhythmWindowLightDesc;
 
-  /// No description provided for @rhythmWindowNoProfileHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ritim testini tamamlayarak kişiselleştirilmiş öneriler alabilirsin'**
   String get rhythmWindowNoProfileHint;
 
-  /// No description provided for @rhythmWindowReflection.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Refleksiyon Zamanı'**
   String get rhythmWindowReflection;
 
-  /// No description provided for @rhythmWindowReflectionDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük, tefekkür, kapanış'**
   String get rhythmWindowReflectionDesc;
 
-  /// No description provided for @rhythmWindowStepSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu alışkanlığı hangi zaman diliminde yapmak istersin?'**
   String get rhythmWindowStepSubtitle;
 
-  /// No description provided for @rhythmWindowStepTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'En Uygun Zaman Dilimi'**
   String get rhythmWindowStepTitle;
 
-  /// No description provided for @roomFabLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Oda'**
   String get roomFabLabel;
 
-  /// No description provided for @roomMembersLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'ODA ÜYELERİ'**
   String get roomMembersLabel;
 
-  /// No description provided for @roomNameHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Örn: Sabah Rutini Ekibi'**
   String get roomNameHint;
 
-  /// No description provided for @roomNameLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Oda Adı'**
   String get roomNameLabel;
 
-  /// No description provided for @roomNotFoundError.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu kodla bir oda bulunamadı'**
   String get roomNotFoundError;
 
-  /// No description provided for @roomSummaryHeader.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'ODA ÖZETİ'**
   String get roomSummaryHeader;
 
-  /// No description provided for @roundCorners.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Köşeleri yuvarlat'**
   String get roundCorners;
 
-  /// No description provided for @ruleEnteredDurationAtLeast.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kural: Girilen süre ≥ {target}'**
   String ruleEnteredDurationAtLeast(Object target);
 
-  /// No description provided for @ruleEnteredDurationAtMost.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kural: Girilen süre ≤ {target}'**
   String ruleEnteredDurationAtMost(Object target);
 
-  /// No description provided for @ruleEnteredDurationExactly.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kural: Girilen süre = {target}'**
   String ruleEnteredDurationExactly(Object target);
 
-  /// No description provided for @ruleEnteredValueAtLeast.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kural: Girilen değer ≥ {target}'**
   String ruleEnteredValueAtLeast(Object target);
 
-  /// No description provided for @ruleEnteredValueAtMost.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kural: Girilen değer ≤ {target}'**
   String ruleEnteredValueAtMost(Object target);
 
-  /// No description provided for @ruleEnteredValueExactly.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kural: Girilen değer = {target}'**
   String ruleEnteredValueExactly(Object target);
 
-  /// No description provided for @runningLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'ÇALIŞIYOR'**
   String get runningLabel;
 
-  /// No description provided for @saturdayShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Cmt'**
   String get saturdayShort;
 
-  /// No description provided for @save.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kaydet'**
   String get save;
 
-  /// No description provided for @saveButton.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kaydet'**
   String get saveButton;
 
-  /// No description provided for @saveChanges.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Değişiklikleri Kaydet'**
   String get saveChanges;
 
-  /// No description provided for @saveEntry.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Girişi Kaydet'**
   String get saveEntry;
 
-  /// No description provided for @saveError.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kaydederken bir hata oluştu'**
   String get saveError;
 
-  /// No description provided for @saved.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kaydedildi'**
   String get saved;
 
-  /// No description provided for @saving.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kaydediliyor...'**
   String get saving;
 
-  /// No description provided for @savingsBudgetPlan.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tasarruf / Bütçe Planı'**
   String get savingsBudgetPlan;
 
-  /// No description provided for @scheduleHabit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlığınızın programını ayarlayın'**
   String get scheduleHabit;
 
-  /// No description provided for @scheduleLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Program'**
   String get scheduleLabel;
 
-  /// No description provided for @schedulingOptions.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Zamanlama Seçenekleri'**
   String get schedulingOptions;
 
-  /// No description provided for @seconds.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Saniye'**
   String get seconds;
 
-  /// No description provided for @seeFullSubscriptionInfo.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tam abonelik bilgilerinizi görün'**
   String get seeFullSubscriptionInfo;
 
-  /// No description provided for @select.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Seç'**
   String get select;
 
-  /// No description provided for @selectAll.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tümünü Seç'**
   String get selectAll;
 
-  /// No description provided for @selectAtLeastOneDay.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Lütfen en az bir gün seçin'**
   String get selectAtLeastOneDay;
 
-  /// No description provided for @selectCategory.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kategori Seç'**
   String get selectCategory;
 
-  /// No description provided for @selectDate.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tarih Seç'**
   String get selectDate;
 
-  /// No description provided for @selectDay.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gün Seçin'**
   String get selectDay;
 
-  /// No description provided for @selectDuration.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Süre Seç'**
   String get selectDuration;
 
-  /// No description provided for @selectEmoji.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Emoji seç'**
   String get selectEmoji;
 
-  /// No description provided for @selectEndDate.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bitiş tarihini seç'**
   String get selectEndDate;
 
-  /// No description provided for @selectFrequency.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sıklık Seç'**
   String get selectFrequency;
 
-  /// No description provided for @selectHabitLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık Seç'**
   String get selectHabitLabel;
 
-  /// No description provided for @selectHabitType.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlık Türü Seç'**
   String get selectHabitType;
 
-  /// No description provided for @selectHabitsToAdd.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük rutinine eklemek istediğin alışkanlıkları seç:'**
   String get selectHabitsToAdd;
 
-  /// No description provided for @selectMonthTooltip.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ay seç'**
   String get selectMonthTooltip;
 
-  /// No description provided for @selectReason.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sebep Seç'**
   String get selectReason;
 
-  /// No description provided for @selectReasonDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günümüzü en çok hangi faktör etkiledi?'**
   String get selectReasonDesc;
 
-  /// No description provided for @selectReportType.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Rapor Türü Seçin:'**
   String get selectReportType;
 
-  /// No description provided for @selectSubEmotion.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alt Duygu Seç'**
   String get selectSubEmotion;
 
-  /// No description provided for @selectSubEmotionDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hangi alt duygu seni en iyi tanımlıyor?'**
   String get selectSubEmotionDesc;
 
-  /// No description provided for @selectTime.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Zaman Seç'**
   String get selectTime;
 
-  /// No description provided for @selectYourCurrentMood.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Şu anki ruh halini seç'**
   String get selectYourCurrentMood;
 
-  /// No description provided for @selectYourMood.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ruh halini seç'**
   String get selectYourMood;
 
-  /// No description provided for @selectedDaysOfMonth.
+  /// Ay içinde seçilen günlerin özeti
   ///
   /// In tr, this message translates to:
   /// **'Ayın {sorted}. günleri'**
   String selectedDaysOfMonth(Object sorted);
 
-  /// No description provided for @send.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gönder'**
   String get send;
 
-  /// No description provided for @sendBackward.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geriye gönder'**
   String get sendBackward;
 
-  /// No description provided for @setAsTodayFocus.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bugünün Odağı Yap'**
   String get setAsTodayFocus;
 
-  /// No description provided for @setVisionTimeline.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyonunuz için zaman çizelgesini belirleyin'**
   String get setVisionTimeline;
 
-  /// No description provided for @settings.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ayarlar'**
   String get settings;
 
-  /// No description provided for @shareAsLink.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bağlantı olarak paylaş'**
   String get shareAsLink;
 
-  /// No description provided for @shareBoard.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Panoyu paylaş'**
   String get shareBoard;
 
-  /// No description provided for @shareButton.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Paylaş'**
   String get shareButton;
 
-  /// No description provided for @shareDashboard.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Panoyu paylaş'**
   String get shareDashboard;
 
-  /// No description provided for @shareInviteCodeMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu kodu arkadaşlarınla paylaş:'**
   String get shareInviteCodeMessage;
 
-  /// No description provided for @shareLinkCopied.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Paylaşım bağlantısı panoya kopyalandı.'**
   String get shareLinkCopied;
 
-  /// No description provided for @shareNoteHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Düşüncelerini paylaş...'**
   String get shareNoteHint;
 
-  /// No description provided for @shareNoteTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Not Paylaş'**
   String get shareNoteTitle;
 
-  /// No description provided for @shareNoteTooltip.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Not Paylaş'**
   String get shareNoteTooltip;
 
-  /// No description provided for @shareVision.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyonu paylaş'**
   String get shareVision;
 
-  /// No description provided for @showProgress.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İlerlemeyi göster'**
   String get showProgress;
 
-  /// No description provided for @showText.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yazıları göster'**
   String get showText;
 
-  /// No description provided for @shuffle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Karıştır'**
   String get shuffle;
 
-  /// No description provided for @signInFailed.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Giriş başarısız oldu. Lütfen tekrar deneyin.'**
   String get signInFailed;
 
-  /// No description provided for @signInToSaveData.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Verileri kaydetmek için giriş yap'**
   String get signInToSaveData;
 
-  /// No description provided for @signInWithGoogle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Google ile giriş yap'**
   String get signInWithGoogle;
 
-  /// No description provided for @signInWithGoogleButton.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Google ile giriş yap'**
   String get signInWithGoogleButton;
 
-  /// No description provided for @signInWithGoogleDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Devam etmek için Google hesabını bağla. Profil bilgilerin otomatik dolacak.'**
   String get signInWithGoogleDesc;
 
-  /// No description provided for @signInWithGoogleTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Google hesabınla giriş yap'**
   String get signInWithGoogleTitle;
 
-  /// No description provided for @signOut.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çıkış Yap'**
   String get signOut;
 
-  /// No description provided for @signOutConfirmation.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çıkış yapmak istediğinize emin misiniz?'**
   String get signOutConfirmation;
 
-  /// No description provided for @simpleHabitColorSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlığının kişiliğini yansıtsın'**
   String get simpleHabitColorSubtitle;
 
-  /// No description provided for @simpleHabitColorTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bir renk seç'**
   String get simpleHabitColorTitle;
 
-  /// No description provided for @simpleHabitEmojiSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlığını daha eğlenceli hale getir!'**
   String get simpleHabitEmojiSubtitle;
 
-  /// No description provided for @simpleHabitEmojiTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Onu temsil edecek bir emoji seç'**
   String get simpleHabitEmojiTitle;
 
-  /// No description provided for @simpleHabitFrequencySubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hedeflerini belirle'**
   String get simpleHabitFrequencySubtitle;
 
-  /// No description provided for @simpleHabitFrequencyTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ne sıklıkla yapmak istiyorsun?'**
   String get simpleHabitFrequencyTitle;
 
-  /// No description provided for @simpleHabitMonthDaysSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aktif olacağı günleri seç'**
   String get simpleHabitMonthDaysSubtitle;
 
-  /// No description provided for @simpleHabitMonthDaysTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ayın hangi günlerinde?'**
   String get simpleHabitMonthDaysTitle;
 
-  /// No description provided for @simpleHabitNameSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Neyi alışkanlık haline getirmek istiyorsun?'**
   String get simpleHabitNameSubtitle;
 
-  /// No description provided for @simpleHabitNameTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alışkanlığına bir isim ver'**
   String get simpleHabitNameTitle;
 
-  /// No description provided for @simpleHabitPeriodicSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tekrar aralığını belirle'**
   String get simpleHabitPeriodicSubtitle;
 
-  /// No description provided for @simpleHabitPeriodicTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kaç günde bir?'**
   String get simpleHabitPeriodicTitle;
 
-  /// No description provided for @simpleHabitPreviewSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Her şey doğru görünüyor mu?'**
   String get simpleHabitPreviewSubtitle;
 
-  /// No description provided for @simpleHabitPreviewTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Harika! İşte alışkanlığın'**
   String get simpleHabitPreviewTitle;
 
-  /// No description provided for @simpleHabitReminderSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük hatırlatıcıyla alışkanlığını kaçırma'**
   String get simpleHabitReminderSubtitle;
 
-  /// No description provided for @simpleHabitReminderTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sana hatırlatayım mı?'**
   String get simpleHabitReminderTitle;
 
-  /// No description provided for @simpleHabitStartDateSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yolculuğun için bir başlangıç noktası seç'**
   String get simpleHabitStartDateSubtitle;
 
-  /// No description provided for @simpleHabitStartDateTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ne zaman başlayacaksın?'**
   String get simpleHabitStartDateTitle;
 
-  /// No description provided for @simpleHabitSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hızlıca bir alışkanlık oluştur'**
   String get simpleHabitSubtitle;
 
-  /// No description provided for @simpleHabitTargetOne.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Basit alışkanlık (hedef = 1)'**
   String get simpleHabitTargetOne;
 
-  /// No description provided for @simpleHabitTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Basit Alışkanlık'**
   String get simpleHabitTitle;
 
-  /// No description provided for @simpleHabitTypeDescription.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Günlük yapılacaklar için. Tamamla veya tamamlama.'**
   String get simpleHabitTypeDescription;
 
-  /// No description provided for @simpleHabitWeekdaysSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aktif olacağı günleri seç'**
   String get simpleHabitWeekdaysSubtitle;
 
-  /// No description provided for @simpleHabitWeekdaysTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hangi günlerde?'**
   String get simpleHabitWeekdaysTitle;
 
-  /// No description provided for @simpleHabitWizardDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Seni adım adım yönlendireceğim. Birlikte harika bir alışkanlık oluşturalım!'**
   String get simpleHabitWizardDesc;
 
-  /// No description provided for @simpleHabitWizardTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yeni bir alışkanlık kazanmaya hazır mısın?'**
   String get simpleHabitWizardTitle;
 
-  /// No description provided for @simpleTypeShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Basit'**
   String get simpleTypeShort;
 
-  /// No description provided for @skip.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geç'**
   String get skip;
 
-  /// No description provided for @skipOnboarding.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geç'**
   String get skipOnboarding;
 
-  /// No description provided for @skipTest.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Testi Atla'**
   String get skipTest;
 
-  /// No description provided for @social.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sosyal'**
   String get social;
 
-  /// No description provided for @socialFeaturesGuestMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Arkadaşlarınla oda oluşturup birbirinizin ilerlemesini takip etmek için Google ile giriş yapman gerekiyor.'**
   String get socialFeaturesGuestMessage;
 
-  /// No description provided for @socialFeaturesTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sosyal Özellikler'**
   String get socialFeaturesTitle;
 
-  /// No description provided for @socialFeedTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Akış'**
   String get socialFeedTitle;
 
-  /// No description provided for @socialRoomsTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sosyal Odalar'**
   String get socialRoomsTitle;
 
-  /// No description provided for @softCloud.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yumuşak Bulut'**
   String get softCloud;
 
-  /// No description provided for @softCloudDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bulut gibi, rüya gibi yumuşak'**
   String get softCloudDesc;
 
-  /// No description provided for @softPeach.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'(Şeftali) Soft Peach'**
   String get softPeach;
 
-  /// No description provided for @softPeachDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sıcak şeftali ve krem tonları'**
   String get softPeachDesc;
 
-  /// No description provided for @sound.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ses'**
   String get sound;
 
-  /// No description provided for @soundAlerts.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sesli uyarılar'**
   String get soundAlerts;
 
-  /// No description provided for @soundSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bildirimlerle birlikte ses çal'**
   String get soundSubtitle;
 
-  /// No description provided for @specificDaysOfMonth.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ayın Belirli Günleri'**
   String get specificDaysOfMonth;
 
-  /// No description provided for @specificDaysOfWeek.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Haftanın Belirli Günleri'**
   String get specificDaysOfWeek;
 
-  /// No description provided for @specificDaysOfYear.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yılın Belirli Günleri'**
   String get specificDaysOfYear;
 
-  /// No description provided for @spendingAdvisorNoBudget.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tavsiye almak için bir bütçe belirleyin.'**
   String get spendingAdvisorNoBudget;
 
-  /// No description provided for @spendingAdvisorOnTrack.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Harika! Bütçenizle tam uyumlusunuz.'**
   String get spendingAdvisorOnTrack;
 
-  /// No description provided for @spendingAdvisorOverBudget.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bütçeyi aştınız. Harcamalarınızı durdurun.'**
   String get spendingAdvisorOverBudget;
 
-  /// No description provided for @spendingAdvisorSafe.
+  /// Günlük güvenli harcama limitini gösteren danışman mesajı
   ///
   /// In tr, this message translates to:
   /// **'Günde {amount} harcayabilirsiniz.'**
   String spendingAdvisorSafe(Object amount);
 
-  /// No description provided for @spendingAdvisorTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Harcama Danışmanı'**
   String get spendingAdvisorTitle;
 
-  /// No description provided for @spendingAdvisorWarning.
+  /// Bütçe aşımını önlemek için azaltılması gereken tutarı gösteren mesaj
   ///
   /// In tr, this message translates to:
   /// **'Limitinizde kalmak için günlük harcamayı {amount} azaltın.'**
   String spendingAdvisorWarning(Object amount);
 
-  /// No description provided for @spendingLessThanDailyAvg.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Harika! Günlük ortalamadan {amount} daha az harcıyorsunuz.'**
   String spendingLessThanDailyAvg(Object amount);
 
-  /// No description provided for @spendingMoreThanDailyAvg.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Uyarı! Günlük ortalamadan {amount} daha fazla harcıyorsunuz.'**
   String spendingMoreThanDailyAvg(Object amount);
 
-  /// No description provided for @spin.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'ÇEVİR'**
   String get spin;
 
-  /// No description provided for @spinAgain.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tekrar Çevir'**
   String get spinAgain;
 
-  /// No description provided for @start.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Başlat'**
   String get start;
 
-  /// No description provided for @startDate.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Başlangıç Tarihi'**
   String get startDate;
 
-  /// No description provided for @startDateLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Başlangıç'**
   String get startDateLabel;
 
-  /// No description provided for @startDayLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Başlangıç günü (1-365)'**
   String get startDayLabel;
 
-  /// No description provided for @startJourney.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yolculuğuna Başla'**
   String get startJourney;
 
-  /// No description provided for @startTest.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Testi Başlat'**
   String get startTest;
 
-  /// No description provided for @startTestDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Testi tamamlarsan kişiliğine uygun öneriler ve önerilen alışkanlıklar alırsın. İstersen bu adımı şimdi atlayabilirsin.'**
   String get startTestDesc;
 
-  /// No description provided for @startTestTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kişilik testine başlamak ister misin?'**
   String get startTestTitle;
 
-  /// No description provided for @startTime.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Başlangıç Saati'**
   String get startTime;
 
-  /// No description provided for @startTrackingFinances.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Finanslarınızı takip etmeye başlayın ve harcamalarınızı kontrol altına alın.'**
   String get startTrackingFinances;
 
-  /// No description provided for @startTrackingMood.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Analizleri görmek için duygu durumunu kaydetmeye başla'**
   String get startTrackingMood;
 
-  /// No description provided for @startsOn.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Başlangıç'**
   String get startsOn;
 
-  /// No description provided for @statsActiveDays.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aktif Gün'**
   String get statsActiveDays;
 
-  /// No description provided for @statusLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Durum'**
   String get statusLabel;
 
-  /// No description provided for @step.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Adım'**
   String get step;
 
-  /// No description provided for @stepOf.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Adım {current} / {total}'**
   String stepOf(Object current, Object total);
 
-  /// No description provided for @steps.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Adımlar'**
   String get steps;
 
-  /// No description provided for @stopwatchLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'KRONOMETRE'**
   String get stopwatchLabel;
 
-  /// No description provided for @streakDays.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'{count} gün'**
   String streakDays(Object count);
 
-  /// No description provided for @streakIndicator.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Seri göstergesi'**
   String get streakIndicator;
 
-  /// No description provided for @streakIndicatorDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alev ve buz efektlerini göster'**
   String get streakIndicatorDesc;
 
-  /// No description provided for @subEmotionAmazing.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Harika'**
   String get subEmotionAmazing;
 
-  /// No description provided for @subEmotionAngry.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kızgın'**
   String get subEmotionAngry;
 
-  /// No description provided for @subEmotionAnxious.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Endişeli'**
   String get subEmotionAnxious;
 
-  /// No description provided for @subEmotionBlessed.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Şanslı'**
   String get subEmotionBlessed;
 
-  /// No description provided for @subEmotionBored.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sıkılmış'**
   String get subEmotionBored;
 
-  /// No description provided for @subEmotionCalm.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sakin'**
   String get subEmotionCalm;
 
-  /// No description provided for @subEmotionCheerful.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Neşeli'**
   String get subEmotionCheerful;
 
-  /// No description provided for @subEmotionConfident.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kendinden Emin'**
   String get subEmotionConfident;
 
-  /// No description provided for @subEmotionConfused.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kafası Karışık'**
   String get subEmotionConfused;
 
-  /// No description provided for @subEmotionDemoralized.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Morali Bozuk'**
   String get subEmotionDemoralized;
 
-  /// No description provided for @subEmotionDetermined.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kararlı'**
   String get subEmotionDetermined;
 
-  /// No description provided for @subEmotionDistracted.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Dikkati Dağınık'**
   String get subEmotionDistracted;
 
-  /// No description provided for @subEmotionDrained.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Boşalmış'**
   String get subEmotionDrained;
 
-  /// No description provided for @subEmotionEmpty.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Boş'**
   String get subEmotionEmpty;
 
-  /// No description provided for @subEmotionEnergetic.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Enerjik'**
   String get subEmotionEnergetic;
 
-  /// No description provided for @subEmotionEnthusiastic.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Coşkulu'**
   String get subEmotionEnthusiastic;
 
-  /// No description provided for @subEmotionEuphoric.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Coşkulu'**
   String get subEmotionEuphoric;
 
-  /// No description provided for @subEmotionExcited.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Heyecanlı'**
   String get subEmotionExcited;
 
-  /// No description provided for @subEmotionExhausted.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bitkin'**
   String get subEmotionExhausted;
 
-  /// No description provided for @subEmotionGrateful.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Minnettar'**
   String get subEmotionGrateful;
 
-  /// No description provided for @subEmotionGuilty.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Suçlu'**
   String get subEmotionGuilty;
 
-  /// No description provided for @subEmotionHappy.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Mutlu'**
   String get subEmotionHappy;
 
-  /// No description provided for @subEmotionHelpless.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çaresiz'**
   String get subEmotionHelpless;
 
-  /// No description provided for @subEmotionHopeful.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Umutlu'**
   String get subEmotionHopeful;
 
-  /// No description provided for @subEmotionHopeless.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Umutsuz'**
   String get subEmotionHopeless;
 
-  /// No description provided for @subEmotionHurt.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İncinmiş'**
   String get subEmotionHurt;
 
-  /// No description provided for @subEmotionIndecisive.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kararsız'**
   String get subEmotionIndecisive;
 
-  /// No description provided for @subEmotionInsecure.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Güvensiz'**
   String get subEmotionInsecure;
 
-  /// No description provided for @subEmotionLonely.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yalnız'**
   String get subEmotionLonely;
 
-  /// No description provided for @subEmotionLoving.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sevgi Dolu'**
   String get subEmotionLoving;
 
-  /// No description provided for @subEmotionMotivated.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Motive'**
   String get subEmotionMotivated;
 
-  /// No description provided for @subEmotionNumb.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hissiz'**
   String get subEmotionNumb;
 
-  /// No description provided for @subEmotionOrdinary.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sıradan'**
   String get subEmotionOrdinary;
 
-  /// No description provided for @subEmotionOverwhelmed.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bunalmış'**
   String get subEmotionOverwhelmed;
 
-  /// No description provided for @subEmotionPeaceful.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Huzurlu'**
   String get subEmotionPeaceful;
 
-  /// No description provided for @subEmotionProud.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gururlu'**
   String get subEmotionProud;
 
-  /// No description provided for @subEmotionRegretful.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Pişman'**
   String get subEmotionRegretful;
 
-  /// No description provided for @subEmotionSad.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Üzgün'**
   String get subEmotionSad;
 
-  /// No description provided for @subEmotionSelection.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu duyguyu daha detaylı tarif edelim'**
   String get subEmotionSelection;
 
-  /// No description provided for @subEmotionStressed.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Stresli'**
   String get subEmotionStressed;
 
-  /// No description provided for @subEmotionTired.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yorgun'**
   String get subEmotionTired;
 
-  /// No description provided for @subEmotionUnstoppable.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Durdurulamaz'**
   String get subEmotionUnstoppable;
 
-  /// No description provided for @subscribeToEnjoyPremium.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Premium özelliklerin keyfini çıkarmak için abone olun'**
   String get subscribeToEnjoyPremium;
 
-  /// No description provided for @subscription.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Abonelik'**
   String get subscription;
 
-  /// No description provided for @subscriptionDetails.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Abonelik Detayları'**
   String get subscriptionDetails;
 
-  /// No description provided for @subtaskIndex.
+  /// Alt görevlerin sırasını belirtir
   ///
   /// In tr, this message translates to:
   /// **'Alt görev {index}'**
   String subtaskIndex(Object index);
 
-  /// No description provided for @subtasks.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alt görevler'**
   String get subtasks;
 
-  /// No description provided for @subtasksTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alt Görevler'**
   String get subtasksTitle;
 
-  /// No description provided for @subtasksType.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Alt Görevler'**
   String get subtasksType;
 
-  /// No description provided for @subtasksTypeDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çoklu görev'**
   String get subtasksTypeDesc;
 
-  /// No description provided for @success.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Başarı'**
   String get success;
 
-  /// No description provided for @successfulDayLegend.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Başarılı gün'**
   String get successfulDayLegend;
 
-  /// No description provided for @successfulDaysCount.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'{count} Başarılı Gün'**
   String successfulDaysCount(Object count);
 
-  /// No description provided for @sundayShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Paz'**
   String get sundayShort;
 
-  /// No description provided for @systemInfo.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sistem Bilgisi'**
   String get systemInfo;
 
-  /// No description provided for @systemTheme.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sistem teması'**
   String get systemTheme;
 
-  /// No description provided for @tapFabToCreate.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Başlamak için + butonuna basın'**
   String get tapFabToCreate;
 
-  /// No description provided for @tapSpinToStart.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çarkı çevirmek için ortadaki butona dokun'**
   String get tapSpinToStart;
 
-  /// No description provided for @tapToPickImage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Resim seçmek için dokunun'**
   String get tapToPickImage;
 
-  /// No description provided for @target.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hedef'**
   String get target;
 
-  /// No description provided for @targetDurationMinutes.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hedef Süre (dakika)'**
   String get targetDurationMinutes;
 
-  /// No description provided for @targetShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hedef: {value}'**
   String targetShort(Object value);
 
-  /// No description provided for @targetType.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hedef Tipi'**
   String get targetType;
 
-  /// No description provided for @targetValue.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hedef Değer'**
   String get targetValue;
 
-  /// No description provided for @targetValueLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hedef Değer'**
   String get targetValueLabel;
 
-  /// No description provided for @taskAdded.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Görev eklendi'**
   String get taskAdded;
 
-  /// No description provided for @taskAddedSnackbar.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'{title} görevi eklendi! ✅'**
   String taskAddedSnackbar(Object title);
 
-  /// No description provided for @taskCompleted.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tamamlandı'**
   String get taskCompleted;
 
-  /// No description provided for @taskDeletedMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Görev silindi: {title}'**
   String taskDeletedMessage(Object title);
 
-  /// No description provided for @taskDescription.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Açıklama (İsteğe Bağlı)'**
   String get taskDescription;
 
-  /// No description provided for @taskPending.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bekliyor'**
   String get taskPending;
 
-  /// No description provided for @taskTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Görev Başlığı'**
   String get taskTitle;
 
-  /// No description provided for @taskTitleRequired.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Görev başlığı zorunlu'**
   String get taskTitleRequired;
 
-  /// No description provided for @tellMeYourDream.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hayalini anlat. Vizyon Panosu oluşturmana yardım edeyim.'**
   String get tellMeYourDream;
 
-  /// No description provided for @tellUsMore.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Biraz daha anlat'**
   String get tellUsMore;
 
-  /// No description provided for @templateDetailsNotFound.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Şablon ayrıntıları bulunamadı'**
   String get templateDetailsNotFound;
 
-  /// No description provided for @templatesTabManual.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Manuel'**
   String get templatesTabManual;
 
-  /// No description provided for @templatesTabReady.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hazır'**
   String get templatesTabReady;
 
-  /// No description provided for @testsSection.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Testler'**
   String get testsSection;
 
-  /// No description provided for @textLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Metin'**
   String get textLabel;
 
-  /// No description provided for @theWinnerIs.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kazanan:'**
   String get theWinnerIs;
 
-  /// No description provided for @theme.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tema'**
   String get theme;
 
-  /// No description provided for @themeAbyss.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Derinlik'**
   String get themeAbyss;
 
-  /// No description provided for @themeAbyssDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Karanlık ve sofistike'**
   String get themeAbyssDesc;
 
-  /// No description provided for @themeBlush.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Allık'**
   String get themeBlush;
 
-  /// No description provided for @themeBlushDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tatlı ve feminen'**
   String get themeBlushDesc;
 
-  /// No description provided for @themeCotton.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Cotton'**
   String get themeCotton;
 
-  /// No description provided for @themeCottonDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Nötr ve sıcak'**
   String get themeCottonDesc;
 
-  /// No description provided for @themeCream.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Krem'**
   String get themeCream;
 
-  /// No description provided for @themeCreamDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sıcak ve yumuşak'**
   String get themeCreamDesc;
 
-  /// No description provided for @themeCrimson.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bordo'**
   String get themeCrimson;
 
-  /// No description provided for @themeCrimsonDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Cesur ve tutkulu'**
   String get themeCrimsonDesc;
 
-  /// No description provided for @themeDetails.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tema Detayları'**
   String get themeDetails;
 
-  /// No description provided for @themeForest.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Orman'**
   String get themeForest;
 
-  /// No description provided for @themeForestDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Zengin ve organik'**
   String get themeForestDesc;
 
-  /// No description provided for @themeLavender.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Lavender'**
   String get themeLavender;
 
-  /// No description provided for @themeLavenderDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sakin mor'**
   String get themeLavenderDesc;
 
-  /// No description provided for @themeMatcha.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Matcha'**
   String get themeMatcha;
 
-  /// No description provided for @themeMatchaDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Taze yeşil'**
   String get themeMatchaDesc;
 
-  /// No description provided for @themeMauve.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Leylak'**
   String get themeMauve;
 
-  /// No description provided for @themeMauveDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Zarif ve romantik'**
   String get themeMauveDesc;
 
-  /// No description provided for @themeMidnight.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gece Yarısı'**
   String get themeMidnight;
 
-  /// No description provided for @themeMidnightDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Derin ve gizemli'**
   String get themeMidnightDesc;
 
-  /// No description provided for @themeOcean.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Okyanus'**
   String get themeOcean;
 
-  /// No description provided for @themeOceanDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Derin ve serin'**
   String get themeOceanDesc;
 
-  /// No description provided for @themeRose.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Rose'**
   String get themeRose;
 
-  /// No description provided for @themeRoseDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sıcak gül'**
   String get themeRoseDesc;
 
-  /// No description provided for @themeSelection.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tema Seçimi'**
   String get themeSelection;
 
-  /// No description provided for @themeSky.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sky'**
   String get themeSky;
 
-  /// No description provided for @themeSkyDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ferah mavi'**
   String get themeSkyDesc;
 
-  /// No description provided for @themeSlate.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Slate'**
   String get themeSlate;
 
-  /// No description provided for @themeSlateDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Modern gri'**
   String get themeSlateDesc;
 
-  /// No description provided for @themeSunset.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gün Batımı'**
   String get themeSunset;
 
-  /// No description provided for @themeSunsetDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sıcak ve altın'**
   String get themeSunsetDesc;
 
-  /// No description provided for @themeVintageRed.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vintage Kırmızı'**
   String get themeVintageRed;
 
-  /// No description provided for @themeVintageRedDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Klasik ve zamansız kırmızı'**
   String get themeVintageRedDesc;
 
-  /// No description provided for @thisFeatureIsPremium.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu özellik Premium\'da'**
   String get thisFeatureIsPremium;
 
-  /// No description provided for @thisMonth.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu ay'**
   String get thisMonth;
 
-  /// No description provided for @thisWeek.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu hafta'**
   String get thisWeek;
 
-  /// No description provided for @thisYear.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu yıl'**
   String get thisYear;
 
-  /// No description provided for @thursdayShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Per'**
   String get thursdayShort;
 
-  /// No description provided for @timer.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sayaç'**
   String get timer;
 
-  /// No description provided for @timerCreateTimerHabitFirst.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Önce bir zamanlayıcı alışkanlığı oluşturun'**
   String get timerCreateTimerHabitFirst;
 
-  /// No description provided for @timerDescription.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Zaman tabanlı takip'**
   String get timerDescription;
 
-  /// No description provided for @timerExample.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'30 dakikalık bir antrenman yap'**
   String get timerExample;
 
-  /// No description provided for @timerHabitLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Zamanlayıcı Alışkanlığı'**
   String get timerHabitLabel;
 
-  /// No description provided for @timerPause.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Duraklat'**
   String get timerPause;
 
-  /// No description provided for @timerPendingDurationLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bekleyen süre: {duration}'**
   String timerPendingDurationLabel(Object duration);
 
-  /// No description provided for @timerPendingLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Beklemede: {duration}'**
   String timerPendingLabel(Object duration);
 
-  /// No description provided for @timerPomodoroBreakPhase.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Mola'**
   String get timerPomodoroBreakPhase;
 
-  /// No description provided for @timerPomodoroCompletedWork.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tamamlanan Çalışma: {count}'**
   String timerPomodoroCompletedWork(Object count);
 
-  /// No description provided for @timerPomodoroLongBreakIntervalLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Uzun Mola Döngüsü (örn. 4)'**
   String get timerPomodoroLongBreakIntervalLabel;
 
-  /// No description provided for @timerPomodoroLongBreakMinutesLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Uzun Mola (dk)'**
   String get timerPomodoroLongBreakMinutesLabel;
 
-  /// No description provided for @timerPomodoroSettings.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Pomodoro Ayarları'**
   String get timerPomodoroSettings;
 
-  /// No description provided for @timerPomodoroShortBreakMinutesLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kısa Mola (dk)'**
   String get timerPomodoroShortBreakMinutesLabel;
 
-  /// No description provided for @timerPomodoroSkipPhase.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aşamayı Atla'**
   String get timerPomodoroSkipPhase;
 
-  /// No description provided for @timerPomodoroWorkMinutesLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çalışma (dk)'**
   String get timerPomodoroWorkMinutesLabel;
 
-  /// No description provided for @timerPomodoroWorkPhase.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çalışma'**
   String get timerPomodoroWorkPhase;
 
-  /// No description provided for @timerQuickPresets.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hızlı Ayarlar'**
   String get timerQuickPresets;
 
-  /// No description provided for @timerResume.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Devam'**
   String get timerResume;
 
-  /// No description provided for @timerSaveDurationTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Süreyi Kaydet'**
   String get timerSaveDurationTitle;
 
-  /// No description provided for @timerSaveSessionTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Oturumu Kaydet'**
   String get timerSaveSessionTitle;
 
-  /// No description provided for @timerSessionAlreadySaved.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu oturum zaten kaydedilmiş'**
   String get timerSessionAlreadySaved;
 
-  /// No description provided for @timerSetDurationFirst.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Önce süreyi ayarla'**
   String get timerSetDurationFirst;
 
-  /// No description provided for @timerSettings.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Zamanlayıcı Ayarları'**
   String get timerSettings;
 
-  /// No description provided for @timerStop.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bitir'**
   String get timerStop;
 
-  /// No description provided for @timerTabCountdown.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geri Sayım'**
   String get timerTabCountdown;
 
-  /// No description provided for @timerTabPomodoro.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Pomodoro'**
   String get timerTabPomodoro;
 
-  /// No description provided for @timerTabStopwatch.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kronometre'**
   String get timerTabStopwatch;
 
-  /// No description provided for @timerTracking.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Süre takibi'**
   String get timerTracking;
 
-  /// No description provided for @timerType.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Zamanlayıcı'**
   String get timerType;
 
-  /// No description provided for @times.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kere'**
   String get times;
 
-  /// No description provided for @timezone.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Zaman Dilimi'**
   String get timezone;
 
-  /// No description provided for @titleHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Örn: Market, Serbest Çalışma, vb.'**
   String get titleHint;
 
-  /// No description provided for @titleOptional.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Başlık (isteğe bağlı)'**
   String get titleOptional;
 
-  /// No description provided for @today.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bugün'**
   String get today;
 
-  /// No description provided for @todaysHabits.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bugünün Alışkanlıkları'**
   String get todaysHabits;
 
-  /// No description provided for @tokenEarnedSuccess.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'+1 jeton kazandınız! 🎉'**
   String get tokenEarnedSuccess;
 
-  /// No description provided for @tomorrow.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yarın'**
   String get tomorrow;
 
-  /// No description provided for @topCategories.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'En İyi Kategoriler'**
   String get topCategories;
 
-  /// No description provided for @totalDuration.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Toplam Süre'**
   String get totalDuration;
 
-  /// No description provided for @totalEntries.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Toplam Kayıt'**
   String get totalEntries;
 
-  /// No description provided for @totalMembersLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Toplam üye'**
   String get totalMembersLabel;
 
-  /// No description provided for @totalProgress.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Toplam ilerleme'**
   String get totalProgress;
 
-  /// No description provided for @totalSuccessfulDays.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Toplam başarılı gün'**
   String get totalSuccessfulDays;
 
-  /// No description provided for @totalUnsuccessfulDays.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Toplam başarısız gün'**
   String get totalUnsuccessfulDays;
 
-  /// No description provided for @trackEarnings.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Gelirlerini takip et'**
   String get trackEarnings;
 
-  /// No description provided for @trackSpending.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Harcamalarını takip et'**
   String get trackSpending;
 
-  /// No description provided for @trends.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Trendler'**
   String get trends;
 
-  /// No description provided for @trialCancelEffect.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ücretsiz deneme sırasında iptal ederseniz hemen ücretlendirilmezsiniz.'**
   String get trialCancelEffect;
 
-  /// No description provided for @trialInfo.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'14 gün ücretsiz deneme, istediğin zaman iptal et.'**
   String get trialInfo;
 
-  /// No description provided for @tuesdayShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sal'**
   String get tuesdayShort;
 
-  /// No description provided for @typeEmoji.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bir emoji girin'**
   String get typeEmoji;
 
-  /// No description provided for @typeEmojiHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Klavyeden bir emoji yazın'**
   String get typeEmojiHint;
 
-  /// No description provided for @typeLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tür'**
   String get typeLabel;
 
-  /// No description provided for @typeNotChangeable.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tür değiştirilemez'**
   String get typeNotChangeable;
 
-  /// No description provided for @unassignLinkedDailyTasks.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bağlı günlük görevlerin atamasını kaldır'**
   String get unassignLinkedDailyTasks;
 
-  /// No description provided for @unassignLinkedHabits.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bağlı alışkanlıkların atamasını kaldır'**
   String get unassignLinkedHabits;
 
-  /// No description provided for @undo.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geri al'**
   String get undo;
 
-  /// No description provided for @uninterruptedUsage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Kesintisiz kullanım'**
   String get uninterruptedUsage;
 
-  /// No description provided for @unit.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Birim'**
   String get unit;
 
-  /// No description provided for @unitAdet.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'adet'**
   String get unitAdet;
 
-  /// No description provided for @unitAdim.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'adım'**
   String get unitAdim;
 
-  /// No description provided for @unitBardak.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'bardak'**
   String get unitBardak;
 
-  /// No description provided for @unitHint.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Birim (bardak, adım, sayfa...)'**
   String get unitHint;
 
-  /// No description provided for @unitKalori.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'kalori'**
   String get unitKalori;
 
-  /// No description provided for @unitKez.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'kez'**
   String get unitKez;
 
-  /// No description provided for @unitKm.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'km'**
   String get unitKm;
 
-  /// No description provided for @unitLitre.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'litre'**
   String get unitLitre;
 
-  /// No description provided for @unitSayfa.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'sayfa'**
   String get unitSayfa;
 
-  /// No description provided for @unknownList.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bilinmeyen Liste'**
   String get unknownList;
 
-  /// No description provided for @unlimitedDataStorage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sınırsız veri depolama'**
   String get unlimitedDataStorage;
 
-  /// No description provided for @unlistedItems.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Listelenmemiş'**
   String get unlistedItems;
 
-  /// No description provided for @unlockAllFeatures.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tüm özellikleri açın ve sınırları kaldırın.'**
   String get unlockAllFeatures;
 
-  /// No description provided for @unnamedBackup.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'adsız'**
   String get unnamedBackup;
 
-  /// No description provided for @update.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Güncelle'**
   String get update;
 
-  /// No description provided for @usePlayStoreToManage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Aboneliğinizi yönetmek için Google Play Store\'u kullanın.'**
   String get usePlayStoreToManage;
 
-  /// No description provided for @validity.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Geçerlilik'**
   String get validity;
 
-  /// No description provided for @valueLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Değer'**
   String get valueLabel;
 
-  /// No description provided for @vibration.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Titreşim'**
   String get vibration;
 
-  /// No description provided for @vibrationSubtitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bildirimlerle birlikte titreşim'**
   String get vibrationSubtitle;
 
-  /// No description provided for @viewInvoicesOnPlayStore.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Google Play Store\'dan faturalarınızı görüntüleyin'**
   String get viewInvoicesOnPlayStore;
 
-  /// No description provided for @vision.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyon'**
   String get vision;
 
-  /// No description provided for @visionAutoDurationInfo.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu vizyon şablondaki son günü kullanacak: {day}.'**
   String visionAutoDurationInfo(Object day);
 
-  /// No description provided for @visionBoard.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyon Panosu'**
   String get visionBoard;
 
-  /// No description provided for @visionBoardDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hedeflerinizi organize etmek ve yolculuğunuzu takip etmek için bir vizyon oluşturun'**
   String get visionBoardDesc;
 
-  /// No description provided for @visionBoardViewTooltip.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Pano görünümü'**
   String get visionBoardViewTooltip;
 
-  /// No description provided for @visionCreateTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyon Oluştur'**
   String get visionCreateTitle;
 
-  /// No description provided for @visionDurationDaysLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Süre (gün)'**
   String get visionDurationDaysLabel;
 
-  /// No description provided for @visionDurationNote.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Not: Vizyon başladığında toplam bir süre belirlenir; bitiş günü bu süreyi aşarsa otomatik olarak kısaltılır.'**
   String get visionDurationNote;
 
-  /// No description provided for @visionEditTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyonu Düzenle'**
   String get visionEditTitle;
 
-  /// No description provided for @visionEmptyDescription.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hedeflerinizi görselleştirin ve hayallerinizi gerçeğe dönüştürmek için ilk vizyonunuzu ekleyin.'**
   String get visionEmptyDescription;
 
-  /// No description provided for @visionEndDayInvalid.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bitiş günü 1 ile 365 arasında olmalıdır'**
   String get visionEndDayInvalid;
 
-  /// No description provided for @visionEndDayLess.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bitiş günü başlangıç gününden küçük olamaz'**
   String get visionEndDayLess;
 
-  /// No description provided for @visionEndDayQuestion.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyonun hangi gününde bitmeli?'**
   String get visionEndDayQuestion;
 
-  /// No description provided for @visionEndDayRequired.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bitiş gününü girin'**
   String get visionEndDayRequired;
 
-  /// No description provided for @visionFreeformTooltip.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Serbest pano'**
   String get visionFreeformTooltip;
 
-  /// No description provided for @visionNoEndDurationInfo.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bitiş günü belirtilmedi. Vizyon ucu açık başlayacak.'**
   String get visionNoEndDurationInfo;
 
-  /// No description provided for @visionPlural.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyonlar'**
   String get visionPlural;
 
-  /// No description provided for @visionSettingsTooltip.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Serbest pano ayarları'**
   String get visionSettingsTooltip;
 
-  /// No description provided for @visionStartDayInvalid.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Başlangıç günü 1 ile 365 arasında olmalıdır'**
   String get visionStartDayInvalid;
 
-  /// No description provided for @visionStartDayQuestion.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyonun hangi gününde başlamalı?'**
   String get visionStartDayQuestion;
 
-  /// No description provided for @visionStartFailed.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyon başlatılamadı.'**
   String get visionStartFailed;
 
-  /// No description provided for @visionStartLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyon başlangıcı: '**
   String get visionStartLabel;
 
-  /// No description provided for @visionStartedMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyon başladı: {title}'**
   String visionStartedMessage(Object title);
 
-  /// No description provided for @visionTasks.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Vizyon Görevleri'**
   String get visionTasks;
 
-  /// No description provided for @visual.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Görsel'**
   String get visual;
 
-  /// No description provided for @warmJournal.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sıcak Günlük'**
   String get warmJournal;
 
-  /// No description provided for @warmJournalDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sıcak günlük ve duygu takibi'**
   String get warmJournalDesc;
 
-  /// No description provided for @watchAdForToken.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Reklam İzle (+1 Jeton)'**
   String get watchAdForToken;
 
-  /// No description provided for @wednesdayShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çar'**
   String get wednesdayShort;
 
-  /// No description provided for @weekDaysShort.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Pzt,Sal,Çar,Per,Cum,Cmt,Paz'**
   String get weekDaysShort;
 
-  /// No description provided for @weekdaysShortFri.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Cum'**
   String get weekdaysShortFri;
 
-  /// No description provided for @weekdaysShortMon.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Pzt'**
   String get weekdaysShortMon;
 
-  /// No description provided for @weekdaysShortSat.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Cmt'**
   String get weekdaysShortSat;
 
-  /// No description provided for @weekdaysShortSun.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Paz'**
   String get weekdaysShortSun;
 
-  /// No description provided for @weekdaysShortThu.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Per'**
   String get weekdaysShortThu;
 
-  /// No description provided for @weekdaysShortTue.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sal'**
   String get weekdaysShortTue;
 
-  /// No description provided for @weekdaysShortWed.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çar'**
   String get weekdaysShortWed;
 
-  /// No description provided for @weekly.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Haftalık'**
   String get weekly;
 
-  /// No description provided for @weeklyDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Haftanın belirli günlerinde'**
   String get weeklyDesc;
 
-  /// No description provided for @weeklyEmailSummary.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Haftalık e-posta özeti'**
   String get weeklyEmailSummary;
 
-  /// No description provided for @weeklyProgress.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Haftalık ilerleme'**
   String get weeklyProgress;
 
-  /// No description provided for @weeklyReportsTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Haftalık Raporlar'**
   String get weeklyReportsTitle;
 
-  /// No description provided for @weeklySchedule.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Haftalık'**
   String get weeklySchedule;
 
-  /// No description provided for @weeklySummaryEmail.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Haftalık özet e-postası'**
   String get weeklySummaryEmail;
 
-  /// No description provided for @whatHappensIfCancel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'İptal edersem ne olur?'**
   String get whatHappensIfCancel;
 
-  /// No description provided for @whatsTheCause.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bu durumun sebebi nedir?'**
   String get whatsTheCause;
 
-  /// No description provided for @wheelOfFortuneDescription.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Seçeneklerini yaz ve çarkı çevir'**
   String get wheelOfFortuneDescription;
 
-  /// No description provided for @wheelOfFortuneTitle.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Çark Çevirme'**
   String get wheelOfFortuneTitle;
 
-  /// No description provided for @whichDays.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hangi günler'**
   String get whichDays;
 
-  /// No description provided for @whichDaysActive.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hangi günler aktif olmalı?'**
   String get whichDaysActive;
 
-  /// No description provided for @whichMonthDays.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Ayın hangi günleri'**
   String get whichMonthDays;
 
-  /// No description provided for @whichWeekdays.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Hangi hafta günleri?'**
   String get whichWeekdays;
 
-  /// No description provided for @whichYearDays.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yılın hangi günleri'**
   String get whichYearDays;
 
-  /// No description provided for @worldTheme.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Dünya'**
   String get worldTheme;
 
-  /// No description provided for @worldThemeDesc.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Tüm renklerin uyumu'**
   String get worldThemeDesc;
 
-  /// No description provided for @writeMessage.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bir mesaj yaz...'**
   String get writeMessage;
 
-  /// No description provided for @xpProgressSummary.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'{current} / {total} XP • Sonraki seviye için {toNext} XP'**
   String xpProgressSummary(Object current, Object toNext, Object total);
 
-  /// No description provided for @xpToNextLevel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'sonraki seviyeye'**
   String xpToNextLevel(Object toNext);
 
-  /// No description provided for @yearly.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yıllık'**
   String get yearly;
 
-  /// No description provided for @yearlyProgress.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Yıllık ilerleme'**
   String get yearlyProgress;
 
-  /// No description provided for @yesNoDescription.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Basit evet/hayır takibi'**
   String get yesNoDescription;
 
-  /// No description provided for @yesNoExample.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bugün meditasyon yaptım mı?'**
   String get yesNoExample;
 
-  /// No description provided for @yesNoType.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Evet/Hayır'**
   String get yesNoType;
 
-  /// No description provided for @yesterday.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Dün'**
   String get yesterday;
 
-  /// No description provided for @youLabel.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Sen'**
   String get youLabel;
 
-  /// No description provided for @yourCharacterType.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Senin Karakter Tipin'**
   String get yourCharacterType;
 
-  /// No description provided for @yourEmail.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'E-posta adresiniz'**
   String get yourEmail;
 
-  /// No description provided for @yourEmailAddress.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'E-posta Adresiniz'**
   String get yourEmailAddress;
 
-  /// No description provided for @yourMoodToday.
+  /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'Bugünkü Ruh Halin'**
   String get yourMoodToday;
+
+  /// Wizard bitirme butonu metni
+  ///
+  /// In tr, this message translates to:
+  /// **'Tamamla'**
+  String get wizardFinish;
+
+  /// Wizard sonraki buton metni
+  ///
+  /// In tr, this message translates to:
+  /// **'Devam'**
+  String get wizardNext;
+
+  /// Wizard atlama butonu metni
+  ///
+  /// In tr, this message translates to:
+  /// **'Atla'**
+  String get wizardSkip;
+
+  /// Optional selection label
+  ///
+  /// In tr, this message translates to:
+  /// **'İsteğe bağlı'**
+  String get wizardOptional;
+
+  /// Simple habit label
+  ///
+  /// In tr, this message translates to:
+  /// **'Basit Alışkanlık'**
+  String get simpleHabit;
 }
 
 class _AppLocalizationsDelegate
