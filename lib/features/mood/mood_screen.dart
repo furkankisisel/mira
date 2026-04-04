@@ -168,7 +168,7 @@ class _MoodScreenState extends State<MoodScreen> {
             fontWeight: FontWeight.w600,
             fontFamily: 'Outfit',
           ),
-          title: const Text("Ruh hali kaydı"),
+          title: Text(AppLocalizations.of(context).moodScreenTitle),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
             onPressed: () => Navigator.of(context).pop(),
@@ -176,7 +176,7 @@ class _MoodScreenState extends State<MoodScreen> {
           actions: [
             IconButton(
               icon: const Icon(Icons.history_rounded),
-              tooltip: "Geçmiş",
+              tooltip: AppLocalizations.of(context).historyTooltip,
               onPressed: () {
                 Navigator.push(
                   context,
@@ -224,7 +224,7 @@ class _MoodScreenState extends State<MoodScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      "Nasıl hissediyorsunuz?",
+                      AppLocalizations.of(context).howAreYouFeeling,
                       style: TextStyle(
                         color: textColor,
                         fontSize: 24,
@@ -299,7 +299,7 @@ class _MoodScreenState extends State<MoodScreen> {
                     }).toList(),
                     const SizedBox(height: 24),
                     Text(
-                      "Ruh hali, uzun süreli genel duygu durumudur.",
+                      AppLocalizations.of(context).moodLevelDescription,
                       style: TextStyle(color: hintColor, fontSize: 13),
                     ),
                     if (_selectedMood != null) ...[
@@ -310,7 +310,7 @@ class _MoodScreenState extends State<MoodScreen> {
                         children: [
                           Expanded(
                             child: Text(
-                              "Hangi duygular hislerinizi\nen iyi şekilde ifade ediyor?",
+                              AppLocalizations.of(context).whichEmotionsExpress,
                               style: TextStyle(
                                 color: textColor,
                                 fontSize: 22,
@@ -349,13 +349,13 @@ class _MoodScreenState extends State<MoodScreen> {
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        "Duygu, bir olay veya anlamlı deneyim nedeniyle\noluşan mutluluk, sinir veya mutsuzluk gibi kısa\nsüreli tepkidir.",
+                        AppLocalizations.of(context).emotionDescription,
                         style: TextStyle(
                             color: hintColor, fontSize: 13, height: 1.4),
                       ),
                       const SizedBox(height: 48),
                       Text(
-                        "Bu şekilde hissetmenizin nedeni\nnedir?",
+                        AppLocalizations.of(context).whyDoYouFeelThisWay,
                         style: TextStyle(
                           color: textColor,
                           fontSize: 22,
@@ -385,7 +385,7 @@ class _MoodScreenState extends State<MoodScreen> {
                       ),
                       const SizedBox(height: 48),
                       Text(
-                        "Ekleyecek başka bir şeyiniz var\nmı?",
+                        AppLocalizations.of(context).anythingElseToAdd,
                         style: TextStyle(
                           color: textColor,
                           fontSize: 22,
@@ -405,7 +405,7 @@ class _MoodScreenState extends State<MoodScreen> {
                           style: TextStyle(color: textColor),
                           decoration: InputDecoration(
                             hintText:
-                                "Bu hissi veya anı hatırlamanıza\nyardımcı olacak bir not ekleyin",
+                                AppLocalizations.of(context).addMoodNoteHint,
                             hintStyle: TextStyle(color: hintColor, height: 1.4),
                             border: InputBorder.none,
                             contentPadding: const EdgeInsets.all(24),
@@ -448,7 +448,9 @@ class _MoodScreenState extends State<MoodScreen> {
                 ),
               ),
               child: Text(
-                _selectedMood == null ? "Sonraki" : "Kaydet",
+                _selectedMood == null
+                    ? AppLocalizations.of(context).moodNext
+                    : AppLocalizations.of(context).moodSave,
                 style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -540,115 +542,117 @@ class _MoodScreenState extends State<MoodScreen> {
   }
 
   String _getSubEmotionLabel(SubEmotion emotion) {
+    final l10n = AppLocalizations.of(context);
     switch (emotion) {
       // Positives
       case SubEmotion.cheerful:
-        return "Neşeli";
+        return l10n.subEmotionCheerful;
       case SubEmotion.hopeful:
-        return "Umutlu";
+        return l10n.subEmotionHopeful;
       case SubEmotion.amazing:
-        return "Etkilenmiş";
+        return l10n.subEmotionAmazing;
       case SubEmotion.peaceful:
-        return "İçi rahatlamış";
+        return l10n.subEmotionPeaceful;
       case SubEmotion.confident:
-        return "Güvenli";
+        return l10n.subEmotionConfident;
       case SubEmotion.happy:
-        return "Keyifli";
+        return l10n.subEmotionHappy;
       case SubEmotion.euphoric:
-        return "Coşkulu";
+        return l10n.subEmotionEuphoric;
       case SubEmotion.blessed:
-        return "Mutlu";
+        return l10n.subEmotionBlessed;
       case SubEmotion.unstoppable:
-        return "Tutkulu";
+        return l10n.subEmotionUnstoppable;
       case SubEmotion.enthusiastic:
-        return "Hevesli";
+        return l10n.subEmotionEnthusiastic;
       case SubEmotion.excited:
-        return "Heyecanlı";
+        return l10n.subEmotionExcited;
       case SubEmotion.determined:
-        return "Cesur";
+        return l10n.subEmotionDetermined;
       case SubEmotion.proud:
-        return "Gururlu";
+        return l10n.subEmotionProud;
       case SubEmotion.calm:
-        return "Sakin";
+        return l10n.subEmotionCalm;
       case SubEmotion.motivated:
-        return "Meraklı";
+        return l10n.subEmotionMotivated;
       case SubEmotion.grateful:
-        return "Minnettar";
+        return l10n.subEmotionGrateful;
       case SubEmotion.loving:
-        return "Huzurlu";
+        return l10n.subEmotionLoving;
 
       // Negatives/Neutrals
       case SubEmotion.exhausted:
-        return "Tükenmiş";
+        return l10n.subEmotionExhausted;
       case SubEmotion.helpless:
-        return "Çaresiz";
+        return l10n.subEmotionHelpless;
       case SubEmotion.hopeless:
-        return "Umutsuz";
+        return l10n.subEmotionHopeless;
       case SubEmotion.hurt:
-        return "Kırgın";
+        return l10n.subEmotionHurt;
       case SubEmotion.drained:
-        return "Bitkin";
+        return l10n.subEmotionDrained;
       case SubEmotion.angry:
-        return "Kızgın";
+        return l10n.subEmotionAngry;
       case SubEmotion.sad:
-        return "Üzgün";
+        return l10n.subEmotionSad;
       case SubEmotion.anxious:
-        return "Endişeli";
+        return l10n.subEmotionAnxious;
       case SubEmotion.stressed:
-        return "Stresli";
+        return l10n.subEmotionStressed;
       case SubEmotion.demoralized:
-        return "Demoralize";
+        return l10n.subEmotionDemoralized;
       case SubEmotion.indecisive:
-        return "Kararsız";
+        return l10n.subEmotionIndecisive;
       case SubEmotion.tired:
-        return "Yorgun";
+        return l10n.subEmotionTired;
       case SubEmotion.ordinary:
-        return "Sıradan";
+        return l10n.subEmotionOrdinary;
       case SubEmotion.empty:
-        return "Boş";
+        return l10n.subEmotionEmpty;
       case SubEmotion.overwhelmed:
-        return "Bunalmış";
+        return l10n.subEmotionOverwhelmed;
       case SubEmotion.lonely:
-        return "Yalnız";
+        return l10n.subEmotionLonely;
       case SubEmotion.regretful:
-        return "Pişman";
+        return l10n.subEmotionRegretful;
       case SubEmotion.insecure:
-        return "Güvensiz";
+        return l10n.subEmotionInsecure;
       case SubEmotion.guilty:
-        return "Suçlu";
+        return l10n.subEmotionGuilty;
       case SubEmotion.bored:
-        return "Sıkılmış";
+        return l10n.subEmotionBored;
       case SubEmotion.numb:
-        return "Hissiz";
+        return l10n.subEmotionNumb;
       case SubEmotion.confused:
-        return "Karmaşık";
+        return l10n.subEmotionConfused;
       case SubEmotion.distracted:
-        return "Dağınık";
+        return l10n.subEmotionDistracted;
       case SubEmotion.energetic:
-        return "Enerjik";
+        return l10n.subEmotionEnergetic;
     }
   }
 
   String _getReasonLabel(ReasonCategory reason) {
+    final l10n = AppLocalizations.of(context);
     switch (reason) {
       case ReasonCategory.health:
-        return "Sağlık";
+        return l10n.reasonHealth;
       case ReasonCategory.academic:
-        return "Okul";
+        return l10n.reasonAcademic;
       case ReasonCategory.work:
-        return "İş";
+        return l10n.reasonWork;
       case ReasonCategory.finance:
-        return "Para";
+        return l10n.reasonFinance;
       case ReasonCategory.relationship:
-        return "Partner";
+        return l10n.reasonRelationship;
       case ReasonCategory.social:
-        return "Arkadaşlar";
+        return l10n.reasonSocial;
       case ReasonCategory.personalGrowth:
-        return "Hobiler";
+        return l10n.reasonPersonalGrowth;
       case ReasonCategory.weather:
-        return "Hava Durumu";
+        return l10n.reasonWeather;
       case ReasonCategory.other:
-        return "Diğer";
+        return l10n.reasonOther;
     }
   }
 }

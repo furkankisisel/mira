@@ -51,6 +51,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get addImage => 'Resim Ekle';
 
   @override
+  String get addMoodNoteHint =>
+      'Bu hissi veya anı hatırlamanıza\nyardımcı olacak bir not ekleyin';
+
+  @override
   String get addNew => 'Yeni Ekle';
 
   @override
@@ -90,9 +94,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get advancedAnalysisAndReports => 'İleri seviye analiz ve raporlar';
-
-  @override
-  String get simpleHabit => 'Basit Alışkanlık';
 
   @override
   String get advancedHabit => 'Gelişmiş Alışkanlık';
@@ -226,7 +227,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get analysisTooltip => 'Analiz';
 
   @override
+  String get analyzingHabit => '🔍 Alışkanlığınız analiz ediliyor...';
+
+  @override
   String get annualPlanDesc => '12 ay boyunca kesintisiz erişim';
+
+  @override
+  String get anythingElseToAdd => 'Ekleyecek başka bir şeyiniz var\nmı?';
 
   @override
   String get appTitle => 'Mira';
@@ -489,6 +496,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get buyPremium => 'Premium Satın Al';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 Canlı Ritminiz hesaplanıyor...';
 
   @override
   String get canIGetRefund => 'Geri ödeme alabilir miyim?';
@@ -1004,6 +1014,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get detailedCharts => 'Detaylı grafikler ve istatistikler';
 
   @override
+  String get determiningBestReminder =>
+      '⏰ En uygun hatırlatıcı zamanı belirleniyor...';
+
+  @override
+  String get determiningBestSettings =>
+      'Sizin için en iyi ayarları belirliyoruz';
+
+  @override
   String get diagnosticsData => 'Tanılama verileri';
 
   @override
@@ -1124,6 +1142,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get emotionConfused => 'Kafası Karışık';
+
+  @override
+  String get emotionDescription =>
+      'Duygu, bir olay veya anlamlı deneyim nedeniyle\noluşan mutluluk, sinir veya mutsuzluk gibi kısa\nsüreli tepkidir.';
 
   @override
   String get emotionDistracted => 'Dikkati Dağınık';
@@ -1320,6 +1342,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get filterTooltip => 'Filtrele';
+
+  @override
+  String get finalizingSettingsProgress => '✨ Son ayarlamalar yapılıyor...';
 
   @override
   String get finance => 'Finans';
@@ -1768,6 +1793,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get historyTitle => 'Geçmiş';
 
   @override
+  String get historyTooltip => 'Geçmiş';
+
+  @override
   String get hourShort => 'sa';
 
   @override
@@ -1777,7 +1805,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get hoursSuffixShort => 'sa';
 
   @override
-  String get howAreYouFeeling => 'Kendini nasıl hissediyorsun?';
+  String get howAreYouFeeling => 'Nasıl hissediyorsunuz?';
 
   @override
   String get howDoYouFeel => 'Bugün nasıl hissediyorsun?';
@@ -2165,13 +2193,26 @@ class AppLocalizationsTr extends AppLocalizations {
   String get moodImproving => 'Duygu durumun iyileşiyor!';
 
   @override
+  String get moodLevelDescription =>
+      'Ruh hali, uzun süreli genel duygu durumudur.';
+
+  @override
   String get moodNeutral => 'Normal';
 
   @override
   String get moodNeutralDesc => 'Normal hissediyorum';
 
   @override
+  String get moodNext => 'Sonraki';
+
+  @override
   String get moodOk => 'Normal';
+
+  @override
+  String get moodSave => 'Kaydet';
+
+  @override
+  String get moodScreenTitle => 'Ruh Hali Kaydı';
 
   @override
   String get moodSelection => 'Ruh Hali Seçimi';
@@ -2806,10 +2847,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get readyVisionsLoadFailed => 'Hazır vizyonlar yüklenemedi.';
 
   @override
-  String get reasonAcademic => 'Akademik';
+  String get reasonAcademic => 'Okul';
 
   @override
-  String get reasonFinance => 'Finans';
+  String get reasonFinance => 'Para';
 
   @override
   String get reasonHealth => 'Sağlık';
@@ -2818,16 +2859,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get reasonOther => 'Diğer';
 
   @override
-  String get reasonPersonalGrowth => 'Kişisel Gelişim';
+  String get reasonPersonalGrowth => 'Hobiler';
 
   @override
-  String get reasonRelationship => 'İlişki';
+  String get reasonRelationship => 'Partner';
 
   @override
   String get reasonSelection => 'Bu durumun sebebi nedir?';
 
   @override
-  String get reasonSocial => 'Sosyal';
+  String get reasonSocial => 'Arkadaşlar';
 
   @override
   String get reasonTitle => 'Neden';
@@ -3401,6 +3442,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get signOutConfirmation => 'Çıkış yapmak istediğinize emin misiniz?';
 
   @override
+  String get simpleHabit => 'Basit Alışkanlık';
+
+  @override
   String get simpleHabitColorSubtitle => 'Alışkanlığının kişiliğini yansıtsın';
 
   @override
@@ -3654,7 +3698,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get streakIndicatorDesc => 'Alev ve buz efektlerini göster';
 
   @override
-  String get subEmotionAmazing => 'Harika';
+  String get subEmotionAmazing => 'Etkilenmiş';
 
   @override
   String get subEmotionAngry => 'Kızgın';
@@ -3663,7 +3707,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get subEmotionAnxious => 'Endişeli';
 
   @override
-  String get subEmotionBlessed => 'Şanslı';
+  String get subEmotionBlessed => 'Mutlu';
 
   @override
   String get subEmotionBored => 'Sıkılmış';
@@ -3675,22 +3719,22 @@ class AppLocalizationsTr extends AppLocalizations {
   String get subEmotionCheerful => 'Neşeli';
 
   @override
-  String get subEmotionConfident => 'Kendinden Emin';
+  String get subEmotionConfident => 'Güvenli';
 
   @override
-  String get subEmotionConfused => 'Kafası Karışık';
+  String get subEmotionConfused => 'Karmaşık';
 
   @override
-  String get subEmotionDemoralized => 'Morali Bozuk';
+  String get subEmotionDemoralized => 'Demoralize';
 
   @override
-  String get subEmotionDetermined => 'Kararlı';
+  String get subEmotionDetermined => 'Cesur';
 
   @override
-  String get subEmotionDistracted => 'Dikkati Dağınık';
+  String get subEmotionDistracted => 'Dağınık';
 
   @override
-  String get subEmotionDrained => 'Boşalmış';
+  String get subEmotionDrained => 'Bitkin';
 
   @override
   String get subEmotionEmpty => 'Boş';
@@ -3699,7 +3743,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get subEmotionEnergetic => 'Enerjik';
 
   @override
-  String get subEmotionEnthusiastic => 'Coşkulu';
+  String get subEmotionEnthusiastic => 'Hevesli';
 
   @override
   String get subEmotionEuphoric => 'Coşkulu';
@@ -3708,7 +3752,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get subEmotionExcited => 'Heyecanlı';
 
   @override
-  String get subEmotionExhausted => 'Bitkin';
+  String get subEmotionExhausted => 'Tükenmiş';
 
   @override
   String get subEmotionGrateful => 'Minnettar';
@@ -3717,7 +3761,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get subEmotionGuilty => 'Suçlu';
 
   @override
-  String get subEmotionHappy => 'Mutlu';
+  String get subEmotionHappy => 'Keyifli';
 
   @override
   String get subEmotionHelpless => 'Çaresiz';
@@ -3729,7 +3773,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get subEmotionHopeless => 'Umutsuz';
 
   @override
-  String get subEmotionHurt => 'İncinmiş';
+  String get subEmotionHurt => 'Kırgın';
 
   @override
   String get subEmotionIndecisive => 'Kararsız';
@@ -3741,10 +3785,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get subEmotionLonely => 'Yalnız';
 
   @override
-  String get subEmotionLoving => 'Sevgi Dolu';
+  String get subEmotionLoving => 'Huzurlu';
 
   @override
-  String get subEmotionMotivated => 'Motive';
+  String get subEmotionMotivated => 'Meraklı';
 
   @override
   String get subEmotionNumb => 'Hissiz';
@@ -3756,7 +3800,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get subEmotionOverwhelmed => 'Bunalmış';
 
   @override
-  String get subEmotionPeaceful => 'Huzurlu';
+  String get subEmotionPeaceful => 'İçi rahatlamış';
 
   @override
   String get subEmotionProud => 'Gururlu';
@@ -3777,7 +3821,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get subEmotionTired => 'Yorgun';
 
   @override
-  String get subEmotionUnstoppable => 'Durdurulamaz';
+  String get subEmotionUnstoppable => 'Tutkulu';
 
   @override
   String get subscribeToEnjoyPremium =>
@@ -4443,6 +4487,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get whichDaysActive => 'Hangi günler aktif olmalı?';
 
   @override
+  String get whichEmotionsExpress =>
+      'Hangi duygular hislerinizi\nen iyi şekilde ifade ediyor?';
+
+  @override
   String get whichMonthDays => 'Ayın hangi günleri';
 
   @override
@@ -4450,6 +4498,21 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get whichYearDays => 'Yılın hangi günleri';
+
+  @override
+  String get whyDoYouFeelThisWay => 'Bu şekilde hissetmenizin nedeni\nnedir?';
+
+  @override
+  String get wizardFinish => 'Tamamla';
+
+  @override
+  String get wizardNext => 'Devam';
+
+  @override
+  String get wizardOptional => 'İsteğe bağlı';
+
+  @override
+  String get wizardSkip => 'Atla';
 
   @override
   String get worldTheme => 'Dünya';
@@ -4502,33 +4565,4 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get yourMoodToday => 'Bugünkü Ruh Halin';
-
-  @override
-  String get wizardFinish => 'Tamamla';
-
-  @override
-  String get wizardNext => 'Devam';
-
-  @override
-  String get wizardSkip => 'Atla';
-
-  @override
-  String get wizardOptional => 'İsteğe bağlı';
-
-  @override
-  String get analyzingHabit => '🔍 Alışkanlığınız analiz ediliyor...';
-
-  @override
-  String get calculatingLifeRhythm => '🧠 Canlı Ritminiz hesaplanıyor...';
-
-  @override
-  String get determiningBestReminder =>
-      '⏰ En uygun hatırlatıcı zamanı belirleniyor...';
-
-  @override
-  String get finalizingSettingsProgress => '✨ Son ayarlamalar yapılıyor...';
-
-  @override
-  String get determiningBestSettings =>
-      'Sizin için en iyi ayarları belirliyoruz';
 }

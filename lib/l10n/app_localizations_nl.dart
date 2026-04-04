@@ -52,6 +52,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get addImage => 'Afbeelding toevoegen';
 
   @override
+  String get addMoodNoteHint =>
+      'Bu hissi veya anı hatırlamanıza\nyardımcı olacak bir not ekleyin';
+
+  @override
   String get addNew => 'Nieuwe toevoegen';
 
   @override
@@ -91,9 +95,6 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get advancedAnalysisAndReports => 'Geavanceerde analyse en rapporten';
-
-  @override
-  String get simpleHabit => 'Eenvoudige gewoonte';
 
   @override
   String get advancedHabit => 'Geavanceerde gewoonte';
@@ -224,7 +225,13 @@ class AppLocalizationsNl extends AppLocalizations {
   String get analysisTooltip => 'Analyse';
 
   @override
+  String get analyzingHabit => '🔍 Je gewoonte wordt geanalyseerd...';
+
+  @override
   String get annualPlanDesc => 'Ononderbroken toegang voor 12 maanden';
+
+  @override
+  String get anythingElseToAdd => 'Ekleyecek başka bir şeyiniz var\nmı?';
 
   @override
   String get appTitle => 'Mira';
@@ -487,6 +494,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get buyPremium => 'Premium kopen';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 Je levensritme wordt berekend...';
 
   @override
   String get canIGetRefund => 'Kan ik mijn geld terugkrijgen?';
@@ -1004,6 +1014,14 @@ class AppLocalizationsNl extends AppLocalizations {
   String get detailedCharts => 'Gedetailleerde grafieken en statistieken';
 
   @override
+  String get determiningBestReminder =>
+      '⏰ Beste herinneringstijd wordt bepaald...';
+
+  @override
+  String get determiningBestSettings =>
+      'We bepalen de beste instellingen voor jou';
+
+  @override
   String get diagnosticsData => 'Diagnostische gegevens';
 
   @override
@@ -1122,6 +1140,10 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get emotionConfused => 'Verward';
+
+  @override
+  String get emotionDescription =>
+      'Duygu, bir olay veya anlamlı deneyim nedeniyle\noluşan mutluluk, sinir veya mutsuzluk gibi kısa\nsüreli tepkidir.';
 
   @override
   String get emotionDistracted => 'Afgeleid';
@@ -1321,6 +1343,10 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get filterTooltip => 'Filteren';
+
+  @override
+  String get finalizingSettingsProgress =>
+      '✨ Laatste aanpassingen worden gemaakt...';
 
   @override
   String get finance => 'Financiën';
@@ -1770,6 +1796,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get historyTitle => 'Geschiedenis';
 
   @override
+  String get historyTooltip => 'Geçmiş';
+
+  @override
   String get hourShort => 'u';
 
   @override
@@ -2168,13 +2197,26 @@ class AppLocalizationsNl extends AppLocalizations {
   String get moodImproving => 'Je stemming verbetert!';
 
   @override
+  String get moodLevelDescription =>
+      'Ruh hali, uzun süreli genel duygu durumudur.';
+
+  @override
   String get moodNeutral => 'Neutraal';
 
   @override
   String get moodNeutralDesc => 'Ik voel me normaal';
 
   @override
+  String get moodNext => 'Sonraki';
+
+  @override
   String get moodOk => 'Oké';
+
+  @override
+  String get moodSave => 'Kaydet';
+
+  @override
+  String get moodScreenTitle => 'Ruh Hali Kaydı';
 
   @override
   String get moodSelection => 'Stemmingskeuze';
@@ -3404,6 +3446,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get signOutConfirmation => 'Weet je zeker dat je wilt uitloggen?';
 
   @override
+  String get simpleHabit => 'Eenvoudige gewoonte';
+
+  @override
   String get simpleHabitColorSubtitle =>
       'Reflecteer de persoonlijkheid van je gewoonte';
 
@@ -4448,6 +4493,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get whichDaysActive => 'Welke dagen moeten actief zijn?';
 
   @override
+  String get whichEmotionsExpress =>
+      'Hangi duygular hislerinizi\nen iyi şekilde ifade ediyor?';
+
+  @override
   String get whichMonthDays => 'Welke dagen van de maand?';
 
   @override
@@ -4455,6 +4504,21 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get whichYearDays => 'Welke dagen van het jaar?';
+
+  @override
+  String get whyDoYouFeelThisWay => 'Bu şekilde hissetmenizin nedeni\nnedir?';
+
+  @override
+  String get wizardFinish => 'Voltooien';
+
+  @override
+  String get wizardNext => 'Volgende';
+
+  @override
+  String get wizardOptional => 'Optioneel';
+
+  @override
+  String get wizardSkip => 'Overslaan';
 
   @override
   String get worldTheme => 'Wereld';
@@ -4507,34 +4571,4 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get yourMoodToday => 'Jouw stemming vandaag';
-
-  @override
-  String get wizardFinish => 'Voltooien';
-
-  @override
-  String get wizardNext => 'Volgende';
-
-  @override
-  String get wizardSkip => 'Overslaan';
-
-  @override
-  String get wizardOptional => 'Optioneel';
-
-  @override
-  String get analyzingHabit => '🔍 Je gewoonte wordt geanalyseerd...';
-
-  @override
-  String get calculatingLifeRhythm => '🧠 Je levensritme wordt berekend...';
-
-  @override
-  String get determiningBestReminder =>
-      '⏰ Beste herinneringstijd wordt bepaald...';
-
-  @override
-  String get finalizingSettingsProgress =>
-      '✨ Laatste aanpassingen worden gemaakt...';
-
-  @override
-  String get determiningBestSettings =>
-      'We bepalen de beste instellingen voor jou';
 }

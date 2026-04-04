@@ -51,6 +51,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get addImage => 'Adicionar imagem';
 
   @override
+  String get addMoodNoteHint =>
+      'Bu hissi veya anı hatırlamanıza\nyardımcı olacak bir not ekleyin';
+
+  @override
   String get addNew => 'Adicionar novo';
 
   @override
@@ -90,9 +94,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get advancedAnalysisAndReports => 'Análise e relatórios avançados';
-
-  @override
-  String get simpleHabit => 'Hábito simples';
 
   @override
   String get advancedHabit => 'Hábito avançado';
@@ -226,7 +227,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get analysisTooltip => 'Análise';
 
   @override
+  String get analyzingHabit => '🔍 Analisando seu hábito...';
+
+  @override
   String get annualPlanDesc => 'Acesso ininterrupto por 12 meses';
+
+  @override
+  String get anythingElseToAdd => 'Ekleyecek başka bir şeyiniz var\nmı?';
 
   @override
   String get appTitle => 'Mira';
@@ -489,6 +496,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get buyPremium => 'Comprar Premium';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 Calculando seu ritmo de vida...';
 
   @override
   String get canIGetRefund => 'Posso receber um reembolso?';
@@ -1006,6 +1016,14 @@ class AppLocalizationsPt extends AppLocalizations {
   String get detailedCharts => 'Gráficos e estatísticas detalhados';
 
   @override
+  String get determiningBestReminder =>
+      '⏰ Determinando o melhor horário para o lembrete...';
+
+  @override
+  String get determiningBestSettings =>
+      'Estamos determinando as melhores configurações para você';
+
+  @override
   String get diagnosticsData => 'Dados de diagnóstico';
 
   @override
@@ -1125,6 +1143,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get emotionConfused => 'Confuso';
+
+  @override
+  String get emotionDescription =>
+      'Duygu, bir olay veya anlamlı deneyim nedeniyle\noluşan mutluluk, sinir veya mutsuzluk gibi kısa\nsüreli tepkidir.';
 
   @override
   String get emotionDistracted => 'Distraído';
@@ -1323,6 +1345,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get filterTooltip => 'Filtrar';
+
+  @override
+  String get finalizingSettingsProgress => '✨ Finalizando as configurações...';
 
   @override
   String get finance => 'Finanças';
@@ -1768,6 +1793,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get historyTitle => 'Histórico';
 
   @override
+  String get historyTooltip => 'Geçmiş';
+
+  @override
   String get hourShort => 'h';
 
   @override
@@ -2166,13 +2194,26 @@ class AppLocalizationsPt extends AppLocalizations {
   String get moodImproving => 'Seu humor está melhorando!';
 
   @override
+  String get moodLevelDescription =>
+      'Ruh hali, uzun süreli genel duygu durumudur.';
+
+  @override
   String get moodNeutral => 'Neutro';
 
   @override
   String get moodNeutralDesc => 'Estou me sentindo normal';
 
   @override
+  String get moodNext => 'Sonraki';
+
+  @override
   String get moodOk => 'Normal';
+
+  @override
+  String get moodSave => 'Kaydet';
+
+  @override
+  String get moodScreenTitle => 'Ruh Hali Kaydı';
 
   @override
   String get moodSelection => 'Seleção de Humor';
@@ -3407,6 +3448,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get signOutConfirmation => 'Tem certeza de que deseja sair?';
 
   @override
+  String get simpleHabit => 'Hábito simples';
+
+  @override
   String get simpleHabitColorSubtitle =>
       'Reflita a personalidade do seu hábito';
 
@@ -4451,6 +4495,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get whichDaysActive => 'Quais dias devem estar ativos?';
 
   @override
+  String get whichEmotionsExpress =>
+      'Hangi duygular hislerinizi\nen iyi şekilde ifade ediyor?';
+
+  @override
   String get whichMonthDays => 'Quais dias do mês?';
 
   @override
@@ -4458,6 +4506,21 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get whichYearDays => 'Quais dias do ano';
+
+  @override
+  String get whyDoYouFeelThisWay => 'Bu şekilde hissetmenizin nedeni\nnedir?';
+
+  @override
+  String get wizardFinish => 'Concluir';
+
+  @override
+  String get wizardNext => 'Próximo';
+
+  @override
+  String get wizardOptional => 'Opcional';
+
+  @override
+  String get wizardSkip => 'Pular';
 
   @override
   String get worldTheme => 'Mundo';
@@ -4510,33 +4573,4 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get yourMoodToday => 'Seu Humor Hoje';
-
-  @override
-  String get wizardFinish => 'Concluir';
-
-  @override
-  String get wizardNext => 'Próximo';
-
-  @override
-  String get wizardSkip => 'Pular';
-
-  @override
-  String get wizardOptional => 'Opcional';
-
-  @override
-  String get analyzingHabit => '🔍 Analisando seu hábito...';
-
-  @override
-  String get calculatingLifeRhythm => '🧠 Calculando seu ritmo de vida...';
-
-  @override
-  String get determiningBestReminder =>
-      '⏰ Determinando o melhor horário para o lembrete...';
-
-  @override
-  String get finalizingSettingsProgress => '✨ Finalizando as configurações...';
-
-  @override
-  String get determiningBestSettings =>
-      'Estamos determinando as melhores configurações para você';
 }

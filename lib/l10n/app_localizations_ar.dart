@@ -51,6 +51,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addImage => 'إضافة صورة';
 
   @override
+  String get addMoodNoteHint =>
+      'Bu hissi veya anı hatırlamanıza\nyardımcı olacak bir not ekleyin';
+
+  @override
   String get addNew => 'إضافة جديد';
 
   @override
@@ -90,9 +94,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get advancedAnalysisAndReports => 'تحليلات وتقارير متقدمة';
-
-  @override
-  String get simpleHabit => 'عادة بسيطة';
 
   @override
   String get advancedHabit => 'عادة متقدمة';
@@ -218,7 +219,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get analysisTooltip => 'تحليل';
 
   @override
+  String get analyzingHabit => '🔍 جاري تحليل عادتك...';
+
+  @override
   String get annualPlanDesc => 'وصول غير محدود لمدة 12 شهراً';
+
+  @override
+  String get anythingElseToAdd => 'Ekleyecek başka bir şeyiniz var\nmı?';
 
   @override
   String get appTitle => 'ميرا';
@@ -480,6 +487,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get buyPremium => 'شراء بريميوم';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 جاري حساب إيقاع حياتك...';
 
   @override
   String get canIGetRefund => 'هل يمكنني استرداد الأموال؟';
@@ -989,6 +999,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get detailedCharts => 'رسوم بيانية وإحصائيات مفصلة';
 
   @override
+  String get determiningBestReminder => '⏰ جاري تحديد أفضل وقت للتذكير...';
+
+  @override
+  String get determiningBestSettings => 'نحدد لك أفضل الإعدادات';
+
+  @override
   String get diagnosticsData => 'بيانات التشخيص';
 
   @override
@@ -1108,6 +1124,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get emotionConfused => 'مرتبك';
+
+  @override
+  String get emotionDescription =>
+      'Duygu, bir olay veya anlamlı deneyim nedeniyle\noluşan mutluluk, sinir veya mutsuzluk gibi kısa\nsüreli tepkidir.';
 
   @override
   String get emotionDistracted => 'مشتت';
@@ -1304,6 +1324,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get filterTooltip => 'تصفية';
+
+  @override
+  String get finalizingSettingsProgress => '✨ جاري وضع اللمسات الأخيرة...';
 
   @override
   String get finance => 'المالية';
@@ -1748,6 +1771,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get historyTitle => 'السجل';
 
   @override
+  String get historyTooltip => 'Geçmiş';
+
+  @override
   String get hourShort => 'ساعة';
 
   @override
@@ -2145,13 +2171,26 @@ class AppLocalizationsAr extends AppLocalizations {
   String get moodImproving => 'مزاجك في تحسن!';
 
   @override
+  String get moodLevelDescription =>
+      'Ruh hali, uzun süreli genel duygu durumudur.';
+
+  @override
   String get moodNeutral => 'محايد';
 
   @override
   String get moodNeutralDesc => 'أشعر أنني بخير';
 
   @override
+  String get moodNext => 'Sonraki';
+
+  @override
   String get moodOk => 'حسنًا';
+
+  @override
+  String get moodSave => 'Kaydet';
+
+  @override
+  String get moodScreenTitle => 'Ruh Hali Kaydı';
 
   @override
   String get moodSelection => 'اختيار المزاج';
@@ -3367,6 +3406,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get signOutConfirmation => 'هل أنت متأكد أنك تريد تسجيل الخروج؟';
 
   @override
+  String get simpleHabit => 'عادة بسيطة';
+
+  @override
   String get simpleHabitColorSubtitle => 'عبر عن شخصية عادتك';
 
   @override
@@ -4398,6 +4440,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get whichDaysActive => 'ما هي الأيام التي يجب أن تكون نشطة؟';
 
   @override
+  String get whichEmotionsExpress =>
+      'Hangi duygular hislerinizi\nen iyi şekilde ifade ediyor?';
+
+  @override
   String get whichMonthDays => 'ما هي أيام الشهر؟';
 
   @override
@@ -4405,6 +4451,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get whichYearDays => 'أي أيام السنة';
+
+  @override
+  String get whyDoYouFeelThisWay => 'Bu şekilde hissetmenizin nedeni\nnedir?';
+
+  @override
+  String get wizardFinish => 'إنهاء';
+
+  @override
+  String get wizardNext => 'التالي';
+
+  @override
+  String get wizardOptional => 'اختياري';
+
+  @override
+  String get wizardSkip => 'تخطي';
 
   @override
   String get worldTheme => 'العالم';
@@ -4457,31 +4518,4 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get yourMoodToday => 'مزاجك اليوم';
-
-  @override
-  String get wizardFinish => 'إنهاء';
-
-  @override
-  String get wizardNext => 'التالي';
-
-  @override
-  String get wizardSkip => 'تخطي';
-
-  @override
-  String get wizardOptional => 'اختياري';
-
-  @override
-  String get analyzingHabit => '🔍 جاري تحليل عادتك...';
-
-  @override
-  String get calculatingLifeRhythm => '🧠 جاري حساب إيقاع حياتك...';
-
-  @override
-  String get determiningBestReminder => '⏰ جاري تحديد أفضل وقت للتذكير...';
-
-  @override
-  String get finalizingSettingsProgress => '✨ جاري وضع اللمسات الأخيرة...';
-
-  @override
-  String get determiningBestSettings => 'نحدد لك أفضل الإعدادات';
 }

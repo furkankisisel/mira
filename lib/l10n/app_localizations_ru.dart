@@ -52,6 +52,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get addImage => 'Добавить изображение';
 
   @override
+  String get addMoodNoteHint =>
+      'Bu hissi veya anı hatırlamanıza\nyardımcı olacak bir not ekleyin';
+
+  @override
   String get addNew => 'Добавить новый';
 
   @override
@@ -91,9 +95,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get advancedAnalysisAndReports => 'Расширенный анализ и отчеты';
-
-  @override
-  String get simpleHabit => 'Простая привычка';
 
   @override
   String get advancedHabit => 'Продвинутая привычка';
@@ -227,7 +228,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get analysisTooltip => 'Анализ';
 
   @override
+  String get analyzingHabit => '🔍 Анализ вашей привычки...';
+
+  @override
   String get annualPlanDesc => 'Непрерывный доступ на 12 месяцев';
+
+  @override
+  String get anythingElseToAdd => 'Ekleyecek başka bir şeyiniz var\nmı?';
 
   @override
   String get appTitle => 'Mira';
@@ -490,6 +497,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get buyPremium => 'Купить Premium';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 Расчет вашего жизненного ритма...';
 
   @override
   String get canIGetRefund => 'Могу ли я получить возврат?';
@@ -1004,6 +1014,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get detailedCharts => 'Подробные графики и статистика';
 
   @override
+  String get determiningBestReminder =>
+      '⏰ Определение лучшего времени для напоминания...';
+
+  @override
+  String get determiningBestSettings =>
+      'Мы определяем лучшие настройки для вас';
+
+  @override
   String get diagnosticsData => 'Диагностические данные';
 
   @override
@@ -1123,6 +1141,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get emotionConfused => 'Сбитый с толку';
+
+  @override
+  String get emotionDescription =>
+      'Duygu, bir olay veya anlamlı deneyim nedeniyle\noluşan mutluluk, sinir veya mutsuzluk gibi kısa\nsüreli tepkidir.';
 
   @override
   String get emotionDistracted => 'Отвлеченный';
@@ -1321,6 +1343,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get filterTooltip => 'Фильтр';
+
+  @override
+  String get finalizingSettingsProgress => '✨ Выполнение последних настроек...';
 
   @override
   String get finance => 'Финансы';
@@ -1768,6 +1793,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get historyTitle => 'История';
 
   @override
+  String get historyTooltip => 'Geçmiş';
+
+  @override
   String get hourShort => 'ч';
 
   @override
@@ -2167,13 +2195,26 @@ class AppLocalizationsRu extends AppLocalizations {
   String get moodImproving => 'Ваше настроение улучшается!';
 
   @override
+  String get moodLevelDescription =>
+      'Ruh hali, uzun süreli genel duygu durumudur.';
+
+  @override
   String get moodNeutral => 'Нормально';
 
   @override
   String get moodNeutralDesc => 'Чувствую себя обычно';
 
   @override
+  String get moodNext => 'Sonraki';
+
+  @override
   String get moodOk => 'Нормально';
+
+  @override
+  String get moodSave => 'Kaydet';
+
+  @override
+  String get moodScreenTitle => 'Ruh Hali Kaydı';
 
   @override
   String get moodSelection => 'Выбор настроения';
@@ -3398,6 +3439,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get signOutConfirmation => 'Вы уверены, что хотите выйти?';
 
   @override
+  String get simpleHabit => 'Простая привычка';
+
+  @override
   String get simpleHabitColorSubtitle => 'Отразите характер вашей привычки';
 
   @override
@@ -4430,6 +4474,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get whichDaysActive => 'Какие дни активны?';
 
   @override
+  String get whichEmotionsExpress =>
+      'Hangi duygular hislerinizi\nen iyi şekilde ifade ediyor?';
+
+  @override
   String get whichMonthDays => 'Какие числа месяца?';
 
   @override
@@ -4437,6 +4485,21 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get whichYearDays => 'Какие дни года?';
+
+  @override
+  String get whyDoYouFeelThisWay => 'Bu şekilde hissetmenizin nedeni\nnedir?';
+
+  @override
+  String get wizardFinish => 'Завершить';
+
+  @override
+  String get wizardNext => 'Далее';
+
+  @override
+  String get wizardOptional => 'Необязательно';
+
+  @override
+  String get wizardSkip => 'Пропустить';
 
   @override
   String get worldTheme => 'Мир';
@@ -4489,33 +4552,4 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get yourMoodToday => 'Ваше настроение сегодня';
-
-  @override
-  String get wizardFinish => 'Завершить';
-
-  @override
-  String get wizardNext => 'Далее';
-
-  @override
-  String get wizardSkip => 'Пропустить';
-
-  @override
-  String get wizardOptional => 'Необязательно';
-
-  @override
-  String get analyzingHabit => '🔍 Анализ вашей привычки...';
-
-  @override
-  String get calculatingLifeRhythm => '🧠 Расчет вашего жизненного ритма...';
-
-  @override
-  String get determiningBestReminder =>
-      '⏰ Определение лучшего времени для напоминания...';
-
-  @override
-  String get finalizingSettingsProgress => '✨ Выполнение последних настроек...';
-
-  @override
-  String get determiningBestSettings =>
-      'Мы определяем лучшие настройки для вас';
 }

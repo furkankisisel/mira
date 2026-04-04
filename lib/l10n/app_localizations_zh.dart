@@ -51,6 +51,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get addImage => '添加图片';
 
   @override
+  String get addMoodNoteHint =>
+      'Bu hissi veya anı hatırlamanıza\nyardımcı olacak bir not ekleyin';
+
+  @override
   String get addNew => '新增';
 
   @override
@@ -90,9 +94,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get advancedAnalysisAndReports => '高级分析与报告';
-
-  @override
-  String get simpleHabit => '简单习惯';
 
   @override
   String get advancedHabit => '高级习惯';
@@ -217,7 +218,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get analysisTooltip => '分析';
 
   @override
+  String get analyzingHabit => '🔍 正在分析您的习惯...';
+
+  @override
   String get annualPlanDesc => '12 个月连续访问';
+
+  @override
+  String get anythingElseToAdd => 'Ekleyecek başka bir şeyiniz var\nmı?';
 
   @override
   String get appTitle => 'Mira';
@@ -477,6 +484,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get buyPremium => '购买高级版';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 正在计算您的生活节奏...';
 
   @override
   String get canIGetRefund => '我可以退款吗？';
@@ -978,6 +988,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get detailedCharts => '详细图表和统计数据';
 
   @override
+  String get determiningBestReminder => '⏰ 正在确定最佳提醒时间...';
+
+  @override
+  String get determiningBestSettings => '我们正在为您确定最佳设置';
+
+  @override
   String get diagnosticsData => '诊断数据';
 
   @override
@@ -1095,6 +1111,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get emotionConfused => '困惑';
+
+  @override
+  String get emotionDescription =>
+      'Duygu, bir olay veya anlamlı deneyim nedeniyle\noluşan mutluluk, sinir veya mutsuzluk gibi kısa\nsüreli tepkidir.';
 
   @override
   String get emotionDistracted => '分心';
@@ -1288,6 +1308,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get filterTooltip => '筛选';
+
+  @override
+  String get finalizingSettingsProgress => '✨ 正在进行最后调整...';
 
   @override
   String get finance => '财务';
@@ -1710,6 +1733,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get historyTitle => '历史记录';
 
   @override
+  String get historyTooltip => 'Geçmiş';
+
+  @override
   String get hourShort => '小时';
 
   @override
@@ -2101,13 +2127,26 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moodImproving => '您的情绪正在好转！';
 
   @override
+  String get moodLevelDescription =>
+      'Ruh hali, uzun süreli genel duygu durumudur.';
+
+  @override
   String get moodNeutral => '一般';
 
   @override
   String get moodNeutralDesc => '我感觉一般';
 
   @override
+  String get moodNext => 'Sonraki';
+
+  @override
   String get moodOk => '一般';
+
+  @override
+  String get moodSave => 'Kaydet';
+
+  @override
+  String get moodScreenTitle => 'Ruh Hali Kaydı';
 
   @override
   String get moodSelection => '情绪选择';
@@ -3290,6 +3329,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get signOutConfirmation => '您确定要注销吗？';
 
   @override
+  String get simpleHabit => '简单习惯';
+
+  @override
   String get simpleHabitColorSubtitle => '反映习惯的个性';
 
   @override
@@ -4306,6 +4348,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get whichDaysActive => '哪些天应该活跃？';
 
   @override
+  String get whichEmotionsExpress =>
+      'Hangi duygular hislerinizi\nen iyi şekilde ifade ediyor?';
+
+  @override
   String get whichMonthDays => '月份中的哪几天？';
 
   @override
@@ -4313,6 +4359,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get whichYearDays => '年份中的哪几天？';
+
+  @override
+  String get whyDoYouFeelThisWay => 'Bu şekilde hissetmenizin nedeni\nnedir?';
+
+  @override
+  String get wizardFinish => '完成';
+
+  @override
+  String get wizardNext => '下一步';
+
+  @override
+  String get wizardOptional => '可选';
+
+  @override
+  String get wizardSkip => '跳过';
 
   @override
   String get worldTheme => '世界';
@@ -4365,31 +4426,4 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get yourMoodToday => '你今天的情绪';
-
-  @override
-  String get wizardFinish => '完成';
-
-  @override
-  String get wizardNext => '下一步';
-
-  @override
-  String get wizardSkip => '跳过';
-
-  @override
-  String get wizardOptional => '可选';
-
-  @override
-  String get analyzingHabit => '🔍 正在分析您的习惯...';
-
-  @override
-  String get calculatingLifeRhythm => '🧠 正在计算您的生活节奏...';
-
-  @override
-  String get determiningBestReminder => '⏰ 正在确定最佳提醒时间...';
-
-  @override
-  String get finalizingSettingsProgress => '✨ 正在进行最后调整...';
-
-  @override
-  String get determiningBestSettings => '我们正在为您确定最佳设置';
 }

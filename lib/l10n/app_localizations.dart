@@ -209,6 +209,12 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
+  /// **'Bu hissi veya anı hatırlamanıza\nyardımcı olacak bir not ekleyin'**
+  String get addMoodNoteHint;
+
+  /// Auto-generated metadata
+  ///
+  /// In tr, this message translates to:
   /// **'Yeni Ekle'**
   String get addNew;
 
@@ -283,12 +289,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'İleri seviye analiz ve raporlar'**
   String get advancedAnalysisAndReports;
-
-  /// Simple habit label
-  ///
-  /// In tr, this message translates to:
-  /// **'Basit Alışkanlık'**
-  String get simpleHabit;
 
   /// Advanced habit label
   ///
@@ -524,11 +524,23 @@ abstract class AppLocalizations {
   /// **'Analiz'**
   String get analysisTooltip;
 
+  /// AI Analysis status
+  ///
+  /// In tr, this message translates to:
+  /// **'🔍 Alışkanlığınız analiz ediliyor...'**
+  String get analyzingHabit;
+
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
   /// **'12 ay boyunca kesintisiz erişim'**
   String get annualPlanDesc;
+
+  /// Auto-generated metadata
+  ///
+  /// In tr, this message translates to:
+  /// **'Ekleyecek başka bir şeyiniz var\nmı?'**
+  String get anythingElseToAdd;
 
   /// Auto-generated metadata
   ///
@@ -1027,6 +1039,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Premium Satın Al'**
   String get buyPremium;
+
+  /// AI Analysis status
+  ///
+  /// In tr, this message translates to:
+  /// **'🧠 Canlı Ritminiz hesaplanıyor...'**
+  String get calculatingLifeRhythm;
 
   /// Auto-generated metadata
   ///
@@ -1970,6 +1988,18 @@ abstract class AppLocalizations {
   /// **'Detaylı grafikler ve istatistikler'**
   String get detailedCharts;
 
+  /// AI Analysis status
+  ///
+  /// In tr, this message translates to:
+  /// **'⏰ En uygun hatırlatıcı zamanı belirleniyor...'**
+  String get determiningBestReminder;
+
+  /// AI Analysis secondary text
+  ///
+  /// In tr, this message translates to:
+  /// **'Sizin için en iyi ayarları belirliyoruz'**
+  String get determiningBestSettings;
+
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
@@ -2203,6 +2233,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Kafası Karışık'**
   String get emotionConfused;
+
+  /// Auto-generated metadata
+  ///
+  /// In tr, this message translates to:
+  /// **'Duygu, bir olay veya anlamlı deneyim nedeniyle\noluşan mutluluk, sinir veya mutsuzluk gibi kısa\nsüreli tepkidir.'**
+  String get emotionDescription;
 
   /// Auto-generated metadata
   ///
@@ -2569,6 +2605,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Filtrele'**
   String get filterTooltip;
+
+  /// AI Analysis status
+  ///
+  /// In tr, this message translates to:
+  /// **'✨ Son ayarlamalar yapılıyor...'**
+  String get finalizingSettingsProgress;
 
   /// Auto-generated metadata
   ///
@@ -3371,6 +3413,12 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
+  /// **'Geçmiş'**
+  String get historyTooltip;
+
+  /// Auto-generated metadata
+  ///
+  /// In tr, this message translates to:
   /// **'sa'**
   String get hourShort;
 
@@ -3389,7 +3437,7 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Kendini nasıl hissediyorsun?'**
+  /// **'Nasıl hissediyorsunuz?'**
   String get howAreYouFeeling;
 
   /// Auto-generated metadata
@@ -4109,6 +4157,12 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
+  /// **'Ruh hali, uzun süreli genel duygu durumudur.'**
+  String get moodLevelDescription;
+
+  /// Auto-generated metadata
+  ///
+  /// In tr, this message translates to:
   /// **'Normal'**
   String get moodNeutral;
 
@@ -4121,8 +4175,26 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
+  /// **'Sonraki'**
+  String get moodNext;
+
+  /// Auto-generated metadata
+  ///
+  /// In tr, this message translates to:
   /// **'Normal'**
   String get moodOk;
+
+  /// Auto-generated metadata
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydet'**
+  String get moodSave;
+
+  /// Auto-generated metadata
+  ///
+  /// In tr, this message translates to:
+  /// **'Ruh Hali Kaydı'**
+  String get moodScreenTitle;
 
   /// Auto-generated metadata
   ///
@@ -5297,13 +5369,13 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Akademik'**
+  /// **'Okul'**
   String get reasonAcademic;
 
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Finans'**
+  /// **'Para'**
   String get reasonFinance;
 
   /// Auto-generated metadata
@@ -5321,13 +5393,13 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Kişisel Gelişim'**
+  /// **'Hobiler'**
   String get reasonPersonalGrowth;
 
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'İlişki'**
+  /// **'Partner'**
   String get reasonRelationship;
 
   /// Auto-generated metadata
@@ -5339,7 +5411,7 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Sosyal'**
+  /// **'Arkadaşlar'**
   String get reasonSocial;
 
   /// Auto-generated metadata
@@ -6410,6 +6482,12 @@ abstract class AppLocalizations {
   /// **'Çıkış yapmak istediğinize emin misiniz?'**
   String get signOutConfirmation;
 
+  /// Simple habit label
+  ///
+  /// In tr, this message translates to:
+  /// **'Basit Alışkanlık'**
+  String get simpleHabit;
+
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
@@ -6869,7 +6947,7 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Harika'**
+  /// **'Etkilenmiş'**
   String get subEmotionAmazing;
 
   /// Auto-generated metadata
@@ -6887,7 +6965,7 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Şanslı'**
+  /// **'Mutlu'**
   String get subEmotionBlessed;
 
   /// Auto-generated metadata
@@ -6911,37 +6989,37 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Kendinden Emin'**
+  /// **'Güvenli'**
   String get subEmotionConfident;
 
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Kafası Karışık'**
+  /// **'Karmaşık'**
   String get subEmotionConfused;
 
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Morali Bozuk'**
+  /// **'Demoralize'**
   String get subEmotionDemoralized;
 
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Kararlı'**
+  /// **'Cesur'**
   String get subEmotionDetermined;
 
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Dikkati Dağınık'**
+  /// **'Dağınık'**
   String get subEmotionDistracted;
 
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Boşalmış'**
+  /// **'Bitkin'**
   String get subEmotionDrained;
 
   /// Auto-generated metadata
@@ -6959,7 +7037,7 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Coşkulu'**
+  /// **'Hevesli'**
   String get subEmotionEnthusiastic;
 
   /// Auto-generated metadata
@@ -6977,7 +7055,7 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Bitkin'**
+  /// **'Tükenmiş'**
   String get subEmotionExhausted;
 
   /// Auto-generated metadata
@@ -6995,7 +7073,7 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Mutlu'**
+  /// **'Keyifli'**
   String get subEmotionHappy;
 
   /// Auto-generated metadata
@@ -7019,7 +7097,7 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'İncinmiş'**
+  /// **'Kırgın'**
   String get subEmotionHurt;
 
   /// Auto-generated metadata
@@ -7043,13 +7121,13 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Sevgi Dolu'**
+  /// **'Huzurlu'**
   String get subEmotionLoving;
 
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Motive'**
+  /// **'Meraklı'**
   String get subEmotionMotivated;
 
   /// Auto-generated metadata
@@ -7073,7 +7151,7 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Huzurlu'**
+  /// **'İçi rahatlamış'**
   String get subEmotionPeaceful;
 
   /// Auto-generated metadata
@@ -7115,7 +7193,7 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Durdurulamaz'**
+  /// **'Tutkulu'**
   String get subEmotionUnstoppable;
 
   /// Auto-generated metadata
@@ -8381,6 +8459,12 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
+  /// **'Hangi duygular hislerinizi\nen iyi şekilde ifade ediyor?'**
+  String get whichEmotionsExpress;
+
+  /// Auto-generated metadata
+  ///
+  /// In tr, this message translates to:
   /// **'Ayın hangi günleri'**
   String get whichMonthDays;
 
@@ -8395,6 +8479,36 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Yılın hangi günleri'**
   String get whichYearDays;
+
+  /// Auto-generated metadata
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu şekilde hissetmenizin nedeni\nnedir?'**
+  String get whyDoYouFeelThisWay;
+
+  /// Wizard bitirme butonu metni
+  ///
+  /// In tr, this message translates to:
+  /// **'Tamamla'**
+  String get wizardFinish;
+
+  /// Wizard sonraki buton metni
+  ///
+  /// In tr, this message translates to:
+  /// **'Devam'**
+  String get wizardNext;
+
+  /// Optional selection label
+  ///
+  /// In tr, this message translates to:
+  /// **'İsteğe bağlı'**
+  String get wizardOptional;
+
+  /// Wizard atlama butonu metni
+  ///
+  /// In tr, this message translates to:
+  /// **'Atla'**
+  String get wizardSkip;
 
   /// Auto-generated metadata
   ///
@@ -8491,60 +8605,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bugünkü Ruh Halin'**
   String get yourMoodToday;
-
-  /// Wizard bitirme butonu metni
-  ///
-  /// In tr, this message translates to:
-  /// **'Tamamla'**
-  String get wizardFinish;
-
-  /// Wizard sonraki buton metni
-  ///
-  /// In tr, this message translates to:
-  /// **'Devam'**
-  String get wizardNext;
-
-  /// Wizard atlama butonu metni
-  ///
-  /// In tr, this message translates to:
-  /// **'Atla'**
-  String get wizardSkip;
-
-  /// Optional selection label
-  ///
-  /// In tr, this message translates to:
-  /// **'İsteğe bağlı'**
-  String get wizardOptional;
-
-  /// AI Analysis status
-  ///
-  /// In tr, this message translates to:
-  /// **'🔍 Alışkanlığınız analiz ediliyor...'**
-  String get analyzingHabit;
-
-  /// AI Analysis status
-  ///
-  /// In tr, this message translates to:
-  /// **'🧠 Canlı Ritminiz hesaplanıyor...'**
-  String get calculatingLifeRhythm;
-
-  /// AI Analysis status
-  ///
-  /// In tr, this message translates to:
-  /// **'⏰ En uygun hatırlatıcı zamanı belirleniyor...'**
-  String get determiningBestReminder;
-
-  /// AI Analysis status
-  ///
-  /// In tr, this message translates to:
-  /// **'✨ Son ayarlamalar yapılıyor...'**
-  String get finalizingSettingsProgress;
-
-  /// AI Analysis secondary text
-  ///
-  /// In tr, this message translates to:
-  /// **'Sizin için en iyi ayarları belirliyoruz'**
-  String get determiningBestSettings;
 }
 
 class _AppLocalizationsDelegate

@@ -52,6 +52,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addImage => 'Add image';
 
   @override
+  String get addMoodNoteHint =>
+      'Add a note to help you remember\nthis feeling or moment';
+
+  @override
   String get addNew => 'Add New';
 
   @override
@@ -91,9 +95,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get advancedAnalysisAndReports => 'Advanced analysis and reports';
-
-  @override
-  String get simpleHabit => 'Simple Habit';
 
   @override
   String get advancedHabit => 'Advanced Habit';
@@ -223,7 +224,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get analysisTooltip => 'Analysis';
 
   @override
+  String get analyzingHabit => '🔍 Analyzing your habit...';
+
+  @override
   String get annualPlanDesc => 'Uninterrupted access for 12 months';
+
+  @override
+  String get anythingElseToAdd => 'Anything else to add?';
 
   @override
   String get appTitle => 'Mira';
@@ -486,6 +493,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get buyPremium => 'Buy Premium';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 Calculating your Life Rhythm...';
 
   @override
   String get canIGetRefund => 'Can I get a refund?';
@@ -979,7 +989,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get deleteVisionMessage => 'Bu vizyonu sil?';
+  String get deleteVisionMessage => 'Delete this vision?';
 
   @override
   String get deleteVisionTitle => 'Delete vision';
@@ -995,6 +1005,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get detailedCharts => 'Detailed charts and statistics';
+
+  @override
+  String get determiningBestReminder =>
+      '⏰ En uygun hatırlatıcı zamanı belirleniyor...';
+
+  @override
+  String get determiningBestSettings =>
+      'Sizin için en iyi ayarları belirliyoruz';
 
   @override
   String get diagnosticsData => 'Diagnostics data';
@@ -1115,6 +1133,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get emotionConfused => 'Confused';
+
+  @override
+  String get emotionDescription =>
+      'Emotion is a short-term reaction like happiness,\nanger, or sadness caused by an event or experience.';
 
   @override
   String get emotionDistracted => 'Distracted';
@@ -1313,6 +1335,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get filterTooltip => 'Filter';
+
+  @override
+  String get finalizingSettingsProgress => '✨ Finalizing settings...';
 
   @override
   String get finance => 'Finance';
@@ -1759,6 +1784,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get historyTitle => 'History';
 
   @override
+  String get historyTooltip => 'History';
+
+  @override
   String get hourShort => 'h';
 
   @override
@@ -2155,13 +2183,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get moodImproving => 'Your mood is improving!';
 
   @override
+  String get moodLevelDescription =>
+      'Mood is your long-term general emotional state.';
+
+  @override
   String get moodNeutral => 'Neutral';
 
   @override
   String get moodNeutralDesc => 'I feel neutral';
 
   @override
+  String get moodNext => 'Next';
+
+  @override
   String get moodOk => 'Okay';
+
+  @override
+  String get moodSave => 'Save';
+
+  @override
+  String get moodScreenTitle => 'Mood Journal';
 
   @override
   String get moodSelection => 'Mood Selection';
@@ -3386,6 +3427,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signOutConfirmation => 'Are you sure you want to sign out?';
 
   @override
+  String get simpleHabit => 'Simple Habit';
+
+  @override
   String get simpleHabitColorSubtitle => 'Reflect your habit\'s personality';
 
   @override
@@ -4422,6 +4466,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whichDaysActive => 'Which days should be active?';
 
   @override
+  String get whichEmotionsExpress =>
+      'Which emotions express your\nfeelings best?';
+
+  @override
   String get whichMonthDays => 'Which days of the month?';
 
   @override
@@ -4429,6 +4477,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get whichYearDays => 'Which year days';
+
+  @override
+  String get whyDoYouFeelThisWay => 'What is the reason you feel\nthis way?';
+
+  @override
+  String get wizardFinish => 'Finish';
+
+  @override
+  String get wizardNext => 'Next';
+
+  @override
+  String get wizardOptional => 'Optional';
+
+  @override
+  String get wizardSkip => 'Skip';
 
   @override
   String get worldTheme => 'World';
@@ -4481,31 +4544,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get yourMoodToday => 'Your Mood Today';
-
-  @override
-  String get wizardFinish => 'Finish';
-
-  @override
-  String get wizardNext => 'Next';
-
-  @override
-  String get wizardSkip => 'Skip';
-
-  @override
-  String get wizardOptional => 'Optional';
-
-  @override
-  String get analyzingHabit => '🔍 Analyzing your habit...';
-
-  @override
-  String get calculatingLifeRhythm => '🧠 Calculating your Life Rhythm...';
-
-  @override
-  String get determiningBestReminder => '⏰ Determining best reminder time...';
-
-  @override
-  String get finalizingSettingsProgress => '✨ Finalizing settings...';
-
-  @override
-  String get determiningBestSettings => 'Determining the best settings for you';
 }

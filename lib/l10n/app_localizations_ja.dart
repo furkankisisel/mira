@@ -51,6 +51,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get addImage => '画像を追加';
 
   @override
+  String get addMoodNoteHint =>
+      'Bu hissi veya anı hatırlamanıza\nyardımcı olacak bir not ekleyin';
+
+  @override
   String get addNew => '新規追加';
 
   @override
@@ -90,9 +94,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get advancedAnalysisAndReports => '高度な分析とレポート';
-
-  @override
-  String get simpleHabit => 'シンプルな習慣';
 
   @override
   String get advancedHabit => '高度な習慣';
@@ -217,7 +218,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get analysisTooltip => '分析';
 
   @override
+  String get analyzingHabit => '🔍 習慣を分析しています...';
+
+  @override
   String get annualPlanDesc => '12ヶ月間の中断のないアクセス';
+
+  @override
+  String get anythingElseToAdd => 'Ekleyecek başka bir şeyiniz var\nmı?';
 
   @override
   String get appTitle => 'Mira';
@@ -477,6 +484,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get buyPremium => 'プレミアムを購入';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 生活リズムを計算しています...';
 
   @override
   String get canIGetRefund => '返金は可能ですか？';
@@ -981,6 +991,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get detailedCharts => '詳細なチャートと統計';
 
   @override
+  String get determiningBestReminder => '⏰ 最適なリマインダー時間を決定しています...';
+
+  @override
+  String get determiningBestSettings => 'あなたに最適な設定を決定しています';
+
+  @override
   String get diagnosticsData => '診断データ';
 
   @override
@@ -1098,6 +1114,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get emotionConfused => '混乱している';
+
+  @override
+  String get emotionDescription =>
+      'Duygu, bir olay veya anlamlı deneyim nedeniyle\noluşan mutluluk, sinir veya mutsuzluk gibi kısa\nsüreli tepkidir.';
 
   @override
   String get emotionDistracted => '気が散っている';
@@ -1292,6 +1312,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get filterTooltip => 'フィルタ';
+
+  @override
+  String get finalizingSettingsProgress => '✨ 最終調整を行っています...';
 
   @override
   String get finance => '家計';
@@ -1718,6 +1741,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get historyTitle => '履歴';
 
   @override
+  String get historyTooltip => 'Geçmiş';
+
+  @override
   String get hourShort => '時間';
 
   @override
@@ -2109,13 +2135,26 @@ class AppLocalizationsJa extends AppLocalizations {
   String get moodImproving => '気分が向上しています！';
 
   @override
+  String get moodLevelDescription =>
+      'Ruh hali, uzun süreli genel duygu durumudur.';
+
+  @override
   String get moodNeutral => '普通';
 
   @override
   String get moodNeutralDesc => '普通です';
 
   @override
+  String get moodNext => 'Sonraki';
+
+  @override
   String get moodOk => '普通';
+
+  @override
+  String get moodSave => 'Kaydet';
+
+  @override
+  String get moodScreenTitle => 'Ruh Hali Kaydı';
 
   @override
   String get moodSelection => '気分の選択';
@@ -3305,6 +3344,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get signOutConfirmation => 'ログアウトしてもよろしいですか？';
 
   @override
+  String get simpleHabit => 'シンプルな習慣';
+
+  @override
   String get simpleHabitColorSubtitle => '習慣の個性を反映させましょう';
 
   @override
@@ -4324,6 +4366,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get whichDaysActive => 'どの日をアクティブにしますか？';
 
   @override
+  String get whichEmotionsExpress =>
+      'Hangi duygular hislerinizi\nen iyi şekilde ifade ediyor?';
+
+  @override
   String get whichMonthDays => '月のどの日？';
 
   @override
@@ -4331,6 +4377,21 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get whichYearDays => '年のどの日？';
+
+  @override
+  String get whyDoYouFeelThisWay => 'Bu şekilde hissetmenizin nedeni\nnedir?';
+
+  @override
+  String get wizardFinish => '完了';
+
+  @override
+  String get wizardNext => '次へ';
+
+  @override
+  String get wizardOptional => 'オプション';
+
+  @override
+  String get wizardSkip => 'スキップ';
 
   @override
   String get worldTheme => 'ワールド';
@@ -4383,31 +4444,4 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get yourMoodToday => '今日の気分';
-
-  @override
-  String get wizardFinish => '完了';
-
-  @override
-  String get wizardNext => '次へ';
-
-  @override
-  String get wizardSkip => 'スキップ';
-
-  @override
-  String get wizardOptional => 'オプション';
-
-  @override
-  String get analyzingHabit => '🔍 習慣を分析しています...';
-
-  @override
-  String get calculatingLifeRhythm => '🧠 生活リズムを計算しています...';
-
-  @override
-  String get determiningBestReminder => '⏰ 最適なリマインダー時間を決定しています...';
-
-  @override
-  String get finalizingSettingsProgress => '✨ 最終調整を行っています...';
-
-  @override
-  String get determiningBestSettings => 'あなたに最適な設定を決定しています';
 }

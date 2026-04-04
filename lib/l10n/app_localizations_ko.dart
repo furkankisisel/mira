@@ -51,6 +51,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get addImage => '이미지 추가';
 
   @override
+  String get addMoodNoteHint =>
+      'Bu hissi veya anı hatırlamanıza\nyardımcı olacak bir not ekleyin';
+
+  @override
   String get addNew => '새로 추가';
 
   @override
@@ -90,9 +94,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get advancedAnalysisAndReports => '고급 분석 및 보고서';
-
-  @override
-  String get simpleHabit => '간단한 습관';
 
   @override
   String get advancedHabit => '고급 습관';
@@ -217,7 +218,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get analysisTooltip => '분석';
 
   @override
+  String get analyzingHabit => '🔍 습관을 분석하는 중...';
+
+  @override
   String get annualPlanDesc => '12개월 동안 끊김 없는 이용';
+
+  @override
+  String get anythingElseToAdd => 'Ekleyecek başka bir şeyiniz var\nmı?';
 
   @override
   String get appTitle => 'Mira';
@@ -477,6 +484,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get buyPremium => '프리미엄 구매';
+
+  @override
+  String get calculatingLifeRhythm => '🧠 생활 리듬을 계산하는 중...';
 
   @override
   String get canIGetRefund => '환불을 받을 수 있나요?';
@@ -981,6 +991,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get detailedCharts => '상세 차트 및 통계';
 
   @override
+  String get determiningBestReminder => '⏰ 최적의 알림 시간을 결정하는 중...';
+
+  @override
+  String get determiningBestSettings => '당신을 위한 최적의 설정을 결정하고 있습니다';
+
+  @override
   String get diagnosticsData => '진단 데이터';
 
   @override
@@ -1098,6 +1114,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get emotionConfused => '혼란스러운';
+
+  @override
+  String get emotionDescription =>
+      'Duygu, bir olay veya anlamlı deneyim nedeniyle\noluşan mutluluk, sinir veya mutsuzluk gibi kısa\nsüreli tepkidir.';
 
   @override
   String get emotionDistracted => '산만한';
@@ -1292,6 +1312,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get filterTooltip => '필터';
+
+  @override
+  String get finalizingSettingsProgress => '✨ 최종 설정을 마무리하는 중...';
 
   @override
   String get finance => '금융';
@@ -1718,6 +1741,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get historyTitle => '기록';
 
   @override
+  String get historyTooltip => 'Geçmiş';
+
+  @override
   String get hourShort => '시간';
 
   @override
@@ -2109,13 +2135,26 @@ class AppLocalizationsKo extends AppLocalizations {
   String get moodImproving => '기분이 좋아지고 있어요!';
 
   @override
+  String get moodLevelDescription =>
+      'Ruh hali, uzun süreli genel duygu durumudur.';
+
+  @override
   String get moodNeutral => '보통';
 
   @override
   String get moodNeutralDesc => '괜찮아요';
 
   @override
+  String get moodNext => 'Sonraki';
+
+  @override
   String get moodOk => '보통';
+
+  @override
+  String get moodSave => 'Kaydet';
+
+  @override
+  String get moodScreenTitle => 'Ruh Hali Kaydı';
 
   @override
   String get moodSelection => '기분 선택';
@@ -3307,6 +3346,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get signOutConfirmation => '로그아웃하시겠습니까?';
 
   @override
+  String get simpleHabit => '간단한 습관';
+
+  @override
   String get simpleHabitColorSubtitle => '습관의 개성을 반영해 보세요';
 
   @override
@@ -4326,6 +4368,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get whichDaysActive => '어떤 날을 활성화해야 합니까?';
 
   @override
+  String get whichEmotionsExpress =>
+      'Hangi duygular hislerinizi\nen iyi şekilde ifade ediyor?';
+
+  @override
   String get whichMonthDays => '월의 어느 날?';
 
   @override
@@ -4333,6 +4379,21 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get whichYearDays => '연의 어느 날?';
+
+  @override
+  String get whyDoYouFeelThisWay => 'Bu şekilde hissetmenizin nedeni\nnedir?';
+
+  @override
+  String get wizardFinish => '완료';
+
+  @override
+  String get wizardNext => '다음';
+
+  @override
+  String get wizardOptional => '선택 사항';
+
+  @override
+  String get wizardSkip => '건너뛰기';
 
   @override
   String get worldTheme => '월드';
@@ -4385,31 +4446,4 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get yourMoodToday => '오늘의 기분';
-
-  @override
-  String get wizardFinish => '완료';
-
-  @override
-  String get wizardNext => '다음';
-
-  @override
-  String get wizardSkip => '건너뛰기';
-
-  @override
-  String get wizardOptional => '선택 사항';
-
-  @override
-  String get analyzingHabit => '🔍 습관을 분석하는 중...';
-
-  @override
-  String get calculatingLifeRhythm => '🧠 생활 리듬을 계산하는 중...';
-
-  @override
-  String get determiningBestReminder => '⏰ 최적의 알림 시간을 결정하는 중...';
-
-  @override
-  String get finalizingSettingsProgress => '✨ 최종 설정을 마무리하는 중...';
-
-  @override
-  String get determiningBestSettings => '당신을 위한 최적의 설정을 결정하고 있습니다';
 }
