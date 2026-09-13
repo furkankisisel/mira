@@ -204,5 +204,5 @@ Contributions, issues, and feature suggestions are welcome!
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 
 <div align="center">
-  <sub>Crafted with passion by <b>Furkan Kişisel</b> • Designed for human wellness & potential.</sub>
+  <sub>Crafted with passion by <b>Furkan Çalık</b> • Designed for human wellness & potential.</sub>
 </div>
