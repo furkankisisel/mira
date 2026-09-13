@@ -35,33 +35,83 @@
 ## 📱 Visual Showcase
 
 <div align="center">
+  <h3>🧬 Core Flow & Circadian Intelligence</h3>
   <table>
     <tr>
       <td align="center" width="33%">
-        <img src="docs/screenshots/screen_habits_dark.png" alt="Habit Flow Dark" width="260" /><br/>
-        <b>🧬 Circadian Habit Management</b>
+        <img src="docs/screenshots/01_today_habits.jpg" alt="Circadian Habit Flow" width="250" /><br/>
+        <b>🧬 Circadian Today & Habits</b><br/>
+        <sub>Dynamic biorhythm cards, AI micro-nudges & habit checks</sub>
       </td>
       <td align="center" width="33%">
-        <img src="docs/screenshots/screen_habits_light.png" alt="Habit Flow Light" width="260" /><br/>
-        <b>✨ Minimalist Daily Schedule</b>
+        <img src="docs/screenshots/02_vision_board.jpg" alt="Infinite Vision Board" width="250" /><br/>
+        <b>🎨 Infinite Vision Canvas</b><br/>
+        <sub>Freeform interactive canvas linking visual dreams to daily routines</sub>
       </td>
       <td align="center" width="33%">
-        <img src="docs/screenshots/screen_wellness_1.png" alt="Live Rhythm Analytics" width="260" /><br/>
-        <b>📊 Live Energy & Mood Analytics</b>
+        <img src="docs/screenshots/03_circadian_timing.jpg" alt="Biorhythm Windows" width="250" /><br/>
+        <b>⏰ Biorhythm Time Windows</b><br/>
+        <sub>Focus, Energy, Light, and Reflection circadian scheduling</sub>
+      </td>
+    </tr>
+  </table>
+
+  <h3>🤖 AI Coaching & Deep Analytics</h3>
+  <table>
+    <tr>
+      <td align="center" width="33%">
+        <img src="docs/screenshots/04_mira_assistant.jpg" alt="Mira AI Assistant" width="250" /><br/>
+        <b>🤖 Mira AI Assistant</b><br/>
+        <sub>Conversational LLM assistant generating real-time guidance</sub>
+      </td>
+      <td align="center" width="33%">
+        <img src="docs/screenshots/06_mood_tracker.jpg" alt="Mood Tracker" width="250" /><br/>
+        <b>🧠 Granular Mood Tracker</b><br/>
+        <sub>Multi-tier emotional tracking & psychological state maps</sub>
+      </td>
+      <td align="center" width="33%">
+        <img src="docs/screenshots/07_weekly_reports.jpg" alt="Weekly Reports" width="250" /><br/>
+        <b>📊 Weekly Intelligence Reports</b><br/>
+        <sub>Financial discipline audits & cross-habit consistency logs</sub>
+      </td>
+    </tr>
+  </table>
+
+  <h3>🎮 Gamification, Design System & Cloud Architecture</h3>
+  <table>
+    <tr>
+      <td align="center" width="33%">
+        <img src="docs/screenshots/05_gamification_profile.jpg" alt="Gamification Profile" width="250" /><br/>
+        <b>🎮 Gamification & XP Progression</b><br/>
+        <sub>Level progression, streak counters & milestone achievement badges</sub>
+      </td>
+      <td align="center" width="33%">
+        <img src="docs/screenshots/08_theme_variations.jpg" alt="Theme Variations" width="250" /><br/>
+        <b>🎨 Design System Engine</b><br/>
+        <sub>8+ curated adaptive palettes (Sunset, Forest, Midnight, Blush, etc.)</sub>
+      </td>
+      <td align="center" width="33%">
+        <img src="docs/screenshots/09_cloud_backup.jpg" alt="Google Drive Backup" width="250" /><br/>
+        <b>☁️ Google Drive Cloud Backup</b><br/>
+        <sub>Automated 24h cloud synchronization & instant JSON restore</sub>
       </td>
     </tr>
     <tr>
       <td align="center" width="33%">
-        <img src="docs/screenshots/screen_wellness_2.png" alt="Wellness Tracker" width="260" /><br/>
-        <b>🛡️ Goal & Streak Intelligence</b>
+        <img src="docs/screenshots/10_circadian_onboarding.jpg" alt="Circadian Onboarding" width="250" /><br/>
+        <b>🌙 Chronotype Profiling</b><br/>
+        <sub>Sleep-wake circadian rhythm intake & questionnaire</sub>
       </td>
       <td align="center" width="33%">
-        <img src="docs/screenshots/screen_nature_1.png" alt="Nature Focus Theme" width="260" /><br/>
-        <b>🌱 Theme Variations Engine</b>
+        <img src="docs/screenshots/11_rhythm_calculation.jpg" alt="Rhythm Calculation" width="250" /><br/>
+        <b>⚡ Real-Time Calibration</b><br/>
+        <sub>Mathematical biorhythm solver calculating peak focus phases</sub>
       </td>
       <td align="center" width="33%">
-        <img src="docs/screenshots/screen_decision_eggs.png" alt="Gamification" width="260" /><br/>
-        <b>🎮 Anti-Cheat Gamification</b>
+        <!-- Empty placeholder cell for alignment -->
+        <br/><br/>
+        <b>✨ Crafted for Performance</b><br/>
+        <sub>Clean Architecture • 60 FPS • Offline-First</sub>
       </td>
     </tr>
   </table>
