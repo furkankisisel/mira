@@ -24,6 +24,7 @@ errors*.json
 test_output*
 problems.txt
 issues*.txt
+untranslated_messages.json
 
 # IntelliJ / Android Studio related
 *.iml
