@@ -2,7 +2,7 @@
 
 <div align="center">
 
-  <img src="assets/icons/app_icon.png" alt="Mira Logo" width="120" style="border-radius: 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);" />
+  <img src="assets/icons/miralogo.png" alt="Mira Logo" width="120" style="border-radius: 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);" />
 
   <h3>Harmonize your daily life with your biological clock and AI.</h3>
 
