@@ -296,7 +296,7 @@ class _MoodScreenState extends State<MoodScreen> {
                                 color: textColor.withOpacity(0.1), height: 1),
                         ],
                       );
-                    }).toList(),
+                    }),
                     const SizedBox(height: 24),
                     Text(
                       AppLocalizations.of(context).moodLevelDescription,

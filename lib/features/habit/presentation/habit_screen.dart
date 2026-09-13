@@ -89,11 +89,16 @@ class HabitScreen extends StatefulWidget {
 }
 
 class HabitScreenState extends State<HabitScreen>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   @override
   bool get wantKeepAlive => true;
 
   final _moodRepo = DetailedMoodRepository();
+
+  // ── Tab + Room state ──
+  TabController? _tabController;
+  List<Room> _rooms = [];
+  StreamSubscription<List<Room>>? _roomsSub;
   MoodLevel? _currentMood;
 
   DateTime _selected = DateTime(
@@ -187,6 +192,30 @@ class HabitScreenState extends State<HabitScreen>
 
     // Start rhythm timer to auto-update focus based on live rhythm
     _startRhythmTimer();
+
+    // Initialize tab controller with "Bugün" tab only, then listen for rooms
+    _rebuildTabController(0);
+    _roomsSub = RoomService.instance.streamMyRooms().listen((rooms) {
+      if (!mounted) return;
+      final oldLen = _rooms.length;
+      _rooms = rooms;
+      if (rooms.length != oldLen) {
+        final currentIdx = _tabController?.index ?? 0;
+        // Keep current tab if still valid, else fall back to 0
+        final safeIdx = currentIdx <= rooms.length ? currentIdx : 0;
+        _rebuildTabController(safeIdx);
+      }
+      setState(() {});
+    });
+  }
+
+  void _rebuildTabController(int initialIndex) {
+    _tabController?.dispose();
+    _tabController = TabController(
+      length: 1 + _rooms.length, // "Bugün" + rooms
+      initialIndex: initialIndex,
+      vsync: this,
+    );
   }
 
   Timer? _rhythmTimer;
@@ -609,6 +638,8 @@ class HabitScreenState extends State<HabitScreen>
     _dateScrollController.dispose();
     _rhythmTimer?.cancel();
     _syncDebounce?.cancel();
+    _roomsSub?.cancel();
+    _tabController?.dispose();
     super.dispose();
   }
 

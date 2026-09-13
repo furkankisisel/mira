@@ -3,9 +3,13 @@ class ApiConfig {
 
   /// Groq API Key for AI-powered features.
   ///
-  /// Securely managed via environment variables or unified config.
+  /// Securely provided via compile-time environment variable:
+  /// `flutter run --dart-define=GROQ_API_KEY=your_groq_key`
   static const String groqApiKey = String.fromEnvironment(
     'GROQ_API_KEY',
-    defaultValue: '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',
+    defaultValue: '',
   );
+
+  /// Checks if Groq API key is provided
+  static bool get isGroqConfigured => groqApiKey.isNotEmpty;
 }

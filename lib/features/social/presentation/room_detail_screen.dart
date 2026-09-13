@@ -94,7 +94,7 @@ class RoomDetailScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: _RoomBody(roomId: room.id),
+      body: RoomBody(roomId: room.id),
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -435,8 +435,8 @@ class RoomDetailScreen extends StatelessWidget {
 
 // ─── Room Body (single scrollable) ───────────────────────
 
-class _RoomBody extends StatelessWidget {
-  const _RoomBody({required this.roomId});
+class RoomBody extends StatelessWidget {
+  const RoomBody({super.key, required this.roomId});
   final String roomId;
 
   @override

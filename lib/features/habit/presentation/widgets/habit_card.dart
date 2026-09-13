@@ -95,6 +95,19 @@ class _HabitCardState extends State<HabitCard>
   late final Animation<double> _scale;
   int _brokenTaps = 0;
 
+  // ── Drag-to-progress state ──
+  bool _isDragging = false;
+  double _dragProgress = 0.0;
+  double _cardWidth = 0.0; // captured from LayoutBuilder
+  int _lastHapticStep = -1; // to avoid repeated haptics
+
+  bool get _isProgressDraggable =>
+      !widget.readOnly &&
+      !widget.isCompleted &&
+      widget.onValueUpdate != null &&
+      (widget.habitType == HabitType.numerical ||
+          widget.habitType == HabitType.timer);
+
   @override
   void initState() {
     super.initState();
@@ -218,6 +231,46 @@ class _HabitCardState extends State<HabitCard>
 
   void _handleTapCancel() {
     _controller.reverse();
+  }
+
+  // ── Drag-to-progress handlers ──
+  void _handleDragStart(DragStartDetails details) {
+    if (!_isProgressDraggable) return;
+    final box = context.findRenderObject() as RenderBox?;
+    if (box == null) return;
+    final localX = box.globalToLocal(details.globalPosition).dx;
+    setState(() {
+      _isDragging = true;
+      _dragProgress = (_cardWidth > 0 ? (localX / _cardWidth) : 0.0).clamp(0.0, 1.0);
+      _lastHapticStep = (_dragProgress * 20).floor(); // 5% steps
+    });
+    HapticFeedback.selectionClick();
+  }
+
+  void _handleDragUpdate(DragUpdateDetails details) {
+    if (!_isDragging || _cardWidth <= 0) return;
+    final box = context.findRenderObject() as RenderBox?;
+    if (box == null) return;
+    final localX = box.globalToLocal(details.globalPosition).dx;
+    final newProgress = (localX / _cardWidth).clamp(0.0, 1.0);
+    final step = (newProgress * 20).floor();
+    if (step != _lastHapticStep) {
+      HapticFeedback.selectionClick();
+      _lastHapticStep = step;
+    }
+    setState(() => _dragProgress = newProgress);
+  }
+
+  void _handleDragEnd(DragEndDetails details) {
+    if (!_isDragging) return;
+    final int newValue = (_dragProgress * widget.targetCount).round();
+    setState(() {
+      _isDragging = false;
+    });
+    if (newValue != widget.currentStreak) {
+      HapticFeedback.mediumImpact();
+      widget.onValueUpdate?.call(newValue);
+    }
   }
 
   // (showManualValueDialog, _submitManual, _showMenu, _confirmDelete remain identical — omitted here for brevity)
@@ -878,6 +931,10 @@ class _HabitCardState extends State<HabitCard>
             onTapUp: _handleTapUp,
             onTapCancel: _handleTapCancel,
             onLongPress: _showMenu,
+            // Drag-to-progress for numerical/timer habits
+            onHorizontalDragStart: _isProgressDraggable ? _handleDragStart : null,
+            onHorizontalDragUpdate: _isProgressDraggable ? _handleDragUpdate : null,
+            onHorizontalDragEnd: _isProgressDraggable ? _handleDragEnd : null,
             // translucent so parent horizontal drags (PageView/Dismissible) work nicer
             behavior: HitTestBehavior.translucent,
             child: ScaleTransition(
@@ -911,23 +968,35 @@ class _HabitCardState extends State<HabitCard>
                         borderRadius: BorderRadius.circular(24),
                         child: LayoutBuilder(
                           builder: (context, constraints) {
-                            final double progress = widget.targetCount > 0
+                            // Capture card width for drag calculations
+                            _cardWidth = constraints.maxWidth;
+
+                            final double baseProgress = widget.targetCount > 0
                                 ? (widget.currentStreak / widget.targetCount).clamp(0.0, 1.0)
                                 : (done ? 1.0 : 0.0);
+                            final double progress = _isDragging ? _dragProgress : baseProgress;
 
                             return Align(
                               alignment: Alignment.centerLeft,
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeOutCubic,
-                                width: constraints.maxWidth * progress,
-                                height: constraints.maxHeight,
-                                decoration: BoxDecoration(
-                                  color: done
-                                      ? completedBg
-                                      : widget.color.withValues(alpha: 0.25),
-                                ),
-                              ),
+                              child: _isDragging
+                                  ? Container(
+                                      width: constraints.maxWidth * progress,
+                                      height: constraints.maxHeight,
+                                      decoration: BoxDecoration(
+                                        color: widget.color.withValues(alpha: 0.35),
+                                      ),
+                                    )
+                                  : AnimatedContainer(
+                                      duration: const Duration(milliseconds: 500),
+                                      curve: Curves.easeOutCubic,
+                                      width: constraints.maxWidth * progress,
+                                      height: constraints.maxHeight,
+                                      decoration: BoxDecoration(
+                                        color: done
+                                            ? completedBg
+                                            : widget.color.withValues(alpha: 0.25),
+                                      ),
+                                    ),
                             );
                           },
                         ),
@@ -998,6 +1067,29 @@ class _HabitCardState extends State<HabitCard>
                                           ),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    // Swipe hint for numerical/timer habits
+                                    if (_isProgressDraggable && !_isDragging)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 2),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.swipe,
+                                              size: 12,
+                                              color: cs.onSurfaceVariant.withValues(alpha: 0.5),
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              '${widget.currentStreak} / ${widget.targetCount}${widget.unit != null ? ' ${widget.unit}' : widget.habitType == HabitType.timer ? ' dk' : ''}',
+                                              style: theme.textTheme.bodySmall?.copyWith(
+                                                fontSize: 10,
+                                                color: cs.onSurfaceVariant.withValues(alpha: 0.5),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                   ],
@@ -1180,6 +1272,41 @@ class _HabitCardState extends State<HabitCard>
                       ],
                     ),
                   ),
+                  // ── Drag value overlay ──
+                  if (_isDragging)
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: Center(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: widget.color.withValues(alpha: 0.85),
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: widget.color.withValues(alpha: 0.3),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              widget.habitType == HabitType.timer
+                                  ? '${(_dragProgress * widget.targetCount).round()} / ${widget.targetCount} dk'
+                                  : '${(_dragProgress * widget.targetCount).round()} / ${widget.targetCount}${widget.unit != null ? ' ${widget.unit}' : ''}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   if (need > 0 && !done)
                     Positioned.fill(
                       child: IgnorePointer(

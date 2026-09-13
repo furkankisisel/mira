@@ -5,7 +5,6 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io' as io;
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'profile_repository.dart';
-import 'dart:ui'; // for ImageFilter
 import '../habit/domain/habit_repository.dart';
 import '../habit/domain/habit_model.dart';
 import '../habit/presentation/habit_analysis_screen.dart';

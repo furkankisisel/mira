@@ -30,7 +30,7 @@ class Habit {
     Map<String, int>? dailyLog,
     this.listId,
     this.categoryName,
-    List<String>? scheduledDates,
+    this.scheduledDates,
     this.numericalTargetType = NumericalTargetType.minimum,
     this.timerTargetType = TimerTargetType.minimum,
     this.reminderEnabled = false,

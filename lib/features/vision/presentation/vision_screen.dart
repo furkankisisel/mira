@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io' as io;
-import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'package:flutter/services.dart' show rootBundle;
 import '../../habit/domain/habit_repository.dart';
 import '../../habit/domain/habit_model.dart';
 import '../../habit/domain/habit_types.dart';

@@ -26,7 +26,7 @@ void main() {
     );
 
     await tester.tap(find.text('NoIce'));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(calls, 1);
     // No snowflake indicator
@@ -59,19 +59,19 @@ void main() {
     expect(find.text('3'), findsOneWidget);
 
     await tester.tap(find.text('IceN'));
-    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     expect(calls, 0);
     // Remaining should now be 2
     expect(find.text('2'), findsOneWidget);
 
     await tester.tap(find.text('IceN'));
-    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
     expect(calls, 0);
     // Remaining should now be 1
     expect(find.text('1'), findsOneWidget);
 
     await tester.tap(find.text('IceN'));
-    await tester.pump();
+    await tester.pumpAndSettle();
     // Now onTap should have fired
     expect(calls, 1);
   });
@@ -101,7 +101,7 @@ void main() {
     expect(find.byIcon(Icons.ac_unit), findsNothing);
 
     await tester.tap(find.text('Done'));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(calls, 1);
     // Flame emoji should be visible if streak > 0, even if completed

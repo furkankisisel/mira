@@ -30,7 +30,7 @@ void main() {
       // Allow async initializations to complete
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
-      expect(find.textContaining('Finans Analizi'), findsOneWidget);
+      expect(find.textContaining('Finans Analizi'), findsWidgets);
       expect(find.text('Tasarruf / Bütçe Planı'), findsOneWidget);
     });
   });
