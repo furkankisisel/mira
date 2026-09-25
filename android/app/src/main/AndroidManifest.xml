@@ -78,9 +78,9 @@
             android:name=".TimerActionReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.koralabs.mira.TIMER_PAUSE" />
-                <action android:name="com.koralabs.mira.TIMER_RESUME" />
-                <action android:name="com.koralabs.mira.TIMER_STOP" />
+                <action android:name="com.kisiselapps.mira.TIMER_PAUSE" />
+                <action android:name="com.kisiselapps.mira.TIMER_RESUME" />
+                <action android:name="com.kisiselapps.mira.TIMER_STOP" />
             </intent-filter>
         </receiver>
 

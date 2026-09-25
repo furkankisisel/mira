@@ -4,7 +4,7 @@ import WidgetKit
 /// Shared data provider for reading widget data from UserDefaults
 struct WidgetDataProvider {
     
-    static let appGroupId = "group.com.koralabs.mira.widgets"
+    static let appGroupId = "group.com.kisiselapps.mira.widgets"
     
     static var sharedDefaults: UserDefaults? {
         UserDefaults(suiteName: appGroupId)

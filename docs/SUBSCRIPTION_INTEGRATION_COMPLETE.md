@@ -319,7 +319,7 @@ debugPrint('Is Premium: ${PremiumManager.instance.isPremium}');
 - [ ] Product ID: `mira_plus` ✅
 - [ ] Base plans: `mira-12` (monthly) and `mira-yearly` (yearly) ✅
 - [ ] Entitlement: `premium` ✅
-- [ ] Package name: `com.koralabs.mira` ✅
+- [ ] Package name: `com.kisiselapps.mira` ✅
 - [ ] All debug logs disabled or set to production level
 
 ---

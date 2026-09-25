@@ -462,7 +462,7 @@ class HomeWidgetService {
     try {
       await HomeWidget.updateWidget(
         androidName: widgetName,
-        qualifiedAndroidName: 'com.koralabs.mira.widgets.$widgetName',
+        qualifiedAndroidName: 'com.kisiselapps.mira.widgets.$widgetName',
       );
     } catch (e) {
       debugPrint('[HomeWidget] Android widget update error: $e');

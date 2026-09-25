@@ -1,4 +1,4 @@
-package com.koralabs.mira
+package com.kisiselapps.mira
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -9,10 +9,10 @@ import io.flutter.embedding.engine.dart.DartExecutor
 
 class TimerActionReceiver : BroadcastReceiver() {
     companion object {
-    const val ACTION_PAUSE = "com.koralabs.mira.TIMER_PAUSE"
-    const val ACTION_RESUME = "com.koralabs.mira.TIMER_RESUME"
-    const val ACTION_STOP = "com.koralabs.mira.TIMER_STOP"
-    const val CHANNEL_NAME = "com.koralabs.mira/timer_actions"
+    const val ACTION_PAUSE = "com.kisiselapps.mira.TIMER_PAUSE"
+    const val ACTION_RESUME = "com.kisiselapps.mira.TIMER_RESUME"
+    const val ACTION_STOP = "com.kisiselapps.mira.TIMER_STOP"
+    const val CHANNEL_NAME = "com.kisiselapps.mira/timer_actions"
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {

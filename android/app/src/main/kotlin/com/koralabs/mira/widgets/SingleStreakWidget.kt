@@ -1,4 +1,4 @@
-package com.koralabs.mira.widgets
+package com.kisiselapps.mira.widgets
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -18,7 +18,7 @@ import androidx.glance.layout.*
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
-import com.koralabs.mira.MainActivity
+import com.kisiselapps.mira.MainActivity
 
 /**
  * Single Streak Widget

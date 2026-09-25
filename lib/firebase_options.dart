@@ -64,9 +64,11 @@ class DefaultFirebaseOptions {
     messagingSenderId: '593291053883',
     projectId: 'mira-1fdc3',
     storageBucket: 'mira-1fdc3.firebasestorage.app',
-    androidClientId: '593291053883-e5askargi4p2cb1vghe9fh3llgiqfj7b.apps.googleusercontent.com',
-    iosClientId: '593291053883-jngmu7luvem85sjm7523501jeeurto11.apps.googleusercontent.com',
-    iosBundleId: 'com.koralabs.mira',
+    androidClientId:
+        '593291053883-e5askargi4p2cb1vghe9fh3llgiqfj7b.apps.googleusercontent.com',
+    iosClientId:
+        '593291053883-jngmu7luvem85sjm7523501jeeurto11.apps.googleusercontent.com',
+    iosBundleId: 'com.kisiselapps.mira',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -75,9 +77,11 @@ class DefaultFirebaseOptions {
     messagingSenderId: '593291053883',
     projectId: 'mira-1fdc3',
     storageBucket: 'mira-1fdc3.firebasestorage.app',
-    androidClientId: '593291053883-e5askargi4p2cb1vghe9fh3llgiqfj7b.apps.googleusercontent.com',
-    iosClientId: '593291053883-jngmu7luvem85sjm7523501jeeurto11.apps.googleusercontent.com',
-    iosBundleId: 'com.koralabs.mira',
+    androidClientId:
+        '593291053883-e5askargi4p2cb1vghe9fh3llgiqfj7b.apps.googleusercontent.com',
+    iosClientId:
+        '593291053883-jngmu7luvem85sjm7523501jeeurto11.apps.googleusercontent.com',
+    iosBundleId: 'com.kisiselapps.mira',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
@@ -89,5 +93,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'mira-1fdc3.firebasestorage.app',
     measurementId: 'G-SPMK8T1815',
   );
-
 }

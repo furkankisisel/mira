@@ -5,7 +5,7 @@ class AppConstants {
       'https://us-central1-mira-1fdc3.cloudfunctions.net';
 
   // ============= Subscription / IAP Configuration =============
-  static const String packageName = 'com.koralabs.mira';
+  static const String packageName = 'com.kisiselapps.mira';
   static const String subscriptionProductId = 'mira_plus';
 
   // Product IDs (from Google Play Console) - for separate products

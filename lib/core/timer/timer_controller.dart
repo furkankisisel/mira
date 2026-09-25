@@ -33,14 +33,14 @@ class TimerSession {
 
   /// JSON'a serialize et
   Map<String, dynamic> toJson() => {
-    'mode': mode.index,
-    'durationMs': duration.inMilliseconds,
-    'startedAt': startedAt.toIso8601String(),
-    'endedAt': endedAt.toIso8601String(),
-    'label': label,
-    'completed': completed,
-    'assigned': assigned,
-  };
+        'mode': mode.index,
+        'durationMs': duration.inMilliseconds,
+        'startedAt': startedAt.toIso8601String(),
+        'endedAt': endedAt.toIso8601String(),
+        'label': label,
+        'completed': completed,
+        'assigned': assigned,
+      };
 
   /// JSON'dan deserialize et
   factory TimerSession.fromJson(Map<String, dynamic> json) {
@@ -86,7 +86,7 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
   final FlutterBackgroundService _backgroundService =
       FlutterBackgroundService();
   static const MethodChannel _methodChannel = MethodChannel(
-    'com.koralabs.mira/timer_actions',
+    'com.kisiselapps.mira/timer_actions',
   );
 
   // Hard Mode state
@@ -291,10 +291,10 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
   TimerMode get activeMode => _activeMode;
   Duration get elapsed => _elapsed;
   bool get isRunning => switch (_activeMode) {
-    TimerMode.stopwatch => _stopwatchRunning,
-    TimerMode.countdown => _countdownRunning,
-    TimerMode.pomodoro => _pomodoroRunning,
-  };
+        TimerMode.stopwatch => _stopwatchRunning,
+        TimerMode.countdown => _countdownRunning,
+        TimerMode.pomodoro => _pomodoroRunning,
+      };
 
   Duration get countdownRemaining => _countdownRemaining;
   Duration get countdownTotal => _countdownTotal;
@@ -470,7 +470,7 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
         // Mola fazındaysa uygun mola süresine ayarla
         final isLong =
             _pomodoroCompletedWorkSessions % _pomodoroLongBreakInterval == 0 &&
-            _pomodoroCompletedWorkSessions > 0;
+                _pomodoroCompletedWorkSessions > 0;
         _pomodoroRemaining = isLong ? _pomodoroLongBreak : _pomodoroShortBreak;
       }
     }
@@ -500,9 +500,8 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
       _pomodoroWorkPhase = false;
       final isLongBreak =
           _pomodoroCompletedWorkSessions % _pomodoroLongBreakInterval == 0;
-      _pomodoroRemaining = isLongBreak
-          ? _pomodoroLongBreak
-          : _pomodoroShortBreak;
+      _pomodoroRemaining =
+          isLongBreak ? _pomodoroLongBreak : _pomodoroShortBreak;
     } else {
       // Mola bitti -> çalışma
       // (İstersen mola oturumlarını ekleyebilirsin)
