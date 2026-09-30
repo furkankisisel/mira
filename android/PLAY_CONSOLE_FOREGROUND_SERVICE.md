@@ -1,6 +1,6 @@
 # Play Console — Foreground Service Açıklaması (mira)
 
-Bu belge, Google Play inceleyicilerine uygulamamızın neden bir Foreground Service kullandığını ve hangi manifest girdilerinin gönderildiğini açık, kısa ve doğrulanabilir şekilde anlatmak için hazırlanmıştır. İlgili paket: `com.kisiselapps.mira`.
+Bu belge, Google Play inceleyicilerine uygulamamızın neden bir Foreground Service kullandığını ve hangi manifest girdilerinin gönderildiğini açık, kısa ve doğrulanabilir şekilde anlatmak için hazırlanmıştır. İlgili paket: `com.koralabs.mira`.
 
 ## Özet
 - Kullanılan özellik: Zamanlayıcı / Alışkanlık takibi (Timer)
@@ -38,7 +38,7 @@ Servis tanımı (merged manifest'te görünür):
 Not: Plugin ayrıca zamanlayıcı bildirimleri, boot sonrası yeniden planlama ve alarm alıcıları (receivers) ekleyebilir; bu yalnızca bildirimlerin yeniden planlanması ve zamanlayıcı durumunun korunması içindir.
 
 ## Play İnceleyicisi için Kısa Doğrulama Adımları
-1. Uygulamayı açın (paket: `com.kisiselapps.mira`).
+1. Uygulamayı açın (paket: `com.koralabs.mira`).
 2. Zamanlayıcı/Alışkanlık ekranından yeni bir zamanlayıcı başlatın.
 3. Uygulamayı arka plana atın veya ekranı kilitleyin. Zamanlayıcının çalışmaya devam ettiğini doğrulayın.
 4. Bildirim alanında uygulamaya ait kalıcı bir bildirim görünür olmalı. Bildirimde `Pause`/`Resume`/`Stop` kontrollerini kullanın ve zamanlayıcının buna göre tepki verdiğini kontrol edin.

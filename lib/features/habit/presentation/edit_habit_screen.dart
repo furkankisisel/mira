@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mira/l10n/app_localizations.dart';
 import '../../habit/domain/habit_model.dart';
 import '../../habit/domain/habit_repository.dart';
@@ -71,13 +72,182 @@ class _EditHabitScreenState extends State<EditHabitScreen> {
     }
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context).editHabit),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leadingWidth: 56,
+        leading: Center(
+          child: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isDark ? colorScheme.surfaceContainerHigh : Colors.white,
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.12)
+                    : Colors.white.withValues(alpha: 0.95),
+                width: 1.2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.05),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+                if (!isDark)
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    blurRadius: 2,
+                    offset: const Offset(0, -1),
+                  ),
+              ],
+            ),
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              iconSize: 18,
+              icon: const Icon(Icons.close_rounded),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+        ),
+        title: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+          decoration: BoxDecoration(
+            color: isDark ? colorScheme.surfaceContainerHigh : Colors.white,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.12)
+                  : Colors.white.withValues(alpha: 0.95),
+              width: 1.2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+              if (!isDark)
+                BoxShadow(
+                  color: Colors.white.withValues(alpha: 0.8),
+                  blurRadius: 2,
+                  offset: const Offset(0, -1),
+                ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (_emoji != null && _emoji!.isNotEmpty) ...[
+                Container(
+                  width: 22,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    color: _color.withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(_emoji!, style: const TextStyle(fontSize: 12)),
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
+              Flexible(
+                child: Text(
+                  _titleCtrl.text.trim().isNotEmpty
+                      ? _titleCtrl.text.trim()
+                      : l10n.editHabit,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    letterSpacing: -0.2,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 5),
+              Text(
+                '• ${l10n.edit}',
+                style: TextStyle(
+                  color: colorScheme.onSurface.withValues(alpha: 0.5),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
         actions: [
-          TextButton(
-            onPressed: _save,
-            child: Text(AppLocalizations.of(context).save),
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isDark ? colorScheme.surfaceContainerHigh : Colors.white,
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.12)
+                      : Colors.white.withValues(alpha: 0.95),
+                  width: 1.2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.05),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                  if (!isDark)
+                    BoxShadow(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      blurRadius: 2,
+                      offset: const Offset(0, -1),
+                    ),
+                ],
+              ),
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                iconSize: 18,
+                tooltip: l10n.delete,
+                icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+                onPressed: () async {
+                  final confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+                      title: Text(l10n.delete),
+                      content: Text(l10n.deleteHabitConfirm(h.title)),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx, false),
+                          child: Text(l10n.cancel),
+                        ),
+                        FilledButton(
+                          style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
+                          onPressed: () => Navigator.pop(ctx, true),
+                          child: Text(l10n.delete),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (confirmed == true) {
+                    await HabitRepository.instance.removeHabit(h.id);
+                    if (mounted) Navigator.pop(context);
+                  }
+                },
+              ),
+            ),
           ),
         ],
       ),
@@ -296,12 +466,36 @@ class _EditHabitScreenState extends State<EditHabitScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: _save,
-                  icon: const Icon(Icons.save),
-                  label: Text(AppLocalizations.of(context).save),
+              GestureDetector(
+                onTap: () {
+                  HapticFeedback.mediumImpact();
+                  _save();
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  decoration: BoxDecoration(
+                    color: _color,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _color.withValues(alpha: 0.35),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      AppLocalizations.of(context).saveChanges,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],

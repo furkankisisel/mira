@@ -1,15 +1,25 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+
 import '../../../l10n/app_localizations.dart';
 import '../../../ui/widgets/wizard_base_widgets.dart';
+import '../../habit/domain/habit_model.dart';
+import '../../habit/domain/habit_repository.dart';
+import '../../habit/presentation/simple_habit_screen.dart';
 import '../data/vision_model.dart';
 import '../data/vision_repository.dart';
 
-/// Vizyon oluşturma wizard'ı - 3 sayfalı kompakt akış
+/// Vizyon / Hedef oluşturma wizard'ı
+/// 1. Hedefin adı (İsteğe bağlı: bitiş tarihi, açıklama, emoji/renk)
+/// 2. "Bu hedef için küçük adım ekle" (Yeni alışkanlık oluştur, Mevcut bağla, Şimdilik atla)
+/// 3. Önizleme & Kaydet
 class VisionWizardScreen extends StatefulWidget {
-  const VisionWizardScreen({super.key, required this.repo, this.initialVision});
+  const VisionWizardScreen({
+    super.key,
+    required this.repo,
+    this.initialVision,
+  });
 
   final VisionRepository repo;
   final Vision? initialVision;
@@ -31,13 +41,10 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
   String? _imagePath;
   bool _useImage = false;
 
-  DateTime _startDate = DateTime.now();
+  final DateTime _startDate = DateTime.now();
   DateTime? _endDate;
+  final List<String> _linkedHabitIds = [];
 
-  // 3 sayfa:
-  // 0: İsim + Açıklama
-  // 1: Görsel stil (emoji/renk/foto) + Tarih aralığı
-  // 2: Önizleme
   static const int _totalPages = 3;
 
   static const List<Color> _colors = [
@@ -64,10 +71,8 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
     '✨',
     '🔥',
     '💡',
-    '🌈',
-    '🌸',
-    '🌻',
-    '🌊',
+    '📚',
+    '🌱',
     '🏔️',
     '🌍',
   ];
@@ -83,8 +88,8 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
       _selectedColor = Color(v.colorValue);
       _imagePath = v.coverImage;
       _useImage = v.coverImage != null;
-      _startDate = v.startDate ?? DateTime.now();
       _endDate = v.endDate;
+      _linkedHabitIds.addAll(v.linkedHabitIds);
     }
   }
 
@@ -100,7 +105,7 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
     if (_currentPage < _totalPages - 1) {
       _pageController.animateToPage(
         _currentPage + 1,
-        duration: const Duration(milliseconds: 400),
+        duration: const Duration(milliseconds: 350),
         curve: Curves.easeInOut,
       );
     }
@@ -110,7 +115,7 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
     if (_currentPage > 0) {
       _pageController.animateToPage(
         _currentPage - 1,
-        duration: const Duration(milliseconds: 400),
+        duration: const Duration(milliseconds: 350),
         curve: Curves.easeInOut,
       );
     } else {
@@ -131,11 +136,20 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
       emoji: _selectedEmoji,
       colorValue: _selectedColor.value,
       coverImage: _useImage ? _imagePath : null,
-      linkedHabitIds: const [],
-      createdAt: DateTime.now(),
+      linkedHabitIds: _linkedHabitIds,
+      createdAt: widget.initialVision?.createdAt ?? DateTime.now(),
       startDate: _startDate,
       endDate: _endDate,
     );
+
+    // Also update habits with linkedVisionId
+    for (final hid in _linkedHabitIds) {
+      final h = HabitRepository.instance.findById(hid);
+      if (h != null && h.linkedVisionId != id) {
+        h.linkedVisionId = id;
+        await HabitRepository.instance.updateHabit(h);
+      }
+    }
 
     if (widget.initialVision != null) {
       await widget.repo.update(vision);
@@ -150,14 +164,15 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
 
   Future<void> _pickImage() async {
     try {
-      final ImagePicker picker = ImagePicker();
-      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+      final picker = ImagePicker();
+      final image = await picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
-        setState(() => _imagePath = image.path);
+        setState(() {
+          _imagePath = image.path;
+          _useImage = true;
+        });
       }
-    } catch (e) {
-      // Handle error
-    }
+    } catch (_) {}
   }
 
   @override
@@ -178,25 +193,29 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
           });
         },
         children: [
-          // 0: İsim + Açıklama
-          _buildNamePage(),
+          // 0: Hedefin Adı ve İsteğe Bağlı Detaylar
+          _buildNameAndDetailsPage(),
 
-          // 1: Görsel stil + Tarih aralığı
-          _buildStyleDatePage(),
+          // 1: Bu Hedef İçin Küçük Adım Ekle
+          _buildAddSmallStepPage(),
 
-          // 2: Önizleme
+          // 2: Önizleme & Kaydet
           _buildPreviewPage(),
         ],
       ),
     );
   }
 
-  Widget _buildNamePage() {
+  // ─── Step 1: Hedef Adı ve İsteğe Bağlı Detaylar ───
+
+  Widget _buildNameAndDetailsPage() {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final isValid = _titleCtrl.text.trim().isNotEmpty;
 
     return WizardPage(
-      emoji: '✏️',
+      emoji: '🎯',
       title: l10n.nameYourVision,
       subtitle: l10n.nameYourVisionSubtitle,
       bottomWidget: WizardNavigationButtons(
@@ -204,405 +223,562 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
         isNextEnabled: isValid,
         accentColor: _selectedColor,
       ),
-      child: Column(
-        children: [
-          TextField(
-            controller: _titleCtrl,
-            autofocus: true,
-            textAlign: TextAlign.center,
-            style: Theme.of(
-              context,
-            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
-            decoration: InputDecoration(
-              hintText: l10n.myBigGoal,
-              hintStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Prominent Title Input
+            TextField(
+              controller: _titleCtrl,
+              autofocus: true,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+                fontSize: 20,
               ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide.none,
+              decoration: InputDecoration(
+                hintText: l10n.myBigGoal,
+                hintStyle: TextStyle(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: isDark
+                    ? Colors.white.withValues(alpha: 0.06)
+                    : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 18,
+                ),
               ),
-              filled: true,
-              fillColor: Theme.of(
-                context,
-              ).colorScheme.surfaceContainerHighest.withOpacity(0.5),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 16,
-              ),
+              onChanged: (_) => setState(() {}),
+              onSubmitted: (_) {
+                if (isValid) _nextPage();
+              },
             ),
-            onChanged: (_) => setState(() {}),
-            onSubmitted: (_) {
-              if (isValid) _nextPage();
-            },
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _descriptionCtrl,
-            textAlign: TextAlign.center,
-            maxLines: 3,
-            style: Theme.of(context).textTheme.bodyMedium,
-            decoration: InputDecoration(
-              hintText: l10n.descriptionHintOptional,
-              hintStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide.none,
-              ),
-              filled: true,
-              fillColor: Theme.of(
-                context,
-              ).colorScheme.surfaceContainerHighest.withOpacity(0.3),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 12,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+            const SizedBox(height: 18),
 
-  Widget _buildStyleDatePage() {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return WizardPage(
-      emoji: _useImage ? '🖼️' : '🎨',
-      title: l10n.simpleHabitEmojiTitle,
-      subtitle: l10n.simpleHabitEmojiSubtitle,
-      bottomWidget: WizardNavigationButtons(
-        onNext: _nextPage,
-        isNextEnabled: !_useImage || (_useImage && _imagePath != null),
-        accentColor: _selectedColor,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ─── Toggle: Emoji/Renk vs Fotoğraf ───
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
+            // Optional Section Divider / Header
+            Row(
               children: [
                 Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => _useImage = false),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        color: !_useImage
-                            ? colorScheme.surface
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: !_useImage
-                            ? [
-                                BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 2))
-                              ]
-                            : null,
-                      ),
-                      child: Center(
-                        child: Text(
-                          l10n.emojiAndColor,
-                          style: TextStyle(
-                            fontWeight: !_useImage
-                                ? FontWeight.w600
-                                : FontWeight.normal,
-                            color: !_useImage
-                                ? colorScheme.onSurface
-                                : colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
+                  child: Divider(
+                    color: isDark ? Colors.white12 : Colors.black12,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(
+                    l10n.wizardOptional,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                     ),
                   ),
                 ),
                 Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => _useImage = true),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        color: _useImage
-                            ? colorScheme.surface
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: _useImage
-                            ? [
-                                BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 2))
-                              ]
-                            : null,
-                      ),
-                      child: Center(
-                        child: Text(
-                          l10n.photo,
-                          style: TextStyle(
-                            fontWeight:
-                                _useImage ? FontWeight.w600 : FontWeight.normal,
-                            color: _useImage
-                                ? colorScheme.onSurface
-                                : colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                    ),
+                  child: Divider(
+                    color: isDark ? Colors.white12 : Colors.black12,
                   ),
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 16),
+            const SizedBox(height: 14),
 
-          // ─── Seçilen görsel moda göre içerik ───
-          if (_useImage) ...[
-            GestureDetector(
-              onTap: _pickImage,
-              child: Container(
-                height: 160,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(20),
-                  image: _imagePath != null
-                      ? DecorationImage(
-                          image: FileImage(File(_imagePath!)),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
-                  border: Border.all(
-                    color: colorScheme.outline.withOpacity(0.2),
-                    width: 2,
-                    style: BorderStyle.solid,
+            // Optional: End Date Picker Tile
+            Container(
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.04)
+                    : const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05),
+                ),
+              ),
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                leading: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: _selectedColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(Icons.event_outlined, color: _selectedColor, size: 20),
+                ),
+                title: Text(
+                  l10n.endDate,
+                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13.5),
+                ),
+                subtitle: Text(
+                  _endDate != null
+                      ? '${_endDate!.day}.${_endDate!.month}.${_endDate!.year}'
+                      : l10n.durationIndefinite,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: _endDate != null
+                        ? _selectedColor
+                        : theme.colorScheme.onSurfaceVariant,
+                    fontWeight: _endDate != null ? FontWeight.w600 : FontWeight.normal,
                   ),
                 ),
-                child: _imagePath == null
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add_photo_alternate_outlined,
-                              size: 40, color: colorScheme.primary),
-                          const SizedBox(height: 8),
-                          Text(l10n.tapToPickImage,
-                              style: TextStyle(
-                                  color: colorScheme.primary,
-                                  fontWeight: FontWeight.w600)),
-                        ],
-                      )
-                    : Stack(
-                        children: [
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: IconButton.filled(
-                              onPressed: () =>
-                                  setState(() => _imagePath = null),
-                              icon: const Icon(Icons.close),
-                              style: IconButton.styleFrom(
-                                backgroundColor: Colors.black54,
-                                foregroundColor: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (_endDate != null)
+                      IconButton(
+                        icon: const Icon(Icons.clear, size: 16),
+                        onPressed: () => setState(() => _endDate = null),
                       ),
+                    const Icon(Icons.chevron_right_rounded, size: 18),
+                  ],
+                ),
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: _endDate ?? _startDate.add(const Duration(days: 30)),
+                    firstDate: _startDate,
+                    lastDate: DateTime.now().add(const Duration(days: 365 * 3)),
+                  );
+                  if (picked != null) setState(() => _endDate = picked);
+                },
               ),
-            ),
-          ] else ...[
-            // Emoji seçimi
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              alignment: WrapAlignment.center,
-              children: _quickEmojis.map((emoji) {
-                final isSelected = emoji == _selectedEmoji;
-                return WizardSelectionCard(
-                  isSelected: isSelected,
-                  onTap: () => setState(() => _selectedEmoji = emoji),
-                  size: 52,
-                  borderRadius: 14,
-                  selectedColor: _selectedColor,
-                  child: Text(emoji, style: const TextStyle(fontSize: 26)),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 16),
-            // Renk seçimi
-            Text(
-              l10n.simpleHabitColorTitle,
-              style: theme.textTheme.titleSmall
-                  ?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 10),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              alignment: WrapAlignment.center,
-              children: _colors.map((color) {
-                final isSelected = color.value == _selectedColor.value;
-                return GestureDetector(
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    setState(() => _selectedColor = color);
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: isSelected ? 44 : 36,
-                    height: isSelected ? 44 : 36,
-                    decoration: BoxDecoration(
-                      color: color,
-                      shape: BoxShape.circle,
-                      border: isSelected
-                          ? Border.all(
-                              color: Theme.of(context).colorScheme.surface,
-                              width: 3)
-                          : null,
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                  color: color.withOpacity(0.4),
-                                  blurRadius: 12,
-                                  spreadRadius: 2)
-                            ]
-                          : null,
+
+            // Optional: Description TextField
+            TextField(
+              controller: _descriptionCtrl,
+              maxLines: 2,
+              style: theme.textTheme.bodyMedium,
+              decoration: InputDecoration(
+                hintText: l10n.descriptionHintOptional,
+                hintStyle: TextStyle(
+                  fontSize: 13,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: isDark
+                    ? Colors.white.withValues(alpha: 0.04)
+                    : const Color(0xFFF8FAFC),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
+
+            // Optional: Quick Emoji Picker Row
+            SizedBox(
+              height: 48,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: _quickEmojis.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (context, i) {
+                  final emoji = _quickEmojis[i];
+                  final isSelected = emoji == _selectedEmoji && !_useImage;
+                  return GestureDetector(
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      setState(() {
+                        _selectedEmoji = emoji;
+                        _useImage = false;
+                      });
+                    },
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? _selectedColor.withValues(alpha: 0.15)
+                            : (isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFF1F5F9)),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isSelected ? _selectedColor : Colors.transparent,
+                          width: 1.5,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(emoji, style: const TextStyle(fontSize: 22)),
                     ),
-                  ),
-                );
-              }).toList(),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Optional: Colors Row
+            SizedBox(
+              height: 38,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: _colors.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (context, i) {
+                  final color = _colors[i];
+                  final isSelected = color.value == _selectedColor.value;
+                  return GestureDetector(
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      setState(() => _selectedColor = color);
+                    },
+                    child: Container(
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                        border: isSelected
+                            ? Border.all(color: Colors.white, width: 2.5)
+                            : null,
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: color.withValues(alpha: 0.4),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ],
-
-          const SizedBox(height: 20),
-
-          // ─── Tarih Aralığı ───
-          Text(
-            l10n.dateRangeLabel,
-            style: theme.textTheme.titleSmall
-                ?.copyWith(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest.withOpacity(0.4),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Column(
-              children: [
-                ListTile(
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  leading: Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: _selectedColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child:
-                        Icon(Icons.play_arrow, color: _selectedColor, size: 20),
-                  ),
-                  title: Text(l10n.startDate,
-                      style: const TextStyle(fontWeight: FontWeight.w600)),
-                  subtitle: Text(
-                    '${_startDate.day}/${_startDate.month}/${_startDate.year}',
-                    style: theme.textTheme.bodyMedium
-                        ?.copyWith(color: _selectedColor),
-                  ),
-                  trailing: const Icon(Icons.chevron_right, size: 18),
-                  onTap: () async {
-                    final picked = await showDatePicker(
-                      context: context,
-                      initialDate: _startDate,
-                      firstDate:
-                          DateTime.now().subtract(const Duration(days: 30)),
-                      lastDate: DateTime.now().add(const Duration(days: 365)),
-                    );
-                    if (picked != null) setState(() => _startDate = picked);
-                  },
-                ),
-                Divider(height: 1, color: colorScheme.outline.withOpacity(0.2)),
-                ListTile(
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  leading: Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: colorScheme.error.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(Icons.flag, color: colorScheme.error, size: 20),
-                  ),
-                  title: Text(l10n.endDate,
-                      style: const TextStyle(fontWeight: FontWeight.w600)),
-                  subtitle: Text(
-                    _endDate != null
-                        ? '${_endDate!.day}/${_endDate!.month}/${_endDate!.year}'
-                        : l10n.durationIndefinite,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: _endDate != null
-                          ? colorScheme.error
-                          : colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (_endDate != null)
-                        InkWell(
-                          onTap: () => setState(() => _endDate = null),
-                          child: Icon(Icons.clear,
-                              color: colorScheme.error, size: 16),
-                        ),
-                      const Icon(Icons.chevron_right, size: 18),
-                    ],
-                  ),
-                  onTap: () async {
-                    final picked = await showDatePicker(
-                      context: context,
-                      initialDate:
-                          _endDate ?? _startDate.add(const Duration(days: 30)),
-                      firstDate: _startDate,
-                      lastDate:
-                          DateTime.now().add(const Duration(days: 365 * 2)),
-                    );
-                    if (picked != null) setState(() => _endDate = picked);
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
+
+  // ─── Step 2: Bu Hedef İçin Küçük Adım Ekle ───
+
+  Widget _buildAddSmallStepPage() {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final allHabits = HabitRepository.instance.habits;
+    final selectedHabits =
+        allHabits.where((h) => _linkedHabitIds.contains(h.id)).toList();
+
+    return WizardPage(
+      emoji: '⚡',
+      title: l10n.addSmallStep,
+      subtitle: l10n.addSmallStepSubtitle,
+      bottomWidget: WizardNavigationButtons(
+        onNext: _nextPage,
+        nextLabel: _linkedHabitIds.isEmpty ? l10n.skipForNow : l10n.wizardNext,
+        isNextEnabled: true,
+        accentColor: _selectedColor,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Option 1: Yeni Alışkanlık Oluştur
+            _buildActionOptionCard(
+              icon: Icons.add_circle_outline_rounded,
+              color: const Color(0xFF8B5CF6),
+              title: l10n.createNewHabit,
+              subtitle: l10n.createNewHabitSubtitle,
+              isDark: isDark,
+              onTap: () async {
+                HapticFeedback.lightImpact();
+                final habit = await Navigator.of(context).push<Habit>(
+                  MaterialPageRoute(builder: (_) => const SimpleHabitScreen()),
+                );
+                if (habit != null) {
+                  // Ensure saved in repo
+                  if (HabitRepository.instance.findById(habit.id) == null) {
+                    await HabitRepository.instance.addHabit(habit);
+                  }
+                  setState(() {
+                    if (!_linkedHabitIds.contains(habit.id)) {
+                      _linkedHabitIds.add(habit.id);
+                    }
+                  });
+                }
+              },
+            ),
+            const SizedBox(height: 12),
+
+            // Option 2: Mevcut Alışkanlık Bağla
+            _buildActionOptionCard(
+              icon: Icons.link_rounded,
+              color: const Color(0xFF3B82F6),
+              title: l10n.linkExistingHabit,
+              subtitle: l10n.linkExistingHabitSubtitle,
+              isDark: isDark,
+              onTap: () => _openLinkExistingHabitsSheet(context, allHabits),
+            ),
+            const SizedBox(height: 20),
+
+            // Display selected linked habits (if any)
+            if (selectedHabits.isNotEmpty) ...[
+              Text(
+                '${l10n.linkedHabits} (${selectedHabits.length})',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                  letterSpacing: -0.2,
+                ),
+              ),
+              const SizedBox(height: 8),
+              ...selectedHabits.map((habit) {
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.05)
+                        : const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: _selectedColor.withValues(alpha: 0.25),
+                      width: 1.2,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        habit.emoji ?? '🎯',
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          habit.title,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded, size: 18),
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          setState(() => _linkedHabitIds.remove(habit.id));
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionOptionCard({
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String subtitle,
+    required bool isDark,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1B202D) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : Colors.black.withValues(alpha: 0.06),
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: isDark ? 0.22 : 0.12),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(icon, color: color, size: 22),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14.5,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, size: 20, color: Colors.grey),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _openLinkExistingHabitsSheet(BuildContext context, List<Habit> habits) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDark ? const Color(0xFF181D29) : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) {
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 36,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: isDark ? Colors.white24 : Colors.black12,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.selectHabitsToLink,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  if (habits.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Center(
+                        child: Text(
+                          l10n.emptyHabitTitle,
+                          style: TextStyle(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(ctx).size.height * 0.45,
+                      ),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: habits.length,
+                        itemBuilder: (_, i) {
+                          final h = habits[i];
+                          final isSelected = _linkedHabitIds.contains(h.id);
+
+                          return CheckboxListTile(
+                            value: isSelected,
+                            activeColor: _selectedColor,
+                            title: Text(
+                              h.title,
+                              style: const TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                            secondary: Text(h.emoji ?? '🎯',
+                                style: const TextStyle(fontSize: 20)),
+                            onChanged: (val) {
+                              setSheetState(() {
+                                if (val == true) {
+                                  _linkedHabitIds.add(h.id);
+                                } else {
+                                  _linkedHabitIds.remove(h.id);
+                                }
+                              });
+                              setState(() {});
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  const SizedBox(height: 12),
+                  FilledButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: _selectedColor,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: Text(l10n.wizardFinish),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  // ─── Step 3: Önizleme & Kaydet ───
 
   Widget _buildPreviewPage() {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     final tags = [
-      '${l10n.startsOn}: ${_startDate.day}/${_startDate.month}/${_startDate.year}',
+      '${l10n.startsOn}: ${_startDate.day}.${_startDate.month}.${_startDate.year}',
       if (_endDate != null)
-        '${l10n.endDate}: ${_endDate!.day}/${_endDate!.month}/${_endDate!.year}',
+        '${l10n.endDate}: ${_endDate!.day}.${_endDate!.month}.${_endDate!.year}',
+      if (_linkedHabitIds.isNotEmpty)
+        l10n.todayStepsCount(_linkedHabitIds.length),
     ];
 
     return WizardPage(
-      emoji: '🎉',
+      emoji: '✨',
       title: l10n.simpleHabitPreviewTitle,
       subtitle: l10n.simpleHabitPreviewSubtitle,
       bottomWidget: Padding(
@@ -614,19 +790,23 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
             style: FilledButton.styleFrom(
               backgroundColor: _selectedColor,
               padding: const EdgeInsets.symmetric(vertical: 16),
+              elevation: 0,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  l10n.createHabit,
+                  l10n.save,
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(width: 8),
-                const Icon(Icons.check, size: 20),
+                const Icon(Icons.check_rounded, size: 20),
               ],
             ),
           ),
@@ -643,55 +823,60 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
             color: _selectedColor,
             tags: tags,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
           Container(
             width: double.infinity,
-            height: 200,
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              gradient: _useImage && _imagePath != null
-                  ? null
-                  : LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        _selectedColor.withOpacity(0.2),
-                        _selectedColor.withOpacity(0.05),
-                      ],
-                    ),
-              image: _useImage && _imagePath != null
-                  ? DecorationImage(
-                      image: FileImage(File(_imagePath!)),
-                      fit: BoxFit.cover,
-                      colorFilter: ColorFilter.mode(
-                          Colors.black.withOpacity(0.3), BlendMode.darken),
-                    )
-                  : null,
+              color: isDark ? const Color(0xFF1B202D) : Colors.white,
               borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: _selectedColor.withValues(alpha: 0.2),
+                width: 1.2,
+              ),
             ),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (!_useImage) ...[
-                  Text(_selectedEmoji, style: const TextStyle(fontSize: 48)),
-                  const SizedBox(height: 12),
-                ],
+                Container(
+                  width: 54,
+                  height: 54,
+                  decoration: BoxDecoration(
+                    color: _selectedColor.withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    _selectedEmoji,
+                    style: const TextStyle(fontSize: 26),
+                  ),
+                ),
+                const SizedBox(height: 12),
                 Text(
                   _titleCtrl.text.trim(),
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: _useImage ? Colors.white : _selectedColor,
-                    shadows: _useImage
-                        ? [
-                            const Shadow(
-                                color: Colors.black45,
-                                blurRadius: 8,
-                                offset: Offset(0, 2))
-                          ]
-                        : null,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
                   ),
                   textAlign: TextAlign.center,
                 ),
+                if (_linkedHabitIds.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _selectedColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      '${_linkedHabitIds.length} bağlı adım hazır',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: _selectedColor,
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

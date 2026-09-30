@@ -1,4 +1,4 @@
-package com.kisiselapps.mira
+package com.koralabs.mira
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -16,7 +16,7 @@ class MainActivity : FlutterFragmentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
     }
-    private val CHANNEL = "com.kisiselapps.mira/timer_actions"
+    private val CHANNEL = "com.koralabs.mira/timer_actions"
     private var sharedPrefs: SharedPreferences? = null
     private var methodChannel: MethodChannel? = null
 

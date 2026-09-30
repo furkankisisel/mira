@@ -109,13 +109,16 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
     super.dispose();
   }
 
-  void _nextPage() async {
+  void _nextPage() {
     if (_currentPage < _totalPages - 1) {
-      if (_currentPage == 3 && mounted) {
-        final isPremium = context.read<PremiumProvider>().isPremium;
-        if (isPremium) {
-          await _showAiAnalysisDialog();
-        }
+      if (_currentPage == 3 && _selectedRhythmWindow == null) {
+        final optimalWindow = _determineOptimalRhythmWindow();
+        final optimalTime = _determineOptimalReminderTime(optimalWindow);
+        setState(() {
+          _selectedRhythmWindow = optimalWindow;
+          _reminderEnabled = true;
+          _reminderTime = optimalTime;
+        });
       }
 
       _pageController.animateToPage(
@@ -124,141 +127,6 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
         curve: Curves.easeInOut,
       );
     }
-  }
-
-  Future<void> _showAiAnalysisDialog() async {
-    final l10n = AppLocalizations.of(context);
-    final statusTexts = [
-      l10n.analyzingHabit,
-      l10n.calculatingLifeRhythm,
-      l10n.determiningBestReminder,
-      l10n.finalizingSettingsProgress,
-    ];
-
-    int currentStatus = 0;
-    bool dialogActive = true;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => PopScope(
-        canPop: false,
-        child: StatefulBuilder(
-          builder: (context, setDialogState) {
-            Future.delayed(const Duration(milliseconds: 1200), () {
-              if (dialogActive && currentStatus < statusTexts.length - 1) {
-                setDialogState(() => currentStatus++);
-              }
-            });
-
-            return Center(
-              child: Container(
-                margin: const EdgeInsets.all(32),
-                padding: const EdgeInsets.all(28),
-                decoration: BoxDecoration(
-                  color: Theme.of(ctx).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: _selectedColor.withOpacity(0.2),
-                      blurRadius: 30,
-                      offset: const Offset(0, 12),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 64,
-                      height: 64,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: [
-                            _selectedColor,
-                            _selectedColor.withOpacity(0.6),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                      ),
-                      child: const Center(
-                        child: SizedBox(
-                          width: 28,
-                          height: 28,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 3,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      child: Text(
-                        statusTexts[currentStatus],
-                        key: ValueKey(currentStatus),
-                        style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      l10n.determiningBestSettings,
-                      style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(ctx)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.5),
-                          ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: List.generate(
-                          4,
-                          (i) => Container(
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 4),
-                                width: 8,
-                                height: 8,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: i <= currentStatus
-                                      ? _selectedColor
-                                      : Theme.of(ctx)
-                                          .colorScheme
-                                          .outlineVariant,
-                                ),
-                              )),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-
-    await Future.delayed(const Duration(milliseconds: 5000));
-    dialogActive = false;
-
-    final aiRhythmWindow = _determineOptimalRhythmWindow();
-    final aiReminderTime = _determineOptimalReminderTime(aiRhythmWindow);
-
-    setState(() {
-      _selectedRhythmWindow = aiRhythmWindow;
-      _reminderEnabled = true;
-      _reminderTime = aiReminderTime;
-    });
-
-    if (mounted) Navigator.of(context).pop();
   }
 
   RhythmWindow _determineOptimalRhythmWindow() {
@@ -471,6 +339,7 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
       child: Column(
         children: types.map((type) {
           final isSelected = _habitType == type.$1;
+          final isDark = theme.brightness == Brightness.dark;
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: InkWell(
@@ -478,22 +347,60 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
                 HapticFeedback.lightImpact();
                 setState(() => _habitType = type.$1);
               },
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? _selectedColor.withOpacity(0.1)
-                      : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(16),
-                  border: isSelected
-                      ? Border.all(color: _selectedColor, width: 2)
-                      : null,
+                      ? _selectedColor.withValues(alpha: 0.12)
+                      : (isDark
+                          ? colorScheme.surfaceContainerHigh
+                          : Colors.white),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: isSelected
+                        ? _selectedColor
+                        : (isDark
+                            ? Colors.white.withValues(alpha: 0.12)
+                            : Colors.white.withValues(alpha: 0.95)),
+                    width: isSelected ? 2 : 1.2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: isSelected
+                          ? _selectedColor.withValues(alpha: 0.22)
+                          : Colors.black.withValues(
+                              alpha: isDark ? 0.2 : 0.04,
+                            ),
+                      blurRadius: isSelected ? 12 : 8,
+                      offset: const Offset(0, 2),
+                    ),
+                    if (!isDark && !isSelected)
+                      BoxShadow(
+                        color: Colors.white.withValues(alpha: 0.8),
+                        blurRadius: 2,
+                        offset: const Offset(0, -1),
+                      ),
+                  ],
                 ),
                 child: Row(
                   children: [
-                    Text(type.$3, style: const TextStyle(fontSize: 28)),
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? _selectedColor.withValues(alpha: 0.18)
+                            : (isDark
+                                ? Colors.white.withValues(alpha: 0.08)
+                                : const Color(0xFFF1F5F9)),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Center(
+                        child: Text(type.$3, style: const TextStyle(fontSize: 24)),
+                      ),
+                    ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
@@ -502,20 +409,29 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
                           Text(
                             type.$2,
                             style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15.5,
                             ),
                           ),
+                          const SizedBox(height: 2),
                           Text(
                             type.$4,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurface.withOpacity(0.6),
+                              color: colorScheme.onSurface.withValues(
+                                alpha: isSelected ? 0.8 : 0.55,
+                              ),
+                              fontSize: 12,
                             ),
                           ),
                         ],
                       ),
                     ),
                     if (isSelected)
-                      Icon(Icons.check_circle, color: _selectedColor),
+                      Icon(
+                        Icons.check_circle_rounded,
+                        color: _selectedColor,
+                        size: 22,
+                      ),
                   ],
                 ),
               ),
@@ -528,6 +444,9 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
 
   Widget _buildNamePage() {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final isValid = _nameController.text.trim().isNotEmpty;
 
     return WizardPage(
@@ -541,58 +460,98 @@ class _AdvancedHabitWizardScreenState extends State<AdvancedHabitWizardScreen> {
       ),
       child: Column(
         children: [
-          TextField(
-            controller: _nameController,
-            autofocus: true,
-            textAlign: TextAlign.center,
-            style: Theme.of(
-              context,
-            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
-            decoration: InputDecoration(
-              hintText: l10n.habitNameHint,
-              hintStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+          Container(
+            decoration: BoxDecoration(
+              color: isDark ? colorScheme.surfaceContainerHigh : Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.12)
+                    : Colors.white.withValues(alpha: 0.95),
+                width: 1.2,
               ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide.none,
-              ),
-              filled: true,
-              fillColor: Theme.of(
-                context,
-              ).colorScheme.surfaceContainerHighest.withOpacity(0.5),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 16,
-              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+                if (!isDark)
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    blurRadius: 2,
+                    offset: const Offset(0, -1),
+                  ),
+              ],
             ),
-            onChanged: (_) => setState(() {}),
-            onSubmitted: (_) {
-              if (isValid) _nextPage();
-            },
+            child: TextField(
+              controller: _nameController,
+              autofocus: true,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+              ),
+              decoration: InputDecoration(
+                hintText: l10n.habitNameHint,
+                hintStyle: TextStyle(
+                  color: colorScheme.onSurface.withValues(alpha: 0.35),
+                  fontWeight: FontWeight.w500,
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 18,
+                ),
+              ),
+              onChanged: (_) => setState(() {}),
+              onSubmitted: (_) {
+                if (isValid) _nextPage();
+              },
+            ),
           ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _descriptionController,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            style: Theme.of(context).textTheme.bodyMedium,
-            decoration: InputDecoration(
-              hintText: l10n.descriptionHintOptional,
-              hintStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+          const SizedBox(height: 14),
+          Container(
+            decoration: BoxDecoration(
+              color: isDark ? colorScheme.surfaceContainerHigh : Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.09)
+                    : Colors.white.withValues(alpha: 0.9),
+                width: 1.2,
               ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide.none,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+                if (!isDark)
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    blurRadius: 2,
+                    offset: const Offset(0, -1),
+                  ),
+              ],
+            ),
+            child: TextField(
+              controller: _descriptionController,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurface.withValues(alpha: 0.85),
               ),
-              filled: true,
-              fillColor: Theme.of(
-                context,
-              ).colorScheme.surfaceContainerHighest.withOpacity(0.3),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 12,
+              decoration: InputDecoration(
+                hintText: l10n.descriptionHintOptional,
+                hintStyle: TextStyle(
+                  color: colorScheme.onSurface.withValues(alpha: 0.35),
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 14,
+                ),
               ),
             ),
           ),

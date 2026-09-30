@@ -1,30 +1,44 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import '../../l10n/app_localizations.dart';
-import '../../design_system/theme/theme_variations.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
+
+import '../../design_system/theme/theme_variations.dart';
+import '../../l10n/app_localizations.dart';
+import '../../ui/premium_gate.dart';
+import 'data/ai_finance_service.dart';
+import 'data/budget_repository.dart';
+import 'data/finance_category.dart';
+import 'data/finance_category_repository.dart';
 import 'data/transaction_model.dart';
 import 'data/transaction_repository.dart';
-import 'data/finance_category_repository.dart';
-import 'data/finance_category.dart';
-
-import 'data/budget_repository.dart';
-
-import 'finance_wizard_screen.dart';
-import 'finance_edit_screen.dart';
-import '../../ui/premium_gate.dart';
-import 'dart:io';
-import 'dart:convert';
-import 'package:file_picker/file_picker.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart';
-import 'data/ai_finance_service.dart';
 import 'domain/ai_finance_dto.dart';
+import 'finance_analysis_screen.dart';
+import 'finance_edit_screen.dart';
+import 'finance_wizard_screen.dart';
 import 'presentation/ai_finance_preview_dialog.dart';
 
+/// The restored modern Finance Screen adhering to the Cotton Design System:
+/// - Floating aesthetic month navigator with quick 'This Month' badge.
+/// - Hero Balance Overview card with glowing income/expense pills and net status.
+/// - Spending Advisor & Monthly Budget card with dynamic progress and daily allowance.
+/// - Aesthetic segmented view switcher [ Tümü | Giderler | Gelirler ].
+/// - Animated transaction timeline grouped by date with spring scale tactile cards.
+/// - Direct AI Bank Statement / Receipt OCR scanner integration.
 class FinanceScreen extends StatefulWidget {
-  const FinanceScreen({super.key, this.variant});
+  const FinanceScreen({
+    super.key,
+    this.variant,
+    this.onMonthChanged,
+  });
 
   final ThemeVariant? variant;
+  final ValueChanged<DateTime>? onMonthChanged;
 
   @override
   State<FinanceScreen> createState() => FinanceScreenState();
@@ -39,8 +53,13 @@ class FinanceScreenState extends State<FinanceScreen>
   bool _loading = true;
   double? _plannedMonthlySpend;
 
-  // Expose the currently selected month for global navigation actions
+  // Selected filter tab: 0 = All, 1 = Expense, 2 = Income
+  int _selectedFilterIndex = 0;
+
   DateTime get currentMonth => _currentMonth;
+  bool get isViewingCurrentMonth =>
+      _currentMonth.year == DateTime.now().year &&
+      _currentMonth.month == DateTime.now().month;
 
   @override
   void initState() {
@@ -48,16 +67,20 @@ class FinanceScreenState extends State<FinanceScreen>
     _repo = TransactionRepository();
     _catRepo = FinanceCategoryRepository();
     _budgetRepo = BudgetRepository();
-    Future.wait([
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    await Future.wait([
       _repo.initialize(),
       _catRepo.initialize(),
       _budgetRepo.initialize(),
-    ]).then((_) {
-      _plannedMonthlySpend = _budgetRepo.getBudgetForMonth(
-        DateTime(_currentMonth.year, _currentMonth.month, 1),
-      );
-      if (mounted) setState(() => _loading = false);
-    });
+    ]);
+    if (!mounted) return;
+    _plannedMonthlySpend = _budgetRepo.getBudgetForMonth(
+      DateTime(_currentMonth.year, _currentMonth.month, 1),
+    );
+    setState(() => _loading = false);
   }
 
   @override
@@ -68,471 +91,143 @@ class FinanceScreenState extends State<FinanceScreen>
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // Build UI under a Builder so Theme override applies inside
-    final ui = Builder(
-      builder: (innerCtx) {
-        final theme = Theme.of(innerCtx);
-        final scheme = theme.colorScheme;
-        // Compute monthly totals for each tab
-        final monthIncomes = _loading
-            ? const <FinanceTransaction>[]
-            : _repo.incomesForMonth(_currentMonth);
-        final monthExpenses = _loading
-            ? const <FinanceTransaction>[]
-            : _repo.expensesForMonth(_currentMonth);
-        final incomeTotal = monthIncomes.fold<double>(
-          0,
-          (sum, e) => sum + e.amount,
-        );
-        final expenseTotal = monthExpenses.fold<double>(
-          0,
-          (sum, e) => sum + e.amount,
-        );
-        final netTotal = incomeTotal - expenseTotal;
-        final genelTotalStr = _loading
-            ? ''
-            : _formatAmount(netTotal.abs(), netTotal >= 0, context);
-        final giderTotalStr =
-            _loading ? '' : _formatAmount(expenseTotal, false, context);
-        final gelirTotalStr =
-            _loading ? '' : _formatAmount(incomeTotal, true, context);
-        final genelColor = _loading
-            ? scheme.onSurfaceVariant
-            : netTotal > 0
-                ? Colors.green
-                : netTotal < 0
-                    ? Colors.redAccent
-                    : scheme.onSurfaceVariant;
-
-        return DefaultTabController(
-          length: 3,
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            floatingActionButton: FloatingActionButton.extended(
-              onPressed: _showAddOptions,
-              icon: const Icon(Icons.add),
-              label: Text(AppLocalizations.of(context).add),
-              backgroundColor: scheme.primary,
-              foregroundColor: scheme.onPrimary,
-            ),
-            body: Column(
-              children: [
-                // Floating-style tabbar similar to ProfileScreen's appearance.
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-                  child: Material(
-                    elevation: 6,
-                    borderRadius: BorderRadius.circular(14),
-                    color: Colors.transparent,
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      decoration: BoxDecoration(
-                        // Use theme surface so TabBar adapts to selected theme and brightness
-                        color: scheme.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            // Slightly stronger shadow on light themes, subtler on dark
-                            color: theme.brightness == Brightness.light
-                                ? Colors.black.withOpacity(0.06)
-                                : Colors.black.withOpacity(0.18),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(2),
-                      child: TabBar(
-                        isScrollable: false,
-                        dividerColor: Colors.transparent,
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        indicatorPadding: const EdgeInsets.all(2),
-                        overlayColor: WidgetStatePropertyAll(
-                          scheme.primary.withValues(alpha: 0.06),
-                        ),
-                        labelColor: theme.brightness == Brightness.light
-                            ? scheme.onPrimaryContainer
-                            : scheme.onSurface,
-                        unselectedLabelColor:
-                            theme.brightness == Brightness.light
-                                ? scheme.onSurfaceVariant
-                                : scheme.onSurfaceVariant.withOpacity(0.8),
-                        indicator: BoxDecoration(
-                          color: scheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        tabs: [
-                          Tab(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(AppLocalizations.of(context).general),
-                                const SizedBox(height: 2),
-                                Text(
-                                  genelTotalStr,
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    color: genelColor,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Tab(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(AppLocalizations.of(context).expenseLabel),
-                                const SizedBox(height: 2),
-                                Text(
-                                  giderTotalStr,
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    color: Colors.redAccent,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Tab(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(AppLocalizations.of(context).incomeLabel),
-                                const SizedBox(height: 2),
-                                Text(
-                                  gelirTotalStr,
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    color: Colors.green,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                if (!_loading) ...[
-                  const SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: _SpendingAdvisorCard(
-                      month: _currentMonth,
-                      budget: _plannedMonthlySpend,
-                      spent: expenseTotal,
-                      onTap: _editBudget,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      _loading
-                          ? const _LoadingSection()
-                          : _GeneralSection(
-                              items: _repo.forMonth(_currentMonth),
-                              catMap: {for (final c in _catRepo.all()) c.id: c},
-                              onEdit: (tx) async {
-                                // If this is a generated recurring instance, edit the base series
-                                final baseId = tx.recurrenceId ?? tx.id;
-                                final base = _repo.all().firstWhere(
-                                      (e) => e.id == baseId,
-                                      orElse: () => tx,
-                                    );
-                                final res = await Navigator.of(context)
-                                    .push<FinanceTransaction>(
-                                  MaterialPageRoute(
-                                    builder: (_) => FinanceEditScreen(
-                                      repo: _repo,
-                                      catRepo: _catRepo,
-                                      transaction: base,
-                                    ),
-                                  ),
-                                );
-                                if (res != null && mounted) setState(() {});
-                              },
-                              onDelete: (tx) async {
-                                final ok = await _confirmDelete(context, tx);
-                                if (ok) {
-                                  final baseId = tx.recurrenceId ?? tx.id;
-                                  await _repo.remove(baseId);
-                                  if (mounted) setState(() {});
-                                }
-                              },
-                            ),
-                      _loading
-                          ? const _LoadingSection()
-                          : _ExpensesSection(
-                              items: _repo.expensesForMonth(_currentMonth),
-                              catMap: {for (final c in _catRepo.all()) c.id: c},
-                              onEdit: (tx) async {
-                                final baseId = tx.recurrenceId ?? tx.id;
-                                final base = _repo.all().firstWhere(
-                                      (e) => e.id == baseId,
-                                      orElse: () => tx,
-                                    );
-                                final res = await Navigator.of(context)
-                                    .push<FinanceTransaction>(
-                                  MaterialPageRoute(
-                                    builder: (_) => FinanceEditScreen(
-                                      repo: _repo,
-                                      catRepo: _catRepo,
-                                      transaction: base,
-                                    ),
-                                  ),
-                                );
-                                if (res != null && mounted) setState(() {});
-                              },
-                              onDelete: (tx) async {
-                                final ok = await _confirmDelete(context, tx);
-                                if (ok) {
-                                  final baseId = tx.recurrenceId ?? tx.id;
-                                  await _repo.remove(baseId);
-                                  if (mounted) setState(() {});
-                                }
-                              },
-                            ),
-                      _loading
-                          ? const _LoadingSection()
-                          : _IncomeSection(
-                              items: _repo.incomesForMonth(_currentMonth),
-                              catMap: {for (final c in _catRepo.all()) c.id: c},
-                              onEdit: (tx) async {
-                                final baseId = tx.recurrenceId ?? tx.id;
-                                final base = _repo.all().firstWhere(
-                                      (e) => e.id == baseId,
-                                      orElse: () => tx,
-                                    );
-                                final res = await Navigator.of(context)
-                                    .push<FinanceTransaction>(
-                                  MaterialPageRoute(
-                                    builder: (_) => FinanceEditScreen(
-                                      repo: _repo,
-                                      catRepo: _catRepo,
-                                      transaction: base,
-                                    ),
-                                  ),
-                                );
-                                if (res != null && mounted) setState(() {});
-                              },
-                              onDelete: (tx) async {
-                                final ok = await _confirmDelete(context, tx);
-                                if (ok) {
-                                  final baseId = tx.recurrenceId ?? tx.id;
-                                  await _repo.remove(baseId);
-                                  if (mounted) setState(() {});
-                                }
-                              },
-                            ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-
-    return ui;
-  }
-
-  Future<void> _openAddPageDefault() async {
-    final result = await Navigator.of(context).push<FinanceTransaction>(
-      MaterialPageRoute(
-        builder: (_) => FinanceWizardScreen(
-          repo: _repo,
-          catRepo: _catRepo,
-          initialType: TransactionType.expense,
-        ),
-      ),
-    );
-    if (result != null && mounted) setState(() {});
-  }
-
-  Future<void> _editBudget() async {
-    if (!await requirePremium(context)) return;
-
-    if (!mounted) return;
-
-    final l10n = AppLocalizations.of(context);
-    final controller = TextEditingController(
-      text: _plannedMonthlySpend?.toStringAsFixed(0) ?? '',
-    );
-
-    final result = await showDialog<double>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.spendingAdvisorTitle),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          autofocus: true,
-          decoration: InputDecoration(
-            labelText: l10n.expenseLabel,
-            prefixText: NumberFormat.simpleCurrency(
-              locale: Localizations.localeOf(context).toString(),
-            ).currencySymbol,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () {
-              final val = double.tryParse(controller.text);
-              Navigator.pop(context, val);
-            },
-            child: Text(
-              l10n.add,
-            ), // Using existing 'add' key if 'save' implies a new transaction, or just 'add' as generic positive action
-          ),
-        ],
-      ),
-    );
-
-    if (result != null) {
-      await _budgetRepo.setBudgetForMonth(_currentMonth, result);
-      setState(() {
-        _plannedMonthlySpend = result;
-      });
-    }
-  }
-
-  // Exposed control for global AppBar action
   void selectCurrentMonth() {
+    final now = DateTime.now();
     setState(() {
-      final now = DateTime.now();
       _currentMonth = DateTime(now.year, now.month, 1);
       _plannedMonthlySpend = _budgetRepo.getBudgetForMonth(_currentMonth);
     });
+    widget.onMonthChanged?.call(_currentMonth);
   }
 
-  // Popup month picker for global AppBar
+  void changeMonth(int delta) {
+    HapticFeedback.selectionClick();
+    setState(() {
+      _currentMonth = DateTime(_currentMonth.year, _currentMonth.month + delta, 1);
+      _plannedMonthlySpend = _budgetRepo.getBudgetForMonth(_currentMonth);
+    });
+    widget.onMonthChanged?.call(_currentMonth);
+  }
+
   Future<void> showMonthPicker() async {
     final locale = Localizations.localeOf(context).toString();
     int pickerYear = _currentMonth.year;
+
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
-        final scheme = Theme.of(ctx).colorScheme;
+        final theme = Theme.of(ctx);
+        final scheme = theme.colorScheme;
+        final isDark = theme.brightness == Brightness.dark;
+
         return StatefulBuilder(
           builder: (context, setSheetState) {
             return SafeArea(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton(
-                            tooltip: AppLocalizations.of(context).previousYear,
-                            onPressed: () =>
-                                setSheetState(() => pickerYear -= 1),
-                            icon: const Icon(Icons.chevron_left),
-                          ),
-                          Text(
-                            '$pickerYear',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          IconButton(
-                            tooltip: AppLocalizations.of(context).nextYear,
-                            onPressed: () =>
-                                setSheetState(() => pickerYear += 1),
-                            icon: const Icon(Icons.chevron_right),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          mainAxisSpacing: 8,
-                          crossAxisSpacing: 8,
-                          childAspectRatio: 2.2,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton.filledTonal(
+                          onPressed: () => setSheetState(() => pickerYear -= 1),
+                          icon: const Icon(Icons.chevron_left_rounded, size: 22),
                         ),
-                        itemCount: 12,
-                        itemBuilder: (context, index) {
-                          final month = index + 1;
-                          final selected = pickerYear == _currentMonth.year &&
-                              month == _currentMonth.month;
-                          final label = DateFormat(
-                            'MMMM',
-                            locale,
-                          ).format(DateTime(2000, month, 1));
-                          return FilledButton.tonal(
-                            style: ButtonStyle(
-                              backgroundColor: WidgetStatePropertyAll(
-                                selected
-                                    ? scheme.primaryContainer
-                                    : scheme.surfaceContainerHighest,
-                              ),
-                              foregroundColor: WidgetStatePropertyAll(
-                                selected
-                                    ? scheme.onPrimaryContainer
-                                    : scheme.onSurfaceVariant,
-                              ),
-                            ),
-                            onPressed: () {
-                              setState(
-                                () => _currentMonth = DateTime(
-                                  pickerYear,
-                                  month,
-                                  1,
-                                ),
-                              );
+                        Text(
+                          '$pickerYear',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                        IconButton.filledTonal(
+                          onPressed: () => setSheetState(() => pickerYear += 1),
+                          icon: const Icon(Icons.chevron_right_rounded, size: 22),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
+                        childAspectRatio: 2.1,
+                      ),
+                      itemCount: 12,
+                      itemBuilder: (context, index) {
+                        final month = index + 1;
+                        final isSelected = pickerYear == _currentMonth.year &&
+                            month == _currentMonth.month;
+                        final monthLabel = DateFormat('MMMM', locale).format(
+                          DateTime(2000, month, 1),
+                        );
+
+                        return Material(
+                          color: isSelected
+                              ? scheme.primary
+                              : (isDark
+                                  ? scheme.surfaceContainerHighest
+                                  : scheme.surfaceContainerHighest.withValues(alpha: 0.6)),
+                          borderRadius: BorderRadius.circular(14),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(14),
+                            onTap: () {
+                              HapticFeedback.lightImpact();
                               setState(() {
+                                _currentMonth = DateTime(pickerYear, month, 1);
                                 _plannedMonthlySpend = _budgetRepo
                                     .getBudgetForMonth(_currentMonth);
                               });
+                              widget.onMonthChanged?.call(_currentMonth);
                               Navigator.pop(context);
                             },
-                            child: Text(_capitalize(label)),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 8),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton.icon(
-                          style: null,
-                          onPressed: () {
-                            final now = DateTime.now();
-                            setState(
-                              () => _currentMonth = DateTime(
-                                now.year,
-                                now.month,
-                                1,
+                            child: Center(
+                              child: Text(
+                                _capitalize(monthLabel),
+                                style: TextStyle(
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.w600,
+                                  fontSize: 13,
+                                  color: isSelected
+                                      ? scheme.onPrimary
+                                      : scheme.onSurface,
+                                ),
                               ),
-                            );
-                            setState(() {
-                              _plannedMonthlySpend =
-                                  _budgetRepo.getBudgetForMonth(_currentMonth);
-                            });
-                            Navigator.pop(context);
-                          },
-                          icon: const Icon(Icons.today_outlined),
-                          label: Text(AppLocalizations.of(context).thisMonth),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
                         ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 12),
                       ),
-                    ],
-                  ),
+                      onPressed: () {
+                        HapticFeedback.selectionClick();
+                        selectCurrentMonth();
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.today_rounded, size: 18),
+                      label: Text(AppLocalizations.of(context).thisMonth),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -542,43 +237,143 @@ class FinanceScreenState extends State<FinanceScreen>
     );
   }
 
-  Future<void> _showAddOptions() async {
-    showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit_note),
-              title: Text(AppLocalizations.of(context).financeAddManualOption),
-              onTap: () {
-                Navigator.pop(ctx);
-                _openAddPageDefault();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.document_scanner),
-              title: Text(
-                AppLocalizations.of(context).financeAddAiStatementOption,
-              ),
-              subtitle: Text(
-                AppLocalizations.of(context).financeAddAiStatementSubtitle,
-              ),
-              onTap: () {
-                Navigator.pop(ctx);
-                _pickAndAnalyzeStatement();
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
+  Future<void> _openAddTransaction(TransactionType initialType) async {
+    HapticFeedback.lightImpact();
+    final result = await Navigator.of(context).push<FinanceTransaction>(
+      MaterialPageRoute(
+        builder: (_) => FinanceWizardScreen(
+          repo: _repo,
+          catRepo: _catRepo,
+          initialType: initialType,
         ),
       ),
     );
+    if (result != null && mounted) {
+      setState(() {});
+    }
+  }
+
+  Future<void> _openEditTransaction(FinanceTransaction tx) async {
+    HapticFeedback.lightImpact();
+    final baseId = tx.recurrenceId ?? tx.id;
+    final base = _repo.all().firstWhere(
+          (e) => e.id == baseId,
+          orElse: () => tx,
+        );
+    final result = await Navigator.of(context).push<FinanceTransaction>(
+      MaterialPageRoute(
+        builder: (_) => FinanceEditScreen(
+          repo: _repo,
+          catRepo: _catRepo,
+          transaction: base,
+        ),
+      ),
+    );
+    if (result != null && mounted) {
+      setState(() {});
+    }
+  }
+
+  Future<void> _deleteTransaction(FinanceTransaction tx) async {
+    final l10n = AppLocalizations.of(context);
+    final isTr = l10n.localeName.startsWith('tr');
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(isTr ? 'İşlemi Sil' : 'Delete Transaction'),
+        content: Text(
+          isTr
+              ? '"${tx.title}" işlemini silmek istediğinizden emin misiniz?'
+              : 'Are you sure you want to delete "${tx.title}"?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      final baseId = tx.recurrenceId ?? tx.id;
+      await _repo.remove(baseId);
+      if (mounted) setState(() {});
+    }
+  }
+
+  Future<void> _editBudget() async {
+    if (!await requirePremium(context)) return;
+    if (!mounted) return;
+
+    final l10n = AppLocalizations.of(context);
+    final isTr = l10n.localeName.startsWith('tr');
+    final controller = TextEditingController(
+      text: _plannedMonthlySpend?.toStringAsFixed(0) ?? '',
+    );
+
+    final result = await showDialog<double>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+        title: Text(isTr ? 'Aylık Harcama Bütçesi' : l10n.spendingAdvisorTitle),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              isTr
+                  ? 'Bu ay için hedeflediğiniz maksimum harcama limitini belirleyin.'
+                  : 'Set your targeted maximum spending limit for this month.',
+              style: TextStyle(
+                fontSize: 13,
+                color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: controller,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              autofocus: true,
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              decoration: InputDecoration(
+                prefixText: '${NumberFormat.simpleCurrency(locale: Localizations.localeOf(context).toString()).currencySymbol} ',
+                hintText: '0',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                filled: true,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () {
+              final val = double.tryParse(controller.text.trim());
+              Navigator.pop(ctx, val);
+            },
+            child: Text(isTr ? 'Kaydet' : l10n.add),
+          ),
+        ],
+      ),
+    );
+
+    if (result != null) {
+      await _budgetRepo.setBudgetForMonth(_currentMonth, result);
+      setState(() => _plannedMonthlySpend = result);
+    }
   }
 
   Future<void> _pickAndAnalyzeStatement() async {
@@ -590,20 +385,19 @@ class FinanceScreenState extends State<FinanceScreen>
     );
 
     if (result == null || result.files.isEmpty) return;
-    
     if (!mounted) return;
-    
-    // Show Loading
+
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => const Center(child: CircularProgressIndicator()),
+      builder: (_) => const Center(
+        child: CircularProgressIndicator(),
+      ),
     );
-    
+
     try {
       final file = File(result.files.single.path!);
       final extension = result.files.single.extension?.toLowerCase();
-      
       final service = AiFinanceService();
       AiFinanceResponse? aiResponse;
 
@@ -618,12 +412,10 @@ class FinanceScreenState extends State<FinanceScreen>
         final String base64Image = base64Encode(bytes);
         aiResponse = await service.analyzeStatement(imageBase64: base64Image);
       }
-      
-      if (!mounted) return;
-      // Close loading dialog
-      Navigator.pop(context);
 
-      // Open Preview Dialog
+      if (!mounted) return;
+      Navigator.pop(context); // close loader
+
       final selectedTxs = await Navigator.of(context).push<List<FinanceTransaction>>(
         MaterialPageRoute(
           builder: (_) => AiFinancePreviewDialog(
@@ -641,647 +433,1004 @@ class FinanceScreenState extends State<FinanceScreen>
       }
     } catch (e) {
       if (!mounted) return;
-      Navigator.pop(context); // close loading
+      Navigator.pop(context); // close loader
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Hata oluştu: $e')),
       );
     }
   }
 
+  void openAnalysisScreen() {
+    HapticFeedback.lightImpact();
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => FinanceAnalysisScreen(
+          month: DateTime(_currentMonth.year, _currentMonth.month, 1),
+          variant: widget.variant,
+        ),
+      ),
+    );
+  }
+
+  Future<void> pickAndAnalyzeStatement() => _pickAndAnalyzeStatement();
+
   String _capitalize(String s) =>
       s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
-}
 
-String _dateKey(DateTime d) => '${d.year}-${d.month}-${d.day}';
-
-class _DayDivider extends StatelessWidget {
-  final DateTime day;
-  final String totalText;
-  const _DayDivider({required this.day, required this.totalText});
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final localeName = Localizations.localeOf(context).toString();
-    final dateLabel = DateFormat.E(localeName).format(day);
-    final isPositive = totalText.trim().startsWith('+');
-    final isNegative = totalText.trim().startsWith('-');
-    // Slightly smaller and more subdued styles
-    final baseStyle = Theme.of(
-      context,
-    ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500);
-    final dateStyle = baseStyle?.copyWith(
-      color: scheme.onSurfaceVariant.withValues(alpha: 0.80),
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
+    final isTr = l10n.localeName.startsWith('tr');
+    final locale = Localizations.localeOf(context).toString();
+
+    // Data computations
+    final monthIncomes = _loading ? const <FinanceTransaction>[] : _repo.incomesForMonth(_currentMonth);
+    final monthExpenses = _loading ? const <FinanceTransaction>[] : _repo.expensesForMonth(_currentMonth);
+    final incomeTotal = monthIncomes.fold<double>(0, (sum, e) => sum + e.amount);
+    final expenseTotal = monthExpenses.fold<double>(0, (sum, e) => sum + e.amount);
+    final netTotal = incomeTotal - expenseTotal;
+
+    final now = DateTime.now();
+    final isViewingCurrentMonth =
+        _currentMonth.year == now.year && _currentMonth.month == now.month;
+
+    // Filter items based on active tab
+    List<FinanceTransaction> displayItems;
+    if (_selectedFilterIndex == 1) {
+      displayItems = monthExpenses;
+    } else if (_selectedFilterIndex == 2) {
+      displayItems = monthIncomes;
+    } else {
+      displayItems = _loading ? const <FinanceTransaction>[] : _repo.forMonth(_currentMonth);
+    }
+
+    final catMap = {for (final c in _catRepo.all()) c.id: c};
+
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: _initializeData,
+              child: SafeArea(
+                bottom: false,
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 96),
+                  children: [
+                    // ── 1. Hero Net Balance & Overview Card ──
+                    _buildHeroOverviewCard(theme, scheme, isDark, netTotal, incomeTotal, expenseTotal, locale, isTr),
+
+                    const SizedBox(height: 8),
+
+                    // ── 2. Spending Advisor / Monthly Budget Card ──
+                    _buildBudgetAdvisorCard(theme, scheme, isDark, expenseTotal, locale, isTr),
+
+                    const SizedBox(height: 10),
+
+                    // ── 4. Aesthetic Segment Filter Switcher ──
+                    _buildSegmentFilter(theme, scheme, isDark, displayItems.length, monthExpenses.length, monthIncomes.length, isTr),
+
+                    const SizedBox(height: 12),
+
+                    // ── 5. Transactions List (Grouped by Day) ──
+                    if (displayItems.isEmpty)
+                      _buildEmptyState(theme, scheme, isDark, isTr)
+                    else
+                      ..._buildGroupedTransactionCards(theme, scheme, isDark, displayItems, catMap, locale),
+                  ],
+                ),
+              ),
+            ),
     );
-    final totalColor = isPositive
-        ? Colors.green.withValues(alpha: 0.85)
-        : isNegative
-            ? Colors.redAccent.withValues(alpha: 0.85)
-            : scheme.onSurfaceVariant.withValues(alpha: 0.80);
-    final totalStyle = baseStyle?.copyWith(color: totalColor);
-    return Padding(
-      padding: const EdgeInsets.only(top: 12, bottom: 6),
+  }
+
+
+
+  Widget _buildHeroOverviewCard(
+    ThemeData theme,
+    ColorScheme scheme,
+    bool isDark,
+    double netTotal,
+    double incomeTotal,
+    double expenseTotal,
+    String locale,
+    bool isTr,
+  ) {
+    final currency = NumberFormat.simpleCurrency(locale: locale);
+    final isNetPositive = netTotal >= 0;
+    final netColor =
+        isNetPositive ? const Color(0xFF10B981) : const Color(0xFFF43F5E);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: isDark
+            ? scheme.surfaceContainerHighest.withValues(alpha: 0.5)
+            : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.black.withValues(alpha: 0.05),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
         children: [
+          // Header Line: Month Navigation & Surplus/Deficit Status
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(dateLabel, style: dateStyle),
-              Text(totalText, style: totalStyle),
+              Text(
+                isTr ? 'Aylık Özet' : 'Monthly Summary',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: scheme.onSurfaceVariant,
+                  letterSpacing: 0.2,
+                ),
+              ),
+              const SizedBox(width: 4),
+              InkWell(
+                borderRadius: BorderRadius.circular(6),
+                onTap: () => changeMonth(-1),
+                child: Padding(
+                  padding: const EdgeInsets.all(2),
+                  child: Icon(Icons.chevron_left_rounded,
+                      size: 16, color: scheme.onSurfaceVariant),
+                ),
+              ),
+              InkWell(
+                borderRadius: BorderRadius.circular(6),
+                onTap: () => changeMonth(1),
+                child: Padding(
+                  padding: const EdgeInsets.all(2),
+                  child: Icon(Icons.chevron_right_rounded,
+                      size: 16, color: scheme.onSurfaceVariant),
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                decoration: BoxDecoration(
+                  color: netColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isNetPositive
+                          ? Icons.trending_up_rounded
+                          : Icons.trending_down_rounded,
+                      size: 11,
+                      color: netColor,
+                    ),
+                    const SizedBox(width: 3),
+                    Text(
+                      isNetPositive
+                          ? (isTr ? 'Fazla' : 'Surplus')
+                          : (isTr ? 'Açık' : 'Deficit'),
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: netColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
+          const SizedBox(height: 8),
+          // 3 Stats Side-by-Side: Net Durum | Gelir | Gider
+          Row(
+            children: [
+              // 1. Net Durum
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      isTr ? 'Net Durum' : 'Net Balance',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${isNetPositive ? '+' : '-'}${currency.currencySymbol}${NumberFormat('#,##0', locale).format(netTotal.abs())}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        color: netColor,
+                        letterSpacing: -0.3,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                height: 26,
+                width: 1,
+                color: scheme.outlineVariant.withValues(alpha: 0.3),
+              ),
+              const SizedBox(width: 10),
+              // 2. Gelir
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.arrow_downward_rounded,
+                            size: 11, color: Color(0xFF10B981)),
+                        const SizedBox(width: 2),
+                        Text(
+                          isTr ? 'Gelir' : 'Income',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: scheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '+${currency.currencySymbol}${NumberFormat('#,##0', locale).format(incomeTotal)}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        color: Color(0xFF10B981),
+                        letterSpacing: -0.3,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                height: 26,
+                width: 1,
+                color: scheme.outlineVariant.withValues(alpha: 0.3),
+              ),
+              const SizedBox(width: 10),
+              // 3. Gider
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.arrow_upward_rounded,
+                            size: 11, color: Color(0xFFF43F5E)),
+                        const SizedBox(width: 2),
+                        Text(
+                          isTr ? 'Gider' : 'Expense',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: scheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '-${currency.currencySymbol}${NumberFormat('#,##0', locale).format(expenseTotal)}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        color: Color(0xFFF43F5E),
+                        letterSpacing: -0.3,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBudgetAdvisorCard(
+    ThemeData theme,
+    ColorScheme scheme,
+    bool isDark,
+    double spent,
+    String locale,
+    bool isTr,
+  ) {
+    final currency = NumberFormat.simpleCurrency(locale: locale);
+    final budget = _plannedMonthlySpend;
+
+    if (budget == null || budget <= 0) {
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _editBudget,
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? scheme.surfaceContainerHighest.withValues(alpha: 0.4)
+                  : const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.black.withValues(alpha: 0.05),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.today_rounded,
+                    color: scheme.primary, size: 15),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    isTr
+                        ? 'Ay sonuna kadar günlük limiti görmek için bütçe belirle'
+                        : 'Set monthly budget to see daily limit until month end',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 11,
+                      color: scheme.onSurface,
+                    ),
+                  ),
+                ),
+                Text(
+                  isTr ? '+ Bütçe Belirle' : '+ Set Budget',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: scheme.primary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    final ratio = (spent / budget).clamp(0.0, 1.0);
+    final remaining = budget - spent;
+    final isOver = remaining < 0;
+
+    final progressColor = ratio > 0.95
+        ? const Color(0xFFEF4444)
+        : (ratio > 0.75 ? const Color(0xFFF59E0B) : const Color(0xFF10B981));
+
+    // Daily allowance calculation
+    final daysInMonth =
+        DateUtils.getDaysInMonth(_currentMonth.year, _currentMonth.month);
+    final now = DateTime.now();
+    final isCurrentMonth =
+        _currentMonth.year == now.year && _currentMonth.month == now.month;
+    final remainingDays = isCurrentMonth
+        ? (daysInMonth - now.day + 1).clamp(1, daysInMonth)
+        : daysInMonth;
+    final dailyAllowance = remaining > 0 ? (remaining / remainingDays) : 0.0;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: _editBudget,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            color: isDark
+                ? scheme.surfaceContainerHighest.withValues(alpha: 0.4)
+                : const Color(0xFFF8FAFC),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.black.withValues(alpha: 0.05),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Line 1: Ay Sonuna Kadar Günlük Limit (Doğrudan hesaplanmış)
+              Row(
+                children: [
+                  Icon(Icons.today_rounded, size: 14, color: scheme.primary),
+                  const SizedBox(width: 6),
+                  Text(
+                    isTr ? 'Ay sonuna kadar günlük: ' : 'Daily until month end: ',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                  Text(
+                    isOver
+                        ? (isTr ? '0₺ (Aşıldı)' : '0 (Exceeded)')
+                        : '${currency.currencySymbol}${NumberFormat('#,##0', locale).format(dailyAllowance)}',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: isOver ? const Color(0xFFEF4444) : scheme.primary,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    isOver
+                        ? (isTr
+                            ? 'Bütçe ${currency.currencySymbol}${NumberFormat('#,##0', locale).format(remaining.abs())} aşıldı!'
+                            : 'Over ${currency.currencySymbol}${NumberFormat('#,##0', locale).format(remaining.abs())}!')
+                        : (isTr
+                            ? 'Kalan: ${currency.currencySymbol}${NumberFormat('#,##0', locale).format(remaining)}'
+                            : 'Left: ${currency.currencySymbol}${NumberFormat('#,##0', locale).format(remaining)}'),
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: isOver ? const Color(0xFFEF4444) : progressColor,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              // Line 2: İnce Progress Bar
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: ratio,
+                  minHeight: 4,
+                  backgroundColor: scheme.surfaceContainerHighest,
+                  valueColor: AlwaysStoppedAnimation(progressColor),
+                ),
+              ),
+              const SizedBox(height: 4),
+              // Line 3: Aylık Bütçe ve Kalan Gün Bilgisi
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${isTr ? 'Aylık Bütçe' : 'Monthly Budget'}: ${currency.currencySymbol}${NumberFormat('#,##0', locale).format(budget)} (${currency.currencySymbol}${NumberFormat('#,##0', locale).format(spent)} harcandı)',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                      color: scheme.onSurfaceVariant.withValues(alpha: 0.8),
+                    ),
+                  ),
+                  Text(
+                    isCurrentMonth
+                        ? (isTr ? '$remainingDays gün kaldı' : '$remainingDays days left')
+                        : (isTr ? 'Düzenle' : 'Edit'),
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: scheme.onSurfaceVariant.withValues(alpha: 0.7),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSegmentFilter(
+    ThemeData theme,
+    ColorScheme scheme,
+    bool isDark,
+    int allCount,
+    int expenseCount,
+    int incomeCount,
+    bool isTr,
+  ) {
+    final tabs = [
+      {'label': isTr ? 'Tümü' : 'All', 'count': allCount, 'icon': Icons.swap_horiz_rounded},
+      {'label': isTr ? 'Giderler' : 'Expenses', 'count': expenseCount, 'icon': Icons.arrow_upward_rounded},
+      {'label': isTr ? 'Gelirler' : 'Incomes', 'count': incomeCount, 'icon': Icons.arrow_downward_rounded},
+    ];
+
+    return Container(
+      height: 44,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: isDark
+            ? scheme.surfaceContainerHighest.withValues(alpha: 0.4)
+            : const Color(0xFFF1F5F9),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: List.generate(tabs.length, (index) {
+          final isSelected = _selectedFilterIndex == index;
+          final tab = tabs[index];
+
+          return Expanded(
+            child: GestureDetector(
+              onTap: () {
+                HapticFeedback.selectionClick();
+                setState(() => _selectedFilterIndex = index);
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? (isDark ? scheme.surfaceContainerHigh : Colors.white)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.05),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        tab['icon'] as IconData,
+                        size: 15,
+                        color: isSelected ? scheme.primary : scheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        tab['label'] as String,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                          color: isSelected ? scheme.onSurface : scheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '(${tab['count']})',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: (isSelected ? scheme.primary : scheme.onSurfaceVariant).withValues(alpha: 0.7),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  List<Widget> _buildGroupedTransactionCards(
+    ThemeData theme,
+    ColorScheme scheme,
+    bool isDark,
+    List<FinanceTransaction> items,
+    Map<String, FinanceCategory> catMap,
+    String locale,
+  ) {
+    // Group transactions by date
+    final groups = <String, List<FinanceTransaction>>{};
+    for (final tx in items) {
+      final key = '${tx.date.year}-${tx.date.month.toString().padLeft(2, '0')}-${tx.date.day.toString().padLeft(2, '0')}';
+      groups.putIfAbsent(key, () => []).add(tx);
+    }
+
+    final currency = NumberFormat.simpleCurrency(locale: locale);
+    final sortedKeys = groups.keys.toList()..sort((a, b) => b.compareTo(a));
+
+    final widgets = <Widget>[];
+
+    for (final key in sortedKeys) {
+      final dayTxs = groups[key]!;
+      final dayDate = dayTxs.first.date;
+      final dayLabel = DateFormat('d MMMM, EEEE', locale).format(dayDate);
+
+      // Daily net sum
+      double dayNet = 0;
+      for (final t in dayTxs) {
+        dayNet += (t.type == TransactionType.income ? t.amount : -t.amount);
+      }
+      final isPositive = dayNet >= 0;
+
+      widgets.add(
+        Padding(
+          padding: const EdgeInsets.only(top: 14, bottom: 6, left: 4, right: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                dayLabel,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
+              Text(
+                '${isPositive ? '+' : '-'}${currency.currencySymbol}${NumberFormat('#,##0.00', locale).format(dayNet.abs())}',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: isPositive ? const Color(0xFF10B981) : const Color(0xFFF43F5E),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+
+      for (final tx in dayTxs) {
+        final cat = tx.categoryId != null ? catMap[tx.categoryId!] : null;
+        final isIncome = tx.type == TransactionType.income;
+        final amountColor = isIncome ? const Color(0xFF10B981) : const Color(0xFFF43F5E);
+        final catColor = cat != null ? Color(cat.colorValue) : (isIncome ? const Color(0xFF10B981) : const Color(0xFFF43F5E));
+
+        widgets.add(
+          _FinanceTransactionRow(
+            key: ValueKey(tx.id),
+            tx: tx,
+            category: cat,
+            catColor: catColor,
+            isIncome: isIncome,
+            amountColor: amountColor,
+            currencySymbol: currency.currencySymbol,
+            locale: locale,
+            onTap: () => _openEditTransaction(tx),
+            onLongPress: () => _showTransactionActions(tx),
+          ),
+        );
+      }
+    }
+
+    return [
+      AnimationLimiter(
+        child: Column(
+          children: AnimationConfiguration.toStaggeredList(
+            duration: const Duration(milliseconds: 250),
+            childAnimationBuilder: (widget) => SlideAnimation(
+              verticalOffset: 20.0,
+              child: FadeInAnimation(child: widget),
+            ),
+            children: widgets,
+          ),
+        ),
+      ),
+    ];
+  }
+
+  void _showTransactionActions(FinanceTransaction tx) {
+    HapticFeedback.mediumImpact();
+    final l10n = AppLocalizations.of(context);
+    final isTr = l10n.localeName.startsWith('tr');
+
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text(tx.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: Text(
+                '${tx.type == TransactionType.income ? '+' : '-'}${tx.amount.toStringAsFixed(2)}',
+              ),
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.edit_outlined),
+              title: Text(l10n.edit),
+              onTap: () {
+                Navigator.pop(ctx);
+                _openEditTransaction(tx);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete_outline, color: Colors.redAccent),
+              title: Text(l10n.delete, style: const TextStyle(color: Colors.redAccent)),
+              onTap: () {
+                Navigator.pop(ctx);
+                _deleteTransaction(tx);
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(ThemeData theme, ColorScheme scheme, bool isDark, bool isTr) {
+    return Container(
+      margin: const EdgeInsets.only(top: 30),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
+      decoration: BoxDecoration(
+        color: isDark
+            ? scheme.surfaceContainerHighest.withValues(alpha: 0.3)
+            : const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.black.withValues(alpha: 0.04),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: scheme.primary.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.account_balance_wallet_outlined,
+              size: 36,
+              color: scheme.primary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            isTr ? 'Bu Ay Henüz İşlem Yok' : 'No Records for this Month',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
           const SizedBox(height: 6),
-          const Divider(),
+          Text(
+            isTr
+                ? 'Harcamalarını veya gelirlerini ekleyerek bütçeni kontrol etmeye başla.'
+                : 'Start tracking by adding your income and expenses.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              color: scheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 20),
+          FilledButton.icon(
+            style: FilledButton.styleFrom(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            ),
+            onPressed: () => _openAddTransaction(TransactionType.expense),
+            icon: const Icon(Icons.add_rounded, size: 20),
+            label: Text(isTr ? 'İlk İşlemini Ekle' : 'Add First Record'),
+          ),
         ],
       ),
     );
   }
 }
 
-class _GeneralSection extends StatelessWidget {
-  final List<FinanceTransaction> items;
-  final Map<String, FinanceCategory> catMap;
-  final ValueChanged<FinanceTransaction>? onEdit;
-  final ValueChanged<FinanceTransaction>? onDelete;
+/// A tactile, responsive transaction card row matching the Cotton Design System.
+class _FinanceTransactionRow extends StatefulWidget {
+  final FinanceTransaction tx;
+  final FinanceCategory? category;
+  final Color catColor;
+  final bool isIncome;
+  final Color amountColor;
+  final String currencySymbol;
+  final String locale;
+  final VoidCallback onTap;
+  final VoidCallback onLongPress;
 
-  const _GeneralSection({
-    required this.items,
-    required this.catMap,
-    this.onEdit,
-    this.onDelete,
+  const _FinanceTransactionRow({
+    super.key,
+    required this.tx,
+    required this.category,
+    required this.catColor,
+    required this.isIncome,
+    required this.amountColor,
+    required this.currencySymbol,
+    required this.locale,
+    required this.onTap,
+    required this.onLongPress,
   });
 
   @override
-  Widget build(BuildContext context) {
-    if (items.isEmpty) {
-      return _EmptySection(
-        message: AppLocalizations.of(context).noRecordsThisMonth,
-      );
-    }
-    // Group by day and add a divider with the day's net total
-    final dailyTotals = <String, double>{};
-    for (final tx in items) {
-      final key = _dateKey(tx.date);
-      final sign = tx.type == TransactionType.income ? 1 : -1;
-      dailyTotals.update(
-        key,
-        (v) => v + sign * tx.amount,
-        ifAbsent: () => sign * tx.amount,
-      );
-    }
-    final seen = <String>{};
-    final children = <Widget>[];
-    for (final tx in items) {
-      final key = _dateKey(tx.date);
-      if (!seen.contains(key)) {
-        seen.add(key);
-        final total = dailyTotals[key] ?? 0;
-        final totalText = _formatAmount(total.abs(), total >= 0, context);
-        final day = DateTime(tx.date.year, tx.date.month, tx.date.day);
-        children.add(_DayDivider(day: day, totalText: totalText));
-      }
-      final isIncome = tx.type == TransactionType.income;
-      final cat = tx.categoryId != null ? catMap[tx.categoryId!] : null;
-      final icon =
-          cat?.icon ?? (isIncome ? Icons.arrow_downward : Icons.arrow_upward);
-      final color = cat != null
-          ? Color(cat.colorValue)
-          : (isIncome ? Colors.green : Colors.redAccent);
-      final amountStr = _formatAmount(tx.amount, isIncome, context);
-      children.add(
-        _FinanceTile(
-          leadingIcon: icon,
-          leadingEmoji: cat?.emoji,
-          leadingColor: color,
-          title: tx.title,
-          subtitle: null,
-          trailing: amountStr,
-          trailingColor: isIncome ? Colors.green : Colors.redAccent,
-          onLongPress: () => _showTxMenu(context, tx),
-        ),
-      );
-    }
-    return AnimationLimiter(
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: children.length,
-        itemBuilder: (context, index) {
-          return AnimationConfiguration.staggeredList(
-            position: index,
-            duration: const Duration(milliseconds: 375),
-            child: SlideAnimation(
-              verticalOffset: 50.0,
-              child: FadeInAnimation(
-                child: children[index],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  void _showTxMenu(BuildContext context, FinanceTransaction tx) {
-    showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit_outlined),
-              title: Text(AppLocalizations.of(context).edit),
-              onTap: () {
-                Navigator.pop(ctx);
-                onEdit?.call(tx);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.delete_outline, color: Colors.red[600]),
-              title: Text(
-                AppLocalizations.of(context).delete,
-                style: TextStyle(color: Colors.red[600]),
-              ),
-              onTap: () {
-                Navigator.pop(ctx);
-                onDelete?.call(tx);
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-    );
-  }
+  State<_FinanceTransactionRow> createState() => _FinanceTransactionRowState();
 }
 
-String _formatAmount(double amount, bool isIncome, [BuildContext? context]) {
-  final sign = isIncome ? '+' : '-';
-  final localeName = context != null
-      ? Localizations.localeOf(context).toString()
-      : Intl.getCurrentLocale();
-  final currency = NumberFormat.simpleCurrency(locale: localeName);
-  final symbol = currency.currencySymbol;
-  // Build a number-only string in the current locale, then append the symbol.
-  final numberOnly = NumberFormat.currency(
-    locale: localeName,
-    symbol: '',
-  ).format(amount).trim().replaceAll('-', '');
-  return '$sign$numberOnly $symbol';
-}
-
-class _FinanceTile extends StatelessWidget {
-  final IconData leadingIcon;
-  final Color leadingColor;
-  final String? leadingEmoji; // If provided, show emoji instead of icon
-  final String? title;
-  final String? subtitle;
-  final String? trailing;
-  final Color? trailingColor;
-  final VoidCallback? onLongPress;
-
-  const _FinanceTile({
-    required this.leadingIcon,
-    required this.leadingColor,
-    this.leadingEmoji,
-    this.title,
-    this.subtitle,
-    this.trailing,
-    this.trailingColor,
-    this.onLongPress,
-  });
+class _FinanceTransactionRowState extends State<_FinanceTransactionRow>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _anim;
+  late final Animation<double> _scale;
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onLongPress: onLongPress,
-        borderRadius: BorderRadius.circular(12),
-        child: ListTile(
-          dense: true,
-          visualDensity: const VisualDensity(horizontal: 0, vertical: -2),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 2,
-          ),
-          // Removed onLongPress from ListTile so InkWell controls the splash
-          leading: (leadingEmoji != null && leadingEmoji!.isNotEmpty)
-              ? Text(leadingEmoji!, style: const TextStyle(fontSize: 20))
-              : Icon(leadingIcon, color: leadingColor),
-          title: Text(title ?? ''),
-          subtitle: subtitle == null ? null : Text(subtitle!),
-          trailing: Text(
-            trailing ?? '',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: trailingColor,
-                ),
-            textAlign: TextAlign.right,
-          ),
-        ),
-      ),
+  void initState() {
+    super.initState();
+    _anim = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 90),
+      reverseDuration: const Duration(milliseconds: 130),
+    );
+    _scale = Tween<double>(begin: 1.0, end: 0.96).animate(
+      CurvedAnimation(parent: _anim, curve: Curves.easeOutCubic),
     );
   }
-}
-
-class _ExpensesSection extends StatelessWidget {
-  final List<FinanceTransaction> items;
-  final Map<String, FinanceCategory> catMap;
-  final ValueChanged<FinanceTransaction>? onEdit;
-  final ValueChanged<FinanceTransaction>? onDelete;
-
-  const _ExpensesSection({
-    required this.items,
-    required this.catMap,
-    this.onEdit,
-    this.onDelete,
-  });
 
   @override
-  Widget build(BuildContext context) {
-    if (items.isEmpty) {
-      return _EmptySection(
-        message: AppLocalizations.of(context).noExpensesThisMonth,
-      );
-    }
-    // Group by day and add daily expense totals
-    final dailyTotals = <String, double>{};
-    for (final tx in items) {
-      final key = _dateKey(tx.date);
-      dailyTotals.update(key, (v) => v + tx.amount, ifAbsent: () => tx.amount);
-    }
-    final seen = <String>{};
-    final children = <Widget>[];
-    for (final tx in items) {
-      final key = _dateKey(tx.date);
-      if (!seen.contains(key)) {
-        seen.add(key);
-        final total = dailyTotals[key] ?? 0;
-        children.add(
-          _DayDivider(
-            day: DateTime(tx.date.year, tx.date.month, tx.date.day),
-            totalText: _formatAmount(total, false, context),
-          ),
-        );
-      }
-      final cat = tx.categoryId != null ? catMap[tx.categoryId!] : null;
-      children.add(
-        _FinanceTile(
-          leadingIcon: cat?.icon ?? Icons.arrow_upward,
-          leadingEmoji: cat?.emoji,
-          leadingColor: cat != null ? Color(cat.colorValue) : Colors.redAccent,
-          title: tx.title,
-          subtitle: null,
-          trailing: _formatAmount(tx.amount, false, context),
-          trailingColor: Colors.redAccent,
-          onLongPress: () => _showTxMenu(context, tx),
-        ),
-      );
-    }
-    return ListView(padding: const EdgeInsets.all(16), children: children);
+  void dispose() {
+    _anim.dispose();
+    super.dispose();
   }
-
-  void _showTxMenu(BuildContext context, FinanceTransaction tx) {
-    showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit_outlined),
-              title: Text(AppLocalizations.of(context).edit),
-              onTap: () {
-                Navigator.pop(ctx);
-                onEdit?.call(tx);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.delete_outline, color: Colors.red[600]),
-              title: Text(
-                AppLocalizations.of(context).delete,
-                style: TextStyle(color: Colors.red[600]),
-              ),
-              onTap: () {
-                Navigator.pop(ctx);
-                onDelete?.call(tx);
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SpendingAdvisorCard extends StatelessWidget {
-  const _SpendingAdvisorCard({
-    required this.month,
-    required this.budget,
-    required this.spent,
-    this.onTap,
-  });
-  final DateTime month;
-  final double? budget;
-  final double spent;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final localeName = Localizations.localeOf(context).toString();
-    final nf = NumberFormat.simpleCurrency(
-      locale: localeName,
-      decimalDigits: 0,
-    );
-
-    // Calculate days remaining
-    final now = DateTime.now();
-    final isCurrentMonth = now.year == month.year && now.month == month.month;
-
-    if (!isCurrentMonth) {
-      return const SizedBox.shrink();
-    }
-
-    Color iconColor;
-    Color bgColor;
-    IconData icon;
-    String message;
-
-    if (budget == null || budget! <= 0) {
-      iconColor = Theme.of(context).colorScheme.primary;
-      bgColor = Theme.of(context).colorScheme.surfaceContainerHighest;
-      icon = Icons.help_outline_rounded;
-      message = l10n.spendingAdvisorNoBudget;
-    } else {
-      final endOfMonth = DateTime(now.year, now.month + 1, 0);
-      final daysLeft = endOfMonth.day - now.day + 1; // Include today
-      final remaining = budget! - spent;
-
-      if (remaining < 0) {
-        // Already over budget
-        iconColor = Theme.of(context).colorScheme.error;
-        bgColor = Theme.of(context).colorScheme.errorContainer;
-        icon = Icons.warning_amber_rounded;
-        message = l10n.spendingAdvisorOverBudget;
-      } else {
-        final dailySafe = remaining / daysLeft;
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-
-        if (isDark) {
-          iconColor = Colors.greenAccent;
-          bgColor = Colors.green.withValues(alpha: 0.2);
-        } else {
-          iconColor = const Color(0xFF2E7D32); // Success Green
-          bgColor = const Color(0xFFE8F5E9); // Light Green
-        }
-        icon = Icons.tips_and_updates_outlined;
-
-        message = l10n.spendingAdvisorSafe(nf.format(dailySafe));
-      }
-    }
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: iconColor.withOpacity(0.3)),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: iconColor, size: 28),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.spendingAdvisorTitle,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: iconColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    message,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          fontWeight: FontWeight.w500,
-                        ),
-                  ),
-                ],
-              ),
-            ),
-            if (onTap != null) ...[
-              const SizedBox(width: 8),
-              Icon(
-                Icons.edit_outlined,
-                size: 20,
-                color: iconColor.withOpacity(0.7),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _IncomeSection extends StatelessWidget {
-  final List<FinanceTransaction> items;
-  final Map<String, FinanceCategory> catMap;
-  final ValueChanged<FinanceTransaction>? onEdit;
-  final ValueChanged<FinanceTransaction>? onDelete;
-
-  const _IncomeSection({
-    required this.items,
-    required this.catMap,
-    this.onEdit,
-    this.onDelete,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (items.isEmpty) {
-      return _EmptySection(
-        message: AppLocalizations.of(context).noIncomeThisMonth,
-      );
-    }
-    // Group by day and add daily income totals
-    final dailyTotals = <String, double>{};
-    for (final tx in items) {
-      final key = _dateKey(tx.date);
-      dailyTotals.update(key, (v) => v + tx.amount, ifAbsent: () => tx.amount);
-    }
-    final seen = <String>{};
-    final children = <Widget>[];
-    for (final tx in items) {
-      final key = _dateKey(tx.date);
-      if (!seen.contains(key)) {
-        seen.add(key);
-        final total = dailyTotals[key] ?? 0;
-        children.add(
-          _DayDivider(
-            day: DateTime(tx.date.year, tx.date.month, tx.date.day),
-            totalText: _formatAmount(total, true, context),
-          ),
-        );
-      }
-      final cat = tx.categoryId != null ? catMap[tx.categoryId!] : null;
-      children.add(
-        _FinanceTile(
-          leadingIcon: cat?.icon ?? Icons.arrow_downward,
-          leadingEmoji: cat?.emoji,
-          leadingColor: cat != null ? Color(cat.colorValue) : Colors.green,
-          title: tx.title,
-          subtitle: null,
-          trailing: _formatAmount(tx.amount, true, context),
-          trailingColor: Colors.green,
-          onLongPress: () => _showTxMenu(context, tx),
-        ),
-      );
-    }
-    return ListView(padding: const EdgeInsets.all(16), children: children);
-  }
-
-  void _showTxMenu(BuildContext context, FinanceTransaction tx) {
-    showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit_outlined),
-              title: Text(AppLocalizations.of(context).edit),
-              onTap: () {
-                Navigator.pop(ctx);
-                onEdit?.call(tx);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.delete_outline, color: Colors.red[600]),
-              title: Text(
-                AppLocalizations.of(context).delete,
-                style: TextStyle(color: Colors.red[600]),
-              ),
-              onTap: () {
-                Navigator.pop(ctx);
-                onDelete?.call(tx);
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _LoadingSection extends StatelessWidget {
-  const _LoadingSection();
-  @override
-  Widget build(BuildContext context) =>
-      const Center(child: CircularProgressIndicator());
-}
-
-class _EmptySection extends StatelessWidget {
-  final String message;
-
-  const _EmptySection({required this.message});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
-    final l10n = AppLocalizations.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final tx = widget.tx;
+    final cat = widget.category;
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Icon
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: scheme.primaryContainer.withOpacity(0.3),
-                shape: BoxShape.circle,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: GestureDetector(
+        onTapDown: (_) => _anim.forward(),
+        onTapUp: (_) async {
+          await Future.delayed(const Duration(milliseconds: 40));
+          if (mounted) _anim.reverse();
+          widget.onTap();
+        },
+        onTapCancel: () => _anim.reverse(),
+        onLongPress: widget.onLongPress,
+        child: ScaleTransition(
+          scale: _scale,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? scheme.surfaceContainerHighest.withValues(alpha: 0.45)
+                  : Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.07)
+                    : Colors.black.withValues(alpha: 0.04),
               ),
-              child: Icon(
-                Icons.account_balance_wallet_outlined,
-                size: 40,
-                color: scheme.primary.withOpacity(0.7),
-              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.03),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-            const SizedBox(height: 24),
-            // Encouraging message
-            Text(
-              message,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: scheme.onSurface,
-              ),
-              textAlign: TextAlign.center,
+            child: Row(
+              children: [
+                // Category icon/emoji avatar
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: widget.catColor.withValues(alpha: isDark ? 0.2 : 0.12),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Center(
+                    child: (cat?.emoji != null && cat!.emoji!.isNotEmpty)
+                        ? Text(cat.emoji!, style: const TextStyle(fontSize: 20))
+                        : Icon(
+                            cat?.icon ??
+                                (widget.isIncome
+                                    ? Icons.arrow_downward_rounded
+                                    : Icons.arrow_upward_rounded),
+                            color: widget.catColor,
+                            size: 22,
+                          ),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                // Title and category badge
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        tx.title,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                          letterSpacing: -0.2,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 3),
+                      Row(
+                        children: [
+                          if (cat != null) ...[
+                            Text(
+                              cat.name,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: scheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                          if (tx.isRecurring) ...[
+                            if (cat != null) const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 1),
+                              decoration: BoxDecoration(
+                                color: scheme.primary.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.repeat_rounded,
+                                      size: 10, color: scheme.primary),
+                                  const SizedBox(width: 2),
+                                  Text(
+                                    'Aylık',
+                                    style: TextStyle(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w700,
+                                      color: scheme.primary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                // Formatted Amount
+                Text(
+                  '${widget.isIncome ? '+' : '-'}${widget.currencySymbol}${NumberFormat('#,##0.00', widget.locale).format(tx.amount)}',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.3,
+                    color: widget.amountColor,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.startTrackingFinances,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: scheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
-}
-
-Future<bool> _confirmDelete(BuildContext context, FinanceTransaction tx) async {
-  return await showDialog<bool>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text(AppLocalizations.of(context).delete),
-          content: Text(
-            AppLocalizations.of(context).deleteTransactionConfirm(tx.title),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(AppLocalizations.of(context).cancel),
-            ),
-            FilledButton(
-              style: FilledButton.styleFrom(backgroundColor: Colors.red[600]),
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(AppLocalizations.of(context).delete),
-            ),
-          ],
-        ),
-      ) ??
-      false;
 }

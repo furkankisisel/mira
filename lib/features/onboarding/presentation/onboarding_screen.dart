@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../l10n/app_localizations.dart';
 import '../domain/onboarding_question.dart';
 import '../domain/onboarding_result.dart';
@@ -6,35 +8,62 @@ import '../data/onboarding_repository.dart';
 import '../../habit/data/server_ai_habit_service.dart';
 import 'ai_character_result_screen.dart';
 import '../../../core/config/api_config.dart';
+import 'onboarding_story_widgets.dart';
+import '../domain/starter_plan.dart';
+import '../../vision/domain/ai_vision_dto.dart';
 
-/// Onboarding flow with welcome, quiz, and result screens
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key, this.isRetake = false});
-
-  /// If true, navigates back to home after completion instead of full app reset
+  const OnboardingScreen(
+      {super.key, this.isRetake = false, this.showWelcome = true});
   final bool isRetake;
+  final bool showWelcome;
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  final PageController _pageController = PageController();
-  final Map<String, int> _answers = {}; // questionId -> selected answer index
-  int _currentPage = 0;
+  final Map<String, int> _answers = {};
+  late int _currentPage = widget.showWelcome ? 0 : 1;
+  bool _busy = false;
+  bool _transitioning = false;
+  bool _backwards = false;
+  static const _stories = [
+    OnboardingStory.vision,
+    OnboardingStory.routine,
+    OnboardingStory.connection,
+    OnboardingStory.connection,
+    OnboardingStory.balance,
+    OnboardingStory.vision,
+    OnboardingStory.routine,
+    OnboardingStory.connection,
+    OnboardingStory.balance,
+    OnboardingStory.routine,
+    OnboardingStory.vision,
+    OnboardingStory.balance,
+  ];
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
+  Future<void> _goTo(int page) async {
+    if (_busy ||
+        _transitioning ||
+        page < 0 ||
+        page > OnboardingQuestions.questions.length) return;
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    setState(() {
+      _backwards = page < _currentPage;
+      _currentPage = page;
+      _transitioning = true;
+    });
+    await Future<void>.delayed(Duration(milliseconds: reduceMotion ? 0 : 360));
+    if (mounted) setState(() => _transitioning = false);
   }
 
-  void _nextPage() {
-    if (_currentPage < OnboardingQuestions.questions.length + 1) {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
-      );
+  void _back() {
+    if (_busy || _transitioning) return;
+    if (_currentPage == 1 && !widget.showWelcome) {
+      Navigator.of(context).maybePop();
+    } else {
+      _goTo(_currentPage - 1);
     }
   }
 
@@ -89,533 +118,253 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _finishOnboarding() async {
-    // Show loading
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => const Center(child: CircularProgressIndicator()),
-    );
-
+    if (_busy || _answers.length != OnboardingQuestions.questions.length)
+      return;
+    final l10n = AppLocalizations.of(context);
+    final languageCode = Localizations.localeOf(context).languageCode;
+    setState(() => _busy = true);
     try {
-      // Generate prompt from answers
-      final buffer = StringBuffer();
-      buffer.writeln("Analyze the following personality test answers:");
-
+      final buffer =
+          StringBuffer('Analyze the following personality test answers:\n');
       for (final question in OnboardingQuestions.questions) {
-        final answerIndex = _answers[question.id];
-        if (answerIndex != null) {
-          final qText = _getQuestionText(context, question.questionKey);
-          final aText = _getAnswerText(
-            context,
-            question.answerKeys[answerIndex],
+        final answerIndex = _answers[question.id]!;
+        buffer.writeln('Q: ${_getQuestionText(context, question.questionKey)}');
+        buffer.writeln(
+            'A: ${_getAnswerText(context, question.answerKeys[answerIndex])}');
+        buffer.writeln();
+      }
+      final starter = StarterPlan.build(
+        OnboardingQuestions.questions.map((q) => _answers[q.id]!).toList(),
+        languageCode: languageCode,
+      );
+      var aiPdf = AiVisionDto.tryFromJson(starter)!;
+      var usesStarterPlan = true;
+      if (ApiConfig.isGroqConfigured) {
+        try {
+          final service = ServerAiHabitService(apiKey: ApiConfig.groqApiKey);
+          aiPdf = await service.analyzePersonality(
+            '${buffer.toString()}\nAnswer-based starter plan:\n${jsonEncode(starter)}',
+            languageCode: languageCode,
           );
-          buffer.writeln("Q: $qText");
-          buffer.writeln("A: $aText");
-          buffer.writeln("");
+          usesStarterPlan = false;
+        } catch (_) {
+          // A missing connection, timeout or invalid response must not lose answers.
+          // Show the answer-based local plan and identify its source in the UI.
         }
       }
-
-      // Call AI Service
-      // Ideally use a DI container or proper config for API key
-      final service = ServerAiHabitService(apiKey: ApiConfig.groqApiKey);
-
-      final aiPdf = await service.analyzePersonality(buffer.toString());
-
-      // Save legacy result just in case
-      // Calculate result
       final traitScores = OnboardingResult.calculateTraitScores(
-        OnboardingQuestions.questions,
-        _answers,
-      );
-      final characterType = OnboardingResult.calculateCharacterType(
-        traitScores,
-      );
-      final result = OnboardingResult(
-        characterType: characterType,
+          OnboardingQuestions.questions, _answers);
+      await OnboardingRepository().saveOnboardingResult(OnboardingResult(
+        characterType: OnboardingResult.calculateCharacterType(traitScores),
         traitScores: traitScores,
         completedAt: DateTime.now(),
-      );
-
-      final repository = OnboardingRepository();
-      await repository.saveOnboardingResult(result);
-
+      ));
+      if (!mounted) return;
+      await Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (_) => AiCharacterResultScreen(
+            result: aiPdf, usesStarterPlan: usesStarterPlan),
+      ));
+    } catch (_) {
       if (mounted) {
-        // Pop loading dialog
-        Navigator.of(context).pop();
-
-        // Navigate to AI Result Screen
-        await Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => AiCharacterResultScreen(result: aiPdf),
-          ),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(l10n.onboardingStoryError)));
       }
-    } catch (e) {
-      if (mounted) {
-        Navigator.of(context).pop(); // Pop loading
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('AI Analysis Failed: $e')));
-        // Fallback to legacy screen logic could go here if desired
-      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final palette = OnboardingPalette(context);
+    final l10n = AppLocalizations.of(context);
+    final firstPage = widget.showWelcome ? 0 : 1;
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
     return PopScope(
-      canPop: _currentPage == 0,
+      canPop: !_busy && !_transitioning && _currentPage == firstPage,
       onPopInvokedWithResult: (didPop, result) {
-        if (!didPop && _currentPage > 0) {
-          _pageController.previousPage(
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.easeInOut,
-          );
-        }
+        if (!didPop && !_busy) _back();
       },
-      child: Scaffold(
-        body: SafeArea(
-          child: Stack(
-            children: [
-              PageView(
-                controller: _pageController,
-                physics: const NeverScrollableScrollPhysics(),
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentPage = index;
-                  });
-                },
-                children: [
-                  // Welcome page
-                  _WelcomePage(onNext: _nextPage),
-
-                  // Quiz pages
-                  ...OnboardingQuestions.questions.asMap().entries.map((entry) {
-                    final questionIndex = entry.key;
-                    final question = entry.value;
-                    return _QuestionPage(
-                      question: question,
-                      selectedAnswer: _answers[question.id],
-                      onAnswerSelected: (answerIndex) {
-                        setState(() {
-                          _answers[question.id] = answerIndex;
-                        });
-
-                        // Auto-advance to next question after a short delay
-                        Future.delayed(const Duration(milliseconds: 500), () {
-                          if (questionIndex <
-                              OnboardingQuestions.questions.length - 1) {
-                            // Not the last question, go to next
-                            _nextPage();
-                          } else {
-                            // Last question, finish onboarding
-                            _finishOnboarding();
-                          }
-                        });
-                      },
-                    );
-                  }),
-                ],
-              ),
-
-              // Progress indicator
-              if (_currentPage > 0)
-                Positioned(
-                  top: 24,
-                  left: 24,
-                  right: 24,
-                  child: LinearProgressIndicator(
-                    value: _currentPage /
-                        (OnboardingQuestions.questions.length + 1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Welcome page widget
-class _WelcomePage extends StatelessWidget {
-  final VoidCallback onNext;
-
-  const _WelcomePage({required this.onNext});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 48.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Spacer(),
-
-            // Cute animated logo
-            TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0.0, end: 1.0),
-              duration: const Duration(milliseconds: 800),
-              curve: Curves.elasticOut,
-              builder: (context, value, child) {
-                return Transform.scale(
-                  scale: value,
-                  child: Container(
-                    width: 140,
-                    height: 140,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.psychology_rounded,
-                      size: 70,
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
-                );
-              },
-            ),
-
-            const SizedBox(height: 48),
-
-            // Welcome title with fade-in
-            TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0.0, end: 1.0),
-              duration: const Duration(milliseconds: 600),
-              curve: Curves.easeOut,
-              builder: (context, value, child) {
-                return Opacity(
-                  opacity: value,
-                  child: Transform.translate(
-                    offset: Offset(0, 20 * (1 - value)),
-                    child: child,
-                  ),
-                );
-              },
-              child: Text(
-                l10n.onboardingWelcomeTitle,
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.5,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Welcome description
-            TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0.0, end: 1.0),
-              duration: const Duration(milliseconds: 800),
-              curve: Curves.easeOut,
-              builder: (context, value, child) {
-                return Opacity(
-                  opacity: value,
-                  child: Transform.translate(
-                    offset: Offset(0, 20 * (1 - value)),
-                    child: child,
-                  ),
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  l10n.onboardingWelcomeDesc,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.7),
-                    height: 1.6,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-
-            const Spacer(),
-
-            // Start button
-            TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0.0, end: 1.0),
-              duration: const Duration(milliseconds: 1000),
-              curve: Curves.easeOut,
-              builder: (context, value, child) {
-                return Opacity(
-                  opacity: value,
-                  child: Transform.scale(
-                    scale: 0.8 + (0.2 * value),
-                    child: child,
-                  ),
-                );
-              },
-              child: SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: onNext,
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        l10n.startJourney,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.arrow_forward_rounded, size: 20),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Quiz intro text
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                l10n.onboardingQuizIntro,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.5),
-                  fontSize: 13,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-
-            const SizedBox(height: 24),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Question page widget with Likert scale
-class _QuestionPage extends StatelessWidget {
-  final OnboardingQuestion question;
-  final int? selectedAnswer;
-  final ValueChanged<int> onAnswerSelected;
-
-  const _QuestionPage({
-    required this.question,
-    required this.selectedAnswer,
-    required this.onAnswerSelected,
-  });
-
-  String _getQuestionText(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    // Map question keys to localized text
-    switch (question.questionKey) {
-      case 'onboardingQ1':
-        return l10n.onboardingQ1;
-      case 'onboardingQ2':
-        return l10n.onboardingQ2;
-      case 'onboardingQ3':
-        return l10n.onboardingQ3;
-      case 'onboardingQ4':
-        return l10n.onboardingQ4;
-      case 'onboardingQ5':
-        return l10n.onboardingQ5;
-      case 'onboardingQ6':
-        return l10n.onboardingQ6;
-      case 'onboardingQ7':
-        return l10n.onboardingQ7;
-      case 'onboardingQ8':
-        return l10n.onboardingQ8;
-      case 'onboardingQ9':
-        return l10n.onboardingQ9;
-      case 'onboardingQ10':
-        return l10n.onboardingQ10;
-      case 'onboardingQ11':
-        return l10n.onboardingQ11;
-      case 'onboardingQ12':
-        return l10n.onboardingQ12;
-      default:
-        return question.questionKey;
-    }
-  }
-
-  String _getAnswerText(BuildContext context, String answerKey) {
-    final l10n = AppLocalizations.of(context);
-    switch (answerKey) {
-      case 'likertStronglyDisagree':
-        return l10n.likertStronglyDisagree;
-      case 'likertDisagree':
-        return l10n.likertDisagree;
-      case 'likertNeutral':
-        return l10n.likertNeutral;
-      case 'likertAgree':
-        return l10n.likertAgree;
-      case 'likertStronglyAgree':
-        return l10n.likertStronglyAgree;
-      default:
-        return answerKey;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(24, 80, 24, 120),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Question number badge
-            Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  '${OnboardingQuestions.questions.indexOf(question) + 1} / ${OnboardingQuestions.questions.length}',
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: theme.colorScheme.onPrimaryContainer,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1,
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 32),
-
-            // Question text
-            Center(
-              child: Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  _getQuestionText(context),
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    height: 1.4,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 32),
-
-            // Likert scale options
-            ...List.generate(question.answerKeys.length, (index) {
-              final isSelected = selectedAnswer == index;
-              final answerText = _getAnswerText(
-                context,
-                question.answerKeys[index],
-              );
-
-              // Emoji indicators for Likert scale
-              final emojis = ['😟', '😐', '😊', '😄', '🤩'];
-              final emoji = index < emojis.length ? emojis[index] : '⭐';
-
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: InkWell(
-                  onTap: () => onAnswerSelected(index),
-                  borderRadius: BorderRadius.circular(16),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 250),
-                    curve: Curves.easeOutCubic,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 18,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? theme.colorScheme.primaryContainer
-                          : theme.colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
+      child: _currentPage == 0
+          ? OnboardingWelcome(onStart: () => _goTo(1))
+          : Scaffold(
+              backgroundColor: palette.background,
+              body: SafeArea(
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 520),
+                    child: Column(
                       children: [
-                        // Emoji
-                        TweenAnimationBuilder<double>(
-                          tween: Tween(begin: 1.0, end: isSelected ? 1.2 : 1.0),
-                          duration: const Duration(milliseconds: 200),
-                          builder: (context, scale, child) {
-                            return Transform.scale(
-                              scale: scale,
-                              child: Text(
-                                emoji,
-                                style: const TextStyle(fontSize: 28),
-                              ),
-                            );
-                          },
-                        ),
-
-                        const SizedBox(width: 16),
-
-                        Expanded(
-                          child: Text(
-                            answerText,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              fontWeight: isSelected
-                                  ? FontWeight.w700
-                                  : FontWeight.w500,
-                              color: isSelected
-                                  ? theme.colorScheme.onPrimaryContainer
-                                  : theme.colorScheme.onSurface,
-                              letterSpacing: 0.2,
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(12, 8, 24, 0),
+                          child: Row(children: [
+                            IconButton(
+                              tooltip: l10n.back,
+                              onPressed: _busy || _transitioning ? null : _back,
+                              icon: Icon(Icons.arrow_back_rounded,
+                                  color: palette.ink),
                             ),
+                            const Spacer(),
+                            Text('mira',
+                                style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: -.8,
+                                    color: palette.ink)),
+                            const Spacer(),
+                            Text(
+                                '${_currentPage.toString().padLeft(2, '0')} / ${OnboardingQuestions.questions.length}',
+                                style: TextStyle(
+                                    fontSize: 12, color: palette.muted)),
+                          ]),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(28, 8, 28, 4),
+                          child: Semantics(
+                            value:
+                                '$_currentPage / ${OnboardingQuestions.questions.length}',
+                            child: Row(
+                                children: List.generate(
+                                    OnboardingQuestions.questions.length,
+                                    (i) => Expanded(
+                                          child: AnimatedContainer(
+                                            duration: Duration(
+                                                milliseconds:
+                                                    reduceMotion ? 0 : 250),
+                                            height: 3,
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 2),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              color: i < _currentPage
+                                                  ? palette.accent
+                                                  : palette.line,
+                                            ),
+                                          ),
+                                        ))),
                           ),
                         ),
-
-                        // Check indicator
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 250),
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? theme.colorScheme.primary
-                                : Colors.transparent,
-                            shape: BoxShape.circle,
+                        Expanded(
+                          child: AnimatedSwitcher(
+                            duration:
+                                Duration(milliseconds: reduceMotion ? 0 : 350),
+                            switchInCurve: Curves.easeOutCubic,
+                            switchOutCurve: Curves.easeInCubic,
+                            transitionBuilder: (child, animation) =>
+                                FadeTransition(
+                              opacity: animation,
+                              child: SlideTransition(
+                                position: Tween<Offset>(
+                                        begin:
+                                            Offset(_backwards ? -.06 : .06, 0),
+                                        end: Offset.zero)
+                                    .animate(animation),
+                                child: child,
+                              ),
+                            ),
+                            child: _questionBody(context,
+                                key: ValueKey(_currentPage)),
                           ),
-                          child: isSelected
-                              ? Icon(
-                                  Icons.check_rounded,
-                                  size: 18,
-                                  color: theme.colorScheme.onPrimary,
-                                )
-                              : null,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(28, 10, 28, 20),
+                          child:
+                              Column(mainAxisSize: MainAxisSize.min, children: [
+                            if (_busy) ...[
+                              Text(l10n.onboardingStoryLoading,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: palette.muted, fontSize: 13)),
+                              const SizedBox(height: 12),
+                            ],
+                            OnboardingAction(
+                              label: _currentPage ==
+                                      OnboardingQuestions.questions.length
+                                  ? l10n.onboardingStoryResult
+                                  : l10n.continueButton,
+                              busy: _busy,
+                              onPressed: _transitioning ||
+                                      !_answers.containsKey(OnboardingQuestions
+                                          .questions[_currentPage - 1].id)
+                                  ? null
+                                  : () {
+                                      if (_currentPage ==
+                                          OnboardingQuestions
+                                              .questions.length) {
+                                        _finishOnboarding();
+                                      } else {
+                                        _goTo(_currentPage + 1);
+                                      }
+                                    },
+                            ),
+                          ]),
                         ),
                       ],
                     ),
                   ),
                 ),
-              );
-            }),
-          ],
-        ),
+              ),
+            ),
+    );
+  }
+
+  Widget _questionBody(BuildContext context, {required Key key}) {
+    final palette = OnboardingPalette(context);
+    final l10n = AppLocalizations.of(context);
+    final index = _currentPage - 1;
+    final question = OnboardingQuestions.questions[index];
+    final story = _stories[index];
+    return LayoutBuilder(
+      key: key,
+      builder: (context, constraints) => SingleChildScrollView(
+        primary: false,
+        padding: const EdgeInsets.fromLTRB(28, 0, 28, 12),
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          OnboardingScene(
+              story: story,
+              height: (constraints.maxHeight * .32).clamp(140, 230)),
+          Text(story.title(l10n),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 24,
+                  height: 1.2,
+                  letterSpacing: -.6,
+                  fontWeight: FontWeight.w600,
+                  color: palette.ink)),
+          const SizedBox(height: 8),
+          Text(story.body(l10n),
+              textAlign: TextAlign.center,
+              style:
+                  TextStyle(fontSize: 13, height: 1.5, color: palette.muted)),
+          const SizedBox(height: 20),
+          Divider(height: 1, color: palette.line),
+          const SizedBox(height: 18),
+          Text(_getQuestionText(context, question.questionKey),
+              style: TextStyle(
+                  fontSize: 17,
+                  height: 1.4,
+                  fontWeight: FontWeight.w600,
+                  color: palette.ink)),
+          const SizedBox(height: 6),
+          Text(l10n.onboardingStoryAnswerHint,
+              style: TextStyle(fontSize: 12, color: palette.muted)),
+          const SizedBox(height: 14),
+          OnboardingAnswerScale(
+            questionId: question.id,
+            answers: question.answerKeys
+                .map((key) => _getAnswerText(context, key))
+                .toList(),
+            selected: _answers[question.id],
+            onSelected: _busy || _transitioning
+                ? null
+                : (answerIndex) {
+                    HapticFeedback.selectionClick();
+                    setState(() => _answers[question.id] = answerIndex);
+                  },
+          ),
+        ]),
       ),
     );
   }

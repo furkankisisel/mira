@@ -1,3 +1,4 @@
+import '../../onboarding/domain/starter_plan.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../domain/ai_habit_service.dart';
@@ -32,8 +33,7 @@ class ServerAiHabitService implements AiHabitService {
   }) async {
     final langInstruction = _getLanguageInstruction(languageCode);
     // Construct the system prompt with strict schema for one-shot generation
-    final systemPrompt =
-        '''
+    final systemPrompt = '''
 You are a "Science-informed habit design assistant". 
 Your goal is to suggest niche, scientifically-grounded habits to solve the user's specific problem.
 
@@ -94,9 +94,8 @@ IMPORTANT:
       messages.add({"role": "user", "content": prompt});
     }
 
-    final targetModel = imageBase64 != null
-        ? 'llama-3.2-11b-vision-preview'
-        : model;
+    final targetModel =
+        imageBase64 != null ? 'llama-3.2-11b-vision-preview' : model;
 
     final response = await http.post(
       Uri.parse(_baseUrl),
@@ -136,8 +135,7 @@ IMPORTANT:
     String? languageCode,
   }) async {
     final langInstruction = _getLanguageInstruction(languageCode);
-    final systemPrompt =
-        '''
+    final systemPrompt = '''
 You are a "Science-informed habit design assistant".
 Your goal is to help the user build niche, effective habits based on scientific principles.
 
@@ -274,8 +272,7 @@ Language: $langInstruction
     String? languageCode,
   }) async {
     final langInstruction = _getLanguageInstruction(languageCode);
-    final systemPrompt =
-        '''
+    final systemPrompt = '''
 You are a "Vision Board Coach" & "Habit Architect".
 Your goal is to turn the user's dream into a COMPLETE, ACTIONABLE PROGRAM.
 
@@ -363,8 +360,7 @@ RULES:
     String? languageCode,
   }) async {
     final langInstruction = _getLanguageInstruction(languageCode);
-    final systemPrompt =
-        '''
+    final systemPrompt = '''
 You are a "Vision Board Coach" & "Habit Architect".
 Phase 1: Ask 1-2 powerful questions to clarify the user's dream and find their deep motivation.
 Phase 2: Once you have enough clarity, generate the "COMPLETE, ACTIONABLE PROGRAM".
@@ -471,44 +467,45 @@ RULES:
     String prompt, {
     String? languageCode,
   }) async {
+    if (apiKey.trim().isEmpty) {
+      throw StateError('Personality recommendations are not configured');
+    }
     final langInstruction = _getLanguageInstruction(languageCode);
-    final systemPrompt =
-        '''
-You are an expert Personality Psychologist and Habit Coach.
-Analyze the user's answers to find their "Character Archetype".
-Return a JSON object with their profile and 3-5 recommended habits.
+    final systemPrompt = '''
+You are a practical, supportive habit coach. This short preference quiz is NOT
+clinical or a validated diagnostic assessment. Never diagnose, label the person
+as a fixed archetype, invent their job, health, goals, schedule or available time.
+Use the supplied answers and starter plan as evidence. Personalize the explanation
+and habit choices only where the answers support it. Ambiguous answers need modest,
+optional suggestions. Do not claim guaranteed benefits or cite invented research.
 
-JSON SCHEMA:
-{
-  "vision": {
-    "title": "Archetype Name",
-    "description": "Personality analysis",
-    "emoji": "Char",
-    "color_code": "Hex",
-    "motivation_sentence": "Affirmation",
-    "time_horizon": "Life",
-    "tasks": ["Quick Win 1", "Quick Win 2"], 
-    "habits": [
-      {
-         "title": "Habit Title",
-         "description": "Why this fits",
-         "frequency": "daily",
-         "days": ["mon", "tue", "wed", "thu", "fri", "sat", "sun"], 
-         "type": "simple",
-         "target_value": 1,
-         "color_code": "Hex",
-         "emoji": "Char",
-         "category": "Health"
-      }
-    ]
-  }
-}
-
-IMPORTANT RULES:
-1. "habits" ARRAY MUST NOT BE EMPTY. PROVIDE 3-5 HABITS.
-2. "days" property is REQUIRED for every habit (e.g. ["mon", "tue"...]).
-3. "tasks" should be 2-3 one-time actions.
-4. Language: $langInstruction
+Return JSON only with this exact schema:
+{"vision": {
+ "title": "A kind, practical starter-plan title",
+ "description": "2-3 sentences linking suggestions to actual answers, acknowledging uncertainty",
+ "emoji": "🌱", "color_code": "#71836A",
+ "motivation_sentence": "Start with ONE chosen habit for the first week",
+ "time_horizon": "First 7 days",
+ "tasks": ["How to pick a cue today", "What to do on a difficult or missed day", "How to review and adjust after 7 days"],
+ "habits": [{
+   "title": "Specific action, at most 40 characters",
+   "description": "A concrete everyday cue + action + duration, then a smaller version for a hard day. Avoid assumed clock times.",
+   "rationale": "Which answers led to this suggestion and why this small action may help. No diagnoses or promises.",
+   "frequency": "daily or weekly",
+   "days": ["mon","tue","wed","thu","fri","sat","sun"],
+   "type": "timer", "duration_minutes": 2, "target_value": 2,
+   "category": "Productivity", "emoji": "🌱", "color_code": "#71836A", "is_task": false
+ }]
+}}
+Provide exactly THREE distinct, low-burden habit options. Each must take 1-5 minutes,
+except one optional learning activity up to 10 minutes. The user will choose ONE
+initial habit. Use "timer" with an integer duration_minutes, or "simple" for a
+single check-off action. For daily use all seven day codes; for weekly use only the
+actual scheduled days. No supplements, medication, restrictive diets, strenuous
+exercise or sleep prescriptions. Keep general suggestions within the quiz evidence.
+The supplied starter plan is a baseline; preserve its manageable commitments and
+improve specificity rather than adding demands. Respond entirely in the requested
+language, including the review tips. Language instruction: $langInstruction
 ''';
 
     final messages = [
@@ -516,19 +513,22 @@ IMPORTANT RULES:
       {"role": "user", "content": prompt},
     ];
 
-    final response = await http.post(
-      Uri.parse(_baseUrl),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $apiKey',
-      },
-      body: jsonEncode({
-        'model': model,
-        'messages': messages,
-        'response_format': {'type': 'json_object'},
-        'temperature': 0.7,
-      }),
-    );
+    final response = await http
+        .post(
+          Uri.parse(_baseUrl),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $apiKey',
+          },
+          body: jsonEncode({
+            'model': model,
+            'messages': messages,
+            'response_format': {'type': 'json_object'},
+            'temperature': 0.35,
+            'max_tokens': 2200,
+          }),
+        )
+        .timeout(const Duration(seconds: 20));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(utf8.decode(response.bodyBytes));
@@ -536,6 +536,10 @@ IMPORTANT RULES:
 
       try {
         final jsonContent = jsonDecode(content);
+        if (jsonContent is! Map<String, dynamic> ||
+            !StarterPlan.isUsable(jsonContent)) {
+          throw const FormatException('Incomplete personality recommendations');
+        }
         final dto = AiVisionDto.tryFromJson(jsonContent);
         if (dto != null) return dto;
         throw FormatException(
@@ -543,12 +547,12 @@ IMPORTANT RULES:
         );
       } catch (e) {
         throw FormatException(
-          'Failed to parse AI Personality response: $content',
+          'Invalid personality recommendation response',
         );
       }
     } else {
       throw Exception(
-        'Groq API Error: ${response.statusCode} - ${response.body}',
+        'Personality service returned HTTP ${response.statusCode}',
       );
     }
   }
@@ -559,8 +563,7 @@ IMPORTANT RULES:
     String? languageCode,
   }) async {
     final langInstruction = _getLanguageInstruction(languageCode);
-    final systemPrompt =
-        '''
+    final systemPrompt = '''
 You are Mira’s intelligent in-app assistant.
 Your goal is to have a natural, helpful conversation with the user and guide them to the right features.
 

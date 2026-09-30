@@ -7,28 +7,34 @@ import 'dart:ui' as ui;
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'design_system/theme/app_theme.dart';
 import 'design_system/theme/theme_variations.dart';
 import 'design_system/tokens/colors.dart';
 import 'design_system/components/cotton_bottom_bar.dart';
+import 'design_system/components/xp_celebration_overlay.dart';
 import 'core/language_manager.dart';
 
 import 'features/habit/presentation/habit_screen.dart';
 import 'features/timer/timer_screen.dart';
 import 'features/finance/finance_screen.dart';
-import 'features/finance/finance_analysis_screen.dart';
+import 'features/future/presentation/future_screen.dart';
 import 'features/vision/presentation/vision_screen.dart';
 import 'features/profile/profile_screen.dart';
-import 'features/schedule/presentation/weekly_schedule_screen.dart';
 
 import 'features/profile/settings_screen.dart';
+import 'features/social/presentation/social_hub_screen.dart';
+import 'core/timer/timer_controller.dart';
+import 'features/timer/widgets/landscape_timer_screen.dart';
+import 'ui/premium_gate.dart';
 
 // Removed Decision Egg feature
 import 'features/gamification/gamification_repository.dart';
 import 'features/notifications/data/notification_settings_repository.dart';
 import 'features/notifications/services/notification_service.dart';
 import 'features/habit/domain/habit_repository.dart';
+import 'features/quick_create/presentation/quick_create_sheet.dart';
 // Removed unused imports related to text/image sticker creation relocated to Vision FAB
 import 'core/settings/settings_repository.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -463,6 +469,9 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
   int _currentIndex = 0;
   late final PageController _pageController;
   final GlobalKey<HabitScreenState> _habitKey = GlobalKey<HabitScreenState>();
+  final GlobalKey<FutureScreenState> _futureKey =
+      GlobalKey<FutureScreenState>();
+  int _futureSubIndex = 0;
   final GlobalKey<FinanceScreenState> _financeKey =
       GlobalKey<FinanceScreenState>();
   final ValueNotifier<bool> _visionFreeform = ValueNotifier(false);
@@ -473,6 +482,9 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void _onNavTap(int i) {
+    if (_currentIndex != i) {
+      setState(() => _currentIndex = i);
+    }
     _pageController.animateToPage(
       i,
       duration: const Duration(milliseconds: 300),
@@ -488,56 +500,422 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
   }
 
   void _handleAssistantNavigation(String command) {
-    if (command == 'habits') {
+    if (command == 'habits' || command == 'schedule' || command == 'weekly') {
       _onNavTap(0);
-    } else if (command == 'vision') {
+      if (command == 'weekly' || command == 'schedule') {
+        _habitKey.currentState?.switchToWeekly();
+      } else {
+        _habitKey.currentState?.switchToToday();
+      }
+    } else if (command == 'timer') {
       _onNavTap(1);
-    } else if (command == 'finance') {
+    } else if (command == 'social' || command == 'rooms') {
+      _onNavTap(2);
+    } else if (command == 'vision' || command == 'finance' || command == 'future') {
       _onNavTap(3);
+      if (command == 'finance') {
+        _futureKey.currentState?.switchToTab(1);
+      } else if (command == 'vision') {
+        _futureKey.currentState?.switchToTab(0);
+      }
+    } else if (command == 'profile') {
+      _openProfile(context);
+    } else if (command == 'settings') {
+      _openSettings(context);
     }
   }
 
+  void _openProfile(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final isTr = l10n.localeName.startsWith('tr');
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          appBar: AppBar(
+            title: Text(isTr ? 'Profil' : 'Profile'),
+            actions: [
+              IconButton(
+                tooltip: l10n.settings,
+                icon: const Icon(Icons.settings_outlined),
+                onPressed: () => _openSettings(context),
+              ),
+            ],
+          ),
+          body: const ProfileScreen(),
+        ),
+      ),
+    );
+  }
+
+  void _openSettings(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => SettingsScreen(
+          onToggleTheme: widget.onToggleTheme,
+          themeMode: widget.themeMode,
+          currentVariant: widget.currentVariant,
+          onVariantChanged: widget.onVariantChanged,
+          languageManager: widget.languageManager,
+        ),
+      ),
+    );
+  }
+
   Widget _buildPage(int index) => switch (index) {
-        0 => HabitScreen(key: _habitKey, variant: widget.currentVariant),
-        1 => VisionScreen(
+        0 => HabitScreen(
+            key: _habitKey,
             variant: widget.currentVariant,
-            freeformNotifier: _visionFreeform,
-            roundCornersNotifier: _visionRoundCorners,
-            showTextNotifier: _visionShowText,
-            showProgressNotifier: _visionShowProgress,
-            boardBoundaryKey: _visionBoardKey,
+            onViewModeChanged: (mode) {
+              setState(() {});
+            },
+            onDateChanged: (date) {
+              setState(() {});
+            },
+            onOpenGoals: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => VisionScreen(
+                    variant: widget.currentVariant,
+                    freeformNotifier: _visionFreeform,
+                    roundCornersNotifier: _visionRoundCorners,
+                    showTextNotifier: _visionShowText,
+                    showProgressNotifier: _visionShowProgress,
+                    boardBoundaryKey: _visionBoardKey,
+                  ),
+                ),
+              );
+            },
           ),
-        2 => WeeklyScheduleScreen(
+        1 => TimerScreen(
             variant: widget.currentVariant,
+            showAppBar: false,
           ),
-        3 => FinanceScreen(key: _financeKey, variant: widget.currentVariant),
-        4 => const ProfileScreen(),
+        2 => const SocialHubScreen(
+            showAppBar: false,
+          ),
+        3 => FutureScreen(
+            key: _futureKey,
+            variant: widget.currentVariant,
+            initialSubTab: _futureSubIndex,
+            onSubTabChanged: (i) {
+              setState(() => _futureSubIndex = i);
+            },
+            onMonthChanged: (_) {
+              setState(() {});
+            },
+            visionFreeformNotifier: _visionFreeform,
+            visionRoundCornersNotifier: _visionRoundCorners,
+            visionShowTextNotifier: _visionShowText,
+            visionShowProgressNotifier: _visionShowProgress,
+            visionBoardBoundaryKey: _visionBoardKey,
+            financeKey: _financeKey,
+          ),
         _ => const SizedBox.shrink(),
       };
 
   Widget _buildBody() => PageView.builder(
         controller: _pageController,
         onPageChanged: _onPageChanged,
-        // Disable swipe on Vision screen (index 1) to prevent accidental navigation
-        physics: (_currentIndex == 1)
+        // Disable swipe on Timer (index 1) and Future screen (index 3) to prevent accidental navigation
+        physics: (_currentIndex == 1 || _currentIndex == 3)
             ? const NeverScrollableScrollPhysics()
             : const PageScrollPhysics(),
-        itemCount: 5,
+        itemCount: 4,
         itemBuilder: (context, index) => _buildPage(index),
       );
 
-  String _titleFor(int i, AppLocalizations l10n) => switch (i) {
-        0 => l10n.habits,
-        1 => l10n.vision,
-        2 => l10n.weeklySchedule,
+  String _titleFor(int i, BuildContext context, AppLocalizations l10n) => switch (i) {
+        0 => _habitKey.currentState?.title(context, l10n) ?? l10n.today,
+        1 => l10n.timerType,
+        2 => l10n.socialRoomsTitle,
         3 => l10n.finance,
-        4 => l10n.profile,
         _ => '',
       };
+
+  Widget _buildTimerTitlePill(
+    BuildContext context,
+    AppLocalizations l10n,
+    ColorScheme cs,
+    bool isDark,
+    ThemeData theme,
+  ) {
+    return AnimatedBuilder(
+      animation: TimerController.instance,
+      builder: (context, _) {
+        final controller = TimerController.instance;
+        final isRunning = controller.isRunning;
+        final activeHabitId = controller.activeTimerHabitId;
+        String modeName = l10n.timerTabStopwatch;
+        if (controller.activeMode == TimerMode.countdown) {
+          modeName = l10n.timerTabCountdown;
+        } else if (controller.activeMode == TimerMode.pomodoro) {
+          modeName = l10n.timerTabPomodoro;
+        }
+        String pillLabel = l10n.timerType;
+        if (activeHabitId != null) {
+          final h = HabitRepository.instance.findById(activeHabitId);
+          if (h != null) pillLabel = h.title;
+        }
+
+        return Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 7,
+          ),
+          decoration: BoxDecoration(
+            color: isDark ? cs.surfaceContainerHigh : Colors.white,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.12)
+                  : Colors.white.withValues(alpha: 0.95),
+              width: 1.2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(
+                  alpha: isDark ? 0.25 : 0.05,
+                ),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+              if (!isDark)
+                BoxShadow(
+                  color: Colors.white.withValues(alpha: 0.8),
+                  blurRadius: 2,
+                  offset: const Offset(0, -1),
+                ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: isRunning
+                      ? Colors.green.withValues(alpha: 0.15)
+                      : cs.primary.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: isRunning
+                      ? Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.green,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.green,
+                                blurRadius: 4,
+                              ),
+                            ],
+                          ),
+                        )
+                      : Icon(
+                          Icons.timer_outlined,
+                          size: 13,
+                          color: cs.primary,
+                        ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  pillLabel,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    letterSpacing: -0.2,
+                    color: cs.onSurface,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 5),
+              Text(
+                '• $modeName',
+                style: TextStyle(
+                  color: cs.onSurface.withValues(alpha: 0.5),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSocialTitlePill(
+    BuildContext context,
+    AppLocalizations l10n,
+    ColorScheme cs,
+    bool isDark,
+    ThemeData theme,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 14,
+        vertical: 7,
+      ),
+      decoration: BoxDecoration(
+        color: isDark ? cs.surfaceContainerHigh : Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.12)
+              : Colors.white.withValues(alpha: 0.95),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(
+              alpha: isDark ? 0.25 : 0.05,
+            ),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+          if (!isDark)
+            BoxShadow(
+              color: Colors.white.withValues(alpha: 0.8),
+              blurRadius: 2,
+              offset: const Offset(0, -1),
+            ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: const Color(0xFF6366F1).withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.group_rounded,
+              size: 14,
+              color: Color(0xFF6366F1),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            _titleFor(2, context, l10n),
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              fontSize: 15,
+              letterSpacing: -0.2,
+              color: cs.onSurface,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFinanceTitlePill(
+    BuildContext context,
+    AppLocalizations l10n,
+    ColorScheme cs,
+    bool isDark,
+    ThemeData theme,
+  ) {
+    final currentMonth =
+        _financeKey.currentState?.currentMonth ?? DateTime.now();
+    final locale = Localizations.localeOf(context).toString();
+    final rawMonth = DateFormat('MMMM yyyy', locale).format(currentMonth);
+    final monthLabel = rawMonth.isNotEmpty
+        ? rawMonth[0].toUpperCase() + rawMonth.substring(1)
+        : rawMonth;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          _financeKey.currentState?.showMonthPicker();
+        },
+        borderRadius: BorderRadius.circular(22),
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 7,
+          ),
+          decoration: BoxDecoration(
+            color: isDark ? cs.surfaceContainerHigh : Colors.white,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.12)
+                  : Colors.white.withValues(alpha: 0.95),
+              width: 1.2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(
+                  alpha: isDark ? 0.25 : 0.05,
+                ),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+              if (!isDark)
+                BoxShadow(
+                  color: Colors.white.withValues(alpha: 0.8),
+                  blurRadius: 2,
+                  offset: const Offset(0, -1),
+                ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.account_balance_wallet_rounded,
+                  size: 14,
+                  color: Color(0xFF10B981),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                monthLabel,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                  letterSpacing: -0.2,
+                  color: cs.onSurface,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(
+                Icons.keyboard_arrow_down_rounded,
+                size: 18,
+                color: cs.onSurfaceVariant,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     NotificationService.instance.updateLocalizations(l10n);
     return Scaffold(
       key: _scaffoldKey,
@@ -545,104 +923,564 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
         centerTitle: false,
         // Remove overrides to let ThemeVariations apply Cotton style (surface color + shadow)
         title: _currentIndex == 0
-            ? GestureDetector(
-                onTap: () => _habitKey.currentState?.showCalendar(),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(l10n.today),
-                    const SizedBox(width: 4),
-                    const Icon(Icons.keyboard_arrow_down, size: 20),
-                  ],
+            ? Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    _habitKey.currentState?.showCalendar();
+                  },
+                  borderRadius: BorderRadius.circular(22),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 7,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? cs.surfaceContainerHigh
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(22),
+                      border: Border.all(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.12)
+                            : Colors.white.withValues(alpha: 0.95),
+                        width: 1.2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(
+                            alpha: isDark ? 0.25 : 0.05,
+                          ),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                        if (!isDark)
+                          BoxShadow(
+                            color: Colors.white.withValues(alpha: 0.8),
+                            blurRadius: 2,
+                            offset: const Offset(0, -1),
+                          ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: cs.primary.withValues(alpha: 0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            _habitKey.currentState?.isWeeklyView ?? false
+                                ? Icons.calendar_view_week_rounded
+                                : Icons.calendar_today_rounded,
+                            size: 14,
+                            color: cs.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _titleFor(0, context, l10n),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            letterSpacing: -0.2,
+                            color: cs.onSurface,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          size: 18,
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               )
-            : Text(_titleFor(_currentIndex, l10n)),
+            : _currentIndex == 1
+                ? _buildTimerTitlePill(context, l10n, cs, isDark, theme)
+                : _currentIndex == 2
+                    ? _buildSocialTitlePill(context, l10n, cs, isDark, theme)
+                    : _buildFinanceTitlePill(context, l10n, cs, isDark, theme),
         actions: [
-          // Mood button for Habits screen
-          if (_currentIndex == 0)
-            IconButton(
-              tooltip: l10n.mood,
-              icon: const Icon(Icons.mood_outlined),
-              onPressed: () => _habitKey.currentState?.openMoodScreen(),
-            ),
-          // Vision actions (index 1)
-          if (_currentIndex == 1)
-            ValueListenableBuilder<bool>(
-              valueListenable: _visionFreeform,
-              builder: (context, isFreeform, _) => isFreeform
-                  ? IconButton(
-                      tooltip: l10n.visionSettingsTooltip,
-                      icon: const Icon(Icons.tune),
-                      onPressed: () => _showFreeformSettings(context),
-                    )
-                  : const SizedBox.shrink(),
-            ),
-          if (_currentIndex == 1)
-            ValueListenableBuilder<bool>(
-              valueListenable: _visionFreeform,
-              builder: (context, isFreeform, _) => IconButton(
-                tooltip: isFreeform
-                    ? l10n.visionBoardViewTooltip
-                    : l10n.visionFreeformTooltip,
-                icon: Icon(isFreeform ? Icons.grid_view : Icons.open_in_full),
-                onPressed: () => _visionFreeform.value = !isFreeform,
+          // Mood button for Habits screen (only in today mode)
+          if (_currentIndex == 0 &&
+              !(_habitKey.currentState?.isWeeklyView ?? false))
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDark
+                      ? cs.surfaceContainerHigh
+                      : Colors.white,
+                  border: Border.all(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.12)
+                        : Colors.white.withValues(alpha: 0.95),
+                    width: 1.2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(
+                        alpha: isDark ? 0.25 : 0.05,
+                      ),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                    if (!isDark)
+                      BoxShadow(
+                        color: Colors.white.withValues(alpha: 0.8),
+                        blurRadius: 2,
+                        offset: const Offset(0, -1),
+                      ),
+                  ],
+                ),
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  iconSize: 20,
+                  tooltip: l10n.mood,
+                  icon: const Icon(Icons.mood_outlined),
+                  onPressed: () => _habitKey.currentState?.openMoodScreen(),
+                ),
               ),
             ),
+          // 3-dots popup menu on Habits screen (Filter, Lists, Settings/Profile)
           if (_currentIndex == 0)
-            IconButton(
-              tooltip: l10n.timerType,
-              icon: const Icon(Icons.timer_outlined),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => TimerScreen(variant: widget.currentVariant),
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDark
+                      ? cs.surfaceContainerHigh
+                      : Colors.white,
+                  border: Border.all(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.12)
+                        : Colors.white.withValues(alpha: 0.95),
+                    width: 1.2,
                   ),
-                );
-              },
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(
+                        alpha: isDark ? 0.25 : 0.05,
+                      ),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                    if (!isDark)
+                      BoxShadow(
+                        color: Colors.white.withValues(alpha: 0.8),
+                        blurRadius: 2,
+                        offset: const Offset(0, -1),
+                      ),
+                  ],
+                ),
+                child: PopupMenuButton<String>(
+                  padding: EdgeInsets.zero,
+                  iconSize: 20,
+                  tooltip: l10n.localeName.startsWith('tr') ? 'Seçenekler' : 'Options',
+                  icon: const Icon(Icons.more_vert),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  color: cs.surface,
+                  elevation: 6,
+                  onSelected: (value) {
+                    if (value == 'filter') {
+                      _habitKey.currentState?.showFilterSheet();
+                    } else if (value == 'lists') {
+                      _habitKey.currentState?.openManageListsSheet();
+                    } else if (value == 'profile') {
+                      _openProfile(context);
+                    } else if (value == 'settings') {
+                      _openSettings(context);
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'filter',
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.tune_rounded,
+                            size: 20,
+                            color: cs.onSurface,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            l10n.localeName.startsWith('tr')
+                                ? 'Filtrele'
+                                : l10n.filterTitle,
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'lists',
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.format_list_bulleted_rounded,
+                            size: 20,
+                            color: cs.onSurface,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            l10n.localeName.startsWith('tr')
+                                ? 'Listeler'
+                                : l10n.manageLists,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const PopupMenuDivider(),
+                    PopupMenuItem(
+                      value: 'profile',
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.person_outline_rounded,
+                            size: 20,
+                            color: cs.onSurface,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            l10n.localeName.startsWith('tr')
+                                ? 'Profil'
+                                : 'Profile',
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'settings',
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.settings_outlined,
+                            size: 20,
+                            color: cs.onSurface,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            l10n.localeName.startsWith('tr')
+                                ? 'Ayarlar'
+                                : l10n.settings,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
+
+          // Timer actions (index 1)
+          if (_currentIndex == 1) ...[
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: AnimatedBuilder(
+                animation: TimerController.instance,
+                builder: (context, _) {
+                  final isHardMode = TimerController.instance.hardMode;
+                  return Tooltip(
+                    message: l10n.hardMode,
+                    child: Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: isHardMode
+                            ? Colors.red.withValues(alpha: isDark ? 0.22 : 0.12)
+                            : (isDark ? cs.surfaceContainerHigh : Colors.white),
+                        border: Border.all(
+                          color: isHardMode
+                              ? Colors.red.withValues(alpha: 0.5)
+                              : (isDark
+                                  ? Colors.white.withValues(alpha: 0.12)
+                                  : Colors.white.withValues(alpha: 0.95)),
+                          width: 1.2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: isHardMode
+                                ? Colors.red.withValues(alpha: 0.15)
+                                : Colors.black.withValues(alpha: isDark ? 0.25 : 0.05),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                          if (!isDark && !isHardMode)
+                            BoxShadow(
+                              color: Colors.white.withValues(alpha: 0.8),
+                              blurRadius: 2,
+                              offset: const Offset(0, -1),
+                            ),
+                        ],
+                      ),
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        iconSize: 18,
+                        icon: Icon(
+                          isHardMode ? Icons.lock_rounded : Icons.lock_open_rounded,
+                          color: isHardMode ? Colors.red : cs.onSurface.withValues(alpha: 0.75),
+                        ),
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          TimerController.instance.toggleHardMode();
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: Tooltip(
+                message: 'Masa Saati / Yatay Mod',
+                child: Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isDark ? cs.surfaceContainerHigh : Colors.white,
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.12)
+                          : Colors.white.withValues(alpha: 0.95),
+                      width: 1.2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.05),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                      if (!isDark)
+                        BoxShadow(
+                          color: Colors.white.withValues(alpha: 0.8),
+                          blurRadius: 2,
+                          offset: const Offset(0, -1),
+                        ),
+                    ],
+                  ),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    iconSize: 19,
+                    icon: Icon(
+                      Icons.stay_current_landscape_rounded,
+                      color: cs.onSurface.withValues(alpha: 0.75),
+                    ),
+                    onPressed: () async {
+                      if (!await requirePremium(context)) return;
+                      if (!context.mounted) return;
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              LandscapeTimerScreen(variant: widget.currentVariant),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+
+          // Social actions (index 2)
+          if (_currentIndex == 2)
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDark ? cs.surfaceContainerHigh : Colors.white,
+                  border: Border.all(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.12)
+                        : Colors.white.withValues(alpha: 0.95),
+                    width: 1.2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(
+                        alpha: isDark ? 0.25 : 0.05,
+                      ),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                    if (!isDark)
+                      BoxShadow(
+                        color: Colors.white.withValues(alpha: 0.8),
+                        blurRadius: 2,
+                        offset: const Offset(0, -1),
+                      ),
+                  ],
+                ),
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  iconSize: 19,
+                  tooltip: l10n.roomFabLabel,
+                  icon: Icon(
+                    Icons.group_add_rounded,
+                    color: cs.onSurface.withValues(alpha: 0.75),
+                  ),
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    SocialHubScreen.showFabOptions(context);
+                  },
+                ),
+              ),
+            ),
+
           // Finance actions (index 3)
-          if (_currentIndex == 3)
-            IconButton(
-              tooltip: l10n.selectMonthTooltip,
-              icon: const Icon(Icons.calendar_month_outlined),
-              onPressed: () => _financeKey.currentState?.showMonthPicker(),
-            ),
-          if (_currentIndex == 3)
-            IconButton(
-              tooltip: l10n.analysisTooltip,
-              icon: const Icon(Icons.insights_outlined),
-              onPressed: () {
-                final month =
-                    _financeKey.currentState?.currentMonth ?? DateTime.now();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => FinanceAnalysisScreen(
-                      month: DateTime(month.year, month.month, 1),
-                      variant: widget.currentVariant,
+          if (_currentIndex == 3) ...[
+            if (!(_financeKey.currentState?.isViewingCurrentMonth ?? true))
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isDark ? cs.surfaceContainerHigh : Colors.white,
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.12)
+                          : Colors.white.withValues(alpha: 0.95),
+                      width: 1.2,
                     ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(
+                          alpha: isDark ? 0.25 : 0.05,
+                        ),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                      if (!isDark)
+                        BoxShadow(
+                          color: Colors.white.withValues(alpha: 0.8),
+                          blurRadius: 2,
+                          offset: const Offset(0, -1),
+                        ),
+                    ],
                   ),
-                );
-              },
-            ),
-          // Profile Actions (Settings)
-          if (_currentIndex == 4)
-            IconButton(
-              tooltip: l10n.settings,
-              icon: const Icon(Icons.settings_outlined),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => SettingsScreen(
-                      onToggleTheme: widget.onToggleTheme,
-                      themeMode: widget.themeMode,
-                      currentVariant: widget.currentVariant,
-                      onVariantChanged: widget.onVariantChanged,
-                      languageManager: widget.languageManager,
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    iconSize: 19,
+                    tooltip: l10n.localeName.startsWith('tr')
+                        ? 'Bu Aya Dön'
+                        : l10n.thisMonth,
+                    icon: const Icon(Icons.today_rounded),
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                      _financeKey.currentState?.selectCurrentMonth();
+                    },
+                  ),
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDark ? cs.surfaceContainerHigh : Colors.white,
+                  border: Border.all(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.12)
+                        : Colors.white.withValues(alpha: 0.95),
+                    width: 1.2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(
+                        alpha: isDark ? 0.25 : 0.05,
+                      ),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
                     ),
-                  ),
-                );
-              },
+                    if (!isDark)
+                      BoxShadow(
+                        color: Colors.white.withValues(alpha: 0.8),
+                        blurRadius: 2,
+                        offset: const Offset(0, -1),
+                      ),
+                  ],
+                ),
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  iconSize: 19,
+                  tooltip: l10n.localeName.startsWith('tr')
+                      ? 'AI Belge / Fiş Tara'
+                      : 'AI Statement Import',
+                  icon: const Icon(Icons.document_scanner_outlined),
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    _financeKey.currentState?.pickAndAnalyzeStatement();
+                  },
+                ),
+              ),
             ),
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDark ? cs.surfaceContainerHigh : Colors.white,
+                  border: Border.all(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.12)
+                        : Colors.white.withValues(alpha: 0.95),
+                    width: 1.2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(
+                        alpha: isDark ? 0.25 : 0.05,
+                      ),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                    if (!isDark)
+                      BoxShadow(
+                        color: Colors.white.withValues(alpha: 0.8),
+                        blurRadius: 2,
+                        offset: const Offset(0, -1),
+                      ),
+                  ],
+                ),
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  iconSize: 19,
+                  tooltip: l10n.localeName.startsWith('tr')
+                      ? 'Finansal Analiz'
+                      : 'Analytics',
+                  icon: const Icon(Icons.insights_rounded),
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    _financeKey.currentState?.openAnalysisScreen();
+                  },
+                ),
+              ),
+            ),
+          ],
         ],
       ),
       body: _buildBody(),
@@ -650,31 +1488,28 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
         selectedIndex: _currentIndex,
         onDestinationSelected: _onNavTap,
         variant: widget.currentVariant,
+        onActionPressed: () =>
+            showQuickCreateSheet(context, variant: widget.currentVariant),
         destinations: [
           CottonDestination(
             icon: Icons.wb_sunny_outlined,
-            selectedIcon: Icons.wb_sunny,
+            selectedIcon: Icons.wb_sunny_rounded,
             label: l10n.today,
           ),
           CottonDestination(
-            icon: Icons.terrain_outlined,
-            selectedIcon: Icons.terrain,
-            label: l10n.vision,
+            icon: Icons.timer_outlined,
+            selectedIcon: Icons.timer_rounded,
+            label: l10n.timerType,
           ),
           CottonDestination(
-            icon: Icons.calendar_view_week_outlined,
-            selectedIcon: Icons.calendar_view_week,
-            label: l10n.weeklySchedule,
+            icon: Icons.groups_outlined,
+            selectedIcon: Icons.groups_rounded,
+            label: l10n.social,
           ),
           CottonDestination(
-            icon: Icons.water_drop_outlined,
-            selectedIcon: Icons.water_drop,
+            icon: Icons.account_balance_wallet_outlined,
+            selectedIcon: Icons.account_balance_wallet_rounded,
             label: l10n.finance,
-          ),
-          CottonDestination(
-            icon: Icons.person_outlined,
-            selectedIcon: Icons.person,
-            label: l10n.profile,
           ),
         ],
       ),
@@ -704,19 +1539,25 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
   void _showXpCelebration(int gain, Color color) {
     final overlay = Overlay.of(context);
     final media = MediaQuery.of(context);
-    final double targetTop = media.padding.top + (kToolbarHeight / 2) - 8;
+    final double targetTop = media.padding.top + 16;
     final entry = OverlayEntry(
       builder: (ctx) => Positioned(
         top: targetTop,
         left: 0,
         right: 0,
-        child: IgnorePointer(
-          child: _XpMinimalToast(amount: gain, color: color),
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: IgnorePointer(
+            child: XpCelebrationToast(
+              amount: gain,
+              primaryColor: color,
+            ),
+          ),
         ),
       ),
     );
     overlay.insert(entry);
-    Future.delayed(const Duration(milliseconds: 3300), () {
+    Future.delayed(const Duration(milliseconds: 2700), () {
       if (entry.mounted) entry.remove();
     });
   }
@@ -805,167 +1646,3 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
   }
 }
 
-class _XpMinimalToast extends StatefulWidget {
-  const _XpMinimalToast({required this.amount, required this.color});
-  final int amount;
-  final Color color;
-
-  @override
-  State<_XpMinimalToast> createState() => _XpMinimalToastState();
-}
-
-class _XpMinimalToastState extends State<_XpMinimalToast>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _c;
-  late final Animation<double> _morph; // 0 → 1 → 0 (dot → pill → dot)
-  late final Animation<double> _fadeIn;
-  late final Animation<double> _fadeOut;
-  late final Animation<double> _offsetY; // drop into AppBar then rise back
-  // Offset removed for pill open/close effect centered on AppBar
-
-  @override
-  void initState() {
-    super.initState();
-    _c = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 3000),
-    );
-    _morph = TweenSequence<double>([
-      TweenSequenceItem(
-        tween: Tween(
-          begin: 0.0,
-          end: 1.0,
-        ).chain(CurveTween(curve: Curves.easeOutCubic)),
-        weight: 50,
-      ),
-      // slight hold at full pill
-      TweenSequenceItem(
-        tween: ConstantTween(1.0),
-        weight: 50, // much longer plateau at full pill
-      ),
-      TweenSequenceItem(
-        tween: Tween(
-          begin: 1.0,
-          end: 0.0,
-        ).chain(CurveTween(curve: Curves.easeInCubic)),
-        weight: 35,
-      ),
-    ]).animate(_c);
-    _offsetY = TweenSequence<double>([
-      // drop from above (-32) to center (0)
-      TweenSequenceItem(
-        tween: Tween(
-          begin: -36.0,
-          end: 0.0,
-        ).chain(CurveTween(curve: Curves.easeOutQuad)),
-        weight: 40,
-      ),
-      // hold in center
-      TweenSequenceItem(tween: ConstantTween(0.0), weight: 30),
-      // rise back up
-      TweenSequenceItem(
-        tween: Tween(
-          begin: 0.0,
-          end: -36.0,
-        ).chain(CurveTween(curve: Curves.easeInQuad)),
-        weight: 30,
-      ),
-    ]).animate(_c);
-    _fadeIn = CurvedAnimation(
-      parent: _c,
-      curve: const Interval(0.02, 0.14, curve: Curves.easeOut),
-    );
-    _fadeOut = CurvedAnimation(
-      parent: _c,
-      curve: const Interval(0.92, 1.0, curve: Curves.easeIn),
-    );
-    _c.forward();
-  }
-
-  @override
-  void dispose() {
-    _c.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _c,
-      builder: (context, _) {
-        // Morph dot → pill → dot around AppBar center
-        final opacity = _fadeIn.value * (1 - _fadeOut.value + 1e-6);
-        final g = _morph.value.clamp(0.0, 1.0);
-
-        // Text style and target width measurement
-        // Use black text on light theme for readability, white on dark
-        final isLight = Theme.of(context).brightness == Brightness.light;
-        final textStyle = TextStyle(
-          color: isLight ? Colors.black : Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.2,
-          decoration: TextDecoration.none,
-        );
-        final text = '+${widget.amount} XP';
-        final tp = TextPainter(
-          text: const TextSpan(text: ''),
-          textDirection: TextDirection.ltr,
-        );
-        tp.text = TextSpan(text: text, style: textStyle);
-        tp.layout();
-        final targetWidth = tp.width + 28; // 14px padding each side
-
-        final width = ui.lerpDouble(6.0, targetWidth, g)!;
-        final height = ui.lerpDouble(6.0, 28.0, g)!;
-        final radius = height / 2;
-
-        double smoothStep(double x, double a, double b) {
-          if (x <= a) return 0.0;
-          if (x >= b) return 1.0;
-          final t = (x - a) / (b - a);
-          return t.clamp(0.0, 1.0);
-        }
-
-        // Keep text visible while in pill form; fade in as it becomes a pill.
-        // We tie it to morph (g) so plateau at g=1 keeps text fully visible.
-        final textAppear = smoothStep(g, 0.35, 0.75);
-        final textOpacity = (opacity * textAppear).clamp(0.0, 1.0);
-
-        // Background opacity ramps with morph, softer at ends
-        final tail = g < 0.15 ? g / 0.15 : (g > 0.85 ? (1 - g) / 0.15 : 1.0);
-        final bgOpacity = 0.16 * tail.clamp(0.0, 1.0);
-
-        return Opacity(
-          opacity: opacity.clamp(0.0, 1.0),
-          child: Center(
-            child: Transform.translate(
-              offset: Offset(0, _offsetY.value),
-              child: Container(
-                width: width,
-                height: height,
-                decoration: BoxDecoration(
-                  color: widget.color.withOpacity(bgOpacity),
-                  borderRadius: BorderRadius.circular(radius),
-                  boxShadow: [
-                    if (bgOpacity > 0)
-                      BoxShadow(
-                        color: widget.color.withOpacity(0.18 * tail),
-                        blurRadius: 10,
-                        offset: const Offset(0, 2),
-                      ),
-                  ],
-                ),
-                alignment: Alignment.center,
-                child: Opacity(
-                  opacity: textOpacity,
-                  child: Text(text, style: textStyle),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}

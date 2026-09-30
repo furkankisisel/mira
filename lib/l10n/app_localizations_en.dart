@@ -9,6 +9,79 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get onboardingPlanLocal => 'A starter plan based on your answers';
+
+  @override
+  String get onboardingPlanAi => 'An AI-assisted plan based on your answers';
+
+  @override
+  String get onboardingPlanAdvice => 'Your first-week guide';
+
+  @override
+  String get onboardingPlanReason => 'Why this is suggested for you';
+
+  @override
+  String get onboardingPlanChooseOne =>
+      'Start with one for the first week. Add more as you find what fits.';
+
+  @override
+  String get onboardingPlanSaveError =>
+      'We couldn’t save your habits. Your selections are still here; please try again.';
+
+  @override
+  String get onboardingStoryWelcomeTitle =>
+      'A little more you.\nA rhythm of your own.';
+
+  @override
+  String get onboardingStoryWelcomeBody =>
+      'Let’s get to know you. Turn your goals into small habits, plan your day and check in with how you feel with Mira.';
+
+  @override
+  String get onboardingStoryNote => '12 short questions · At your own pace';
+
+  @override
+  String get onboardingStoryVisionTitle => 'Make room for your dreams.';
+
+  @override
+  String get onboardingStoryVisionBody =>
+      'Bring the goals that inspire you together on your vision board.';
+
+  @override
+  String get onboardingStoryRoutineTitle => 'Small steps, everyday progress.';
+
+  @override
+  String get onboardingStoryRoutineBody =>
+      'Let your habits and weekly plan make room for what matters to you.';
+
+  @override
+  String get onboardingStoryBalanceTitle => 'Listen to yourself.';
+
+  @override
+  String get onboardingStoryBalanceBody =>
+      'Track your mood and notice the moments that help you feel good.';
+
+  @override
+  String get onboardingStoryConnectionTitle => 'Grow together.';
+
+  @override
+  String get onboardingStoryConnectionBody =>
+      'Share your goals in rooms and encourage each other along the way.';
+
+  @override
+  String get onboardingStoryAnswerHint => 'How much does this sound like you?';
+
+  @override
+  String get onboardingStoryResult => 'Discover my profile';
+
+  @override
+  String get onboardingStoryLoading =>
+      'Turning your answers into personal suggestions…';
+
+  @override
+  String get onboardingStoryError =>
+      'We couldn’t prepare your suggestions just now. Your answers are still here; please try again.';
+
+  @override
   String get about => 'About';
 
   @override
@@ -4306,7 +4379,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'View your invoices on Google Play Store';
 
   @override
-  String get vision => 'Vision';
+  String get vision => 'Goals';
 
   @override
   String visionAutoDurationInfo(Object day) {
@@ -4544,4 +4617,85 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get yourMoodToday => 'Your Mood Today';
+
+  @override
+  String get activeGoal => 'Active Goal';
+
+  @override
+  String get goals => 'Goals';
+
+  @override
+  String todayStepsCount(Object count) {
+    return '$count step today';
+  }
+
+  @override
+  String todayTasksCount(Object count) {
+    return '$count task today';
+  }
+
+  @override
+  String percentCompleted(Object percent) {
+    return '$percent% completed';
+  }
+
+  @override
+  String get goalSummary => 'Goal Summary';
+
+  @override
+  String get goToGoal => 'Go to Goal';
+
+  @override
+  String get viewAllGoals => 'View All Goals';
+
+  @override
+  String get todaySteps => 'Steps for Today';
+
+  @override
+  String get todayStepsDone => 'You completed today\'s steps! 🌟';
+
+  @override
+  String get linkedHabits => 'Linked Habits';
+
+  @override
+  String get oneTimeTasks => 'One-Time Tasks';
+
+  @override
+  String get addSmallStep => 'Add a small step for this goal';
+
+  @override
+  String get addSmallStepSubtitle =>
+      'Set a daily action that moves you toward your goal';
+
+  @override
+  String get createNewHabit => 'Create New Habit';
+
+  @override
+  String get createNewHabitSubtitle =>
+      'Set up a new routine that supports this goal';
+
+  @override
+  String get linkExistingHabit => 'Link Existing Habit';
+
+  @override
+  String get linkExistingHabitSubtitle =>
+      'Add a habit you already track to this goal';
+
+  @override
+  String get skipForNow => 'Skip for Now';
+
+  @override
+  String get noLinkedHabits => 'No linked habits yet';
+
+  @override
+  String get addHabitStep => 'Add Habit';
+
+  @override
+  String get selectHabitsToLink => 'Select Habits to Link';
+
+  @override
+  String get setGoal => 'Set Goal';
+
+  @override
+  String get swipeGoalsHint => 'Swipe to switch';
 }

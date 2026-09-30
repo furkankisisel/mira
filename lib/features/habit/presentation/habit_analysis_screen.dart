@@ -75,6 +75,7 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     // Canlı veriyi repository'den çek
     if (widget.habitId != null) {
       _liveHabit = _repo.findById(widget.habitId!);
@@ -101,12 +102,112 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
     return Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        title: Text('${widget.habitTitle} • ${l10n.analysis}'),
+        centerTitle: false,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+        scrolledUnderElevation: 0,
+        leadingWidth: 56,
+        leading: Center(
+          child: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: isDark ? colorScheme.surfaceContainerHigh : Colors.white,
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.12)
+                    : Colors.white.withValues(alpha: 0.95),
+                width: 1.2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.05),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+                if (!isDark)
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    blurRadius: 2,
+                    offset: const Offset(0, -1),
+                  ),
+              ],
+            ),
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              iconSize: 18,
+              icon: const Icon(Icons.arrow_back_ios_new_rounded),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+        ),
+        title: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+          decoration: BoxDecoration(
+            color: isDark ? colorScheme.surfaceContainerHigh : Colors.white,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.12)
+                  : Colors.white.withValues(alpha: 0.95),
+              width: 1.2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+              if (!isDark)
+                BoxShadow(
+                  color: Colors.white.withValues(alpha: 0.8),
+                  blurRadius: 2,
+                  offset: const Offset(0, -1),
+                ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: widget.habitColor.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: _liveHabit?.emoji != null && _liveHabit!.emoji!.isNotEmpty
+                      ? Text(_liveHabit!.emoji!, style: const TextStyle(fontSize: 12))
+                      : Icon(widget.habitIcon, size: 12, color: widget.habitColor),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  widget.habitTitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    letterSpacing: -0.2,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 5),
+              Text(
+                '• ${l10n.analysis}',
+                style: TextStyle(
+                  color: colorScheme.onSurface.withValues(alpha: 0.5),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -117,58 +218,78 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
             // Habit info card
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
               decoration: BoxDecoration(
-                // Use a stronger surfaceVariant in dark mode so the card separates
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? colorScheme.surfaceContainerHighest
-                        .withValues(alpha: 0.18)
-                    : widget.habitColor.withValues(alpha: 0.10),
-                borderRadius: BorderRadius.circular(16),
+                color: isDark
+                    ? colorScheme.surfaceContainerHigh.withValues(alpha: 0.6)
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(22),
                 border: Border.all(
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? widget.habitColor.withValues(alpha: 0.40)
-                      : widget.habitColor.withValues(alpha: 0.28),
-                  width: 1,
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : const Color(0xFFF1F5F9),
+                  width: 1.2,
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
+                    blurRadius: 14,
+                    offset: const Offset(0, 4),
+                  ),
+                  if (!isDark)
+                    BoxShadow(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      blurRadius: 2,
+                      offset: const Offset(0, -1),
+                    ),
+                ],
               ),
               child: Column(
                 children: [
                   Hero(
                     tag: 'habit_icon_${widget.habitTitle}',
                     child: Container(
-                      width: 60,
-                      height: 60,
+                      width: 64,
+                      height: 64,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? widget.habitColor.withValues(alpha: 0.30)
-                            : widget.habitColor.withValues(alpha: 0.20),
-                        borderRadius: BorderRadius.circular(16),
+                        color: widget.habitColor.withValues(alpha: 0.14),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: widget.habitColor.withValues(alpha: 0.22),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      child: Icon(
-                        widget.habitIcon,
-                        color: widget.habitColor,
-                        size: 30,
+                      child: Center(
+                        child: _liveHabit?.emoji != null && _liveHabit!.emoji!.isNotEmpty
+                            ? Text(_liveHabit!.emoji!, style: const TextStyle(fontSize: 32))
+                            : Icon(widget.habitIcon, color: widget.habitColor, size: 30),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
                   Text(
                     widget.habitTitle,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: widget.habitColor,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: colorScheme.onSurface,
+                      letterSpacing: -0.3,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    widget.habitDescription,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+                  if (widget.habitDescription.trim().isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      widget.habitDescription,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                        fontSize: 13,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
+                  ],
                 ],
               ),
             ),
@@ -186,13 +307,23 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
             Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(12),
+                color: isDark
+                    ? colorScheme.surfaceContainerHigh.withValues(alpha: 0.5)
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? colorScheme.outlineVariant.withValues(alpha: 0.60)
-                      : Colors.transparent,
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : const Color(0xFFF1F5F9),
+                  width: 1.2,
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
@@ -224,7 +355,7 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
                   l10n.totalSuccessfulDays,
                   l10n.daysCount(_successfulDaysSelected()),
                   '',
-                  Icons.check_circle_outline,
+                  Icons.check_circle_rounded,
                   Theme.of(context).colorScheme.primary,
                 ),
                 // 2) Toplam Başarısız Gün
@@ -232,7 +363,7 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
                   l10n.totalUnsuccessfulDays,
                   l10n.daysCount(_unsuccessfulDaysSelected()),
                   '',
-                  Icons.cancel_outlined,
+                  Icons.cancel_rounded,
                   Theme.of(context).colorScheme.error,
                 ),
                 // Seri kartları yukarı taşındı
@@ -242,16 +373,16 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
                     l10n.totalDuration,
                     '${_totalMinutesSelected()} ${widget.unit ?? 'min'}',
                     '',
-                    Icons.access_time,
-                    Colors.green,
+                    Icons.access_time_rounded,
+                    Colors.teal,
                   )
                 else
                   _buildStatCard(
                     l10n.totalProgress,
                     _totalRawSelectedWithUnit(),
                     '',
-                    Icons.data_usage_outlined,
-                    Colors.green,
+                    Icons.insights_rounded,
+                    Colors.teal,
                   ),
               ],
             ),
@@ -265,24 +396,28 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
               height: 300,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? colorScheme.surfaceContainerHighest
-                        .withValues(alpha: 0.06)
-                    : colorScheme.surface,
-                borderRadius: BorderRadius.circular(16),
+                color: isDark
+                    ? colorScheme.surfaceContainerHigh.withValues(alpha: 0.6)
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(22),
                 boxShadow: [
                   BoxShadow(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.black.withValues(alpha: 0.10)
-                        : Colors.black.withValues(alpha: 0.05),
+                    color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
                     blurRadius: 12,
-                    offset: const Offset(0, 2),
+                    offset: const Offset(0, 3),
                   ),
+                  if (!isDark)
+                    BoxShadow(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      blurRadius: 2,
+                      offset: const Offset(0, -1),
+                    ),
                 ],
                 border: Border.all(
-                  color: Theme.of(context).brightness == Brightness.light
-                      ? colorScheme.outlineVariant.withValues(alpha: 0.50)
-                      : colorScheme.outline.withValues(alpha: 0.10),
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : const Color(0xFFF1F5F9),
+                  width: 1.2,
                 ),
               ),
               child: Column(
@@ -297,7 +432,8 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
                                 ? l10n.yearlyProgress
                                 : l10n.overallProgress,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.2,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -318,34 +454,55 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                gradient: Theme.of(context).brightness == Brightness.dark
-                    ? LinearGradient(
-                        colors: [
-                          colorScheme.surfaceContainerHighest
-                              .withValues(alpha: 0.12),
-                          colorScheme.surface.withValues(alpha: 0.04),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      )
-                    : LinearGradient(
-                        colors: [
-                          widget.habitColor.withValues(alpha: 0.10),
-                          widget.habitColor.withValues(alpha: 0.05),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                borderRadius: BorderRadius.circular(16),
+                color: isDark
+                    ? colorScheme.surfaceContainerHigh.withValues(alpha: 0.6)
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : const Color(0xFFF1F5F9),
+                  width: 1.2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+                    blurRadius: 12,
+                    offset: const Offset(0, 3),
+                  ),
+                  if (!isDark)
+                    BoxShadow(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      blurRadius: 2,
+                      offset: const Offset(0, -1),
+                    ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '🎯 ${AppLocalizations.of(context).motivation}',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.amber.withValues(alpha: 0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.lightbulb_outline_rounded,
+                          color: Colors.amber,
+                          size: 16,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        AppLocalizations.of(context).motivation,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 12),
                   Text(
@@ -357,6 +514,7 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
                     ),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant,
+                      fontSize: 13,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -377,31 +535,36 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
     IconData icon,
     Color color,
   ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).brightness == Brightness.dark
-            ? Theme.of(
-                context,
-              ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.10)
-            : Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
+        color: isDark
+            ? colorScheme.surfaceContainerHigh.withValues(alpha: 0.6)
+            : Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : const Color(0xFFF1F5F9),
+          width: 1.2,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.black.withValues(alpha: 0.10)
-                : Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
           ),
+          if (!isDark)
+            BoxShadow(
+              color: Colors.white.withValues(alpha: 0.8),
+              blurRadius: 2,
+              offset: const Offset(0, -1),
+            ),
         ],
-        border: Border.all(
-          color: Theme.of(context).brightness == Brightness.light
-              ? Theme.of(
-                  context,
-                ).colorScheme.outlineVariant.withValues(alpha: 0.50)
-              : Theme.of(context).colorScheme.outline.withValues(alpha: 0.12),
-        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -409,32 +572,46 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(icon, color: color, size: 20),
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Icon(icon, color: color, size: 16),
+                ),
+              ),
               if (subtitle.isNotEmpty)
                 Text(
                   subtitle,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: color,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
             ],
           ),
           const Spacer(),
           Text(
             title,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             value,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w800,
+              fontSize: 17,
+              color: colorScheme.onSurface,
+            ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -445,24 +622,40 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
 
   Widget _buildPeriodButton(String text, int index) {
     final isSelected = _selectedPeriod == index;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
-      onTap: () => setState(() => _selectedPeriod = index),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+      onTap: () {
+        HapticFeedback.selectionClick();
+        setState(() => _selectedPeriod = index);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 9),
         decoration: BoxDecoration(
           color: isSelected
-              ? Theme.of(context).colorScheme.primary
+              ? (isDark ? colorScheme.primary : colorScheme.primary)
               : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: colorScheme.primary.withValues(alpha: 0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
         ),
         child: Text(
           text,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 color: isSelected
-                    ? Theme.of(context).colorScheme.onPrimary
-                    : Theme.of(context).colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
+                    ? colorScheme.onPrimary
+                    : colorScheme.onSurfaceVariant,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                fontSize: 13,
               ),
         ),
       ),
@@ -824,24 +1017,32 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
       return cells;
     }
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
+        color: isDark
+            ? colorScheme.surfaceContainerHigh.withValues(alpha: 0.6)
+            : Colors.white,
+        borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.black.withValues(alpha: 0.10)
-                : Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
           ),
+          if (!isDark)
+            BoxShadow(
+              color: Colors.white.withValues(alpha: 0.8),
+              blurRadius: 2,
+              offset: const Offset(0, -1),
+            ),
         ],
         border: Border.all(
-          color: Theme.of(context).brightness == Brightness.light
-              ? colorScheme.outlineVariant.withValues(alpha: 0.50)
-              : colorScheme.outline.withValues(alpha: 0.10),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : const Color(0xFFF1F5F9),
+          width: 1.2,
         ),
       ),
       child: Column(
@@ -850,17 +1051,31 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
           Row(
             children: [
               if (withNav)
-                IconButton(
-                  icon: const Icon(Icons.chevron_left),
-                  onPressed: () {
-                    setState(() {
-                      _calendarMonth = DateTime(
-                        _calendarMonth.year,
-                        _calendarMonth.month - 1,
-                        1,
-                      );
-                    });
-                  },
+                Container(
+                  width: 32,
+                  height: 32,
+                  margin: const EdgeInsets.only(right: 6),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isDark
+                        ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
+                        : const Color(0xFFF1F5F9),
+                  ),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    iconSize: 18,
+                    icon: const Icon(Icons.chevron_left_rounded),
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                      setState(() {
+                        _calendarMonth = DateTime(
+                          _calendarMonth.year,
+                          _calendarMonth.month - 1,
+                          1,
+                        );
+                      });
+                    },
+                  ),
                 ),
               Expanded(
                 child: Text(
@@ -874,19 +1089,33 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
                 ),
               ),
               if (withNav)
-                IconButton(
-                  icon: const Icon(Icons.chevron_right),
-                  onPressed: () {
-                    setState(() {
-                      _calendarMonth = DateTime(
-                        _calendarMonth.year,
-                        _calendarMonth.month + 1,
-                        1,
-                      );
-                    });
-                  },
+                Container(
+                  width: 32,
+                  height: 32,
+                  margin: const EdgeInsets.only(left: 6, right: 6),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isDark
+                        ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
+                        : const Color(0xFFF1F5F9),
+                  ),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    iconSize: 18,
+                    icon: const Icon(Icons.chevron_right_rounded),
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                      setState(() {
+                        _calendarMonth = DateTime(
+                          _calendarMonth.year,
+                          _calendarMonth.month + 1,
+                          1,
+                        );
+                      });
+                    },
+                  ),
                 ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 4),
               Flexible(
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -1132,26 +1361,32 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
       ]);
     }
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).brightness == Brightness.dark
-            ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.06)
-            : colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
+        color: isDark
+            ? colorScheme.surfaceContainerHigh.withValues(alpha: 0.6)
+            : Colors.white,
+        borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.black.withValues(alpha: 0.10)
-                : Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
           ),
+          if (!isDark)
+            BoxShadow(
+              color: Colors.white.withValues(alpha: 0.8),
+              blurRadius: 2,
+              offset: const Offset(0, -1),
+            ),
         ],
         border: Border.all(
-          color: Theme.of(context).brightness == Brightness.dark
-              ? colorScheme.outline.withValues(alpha: 0.10)
-              : Colors.transparent,
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : const Color(0xFFF1F5F9),
+          width: 1.2,
         ),
       ),
       child: Column(
@@ -1159,7 +1394,14 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
         children: [
           Row(
             children: [
-              const Icon(Icons.emoji_events, color: Colors.amber),
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.emoji_events_rounded, color: Colors.amber, size: 16),
+              ),
               const SizedBox(width: 8),
               Text(
                 AppLocalizations.of(context).badges,
@@ -1217,6 +1459,7 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
 
   Widget _buildSuccessDonut() {
     final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final success = _successfulDaysSelected();
     final fail = _unsuccessfulDaysSelected();
     final total = (success + fail);
@@ -1226,15 +1469,29 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
       height: 220,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
+        color: isDark
+            ? colorScheme.surfaceContainerHigh.withValues(alpha: 0.6)
+            : Colors.white,
+        borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
           ),
+          if (!isDark)
+            BoxShadow(
+              color: Colors.white.withValues(alpha: 0.8),
+              blurRadius: 2,
+              offset: const Offset(0, -1),
+            ),
         ],
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : const Color(0xFFF1F5F9),
+          width: 1.2,
+        ),
       ),
       padding: const EdgeInsets.all(16),
       child: Stack(
@@ -1287,29 +1544,35 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
   Widget _buildStreakRow() {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     return Row(
       children: [
         Expanded(
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.08)
-                  : colorScheme.surface,
-              borderRadius: BorderRadius.circular(12),
+              color: isDark
+                  ? colorScheme.surfaceContainerHigh.withValues(alpha: 0.6)
+                  : Colors.white,
+              borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.black.withValues(alpha: 0.10)
-                      : Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+                  color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
                 ),
+                if (!isDark)
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    blurRadius: 2,
+                    offset: const Offset(0, -1),
+                  ),
               ],
               border: Border.all(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? colorScheme.outline.withValues(alpha: 0.10)
-                    : Colors.transparent,
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : const Color(0xFFF1F5F9),
+                width: 1.2,
               ),
             ),
             child: Column(
@@ -1317,25 +1580,43 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
               children: [
                 Row(
                   children: [
-                    const Icon(
-                      Icons.whatshot_outlined,
-                      color: Colors.orange,
-                      size: 18,
+                    Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withValues(alpha: 0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.whatshot_rounded,
+                          color: Colors.orange,
+                          size: 16,
+                        ),
+                      ),
                     ),
-                    const SizedBox(width: 6),
-                    Text(
-                      AppLocalizations.of(context).longestStreak,
-                      style: theme.textTheme.labelSmall,
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        AppLocalizations.of(context).longestStreak,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
                 Text(
                   AppLocalizations.of(
                     context,
                   ).daysCount(_longestStreakAllHistory()),
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 17,
                   ),
                 ),
               ],
@@ -1347,36 +1628,72 @@ class _HabitAnalysisScreenState extends State<HabitAnalysisScreen> {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(12),
+              color: isDark
+                  ? colorScheme.surfaceContainerHigh.withValues(alpha: 0.6)
+                  : Colors.white,
+              borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+                  color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
                 ),
+                if (!isDark)
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    blurRadius: 2,
+                    offset: const Offset(0, -1),
+                  ),
               ],
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : const Color(0xFFF1F5F9),
+                width: 1.2,
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.trending_up, color: Colors.blue, size: 18),
-                    const SizedBox(width: 6),
-                    Text(
-                      AppLocalizations.of(context).currentStreak,
-                      style: theme.textTheme.labelSmall,
+                    Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withValues(alpha: 0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.trending_up_rounded,
+                          color: Colors.blue,
+                          size: 16,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        AppLocalizations.of(context).currentStreak,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
                 Text(
                   AppLocalizations.of(
                     context,
                   ).daysCount(_currentStreakSelected()),
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 17,
                   ),
                 ),
               ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../onboarding/presentation/onboarding_screen.dart';
 import '../onboarding/data/onboarding_repository.dart';
-import 'package:mira/l10n/app_localizations.dart';
+import '../onboarding/presentation/onboarding_story_widgets.dart';
 
 /// Screen shown after successful sign-in to choose whether to start the test or skip it.
 class TestChoiceScreen extends StatelessWidget {
@@ -19,62 +19,13 @@ class TestChoiceScreen extends StatelessWidget {
     onStart?.call();
     Navigator.of(
       context,
-    ).push(MaterialPageRoute(builder: (_) => const OnboardingScreen()));
+    ).push(MaterialPageRoute(
+        builder: (_) => const OnboardingScreen(showWelcome: false)));
   }
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              const Spacer(),
-              Icon(
-                Icons.psychology,
-                size: 80,
-                color: theme.colorScheme.primary,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                AppLocalizations.of(context).startTestTitle,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                AppLocalizations.of(context).startTestDesc,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const Spacer(),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => _skipTest(context),
-                      child: Text(AppLocalizations.of(context).skipTest),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: FilledButton(
-                      onPressed: () => _startTest(context),
-                      child: Text(AppLocalizations.of(context).startTest),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => OnboardingWelcome(
+        onStart: () => _startTest(context),
+        onSkip: () => _skipTest(context),
+      );
 }

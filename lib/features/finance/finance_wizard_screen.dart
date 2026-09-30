@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+
 import '../../core/utils/emoji_presets.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/widgets/wizard_base_widgets.dart';
@@ -9,7 +10,7 @@ import 'data/finance_category_repository.dart';
 import 'data/transaction_model.dart';
 import 'data/transaction_repository.dart';
 
-/// Finans işlemi oluşturma wizard'ı - 4 sayfalı kompakt akış
+/// Finans işlemi oluşturma wizard'ı - Cotton Design System 4 adımlı akış
 class FinanceWizardScreen extends StatefulWidget {
   const FinanceWizardScreen({
     super.key,
@@ -42,16 +43,11 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
   bool _recurringForever = true;
   int _recurringMonths = 12;
 
-  // 4 sayfa:
-  // 0: Tip + Kategori
-  // 1: İsim + Tutar
-  // 2: Tarih + Tekrarlama
-  // 3: Önizleme
   static const int _totalPages = 4;
 
   Color get _accentColor => _type == TransactionType.income
-      ? const Color(0xFF22C55E)
-      : const Color(0xFFEF4444);
+      ? const Color(0xFF10B981)
+      : const Color(0xFFF43F5E);
 
   @override
   void initState() {
@@ -76,9 +72,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
             orElse: () => cats.first,
           );
         }
-      } catch (e) {
-        // ignore
-      }
+      } catch (_) {}
     } else {
       _type = widget.initialType;
     }
@@ -93,21 +87,23 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
   }
 
   void _nextPage() {
+    HapticFeedback.lightImpact();
     if (_currentPage < _totalPages - 1) {
       _pageController.animateToPage(
         _currentPage + 1,
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeOutCubic,
       );
     }
   }
 
   void _previousPage() {
+    HapticFeedback.lightImpact();
     if (_currentPage > 0) {
       _pageController.animateToPage(
         _currentPage - 1,
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeOutCubic,
       );
     } else {
       Navigator.pop(context);
@@ -129,10 +125,22 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
     }
   }
 
+  void _quickAddAmount(double add) {
+    HapticFeedback.selectionClick();
+    final current = _parsedAmount();
+    final updated = current + add;
+    final localeName = Localizations.localeOf(context).toString();
+    _amountCtrl.text = NumberFormat.decimalPattern(localeName).format(updated);
+    setState(() {});
+  }
+
   Future<void> _saveTransaction() async {
+    HapticFeedback.mediumImpact();
     final tx = FinanceTransaction(
       id: widget.existing?.id ?? 'tx_${DateTime.now().millisecondsSinceEpoch}',
-      title: _titleCtrl.text.trim(),
+      title: _titleCtrl.text.trim().isNotEmpty
+          ? _titleCtrl.text.trim()
+          : (_selectedCategory?.name ?? 'İşlem'),
       amount: _parsedAmount(),
       date: _selectedDate,
       type: _type,
@@ -165,132 +173,167 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
     final created = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      showDragHandle: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheetState) => SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 16,
-                bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    AppLocalizations.of(ctx).newCategory,
-                    style: Theme.of(ctx).textTheme.titleMedium,
+        builder: (ctx, setSheetState) {
+          final isDark = Theme.of(ctx).brightness == Brightness.dark;
+          final scheme = Theme.of(ctx).colorScheme;
+
+          return Container(
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E1E24) : Colors.white,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+            ),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    top: 14,
+                    bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
                   ),
-                  const SizedBox(height: 16),
-                  Center(
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color:
-                            Theme.of(ctx).colorScheme.surfaceContainerHighest,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Theme.of(ctx)
-                              .colorScheme
-                              .outline
-                              .withOpacity(0.2),
-                        ),
-                      ),
-                      alignment: Alignment.center,
-                      child: TextField(
-                        controller: emojiCtrl,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 40),
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          hintText: '😊',
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        onChanged: (v) {
-                          if (v.characters.length > 1) {
-                            emojiCtrl.text = v.characters.last;
-                            emojiCtrl.selection = TextSelection.fromPosition(
-                              TextPosition(offset: emojiCtrl.text.length),
-                            );
-                          }
-                          setSheetState(() {
-                            selectedEmoji = emojiCtrl.text;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Center(
-                    child: Text(
-                      AppLocalizations.of(ctx).chooseEmoji.replaceAll(':', ''),
-                      style: Theme.of(ctx).textTheme.bodySmall,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: nameCtrl,
-                    textCapitalization: TextCapitalization.sentences,
-                    decoration: InputDecoration(
-                      labelText: AppLocalizations.of(ctx).categoryName,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    AppLocalizations.of(ctx).quickSuggestions,
-                    style: Theme.of(ctx).textTheme.labelLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    height: 160,
-                    child: SingleChildScrollView(
-                      child: _EmojiGrid(
-                        selectedEmoji: selectedEmoji,
-                        onSelect: (e) => setSheetState(() {
-                          selectedEmoji = e;
-                          emojiCtrl.text = e;
-                        }),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, false),
-                        child: Text(AppLocalizations.of(ctx).cancel),
+                      Center(
+                        child: Container(
+                          width: 36,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: Colors.grey.withValues(alpha: 0.35),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
                       ),
-                      const SizedBox(width: 8),
-                      FilledButton(
-                        onPressed: () {
-                          if (nameCtrl.text.trim().isEmpty ||
-                              (selectedEmoji == null ||
-                                  selectedEmoji!.isEmpty)) {
-                            return;
-                          }
-                          Navigator.pop(ctx, true);
-                        },
-                        child: Text(AppLocalizations.of(ctx).create),
+                      const SizedBox(height: 16),
+                      Text(
+                        AppLocalizations.of(ctx).newCategory,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.3,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Center(
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? scheme.surfaceContainerHighest.withValues(alpha: 0.5)
+                                : Colors.black.withValues(alpha: 0.04),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: scheme.primary.withValues(alpha: 0.3),
+                              width: 1.5,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: TextField(
+                            controller: emojiCtrl,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 40),
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              hintText: '😊',
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            onChanged: (v) {
+                              if (v.characters.length > 1) {
+                                emojiCtrl.text = v.characters.last;
+                                emojiCtrl.selection = TextSelection.fromPosition(
+                                  TextPosition(offset: emojiCtrl.text.length),
+                                );
+                              }
+                              setSheetState(() {
+                                selectedEmoji = emojiCtrl.text;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Center(
+                        child: Text(
+                          AppLocalizations.of(ctx).chooseEmoji.replaceAll(':', ''),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: scheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: nameCtrl,
+                        textCapitalization: TextCapitalization.sentences,
+                        decoration: InputDecoration(
+                          labelText: AppLocalizations.of(ctx).categoryName,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          filled: true,
+                          fillColor: isDark
+                              ? scheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                              : Colors.black.withValues(alpha: 0.03),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        AppLocalizations.of(ctx).quickSuggestions,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: 140,
+                        child: SingleChildScrollView(
+                          child: _EmojiGrid(
+                            selectedEmoji: selectedEmoji,
+                            onSelect: (e) => setSheetState(() {
+                              selectedEmoji = e;
+                              emojiCtrl.text = e;
+                            }),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: Text(AppLocalizations.of(ctx).cancel),
+                          ),
+                          const SizedBox(width: 8),
+                          FilledButton(
+                            style: FilledButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            onPressed: () {
+                              if (nameCtrl.text.trim().isEmpty ||
+                                  (selectedEmoji == null || selectedEmoji!.isEmpty)) {
+                                return;
+                              }
+                              Navigator.pop(ctx, true);
+                            },
+                            child: Text(AppLocalizations.of(ctx).create),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
 
@@ -302,8 +345,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
         emoji: selectedEmoji,
         type: type,
         colorValue: type == TransactionType.income
-            ? const Color(0xFF22C55E).value
-            : const Color(0xFFEF4444).value,
+            ? const Color(0xFF10B981).value
+            : const Color(0xFFF43F5E).value,
       );
       await widget.catRepo.add(cat);
       return cat;
@@ -312,69 +355,79 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
   }
 
   Future<void> _showCategoryActions(
-      BuildContext context, FinanceCategory cat) async {
+    BuildContext context,
+    FinanceCategory cat,
+  ) async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     await showModalBottomSheet(
       context: context,
-      showDragHandle: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit_outlined),
-              title: Text(AppLocalizations.of(ctx).editCategory),
-              onTap: () {
-                Navigator.pop(ctx);
-                _editCategory(context, cat);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.delete_outline, color: Colors.red[600]),
-              title: Text(
-                AppLocalizations.of(ctx).deleteCategoryTitle,
-                style: TextStyle(color: Colors.red[600]),
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E1E24) : Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.edit_outlined),
+                title: Text(AppLocalizations.of(ctx).editCategory),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _editCategory(context, cat);
+                },
               ),
-              onTap: () async {
-                Navigator.pop(ctx);
-                final confirmed = await showDialog<bool>(
-                      context: context,
-                      builder: (dctx) => AlertDialog(
-                        title: Text(AppLocalizations.of(dctx).delete),
-                        content: Text(
-                          AppLocalizations.of(dctx)
-                              .deleteCategoryConfirmNamed(cat.name),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(dctx, false),
-                            child: Text(AppLocalizations.of(dctx).cancel),
+              ListTile(
+                leading: const Icon(Icons.delete_outline, color: Color(0xFFF43F5E)),
+                title: Text(
+                  AppLocalizations.of(ctx).deleteCategoryTitle,
+                  style: const TextStyle(color: Color(0xFFF43F5E)),
+                ),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (dctx) => AlertDialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                          FilledButton(
-                            style: FilledButton.styleFrom(
-                              backgroundColor: Colors.red[600],
+                          title: Text(AppLocalizations.of(dctx).delete),
+                          content: Text(
+                            AppLocalizations.of(dctx)
+                                .deleteCategoryConfirmNamed(cat.name),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(dctx, false),
+                              child: Text(AppLocalizations.of(dctx).cancel),
                             ),
-                            onPressed: () => Navigator.pop(dctx, true),
-                            child: Text(AppLocalizations.of(dctx).delete),
-                          ),
-                        ],
-                      ),
-                    ) ??
-                    false;
-                if (confirmed) {
-                  await widget.catRepo.remove(cat.id);
-                  if (_selectedCategory?.id == cat.id) {
-                    setState(() => _selectedCategory = null);
-                  } else {
-                    setState(() {});
+                            FilledButton(
+                              style: FilledButton.styleFrom(
+                                backgroundColor: const Color(0xFFF43F5E),
+                              ),
+                              onPressed: () => Navigator.pop(dctx, true),
+                              child: Text(AppLocalizations.of(dctx).delete),
+                            ),
+                          ],
+                        ),
+                      ) ??
+                      false;
+                  if (confirmed) {
+                    await widget.catRepo.remove(cat.id);
+                    if (_selectedCategory?.id == cat.id) {
+                      setState(() => _selectedCategory = null);
+                    } else {
+                      setState(() {});
+                    }
                   }
-                }
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -390,121 +443,153 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
     final updated = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      showDragHandle: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheetState) => SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 16,
-                bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    AppLocalizations.of(ctx).editCategory,
-                    style: Theme.of(ctx).textTheme.titleMedium,
+        builder: (ctx, setSheetState) {
+          final isDark = Theme.of(ctx).brightness == Brightness.dark;
+          final scheme = Theme.of(ctx).colorScheme;
+
+          return Container(
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E1E24) : Colors.white,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+            ),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    top: 14,
+                    bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
                   ),
-                  const SizedBox(height: 16),
-                  Center(
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color:
-                            Theme.of(ctx).colorScheme.surfaceContainerHighest,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Theme.of(ctx)
-                              .colorScheme
-                              .outline
-                              .withOpacity(0.2),
-                        ),
-                      ),
-                      alignment: Alignment.center,
-                      child: TextField(
-                        controller: emojiCtrl,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 40),
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          hintText: '😊',
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        onChanged: (v) {
-                          if (v.characters.length > 1) {
-                            emojiCtrl.text = v.characters.last;
-                            emojiCtrl.selection = TextSelection.fromPosition(
-                              TextPosition(offset: emojiCtrl.text.length),
-                            );
-                          }
-                          setSheetState(() {
-                            selectedEmoji = emojiCtrl.text;
-                            selectedIcon = Icons.category.codePoint;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: nameCtrl,
-                    textCapitalization: TextCapitalization.sentences,
-                    decoration: InputDecoration(
-                      labelText: AppLocalizations.of(ctx).categoryName,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text('Quick Suggestions',
-                      style: Theme.of(ctx).textTheme.labelLarge),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    height: 120,
-                    child: SingleChildScrollView(
-                      child: _EmojiGrid(
-                        selectedEmoji: selectedEmoji,
-                        onSelect: (e) => setSheetState(() {
-                          selectedEmoji = e;
-                          emojiCtrl.text = e;
-                          selectedIcon = Icons.category.codePoint;
-                        }),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, false),
-                        child: Text(AppLocalizations.of(ctx).cancel),
+                      Center(
+                        child: Container(
+                          width: 36,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: Colors.grey.withValues(alpha: 0.35),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
                       ),
-                      const SizedBox(width: 8),
-                      FilledButton(
-                        onPressed: () {
-                          if (nameCtrl.text.trim().isEmpty) return;
-                          Navigator.pop(ctx, true);
-                        },
-                        child: Text(AppLocalizations.of(ctx).update),
+                      const SizedBox(height: 16),
+                      Text(
+                        AppLocalizations.of(ctx).editCategory,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.3,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Center(
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? scheme.surfaceContainerHighest.withValues(alpha: 0.5)
+                                : Colors.black.withValues(alpha: 0.04),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: scheme.primary.withValues(alpha: 0.3),
+                              width: 1.5,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: TextField(
+                            controller: emojiCtrl,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 40),
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              hintText: '😊',
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            onChanged: (v) {
+                              if (v.characters.length > 1) {
+                                emojiCtrl.text = v.characters.last;
+                                emojiCtrl.selection = TextSelection.fromPosition(
+                                  TextPosition(offset: emojiCtrl.text.length),
+                                );
+                              }
+                              setSheetState(() {
+                                selectedEmoji = emojiCtrl.text;
+                                selectedIcon = Icons.category.codePoint;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: nameCtrl,
+                        textCapitalization: TextCapitalization.sentences,
+                        decoration: InputDecoration(
+                          labelText: AppLocalizations.of(ctx).categoryName,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          filled: true,
+                          fillColor: isDark
+                              ? scheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                              : Colors.black.withValues(alpha: 0.03),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Hızlı Öneriler',
+                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: 120,
+                        child: SingleChildScrollView(
+                          child: _EmojiGrid(
+                            selectedEmoji: selectedEmoji,
+                            onSelect: (e) => setSheetState(() {
+                              selectedEmoji = e;
+                              emojiCtrl.text = e;
+                              selectedIcon = Icons.category.codePoint;
+                            }),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: Text(AppLocalizations.of(ctx).cancel),
+                          ),
+                          const SizedBox(width: 8),
+                          FilledButton(
+                            style: FilledButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            onPressed: () {
+                              if (nameCtrl.text.trim().isEmpty) return;
+                              Navigator.pop(ctx, true);
+                            },
+                            child: Text(AppLocalizations.of(ctx).update),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
 
@@ -544,16 +629,9 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
           });
         },
         children: [
-          // 0: Tip + Kategori
           _buildTypeCategoryPage(),
-
-          // 1: İsim + Tutar
           _buildTitleAmountPage(),
-
-          // 2: Tarih + Tekrarlama
           _buildDateRecurringPage(),
-
-          // 3: Önizleme
           _buildPreviewPage(),
         ],
       ),
@@ -563,14 +641,12 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
   Widget _buildTypeCategoryPage() {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     final categories = widget.catRepo.byType(_type);
 
     return WizardPage(
-      emoji: '💰',
-      title: l10n.add,
-      subtitle: l10n.category,
+      emoji: _type == TransactionType.income ? '💵' : '💸',
+      title: _type == TransactionType.income ? 'Gelir Ekle' : 'Gider Ekle',
+      subtitle: 'Tür ve Kategori Seçimi',
       bottomWidget: WizardNavigationButtons(
         onNext: _nextPage,
         isNextEnabled: _selectedCategory != null,
@@ -588,7 +664,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                   emoji: '💸',
                   title: l10n.expenseLabel,
                   description: l10n.trackSpending,
-                  color: const Color(0xFFEF4444),
+                  color: const Color(0xFFF43F5E),
                 ),
               ),
               const SizedBox(width: 12),
@@ -598,21 +674,23 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                   emoji: '💵',
                   title: l10n.incomeLabel,
                   description: l10n.trackEarnings,
-                  color: const Color(0xFF22C55E),
+                  color: const Color(0xFF10B981),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
 
           // ─── Kategori Seçimi ───
           Text(
             l10n.category,
-            style: theme.textTheme.titleSmall
-                ?.copyWith(fontWeight: FontWeight.w600),
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              fontSize: 15,
+            ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           _CategoryGrid(
             categories: categories,
             selected: _selectedCategory,
@@ -642,6 +720,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
   }) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final isSelected = _type == type;
 
     return InkWell(
@@ -652,30 +731,49 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
           _selectedCategory = null;
         });
       },
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(18),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
         decoration: BoxDecoration(
           color: isSelected
-              ? color.withOpacity(0.1)
-              : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(14),
-          border: isSelected ? Border.all(color: color, width: 2) : null,
+              ? color.withValues(alpha: isDark ? 0.18 : 0.1)
+              : (isDark
+                  ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
+                  : Colors.grey.withValues(alpha: 0.08)),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: isSelected ? color : Colors.transparent,
+            width: 2,
+          ),
         ),
         child: Column(
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 28)),
-            const SizedBox(height: 6),
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: isSelected ? color.withValues(alpha: 0.2) : Colors.transparent,
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
+              child: Text(emoji, style: const TextStyle(fontSize: 26)),
+            ),
+            const SizedBox(height: 8),
             Text(
               title,
-              style: theme.textTheme.titleSmall
-                  ?.copyWith(fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontWeight: FontWeight.w800,
+                fontSize: 15,
+                color: isSelected ? color : null,
+              ),
             ),
+            const SizedBox(height: 2),
             Text(
               description,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurface.withOpacity(0.6),
+              style: TextStyle(
+                fontSize: 11,
+                color: colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
             ),
@@ -688,6 +786,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
   Widget _buildTitleAmountPage() {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final localeName = Localizations.localeOf(context).toString();
     final currencyFmt = NumberFormat.simpleCurrency(locale: localeName);
     final currencySymbol = currencyFmt.currencySymbol;
@@ -695,9 +794,9 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
     final isValid = _parsedAmount() > 0;
 
     return WizardPage(
-      emoji: _type == TransactionType.income ? '💵' : '💸',
+      emoji: '💳',
       title: l10n.amountLabel,
-      subtitle: l10n.amountLabel,
+      subtitle: 'Tutar ve İşlem Başlığı',
       bottomWidget: WizardNavigationButtons(
         onNext: _nextPage,
         isNextEnabled: isValid,
@@ -705,44 +804,87 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
       ),
       child: Column(
         children: [
-          // ─── Tutar Girişi ───
+          // ─── Tutar Girişi Hero Card ───
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  currencySymbol,
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    color: _accentColor,
-                    fontWeight: FontWeight.bold,
-                  ),
+              color: isDark
+                  ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.45)
+                  : Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: _accentColor.withValues(alpha: 0.25),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: TextField(
-                    controller: _amountCtrl,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    textAlign: TextAlign.center,
-                    autofocus: true,
-                    style: theme.textTheme.displaySmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: _accentColor,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: '0',
-                      hintStyle: theme.textTheme.displaySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.2),
+              ],
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(
+                      currencySymbol,
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                        color: _accentColor,
                       ),
-                      border: InputBorder.none,
                     ),
-                    onChanged: (_) => setState(() {}),
-                  ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: IntrinsicWidth(
+                        child: TextField(
+                          controller: _amountCtrl,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          textAlign: TextAlign.center,
+                          autofocus: true,
+                          style: TextStyle(
+                            fontSize: 38,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -1,
+                            color: _accentColor,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: '0',
+                            hintStyle: TextStyle(
+                              fontSize: 38,
+                              fontWeight: FontWeight.w900,
+                              color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                            ),
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          onChanged: (_) => setState(() {}),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+
+                // Quick Increment Chips
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  alignment: WrapAlignment.center,
+                  children: [50, 100, 250, 500, 1000].map((v) {
+                    return ActionChip(
+                      label: Text('+$v$currencySymbol'),
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      onPressed: () => _quickAddAmount(v.toDouble()),
+                    );
+                  }).toList(),
                 ),
               ],
             ),
@@ -751,32 +893,38 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
           const SizedBox(height: 24),
 
           // ─── İsim Girişi ───
-          Text(
-            l10n.nameLabel,
-            style: theme.textTheme.titleSmall
-                ?.copyWith(fontWeight: FontWeight.w600),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              l10n.nameLabel,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+              ),
+            ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           TextField(
             controller: _titleCtrl,
-            textAlign: TextAlign.center,
             textCapitalization: TextCapitalization.sentences,
-            style: theme.textTheme.headlineSmall
-                ?.copyWith(fontWeight: FontWeight.w600),
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
             decoration: InputDecoration(
-              hintText: l10n.titleOptional,
+              hintText: _selectedCategory != null
+                  ? '${_selectedCategory!.name} harcaması'
+                  : l10n.titleOptional,
               hintStyle: TextStyle(
-                color: theme.colorScheme.onSurface.withOpacity(0.3),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.35),
+                fontSize: 14,
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
               ),
               filled: true,
-              fillColor:
-                  theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              fillColor: isDark
+                  ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                  : Colors.grey.withValues(alpha: 0.08),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
             ),
             onSubmitted: (_) => _nextPage(),
           ),
@@ -789,6 +937,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     final today = DateTime.now();
     final yesterday = today.subtract(const Duration(days: 1));
@@ -796,7 +945,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
     return WizardPage(
       emoji: '📅',
       title: l10n.date,
-      subtitle: l10n.selectDate,
+      subtitle: 'Tarih ve Tekrarlama Sıklığı',
       bottomWidget: WizardNavigationButtons(
         onNext: _nextPage,
         accentColor: _accentColor,
@@ -807,22 +956,24 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
           // ─── Tarih Seçimi ───
           Text(
             l10n.date,
-            style: theme.textTheme.titleSmall
-                ?.copyWith(fontWeight: FontWeight.w600),
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+            ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Row(
             children: [
               _buildDateChip(
                 label: l10n.today,
                 date: today,
-                icon: Icons.today,
+                icon: Icons.today_rounded,
               ),
               const SizedBox(width: 8),
               _buildDateChip(
                 label: l10n.yesterday,
                 date: yesterday,
-                icon: Icons.history,
+                icon: Icons.history_rounded,
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -837,25 +988,22 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                     );
                     if (picked != null) setState(() => _selectedDate = picked);
                   },
-                  borderRadius: BorderRadius.circular(12),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 10),
+                  borderRadius: BorderRadius.circular(14),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
                     decoration: BoxDecoration(
-                      color:
-                          colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(12),
+                      color: isDark
+                          ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
+                          : Colors.grey.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                     child: Column(
                       children: [
-                        Icon(Icons.calendar_month,
-                            size: 20, color: colorScheme.primary),
-                        const SizedBox(height: 2),
+                        Icon(Icons.calendar_month_rounded, size: 20, color: colorScheme.primary),
+                        const SizedBox(height: 3),
                         Text(
                           DateFormat.MMMd().format(_selectedDate),
-                          style:
-                              theme.textTheme.bodySmall?.copyWith(fontSize: 10),
+                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -871,36 +1019,38 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
           // ─── Tekrarlama ───
           Text(
             'Tekrarlama',
-            style: theme.textTheme.titleSmall
-                ?.copyWith(fontWeight: FontWeight.w600),
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+            ),
           ),
-          const SizedBox(height: 8),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+          const SizedBox(height: 10),
+          Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: _isRecurring
-                  ? _accentColor.withOpacity(0.1)
-                  : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(14),
-              border: _isRecurring
-                  ? Border.all(color: _accentColor, width: 2)
-                  : null,
+                  ? _accentColor.withValues(alpha: 0.1)
+                  : (isDark
+                      ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
+                      : Colors.grey.withValues(alpha: 0.08)),
+              borderRadius: BorderRadius.circular(18),
+              border: _isRecurring ? Border.all(color: _accentColor, width: 1.5) : null,
             ),
             child: Row(
               children: [
                 Icon(
-                  _isRecurring ? Icons.repeat : Icons.repeat_outlined,
-                  color: _isRecurring
-                      ? _accentColor
-                      : colorScheme.onSurface.withOpacity(0.5),
+                  _isRecurring ? Icons.repeat_rounded : Icons.repeat_one_rounded,
+                  color: _isRecurring ? _accentColor : colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    _isRecurring ? 'Tekrarlayan işlem' : 'Tek seferlik işlem',
-                    style: theme.textTheme.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w600),
+                    _isRecurring ? 'Aylık Tekrarlayan İşlem' : 'Tek Seferlik İşlem',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                      color: _isRecurring ? _accentColor : null,
+                    ),
                   ),
                 ),
                 Switch(
@@ -915,7 +1065,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
             ),
           ),
           if (_isRecurring) ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
             Row(
               children: [
                 Expanded(
@@ -936,7 +1086,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
               ],
             ),
             if (!_recurringForever) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               Slider(
                 value: _recurringMonths.toDouble(),
                 min: 1,
@@ -955,10 +1105,13 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
     );
   }
 
-  Widget _buildDateChip(
-      {required String label, required DateTime date, required IconData icon}) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+  Widget _buildDateChip({
+    required String label,
+    required DateTime date,
+    required IconData icon,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isSelected = _selectedDate.year == date.year &&
         _selectedDate.month == date.month &&
         _selectedDate.day == date.day;
@@ -969,26 +1122,27 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
           HapticFeedback.lightImpact();
           setState(() => _selectedDate = date);
         },
-        borderRadius: BorderRadius.circular(12),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             color: isSelected
-                ? _accentColor.withOpacity(0.1)
-                : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-            borderRadius: BorderRadius.circular(12),
-            border:
-                isSelected ? Border.all(color: _accentColor, width: 2) : null,
+                ? _accentColor.withValues(alpha: 0.12)
+                : (isDark
+                    ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
+                    : Colors.grey.withValues(alpha: 0.08)),
+            borderRadius: BorderRadius.circular(14),
+            border: isSelected ? Border.all(color: _accentColor, width: 1.5) : null,
           ),
           child: Column(
             children: [
-              Icon(icon, size: 20, color: isSelected ? _accentColor : null),
-              const SizedBox(height: 2),
+              Icon(icon, size: 20, color: isSelected ? _accentColor : colorScheme.onSurfaceVariant),
+              const SizedBox(height: 3),
               Text(
                 label,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: isSelected ? FontWeight.w600 : null,
+                style: TextStyle(
+                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                  fontSize: 11,
                   color: isSelected ? _accentColor : null,
                 ),
               ),
@@ -1004,29 +1158,31 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
     required bool isSelected,
     required VoidCallback onTap,
   }) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return InkWell(
       onTap: () {
         HapticFeedback.lightImpact();
         onTap();
       },
-      borderRadius: BorderRadius.circular(12),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
           color: isSelected
-              ? _accentColor.withOpacity(0.1)
-              : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(12),
-          border: isSelected ? Border.all(color: _accentColor, width: 2) : null,
+              ? _accentColor.withValues(alpha: 0.12)
+              : (isDark
+                  ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
+                  : Colors.grey.withValues(alpha: 0.08)),
+          borderRadius: BorderRadius.circular(14),
+          border: isSelected ? Border.all(color: _accentColor, width: 1.5) : null,
         ),
         child: Text(
           title,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+          style: TextStyle(
+            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
+            fontSize: 13,
             color: isSelected ? _accentColor : null,
           ),
           textAlign: TextAlign.center,
@@ -1038,6 +1194,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
   Widget _buildPreviewPage() {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final localeName = Localizations.localeOf(context).toString();
     final currencyFmt = NumberFormat.simpleCurrency(locale: localeName);
 
@@ -1048,13 +1205,13 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
     final tags = [
       typeText,
       DateFormat.yMMMd(localeName).format(_selectedDate),
-      if (_isRecurring) 'Monthly',
+      if (_isRecurring) 'Aylık Tekrarlayan',
     ];
 
     return WizardPage(
-      emoji: '🎉',
-      title: l10n.simpleHabitPreviewTitle,
-      subtitle: l10n.simpleHabitPreviewSubtitle,
+      emoji: '✨',
+      title: 'İşlem Özeti',
+      subtitle: 'Bilgileri Kontrol Edin ve Kaydedin',
       bottomWidget: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: SizedBox(
@@ -1064,17 +1221,17 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
             style: FilledButton.styleFrom(
               backgroundColor: _accentColor,
               padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(l10n.save,
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(
+                  l10n.save,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(width: 8),
-                const Icon(Icons.check, size: 20),
+                const Icon(Icons.check_rounded, size: 20),
               ],
             ),
           ),
@@ -1086,32 +1243,37 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
             emoji: _selectedCategory?.emoji ?? '💰',
             title: _titleCtrl.text.trim().isNotEmpty
                 ? _titleCtrl.text.trim()
-                : (_selectedCategory?.name ?? 'Transaction'),
+                : (_selectedCategory?.name ?? 'İşlem'),
             subtitle: formattedAmount,
             color: _accentColor,
             tags: tags,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           Container(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: _accentColor.withOpacity(0.1),
+              color: isDark
+                  ? _accentColor.withValues(alpha: 0.12)
+                  : _accentColor.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
               children: [
                 Text(
-                  formattedAmount,
-                  style: theme.textTheme.headlineLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+                  '${_type == TransactionType.income ? '+' : '-'}$formattedAmount',
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.5,
                     color: _accentColor,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   typeText,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: _accentColor.withOpacity(0.8),
+                  style: TextStyle(
+                    color: _accentColor,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
                   ),
                 ),
               ],
@@ -1151,16 +1313,15 @@ class _CategoryGrid extends StatelessWidget {
             child: ChoiceChip(
               selected: selected?.id == c.id,
               showCheckmark: false,
-              avatar: null,
               label: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (c.hasEmoji)
-                    Text(c.emoji!, style: const TextStyle(fontSize: 18))
+                    Text(c.emoji!, style: const TextStyle(fontSize: 17))
                   else
-                    Icon(c.icon, size: 18, color: Color(c.colorValue)),
+                    Icon(c.icon, size: 17, color: Color(c.colorValue)),
                   const SizedBox(width: 8),
-                  Text(c.name),
+                  Text(c.name, style: const TextStyle(fontWeight: FontWeight.w600)),
                 ],
               ),
               onSelected: (_) => onSelect(c),
@@ -1172,27 +1333,30 @@ class _CategoryGrid extends StatelessWidget {
             onTap: onCreateNew,
             borderRadius: BorderRadius.circular(20),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
                   width: 1,
-                  style: BorderStyle.solid,
                 ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.add_circle_outline,
-                      size: 18, color: Theme.of(context).colorScheme.primary),
+                  Icon(
+                    Icons.add_circle_outline_rounded,
+                    size: 18,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     AppLocalizations.of(context).newCategory,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
                     ),
                   ),
                 ],
@@ -1224,7 +1388,8 @@ class _EmojiGrid extends StatelessWidget {
         return Center(
           child: ConstrainedBox(
             constraints: BoxConstraints(
-                maxWidth: cols * tileSize + (cols - 1) * spacing),
+              maxWidth: cols * tileSize + (cols - 1) * spacing,
+            ),
             child: GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -1240,13 +1405,16 @@ class _EmojiGrid extends StatelessWidget {
                 final isSel = selectedEmoji == e;
                 return InkWell(
                   onTap: () => onSelect(e),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(10),
                   child: Container(
                     decoration: BoxDecoration(
                       color: isSel
-                          ? scheme.primaryContainer
-                          : scheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(8),
+                          ? scheme.primary.withValues(alpha: 0.2)
+                          : scheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(10),
+                      border: isSel
+                          ? Border.all(color: scheme.primary, width: 1.5)
+                          : null,
                     ),
                     child: Center(
                       child: Text(e, style: const TextStyle(fontSize: 20)),

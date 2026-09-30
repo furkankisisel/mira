@@ -86,7 +86,7 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
   final FlutterBackgroundService _backgroundService =
       FlutterBackgroundService();
   static const MethodChannel _methodChannel = MethodChannel(
-    'com.kisiselapps.mira/timer_actions',
+    'com.koralabs.mira/timer_actions',
   );
 
   // Hard Mode state
@@ -529,7 +529,21 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
             if (_countdownRemaining == Duration.zero) {
               _countdownRunning = false;
               _timer?.cancel();
-              // Otomatik kayıt yok; kullanıcı Bitir'e basınca kaydedilecek
+              _stopBackgroundService();
+
+              final habit = _activeTimerHabitId != null
+                  ? HabitRepository.instance.findById(_activeTimerHabitId!)
+                  : null;
+              final habitName = habit?.title;
+              final displayTitle = habitName != null
+                  ? '⏰ $habitName: Süre Doldu!'
+                  : '⏰ Geri Sayım: Süre Doldu!';
+
+              NotificationService.instance.showTimerCompletedNotification(
+                title: displayTitle,
+                body: 'Hedeflenen odaklanma süresi tamamlandı. Harika bir seans!',
+              );
+              Vibration.vibrate(pattern: [0, 500, 200, 500]);
             }
           }
         }
@@ -540,10 +554,16 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
             _pomodoroRemaining -= const Duration(seconds: 1);
             if (_pomodoroRemaining <= Duration.zero) {
               _pomodoroRemaining = Duration.zero;
-              // Vibrate on completion
-              Vibration.vibrate();
-              // Automatically advance to next phase (auto-continue)
+              Vibration.vibrate(pattern: [0, 500, 200, 500]);
+              final wasWork = _pomodoroWorkPhase;
               _advancePomodoroPhase();
+              NotificationService.instance.showTimerCompletedNotification(
+                title: wasWork ? '☕ Mola Vakti Geldi!' : '💪 Çalışma Zamanı!',
+                body: wasWork
+                    ? 'Pomodoro çalışma oturumu bitti. Şimdi dinlenme zamanı!'
+                    : 'Mola bitti! Yeni çalışma seansı başlıyor.',
+              );
+              _updateNotification();
             }
           }
         }

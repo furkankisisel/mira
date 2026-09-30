@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+
+import '../../core/utils/emoji_presets.dart';
 import '../../l10n/app_localizations.dart';
 import 'data/finance_category.dart';
 import 'data/finance_category_repository.dart';
 import 'data/transaction_model.dart';
 import 'data/transaction_repository.dart';
-import '../../core/utils/emoji_presets.dart';
 
-/// Finans işlemi düzenleme ekranı - Tek sayfa düzeni
+/// The restored modern Finance Edit Screen:
+/// - Tactile Income/Expense Segment Switcher.
+/// - Big, aesthetic hero amount card with quick increment chips.
+/// - Modern category picker with pastel emoji tiles and custom category creator.
+/// - Date selector and monthly recurrence configuration.
+/// - Full-width elevated save button with smooth haptics.
 class FinanceEditScreen extends StatefulWidget {
   const FinanceEditScreen({
     super.key,
@@ -26,12 +32,10 @@ class FinanceEditScreen extends StatefulWidget {
 }
 
 class _FinanceEditScreenState extends State<FinanceEditScreen> {
-  // Controllers
   final _titleCtrl = TextEditingController();
   final _amountCtrl = TextEditingController();
   final _scrollController = ScrollController();
 
-  // State
   TransactionType _type = TransactionType.expense;
   FinanceCategory? _selectedCategory;
   DateTime _selectedDate = DateTime.now();
@@ -39,10 +43,9 @@ class _FinanceEditScreenState extends State<FinanceEditScreen> {
   bool _recurringForever = true;
   int _recurringMonths = 12;
 
-  // Accent colors
   Color get _accentColor => _type == TransactionType.income
-      ? const Color(0xFF22C55E) // Green for income
-      : const Color(0xFFEF4444); // Red for expense
+      ? const Color(0xFF10B981)
+      : const Color(0xFFF43F5E);
 
   @override
   void initState() {
@@ -54,13 +57,12 @@ class _FinanceEditScreenState extends State<FinanceEditScreen> {
     final tx = widget.transaction;
     _type = tx.type;
     _titleCtrl.text = tx.title;
-    _amountCtrl.text = tx.amount.toStringAsFixed(2);
+    _amountCtrl.text = tx.amount.toStringAsFixed(tx.amount.truncateToDouble() == tx.amount ? 0 : 2);
     _selectedDate = tx.date;
     _isRecurring = tx.isRecurring;
     _recurringForever = tx.recurringForever;
     _recurringMonths = tx.recurringMonths ?? 12;
 
-    // Find category
     final cats = widget.catRepo.byType(_type);
     if (cats.isNotEmpty && tx.categoryId != null) {
       _selectedCategory = cats.firstWhere(
@@ -79,39 +81,47 @@ class _FinanceEditScreenState extends State<FinanceEditScreen> {
   }
 
   double _parsedAmount() {
-    final localeName = Localizations.localeOf(context).toString();
     final raw = _amountCtrl.text.trim();
+    if (raw.isEmpty) return 0.0;
     try {
-      final num parsed = NumberFormat.decimalPattern(localeName).parse(raw);
-      return parsed.toDouble();
-    } catch (_) {
       final normalized = raw
-          .replaceAll(RegExp('[^0-9.,-]'), '')
-          .replaceAll('.', '')
+          .replaceAll(RegExp(r'[^0-9.,]'), '')
           .replaceAll(',', '.');
-      return double.tryParse(normalized) ?? 0;
+      return double.tryParse(normalized) ?? 0.0;
+    } catch (_) {
+      return 0.0;
     }
   }
 
+  void _addQuickAmount(double delta) {
+    HapticFeedback.lightImpact();
+    final current = _parsedAmount();
+    final next = current + delta;
+    _amountCtrl.text = next.toStringAsFixed(next.truncateToDouble() == next ? 0 : 2);
+    setState(() {});
+  }
+
   Future<void> _saveTransaction() async {
-    if (_parsedAmount() <= 0) {
+    final amount = _parsedAmount();
+    if (amount <= 0) {
+      HapticFeedback.heavyImpact();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).amountLabel)),
+        const SnackBar(content: Text('Lütfen geçerli bir tutar girin')),
       );
       return;
     }
 
+    HapticFeedback.mediumImpact();
     final tx = FinanceTransaction(
       id: widget.transaction.id,
-      title: _titleCtrl.text.trim(),
-      amount: _parsedAmount(),
+      title: _titleCtrl.text.trim().isEmpty ? (_selectedCategory?.name ?? 'İşlem') : _titleCtrl.text.trim(),
+      amount: amount,
       date: _selectedDate,
       type: _type,
       categoryId: _selectedCategory?.id,
       isRecurring: _isRecurring,
       recurringForever: _recurringForever,
-      recurringMonths:
-          _isRecurring && !_recurringForever ? _recurringMonths : null,
+      recurringMonths: _isRecurring && !_recurringForever ? _recurringMonths : null,
     );
 
     await widget.repo.update(tx);
@@ -121,125 +131,168 @@ class _FinanceEditScreenState extends State<FinanceEditScreen> {
     }
   }
 
+  Future<void> _deleteTransaction() async {
+    final l10n = AppLocalizations.of(context);
+    final isTr = l10n.localeName.startsWith('tr');
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(isTr ? 'İşlemi Sil' : 'Delete Transaction'),
+        content: Text(
+          isTr
+              ? 'Bu işlemi silmek istediğinizden emin misiniz?'
+              : 'Are you sure you want to delete this transaction?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      final baseId = widget.transaction.recurrenceId ?? widget.transaction.id;
+      await widget.repo.remove(baseId);
+      if (mounted) Navigator.pop(context);
+    }
+  }
+
+  Future<void> _pickDate() async {
+    HapticFeedback.lightImpact();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: Theme.of(context).colorScheme.copyWith(
+              primary: _accentColor,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() => _selectedDate = picked);
+    }
+  }
+
   Future<void> _createNewCategory() async {
     final nameCtrl = TextEditingController();
-    final emojiCtrl = TextEditingController();
-    String selectedEmoji = '😊';
-    int selectedIcon = Icons.category.codePoint;
+    String selectedEmoji = '🏷️';
     final l10n = AppLocalizations.of(context);
+    final isTr = l10n.localeName.startsWith('tr');
 
     final created = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheetState) => SafeArea(
           child: SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 16,
-                bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
+                left: 20,
+                right: 20,
+                top: 8,
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    l10n.newCategory,
-                    style: Theme.of(ctx).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 16),
-                  Center(
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color:
-                            Theme.of(ctx).colorScheme.surfaceContainerHighest,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Theme.of(ctx)
-                              .colorScheme
-                              .outline
-                              .withOpacity(0.2),
-                        ),
-                      ),
-                      alignment: Alignment.center,
-                      child: TextField(
-                        controller: emojiCtrl,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 40),
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          hintText: '😊',
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        onChanged: (v) {
-                          if (v.characters.length > 1) {
-                            emojiCtrl.text = v.characters.last;
-                            emojiCtrl.selection = TextSelection.fromPosition(
-                              TextPosition(offset: emojiCtrl.text.length),
-                            );
-                          }
-                          setSheetState(() {
-                            selectedEmoji = emojiCtrl.text;
-                          });
-                        },
-                      ),
-                    ),
+                    isTr ? 'Yeni Kategori Ekle' : 'New Category',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                   const SizedBox(height: 16),
                   TextField(
                     controller: nameCtrl,
-                    textCapitalization: TextCapitalization.sentences,
+                    autofocus: true,
                     decoration: InputDecoration(
-                      labelText: l10n.categoryName,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                      hintText: isTr ? 'Kategori Adı' : 'Category Name',
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
                       filled: true,
                     ),
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Quick Suggestions',
-                    style: Theme.of(ctx).textTheme.labelLarge,
+                    isTr ? 'İkon / Emoji Seçin' : 'Select Emoji',
+                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   SizedBox(
-                    height: 200,
-                    child: SingleChildScrollView(
-                      child: _EmojiGrid(
-                        selectedEmoji: selectedEmoji,
-                        onSelect: (e) => setSheetState(() {
-                          selectedEmoji = e;
-                          emojiCtrl.text = e;
-                        }),
+                    height: 180,
+                    child: GridView.builder(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 6,
+                        crossAxisSpacing: 8,
+                        mainAxisSpacing: 8,
                       ),
+                      itemCount: kEmojiPresets.length,
+                      itemBuilder: (context, index) {
+                        final e = kEmojiPresets[index];
+                        final isSel = selectedEmoji == e;
+                        return GestureDetector(
+                          onTap: () => setSheetState(() => selectedEmoji = e),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: isSel
+                                  ? _accentColor.withValues(alpha: 0.2)
+                                  : Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                              borderRadius: BorderRadius.circular(12),
+                              border: isSel ? Border.all(color: _accentColor, width: 2) : null,
+                            ),
+                            child: Center(
+                              child: Text(e, style: const TextStyle(fontSize: 22)),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx, false),
-                        child: Text(l10n.cancel),
-                      ),
-                      const SizedBox(width: 8),
-                      FilledButton(
-                        onPressed: () {
-                          if (nameCtrl.text.trim().isEmpty) return;
-                          Navigator.pop(ctx, true);
-                        },
-                        child: Text(l10n.add),
-                      ),
-                    ],
+                  const SizedBox(height: 20),
+                  FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: _accentColor,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    onPressed: () async {
+                      final name = nameCtrl.text.trim();
+                      if (name.isNotEmpty) {
+                        final newCat = FinanceCategory(
+                          id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
+                          name: name,
+                          iconCodePoint: Icons.category_rounded.codePoint,
+                          emoji: selectedEmoji,
+                          type: _type,
+                          colorValue: _accentColor.value,
+                        );
+                        await widget.catRepo.add(newCat);
+                        setState(() => _selectedCategory = newCat);
+                        Navigator.pop(ctx, true);
+                      }
+                    },
+                    child: Text(isTr ? 'Kategoriyi Kaydet' : 'Save Category', style: const TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
@@ -249,602 +302,570 @@ class _FinanceEditScreenState extends State<FinanceEditScreen> {
       ),
     );
 
-    if (created == true) {
-      final newCat = FinanceCategory(
-        id: 'user_${DateTime.now().millisecondsSinceEpoch}',
-        name: nameCtrl.text.trim(),
-        iconCodePoint: selectedIcon,
-        emoji: selectedEmoji,
-        type: _type,
-        colorValue: _accentColor.value,
-      );
-      await widget.catRepo.add(newCat);
-      setState(() => _selectedCategory = newCat);
+    if (created == true && mounted) {
+      setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final scheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context);
-    final localeName = Localizations.localeOf(context).toString();
-    final currencyFmt = NumberFormat.simpleCurrency(locale: localeName);
-    final currencySymbol = currencyFmt.currencySymbol;
+    final isTr = l10n.localeName.startsWith('tr');
+    final currency = NumberFormat.simpleCurrency(locale: Localizations.localeOf(context).toString());
 
     final categories = widget.catRepo.byType(_type);
 
     return Scaffold(
-      backgroundColor: colorScheme.surface,
-      body: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          SliverAppBar.large(
-            title: Text(l10n.edit),
-            centerTitle: true,
-            actions: [
-              TextButton(
-                onPressed: _saveTransaction,
-                child: Text(
-                  l10n.save,
-                  style: TextStyle(
-                    color: _accentColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          isTr ? 'İşlemi Düzenle' : 'Edit Transaction',
+          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+        ),
+        actions: [
+          IconButton(
+            tooltip: l10n.delete,
+            icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+            onPressed: _deleteTransaction,
           ),
-          SliverPadding(
-            padding: const EdgeInsets.all(20),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                // Type Section
-                _buildSection(
-                  title: l10n.category,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _buildTypeOption(
-                          type: TransactionType.expense,
-                          emoji: '💸',
-                          title: l10n.expenseLabel,
-                          color: const Color(0xFFEF4444),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildTypeOption(
-                          type: TransactionType.income,
-                          emoji: '💵',
-                          title: l10n.incomeLabel,
-                          color: const Color(0xFF22C55E),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Amount Section
-                _buildSection(
-                  title: l10n.amountLabel,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 16),
+        ],
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                controller: _scrollController,
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+                children: [
+                  // ── 1. Type Switcher [ Gider | Gelir ] ──
+                  Container(
+                    height: 48,
+                    padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color:
-                          colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(20),
+                      color: isDark
+                          ? scheme.surfaceContainerHighest.withValues(alpha: 0.5)
+                          : const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          currencySymbol,
-                          style: theme.textTheme.headlineMedium?.copyWith(
-                            color: _accentColor,
-                            fontWeight: FontWeight.bold,
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              HapticFeedback.selectionClick();
+                              setState(() {
+                                _type = TransactionType.expense;
+                                final cats = widget.catRepo.byType(_type);
+                                if (cats.isNotEmpty) _selectedCategory = cats.first;
+                              });
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              decoration: BoxDecoration(
+                                color: _type == TransactionType.expense
+                                    ? (isDark ? scheme.surfaceContainerHigh : Colors.white)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: _type == TransactionType.expense
+                                    ? [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.06),
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ]
+                                    : null,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.arrow_upward_rounded,
+                                    size: 16,
+                                    color: _type == TransactionType.expense
+                                        ? const Color(0xFFF43F5E)
+                                        : scheme.onSurfaceVariant,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    isTr ? 'Gider' : 'Expense',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      color: _type == TransactionType.expense
+                                          ? const Color(0xFFF43F5E)
+                                          : scheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 8),
                         Expanded(
-                          child: TextField(
-                            controller: _amountCtrl,
-                            keyboardType: const TextInputType.numberWithOptions(
-                                decimal: true),
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.displaySmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: _accentColor,
-                            ),
-                            decoration: InputDecoration(
-                              hintText: '0',
-                              hintStyle: theme.textTheme.displaySmall?.copyWith(
-                                color: colorScheme.onSurface.withOpacity(0.2),
+                          child: GestureDetector(
+                            onTap: () {
+                              HapticFeedback.selectionClick();
+                              setState(() {
+                                _type = TransactionType.income;
+                                final cats = widget.catRepo.byType(_type);
+                                if (cats.isNotEmpty) _selectedCategory = cats.first;
+                              });
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              decoration: BoxDecoration(
+                                color: _type == TransactionType.income
+                                    ? (isDark ? scheme.surfaceContainerHigh : Colors.white)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: _type == TransactionType.income
+                                    ? [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.06),
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ]
+                                    : null,
                               ),
-                              border: InputBorder.none,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.arrow_downward_rounded,
+                                    size: 16,
+                                    color: _type == TransactionType.income
+                                        ? const Color(0xFF10B981)
+                                        : scheme.onSurfaceVariant,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    isTr ? 'Gelir' : 'Income',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      color: _type == TransactionType.income
+                                          ? const Color(0xFF10B981)
+                                          : scheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            onChanged: (_) => setState(() {}),
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
 
-                // Title (optional)
-                TextField(
-                  controller: _titleCtrl,
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                    hintText: l10n.titleOptional,
-                    hintStyle: TextStyle(
-                      color: colorScheme.onSurface.withOpacity(0.3),
+                  const SizedBox(height: 20),
+
+                  // ── 2. Hero Amount Card ──
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? scheme.surfaceContainerHighest.withValues(alpha: 0.5)
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: _accentColor.withValues(alpha: 0.2),
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: _accentColor.withValues(alpha: isDark ? 0.15 : 0.06),
+                          blurRadius: 16,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor:
-                        colorScheme.surfaceContainerHighest.withOpacity(0.3),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
+                    child: Column(
+                      children: [
+                        Text(
+                          isTr ? 'Tutar' : 'Amount',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: scheme.onSurfaceVariant,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              currency.currencySymbol,
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: _accentColor,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            IntrinsicWidth(
+                              child: TextField(
+                                controller: _amountCtrl,
+                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 38,
+                                  fontWeight: FontWeight.w900,
+                                  color: _accentColor,
+                                  letterSpacing: -1,
+                                ),
+                                decoration: const InputDecoration(
+                                  hintText: '0',
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                                onChanged: (_) => setState(() {}),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+                        // Quick increment chips
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _buildQuickChip('+50'),
+                              const SizedBox(width: 8),
+                              _buildQuickChip('+100'),
+                              const SizedBox(width: 8),
+                              _buildQuickChip('+250'),
+                              const SizedBox(width: 8),
+                              _buildQuickChip('+500'),
+                              const SizedBox(width: 8),
+                              _buildQuickChip('+1000'),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 24),
 
-                // Category Section
-                _buildSection(
-                  title: l10n.category,
-                  child: SizedBox(
-                    height: 200,
-                    child: StreamBuilder<List<FinanceCategory>>(
-                      stream: widget.catRepo.stream,
-                      initialData: widget.catRepo.all(),
-                      builder: (context, snapshot) {
-                        final categories = snapshot.data
-                                ?.where((c) => c.type == _type)
-                                .toList() ??
-                            [];
-                        return SingleChildScrollView(
-                          child: Wrap(
-                            spacing: 10,
-                            runSpacing: 10,
+                  const SizedBox(height: 20),
+
+                  // ── 3. Title / Description Input ──
+                  Text(
+                    isTr ? 'Açıklama / Başlık' : 'Title',
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? scheme.surfaceContainerHighest.withValues(alpha: 0.4)
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.08)
+                            : Colors.black.withValues(alpha: 0.05),
+                      ),
+                    ),
+                    child: TextField(
+                      controller: _titleCtrl,
+                      decoration: InputDecoration(
+                        hintText: isTr ? 'Örn: Market alışverişi, Maaş...' : 'E.g. Groceries',
+                        prefixIcon: Icon(Icons.edit_note_rounded, color: _accentColor),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // ── 4. Category Selector ──
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        isTr ? 'Kategori' : 'Category',
+                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                      ),
+                      GestureDetector(
+                        onTap: _createNewCategory,
+                        child: Text(
+                          isTr ? '+ Yeni Kategori' : '+ New',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: _accentColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: categories.map((cat) {
+                      final isSel = _selectedCategory?.id == cat.id;
+                      final catColor = Color(cat.colorValue);
+
+                      return GestureDetector(
+                        onTap: () {
+                          HapticFeedback.selectionClick();
+                          setState(() => _selectedCategory = cat);
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 150),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: isSel
+                                ? catColor.withValues(alpha: isDark ? 0.25 : 0.15)
+                                : (isDark
+                                    ? scheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                                    : const Color(0xFFF1F5F9)),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: isSel ? catColor : Colors.transparent,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              ...categories.map((cat) {
-                                final isSelected =
-                                    _selectedCategory?.id == cat.id;
-                                return GestureDetector(
-                                  onTap: () {
-                                    HapticFeedback.lightImpact();
-                                    setState(() => _selectedCategory = cat);
-                                  },
-                                  child: AnimatedContainer(
-                                    duration: const Duration(milliseconds: 200),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 12,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: isSelected
-                                          ? _accentColor.withOpacity(0.15)
-                                          : colorScheme.surfaceContainerHighest,
-                                      borderRadius: BorderRadius.circular(14),
-                                      border: isSelected
-                                          ? Border.all(
-                                              color: _accentColor,
-                                              width: 2,
-                                            )
-                                          : null,
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        if (cat.emoji != null &&
-                                            cat.emoji!.isNotEmpty)
-                                          Text(cat.emoji!,
-                                              style:
-                                                  const TextStyle(fontSize: 20))
-                                        else
-                                          Icon(cat.icon,
-                                              size: 20,
-                                              color: Color(cat.colorValue)),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          cat.name,
-                                          style: TextStyle(
-                                            fontWeight: isSelected
-                                                ? FontWeight.w600
-                                                : FontWeight.normal,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              }),
-                              // Add Category Button
-                              GestureDetector(
-                                onTap: _createNewCategory,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 12,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: colorScheme.primary.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(14),
-                                    border: Border.all(
-                                      color:
-                                          colorScheme.primary.withOpacity(0.3),
-                                      style: BorderStyle.solid,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.add,
-                                          size: 20, color: colorScheme.primary),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        l10n.add,
-                                        style: TextStyle(
-                                          color: colorScheme.primary,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                              if (cat.emoji != null && cat.emoji!.isNotEmpty)
+                                Text(cat.emoji!, style: const TextStyle(fontSize: 16))
+                              else
+                                Icon(cat.icon, size: 16, color: catColor),
+                              const SizedBox(width: 6),
+                              Text(
+                                cat.name,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: isSel ? FontWeight.bold : FontWeight.w500,
+                                  color: isSel ? (isDark ? Colors.white : Colors.black87) : scheme.onSurfaceVariant,
                                 ),
                               ),
                             ],
                           ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Date Section
-                _buildSection(
-                  title: l10n.date,
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    leading: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: _accentColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(Icons.calendar_today, color: _accentColor),
-                    ),
-                    title: Text(
-                      DateFormat.yMMMd(localeName).format(_selectedDate),
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: _accentColor,
-                      ),
-                    ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () async {
-                      final picked = await showDatePicker(
-                        context: context,
-                        initialDate: _selectedDate,
-                        firstDate: DateTime(2000),
-                        lastDate:
-                            DateTime.now().add(const Duration(days: 3650)),
-                      );
-                      if (picked != null) {
-                        setState(() => _selectedDate = picked);
-                      }
-                    },
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Recurring Section
-                _buildSection(
-                  title: 'Recurring',
-                  child: Column(
-                    children: [
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: _isRecurring
-                              ? _accentColor.withOpacity(0.1)
-                              : colorScheme.surfaceContainerHighest
-                                  .withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(16),
-                          border: _isRecurring
-                              ? Border.all(color: _accentColor, width: 2)
-                              : null,
                         ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              _isRecurring
-                                  ? Icons.repeat
-                                  : Icons.repeat_outlined,
-                              color: _isRecurring
-                                  ? _accentColor
-                                  : colorScheme.onSurface.withOpacity(0.5),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Text(
-                                _isRecurring
-                                    ? 'Recurring enabled'
-                                    : 'One-time transaction',
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
+                      );
+                    }).toList(),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // ── 5. Date & Recurrence Card ──
+                  Text(
+                    isTr ? 'Tarih ve Tekrarlama' : 'Date & Schedule',
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? scheme.surfaceContainerHighest.withValues(alpha: 0.4)
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.08)
+                            : Colors.black.withValues(alpha: 0.05),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        // Date picker row
+                        InkWell(
+                          onTap: _pickDate,
+                          borderRadius: BorderRadius.circular(12),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: _accentColor.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Icon(Icons.calendar_today_rounded, size: 18, color: _accentColor),
                                 ),
-                              ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    DateFormat('d MMMM yyyy, EEEE', Localizations.localeOf(context).toString()).format(_selectedDate),
+                                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                                  ),
+                                ),
+                                const Icon(Icons.chevron_right_rounded, size: 20),
+                              ],
                             ),
-                            Switch(
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        const Divider(height: 1),
+                        const SizedBox(height: 12),
+                        // Recurring switch
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: scheme.primary.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Icon(Icons.repeat_rounded, size: 18, color: scheme.primary),
+                                ),
+                                const SizedBox(width: 12),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      isTr ? 'Aylık Tekrarlayan İşlem' : 'Monthly Recurring',
+                                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                                    ),
+                                    Text(
+                                      isTr ? 'Her ay otomatik yenilenir' : 'Repeats every month',
+                                      style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Switch.adaptive(
                               value: _isRecurring,
                               activeColor: _accentColor,
-                              onChanged: (value) {
-                                HapticFeedback.lightImpact();
-                                setState(() => _isRecurring = value);
+                              onChanged: (val) {
+                                HapticFeedback.selectionClick();
+                                setState(() => _isRecurring = val);
                               },
                             ),
                           ],
                         ),
-                      ),
-                      if (_isRecurring) ...[
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildDurationOption(
-                                title: l10n.durationIndefinite,
-                                isSelected: _recurringForever,
-                                onTap: () =>
-                                    setState(() => _recurringForever = true),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _buildDurationOption(
-                                title: l10n.durationMonths(_recurringMonths),
-                                isSelected: !_recurringForever,
-                                onTap: () =>
-                                    setState(() => _recurringForever = false),
-                              ),
-                            ),
-                          ],
-                        ),
-                        if (!_recurringForever) ...[
-                          const SizedBox(height: 16),
-                          Slider(
-                            value: _recurringMonths.toDouble(),
-                            min: 1,
-                            max: 24,
-                            divisions: 23,
-                            activeColor: _accentColor,
-                            onChanged: (value) {
-                              HapticFeedback.lightImpact();
-                              setState(() => _recurringMonths = value.toInt());
-                            },
+                        if (_isRecurring) ...[
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              _buildDurationChip(isTr ? 'Sürekli' : 'Forever', _recurringForever, () {
+                                setState(() => _recurringForever = true);
+                              }),
+                              const SizedBox(width: 8),
+                              _buildDurationChip('3 Ay', !_recurringForever && _recurringMonths == 3, () {
+                                setState(() {
+                                  _recurringForever = false;
+                                  _recurringMonths = 3;
+                                });
+                              }),
+                              const SizedBox(width: 8),
+                              _buildDurationChip('6 Ay', !_recurringForever && _recurringMonths == 6, () {
+                                setState(() {
+                                  _recurringForever = false;
+                                  _recurringMonths = 6;
+                                });
+                              }),
+                              const SizedBox(width: 8),
+                              _buildDurationChip('12 Ay', !_recurringForever && _recurringMonths == 12, () {
+                                setState(() {
+                                  _recurringForever = false;
+                                  _recurringMonths = 12;
+                                });
+                              }),
+                            ],
                           ),
                         ],
                       ],
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 32),
-
-                // Save Button
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    onPressed: _saveTransaction,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: _accentColor,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          l10n.save,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        const Icon(Icons.check, size: 20),
-                      ],
                     ),
                   ),
+                ],
+              ),
+            ),
+
+            // ── Bottom Save Button ──
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+              child: SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: _accentColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                    elevation: 3,
+                  ),
+                  onPressed: _saveTransaction,
+                  child: Text(
+                    isTr ? 'Değişiklikleri Kaydet' : 'Save Changes',
+                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                  ),
                 ),
-                const SizedBox(height: 32),
-              ]),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSection({
-    required String title,
-    required Widget child,
-  }) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: colorScheme.onSurface,
-          ),
-        ),
-        const SizedBox(height: 12),
-        child,
-      ],
-    );
-  }
-
-  Widget _buildTypeOption({
-    required TransactionType type,
-    required String emoji,
-    required String title,
-    required Color color,
-  }) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final isSelected = _type == type;
-
-    return InkWell(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        setState(() {
-          _type = type;
-          _selectedCategory = null;
-        });
-      },
-      borderRadius: BorderRadius.circular(16),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? color.withOpacity(0.1)
-              : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(16),
-          border: isSelected ? Border.all(color: color, width: 2) : null,
-        ),
-        child: Column(
-          children: [
-            Text(emoji, style: const TextStyle(fontSize: 28)),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
-            if (isSelected)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Icon(Icons.check_circle, color: color, size: 20),
-              ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDurationOption({
-    required String title,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+  Widget _buildQuickChip(String label) {
+    final delta = double.tryParse(label.replaceAll('+', '')) ?? 0.0;
+    return ActionChip(
+      label: Text(label),
+      labelStyle: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 12,
+        color: _accentColor,
+      ),
+      backgroundColor: _accentColor.withValues(alpha: 0.1),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      side: BorderSide.none,
+      onPressed: () => _addQuickAmount(delta),
+    );
+  }
 
-    return InkWell(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        onTap();
-      },
-      borderRadius: BorderRadius.circular(12),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? _accentColor.withOpacity(0.1)
-              : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(12),
-          border: isSelected ? Border.all(color: _accentColor) : null,
-        ),
-        child: Text(
-          title,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-            color: isSelected ? _accentColor : null,
+  Widget _buildDurationChip(String label, bool isSelected, VoidCallback onTap) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          HapticFeedback.selectionClick();
+          onTap();
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? _accentColor.withValues(alpha: 0.15)
+                : Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+            borderRadius: BorderRadius.circular(10),
+            border: isSelected ? Border.all(color: _accentColor) : null,
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                color: isSelected ? _accentColor : null,
+              ),
+            ),
           ),
         ),
       ),
-    );
-  }
-}
-
-class _EmojiGrid extends StatelessWidget {
-  const _EmojiGrid({required this.selectedEmoji, required this.onSelect});
-
-  final String? selectedEmoji;
-  final ValueChanged<String> onSelect;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        const tileSize = 44.0;
-        const spacing = 8.0;
-        int cols =
-            ((constraints.maxWidth + spacing) / (tileSize + spacing)).floor();
-        cols = cols.clamp(4, 12);
-        return Center(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: cols * tileSize + (cols - 1) * spacing,
-            ),
-            child: GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: cols,
-                mainAxisSpacing: spacing,
-                crossAxisSpacing: spacing,
-                childAspectRatio: 1,
-              ),
-              itemCount: kEmojiPresets.length,
-              itemBuilder: (context, i) {
-                final e = kEmojiPresets[i];
-                final isSel = selectedEmoji == e;
-                return InkWell(
-                  onTap: () => onSelect(e),
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: isSel
-                          ? scheme.primaryContainer
-                          : scheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Center(
-                      child: Text(e, style: const TextStyle(fontSize: 20)),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        );
-      },
     );
   }
 }

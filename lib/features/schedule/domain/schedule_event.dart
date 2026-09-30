@@ -17,6 +17,9 @@ class ScheduleEvent {
     this.location,
     this.startDate,
     this.emoji,
+    this.isCompleted = false,
+    this.targetCount,
+    this.unit,
   });
 
   final String id;
@@ -33,6 +36,9 @@ class ScheduleEvent {
   String? location;
   String? startDate; // YYYY-MM-DD representing the week this event belongs to
   String? emoji;
+  bool isCompleted;
+  int? targetCount;
+  String? unit;
 
   /// Duration in minutes
   int get durationMinutes {
@@ -62,6 +68,9 @@ class ScheduleEvent {
         'location': location,
         'startDate': startDate,
         'emoji': emoji,
+        'isCompleted': isCompleted,
+        'targetCount': targetCount,
+        'unit': unit,
       };
 
   factory ScheduleEvent.fromJson(Map<String, dynamic> json) => ScheduleEvent(
@@ -79,5 +88,8 @@ class ScheduleEvent {
         location: json['location'] as String?,
         startDate: json['startDate'] as String?,
         emoji: json['emoji'] as String?,
+        isCompleted: json['isCompleted'] as bool? ?? false,
+        targetCount: json['targetCount'] as int?,
+        unit: json['unit'] as String?,
       );
 }

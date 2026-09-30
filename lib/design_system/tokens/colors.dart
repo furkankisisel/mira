@@ -24,6 +24,16 @@ class AppColors {
   static const Color accentSunset = Color(0xFFE6AA88); // Warm Sunset
   static const Color accentForest = Color(0xFF5F8A5F); // Deep Green
 
+  // Curated Scandinavian Theme Colors
+  static const Color themeCotton = Color(0xFF5B6B4F);
+  static const Color themeTerracotta = Color(0xFFC07355);
+  static const Color themeFjord = Color(0xFF4A6E82);
+  static const Color themeSandstone = Color(0xFF9E846A);
+  static const Color themeMoss = Color(0xFF3F6D55);
+  static const Color themeHeather = Color(0xFF7A688A);
+  static const Color themeAmber = Color(0xFFC28135);
+  static const Color themeBasalt = Color(0xFF525252);
+
   static Color shadowSm([double o = .15]) => Colors.black.withValues(alpha: o);
   static Color overlay([double o = .08]) => Colors.black.withValues(alpha: o);
 }

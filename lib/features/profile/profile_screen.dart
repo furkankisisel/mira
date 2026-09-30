@@ -8,7 +8,6 @@ import 'profile_repository.dart';
 import '../habit/domain/habit_repository.dart';
 import '../habit/domain/habit_model.dart';
 import '../habit/presentation/habit_analysis_screen.dart';
-import '../social/presentation/social_hub_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -630,65 +629,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
-          // 2.4. Social Rooms Entry
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Card(
-                clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const SocialHubScreen(),
-                      ),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: scheme.primaryContainer,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          alignment: Alignment.center,
-                          child: Icon(Icons.groups, color: scheme.primary, size: 24),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Sosyal Odalar',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                'Arkadaşlarınla hedeflerini paylaş',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: scheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(Icons.chevron_right, color: scheme.onSurfaceVariant),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
 
           const SliverToBoxAdapter(child: SizedBox(height: 32)),
 

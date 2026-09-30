@@ -1,5 +1,8 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../design_system/theme/theme_variations.dart';
 
@@ -15,7 +18,7 @@ class MoodAnalyticsScreen extends StatefulWidget {
 }
 
 class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   final DetailedMoodRepository _repository = DetailedMoodRepository();
 
   late TabController _tabController;
@@ -27,6 +30,9 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (mounted) setState(() {});
+    });
     _loadData();
   }
 
@@ -42,13 +48,17 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
     try {
       final entries = await _repository.getAllMoodEntries();
       final stats = await _repository.getMoodStatistics();
-      setState(() {
-        _recentEntries = entries.take(20).toList();
-        _statistics = stats;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _recentEntries = entries;
+          _statistics = stats;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -56,16 +66,10 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-
-    // Apply exact same colors as mood_screen.dart
     final Color bgColor = theme.scaffoldBackgroundColor;
-    final Color cardColor = theme.colorScheme.surface;
     final Color primaryColor = theme.colorScheme.primary;
     final Color textColor = theme.colorScheme.onSurface;
     final bool isDark = theme.brightness == Brightness.dark;
-    final Color chipColor = isDark
-        ? Colors.white.withOpacity(0.08)
-        : Colors.black.withOpacity(0.05);
 
     return Theme(
       data: theme,
@@ -74,458 +78,911 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          centerTitle: false,
-          iconTheme: IconThemeData(color: textColor),
+          scrolledUnderElevation: 0,
+          centerTitle: true,
           titleTextStyle: TextStyle(
             color: textColor,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
             fontFamily: 'Outfit',
+            letterSpacing: -0.2,
           ),
           title: Text(l10n.moodAnalytics),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          bottom: TabBar(
-            controller: _tabController,
-            indicatorColor: primaryColor,
-            labelColor: primaryColor,
-            unselectedLabelColor: textColor.withOpacity(0.5),
-            tabs: [
-              Tab(text: l10n.overview),
-              Tab(text: l10n.history),
-            ],
+          leading: Center(
+            child: GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                Navigator.of(context).pop();
+              },
+              child: Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDark ? const Color(0xFF1E2430) : Colors.white,
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.95),
+                    width: 1.2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                    BoxShadow(
+                      color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.8),
+                      blurRadius: 2,
+                      offset: const Offset(0, -1),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 16,
+                  color: textColor,
+                ),
+              ),
+            ),
           ),
         ),
         body: _isLoading
             ? Center(child: CircularProgressIndicator(color: primaryColor))
-            : TabBarView(
-                controller: _tabController,
+            : Column(
                 children: [
-                  _buildOverviewTab(theme, l10n, cardColor, chipColor,
-                      primaryColor, textColor),
-                  _buildHistoryTab(theme, l10n, cardColor, chipColor,
-                      primaryColor, textColor),
+                  const SizedBox(height: 4),
+                  // Floating Capsule Tab Switcher with Real-Time Sliding Indicator
+                  _buildCapsuleTabBar(primaryColor, textColor, isDark, l10n),
+                  const SizedBox(height: 10),
+                  // Tab Views
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      physics: const BouncingScrollPhysics(),
+                      children: [
+                        _buildOverviewTab(theme, l10n, primaryColor, textColor, isDark),
+                        _buildHistoryTab(theme, l10n, primaryColor, textColor, isDark),
+                      ],
+                    ),
+                  ),
                 ],
               ),
       ),
     );
   }
 
-  Widget _buildOverviewTab(ThemeData theme, AppLocalizations l10n,
-      Color cardColor, Color chipColor, Color primaryColor, Color textColor) {
-    if (_statistics == null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.mood, size: 64, color: textColor.withOpacity(0.3)),
-            const SizedBox(height: 16),
-            Text(l10n.noMoodData,
-                style: theme.textTheme.titleMedium?.copyWith(color: textColor)),
-            const SizedBox(height: 8),
-            Text(
-              l10n.startTrackingMood,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: textColor.withOpacity(0.7),
-              ),
+  // Floating Capsule Segment Switcher with Smooth Sliding Indicator
+  Widget _buildCapsuleTabBar(
+    Color primaryColor,
+    Color textColor,
+    bool isDark,
+    AppLocalizations l10n,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Container(
+        height: 50,
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: isDark
+              ? Color.alphaBlend(
+                  primaryColor.withValues(alpha: 0.08),
+                  Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.65),
+                )
+              : Color.alphaBlend(
+                  primaryColor.withValues(alpha: 0.07),
+                  Color.alphaBlend(
+                    Colors.black.withValues(alpha: 0.04),
+                    Theme.of(context).scaffoldBackgroundColor,
+                  ),
+                ),
+          borderRadius: BorderRadius.circular(26),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+            BoxShadow(
+              color: Colors.white.withValues(alpha: isDark ? 0.04 : 0.8),
+              blurRadius: 1,
+              offset: const Offset(0, -1),
             ),
           ],
+        ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final double pillWidth = (constraints.maxWidth - 2) / 2;
+
+            return Stack(
+              children: [
+                // 1. Sliding Indicator Pill (Synchronous with TabController animation)
+                AnimatedBuilder(
+                  animation: _tabController.animation!,
+                  builder: (context, child) {
+                    final animVal = (_tabController.animation?.value ??
+                            _tabController.index.toDouble())
+                        .clamp(0.0, 1.0);
+                    final leftOffset =
+                        animVal * (constraints.maxWidth - pillWidth - 2);
+
+                    return Positioned(
+                      left: leftOffset,
+                      top: 0,
+                      bottom: 0,
+                      width: pillWidth,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: primaryColor,
+                          borderRadius: BorderRadius.circular(22),
+                          border: Border.all(
+                            color: Colors.white.withValues(
+                              alpha: isDark ? 0.25 : 0.35,
+                            ),
+                            width: 1.2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: primaryColor.withValues(alpha: 0.22),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                            BoxShadow(
+                              color: Colors.black.withValues(
+                                alpha: isDark ? 0.20 : 0.04,
+                              ),
+                              blurRadius: 4,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
+                // 2. Interactive Tab Labels on top
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildSlidingTabItem(
+                        index: 0,
+                        title: l10n.overview,
+                        icon: Icons.insights_rounded,
+                        textColor: textColor,
+                      ),
+                    ),
+                    Expanded(
+                      child: _buildSlidingTabItem(
+                        index: 1,
+                        title: l10n.history,
+                        icon: Icons.history_rounded,
+                        textColor: textColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSlidingTabItem({
+    required int index,
+    required String title,
+    required IconData icon,
+    required Color textColor,
+  }) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        HapticFeedback.selectionClick();
+        _tabController.animateTo(
+          index,
+          duration: const Duration(milliseconds: 320),
+          curve: Curves.easeOutCubic,
+        );
+      },
+      child: AnimatedBuilder(
+        animation: _tabController.animation!,
+        builder: (context, child) {
+          final animVal = (_tabController.animation?.value ??
+                  _tabController.index.toDouble())
+              .clamp(0.0, 1.0);
+          final weight = index == 0 ? (1.0 - animVal) : animVal;
+          final activeColor = Colors.white;
+          final inactiveColor = textColor.withValues(alpha: 0.65);
+          final itemColor = Color.lerp(inactiveColor, activeColor, weight)!;
+
+          return Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  size: 18,
+                  color: itemColor,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: itemColor,
+                    fontSize: 13.5,
+                    fontWeight: weight > 0.5 ? FontWeight.w700 : FontWeight.w500,
+                    letterSpacing: -0.1,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildOverviewTab(
+    ThemeData theme,
+    AppLocalizations l10n,
+    Color primaryColor,
+    Color textColor,
+    bool isDark,
+  ) {
+    if (_statistics == null || _statistics!.totalEntries == 0) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(28),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF181D27) : Colors.white,
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: primaryColor.withValues(alpha: 0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.mood_rounded, size: 36, color: primaryColor),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  l10n.noMoodData,
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 19,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.startTrackingMood,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: textColor.withValues(alpha: 0.65),
+                    fontSize: 14,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       );
     }
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: cardColor,
-          borderRadius: BorderRadius.circular(32),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Summary Cards
-            Row(
-              children: [
-                Expanded(
-                  child: _buildSummaryCard(
-                    title: l10n.totalEntries,
-                    value: _statistics!.totalEntries.toString(),
-                    icon: Icons.event_note,
-                    color: Colors.blue,
-                    chipColor: chipColor,
-                    textColor: textColor,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildSummaryCard(
-                    title: l10n.averageMood,
-                    value: _statistics!.averageMoodScore.toStringAsFixed(1),
-                    icon: Icons.trending_up,
-                    color: _getMoodColor(_statistics!.averageMoodScore),
-                    chipColor: chipColor,
-                    textColor: textColor,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-
-            // Mood Distribution
-            Text(
-              l10n.moodDistribution,
-              style: TextStyle(
-                color: textColor,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-                height: 200,
-                child: _buildMoodDistributionChart(theme, textColor)),
-            const SizedBox(height: 32),
-
-            // Top Categories
-            Text(
-              l10n.topCategories,
-              style: TextStyle(
-                color: textColor,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 24),
-            _buildTopCategoriesCard(
-                theme, l10n, chipColor, textColor, primaryColor),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHistoryTab(ThemeData theme, AppLocalizations l10n,
-      Color cardColor, Color chipColor, Color primaryColor, Color textColor) {
-    if (_recentEntries.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.history, size: 64, color: textColor.withOpacity(0.3)),
-            const SizedBox(height: 16),
-            Text(l10n.noHistory,
-                style: theme.textTheme.titleMedium?.copyWith(color: textColor)),
-          ],
-        ),
-      );
-    }
-
-    return ListView.separated(
-      padding: const EdgeInsets.all(16),
-      itemCount: _recentEntries.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        final entry = _recentEntries[index];
-        return _buildHistoryCard(
-            entry, theme, l10n, cardColor, chipColor, primaryColor, textColor);
-      },
-    );
-  }
-
-  Widget _buildSummaryCard({
-    required String title,
-    required String value,
-    required IconData icon,
-    required Color color,
-    required Color chipColor,
-    required Color textColor,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: chipColor,
-        borderRadius: BorderRadius.circular(24),
-      ),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: color, size: 28),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(color: textColor.withOpacity(0.7), fontSize: 13),
-            textAlign: TextAlign.center,
-          ),
+          // 1. Hero Emotional Harmony Score Card
+          _buildHeroScoreCard(theme, l10n, textColor, isDark),
+          const SizedBox(height: 16),
+
+          // 2. Mood Distribution Donut Chart & Visual Progress Breakdown
+          _buildMoodDistributionCard(theme, l10n, textColor, isDark),
+          const SizedBox(height: 16),
+
+          // 3. Top Patterns Card
+          _buildTopPatternsCard(theme, l10n, primaryColor, textColor, isDark),
         ],
       ),
     );
   }
 
-  Widget _buildMoodDistributionChart(ThemeData theme, Color textColor) {
-    final l10n = AppLocalizations.of(context);
-    if (_statistics == null || _statistics!.moodDistribution.isEmpty) {
-      return Center(
-          child: Text(l10n.noMoodData, style: TextStyle(color: textColor)));
+  // 1. Hero Emotional Harmony Score Card
+  Widget _buildHeroScoreCard(
+    ThemeData theme,
+    AppLocalizations l10n,
+    Color textColor,
+    bool isDark,
+  ) {
+    final score = _statistics!.averageMoodScore;
+    final moodColor = _getMoodColorByScore(score);
+
+    String statusTitle;
+    String statusSubtitle;
+    if (score >= 4.0) {
+      statusTitle = 'Harika Denge ✨';
+      statusSubtitle = 'Pozitif enerji ve motivasyonun oldukça yüksek';
+    } else if (score >= 3.0) {
+      statusTitle = 'Dengeli & Sakin 🌿';
+      statusSubtitle = 'Duyguların stabil ve dengeli bir akışta';
+    } else {
+      statusTitle = 'Yenilenme Vakti 🕊️';
+      statusSubtitle = 'Kendine zaman tanı ve dinlenmeye özen göster';
     }
 
-    final sections = _statistics!.moodDistribution.entries.map((entry) {
-      final mood = entry.key;
-      final count = entry.value;
-      final percentage = (count / _statistics!.totalEntries) * 100;
-
-      return PieChartSectionData(
-        color: _getMoodColor(mood.index + 1.0),
-        value: percentage,
-        title: '${percentage.toStringAsFixed(1)}%',
-        radius: 60,
-        titleStyle: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      );
-    }).toList();
-
-    return PieChart(
-      PieChartData(sections: sections, centerSpaceRadius: 40, sectionsSpace: 4),
-    );
-  }
-
-  Widget _buildTopCategoriesCard(ThemeData theme, AppLocalizations l10n,
-      Color chipColor, Color textColor, Color primaryColor) {
-    if (_statistics == null) return const SizedBox.shrink();
-
     return Container(
-      padding: const EdgeInsets.all(24),
+      width: double.infinity,
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: chipColor,
-        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            moodColor.withValues(alpha: isDark ? 0.20 : 0.12),
+            moodColor.withValues(alpha: isDark ? 0.06 : 0.02),
+          ],
+        ),
+        color: isDark ? const Color(0xFF181D27) : Colors.white,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: moodColor.withValues(alpha: isDark ? 0.35 : 0.5),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: moodColor.withValues(alpha: isDark ? 0.25 : 0.12),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.9),
+            blurRadius: 2,
+            offset: const Offset(0, -1),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildCategoryRow(
-            l10n.mostCommonMood,
-            _getMoodTitle(_statistics!.mostCommonMood, l10n),
-            _getMoodIcon(_statistics!.mostCommonMood),
-            _getMoodColor(_statistics!.mostCommonMood.index + 1.0),
-            textColor,
+          // Top Row: Avatar Orb + Score + Status Badge
+          Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      moodColor,
+                      moodColor.withValues(alpha: 0.8),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.4),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: moodColor.withValues(alpha: 0.4),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  _getMoodIcon(_statistics!.mostCommonMood),
+                  color: Colors.white,
+                  size: 30,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.averageMood,
+                      style: TextStyle(
+                        color: textColor.withValues(alpha: 0.65),
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text(
+                          score.toStringAsFixed(1),
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Outfit',
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        Text(
+                          ' / 5.0',
+                          style: TextStyle(
+                            color: textColor.withValues(alpha: 0.5),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: moodColor.withValues(alpha: 0.16),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: moodColor.withValues(alpha: 0.35),
+                    width: 1,
+                  ),
+                ),
+                child: Text(
+                  statusTitle,
+                  style: TextStyle(
+                    color: moodColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Divider(color: textColor.withOpacity(0.1), height: 1),
+          const SizedBox(height: 12),
+          Text(
+            statusSubtitle,
+            style: TextStyle(
+              color: textColor.withValues(alpha: 0.7),
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-          _buildCategoryRow(
-            l10n.mostCommonEmotion,
-            _getSubEmotionTitle(_statistics!.mostCommonSubEmotion, l10n),
-            _getSubEmotionIcon(_statistics!.mostCommonSubEmotion),
-            primaryColor,
-            textColor,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Divider(color: textColor.withOpacity(0.1), height: 1),
-          ),
-          _buildCategoryRow(
-            l10n.mostCommonReason,
-            _getReasonTitle(_statistics!.mostCommonReason, l10n),
-            _getReasonIcon(_statistics!.mostCommonReason),
-            theme.colorScheme.secondary,
-            textColor,
+          const SizedBox(height: 16),
+          // Bottom Stat Badges Row
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Colors.black.withValues(alpha: 0.25)
+                        : Colors.white.withValues(alpha: 0.8),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: isDark ? 0.06 : 0.8),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.event_note_rounded,
+                        size: 18,
+                        color: moodColor,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          '${_statistics!.totalEntries} ${l10n.totalEntries}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: textColor.withValues(alpha: 0.85),
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Colors.black.withValues(alpha: 0.25)
+                        : Colors.white.withValues(alpha: 0.8),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: isDark ? 0.06 : 0.8),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        _getMoodIcon(_statistics!.mostCommonMood),
+                        size: 18,
+                        color: _getMoodLevelColor(_statistics!.mostCommonMood),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _getMoodTitle(_statistics!.mostCommonMood, l10n),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: textColor.withValues(alpha: 0.85),
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  void _showHistoryEntryActions(MoodEntry entry) {
-    final l10n = AppLocalizations.of(context);
-    showDialog<void>(
-      context: context,
-      builder: (ctx) {
-        final theme = Theme.of(ctx);
-        final Color accent = theme.colorScheme.primary;
-        final themed = theme.copyWith(
-          colorScheme: theme.colorScheme.copyWith(primary: accent),
-          appBarTheme: theme.appBarTheme.copyWith(foregroundColor: accent),
-          iconTheme: theme.iconTheme.copyWith(color: accent),
-        );
+  // 2. Mood Distribution Donut Chart & Visual Progress Breakdown
+  Widget _buildMoodDistributionCard(
+    ThemeData theme,
+    AppLocalizations l10n,
+    Color textColor,
+    bool isDark,
+  ) {
+    final total = _statistics!.totalEntries;
 
-        return Theme(
-          data: themed,
-          child: AlertDialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-            title: Text(l10n.delete),
-            content: Text(l10n.deleteEntryConfirm),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  _showEditEntryDialog(entry);
-                },
-                child: Text(l10n.edit),
+    final sections = _statistics!.moodDistribution.entries.map((entry) {
+      final mood = entry.key;
+      final count = entry.value;
+      final color = _getMoodLevelColor(mood);
+
+      return PieChartSectionData(
+        color: color,
+        value: count.toDouble(),
+        showTitle: false,
+        radius: 22,
+      );
+    }).toList();
+
+    const moodOrder = [
+      MoodLevel.excellent,
+      MoodLevel.good,
+      MoodLevel.neutral,
+      MoodLevel.bad,
+      MoodLevel.terrible,
+    ];
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(22),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF181D27) : Colors.white,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+          BoxShadow(
+            color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.9),
+            blurRadius: 2,
+            offset: const Offset(0, -1),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                l10n.moodDistribution,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -0.2,
+                ),
               ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: Text(l10n.cancel),
-              ),
-              TextButton(
-                onPressed: () async {
-                  Navigator.pop(ctx);
-                  await _repository.deleteMoodEntry(entry.id);
-                  await _loadData();
-                },
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? const Color(0xFF222938)
+                      : const Color(0xFFF1F4F9),
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Text(
-                  l10n.delete,
-                  style: const TextStyle(color: Colors.red),
+                  '$total kayıt',
+                  style: TextStyle(
+                    color: textColor.withValues(alpha: 0.65),
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
           ),
-        );
-      },
-    );
-  }
-
-  void _showEditEntryDialog(MoodEntry entry) {
-    final l10n = AppLocalizations.of(context);
-    final noteCtrl = TextEditingController(text: entry.journalText);
-    var selectedMood = entry.mood;
-    // var selectedSubEmotion = entry.subEmotions.firstOrNull;
-    var selectedReason = entry.reason;
-
-    showDialog<void>(
-      context: context,
-      builder: (ctx) {
-        final theme = Theme.of(ctx);
-        final Color accent = theme.colorScheme.primary;
-        final themed = theme.copyWith(
-          colorScheme: theme.colorScheme.copyWith(primary: accent),
-          appBarTheme: theme.appBarTheme.copyWith(foregroundColor: accent),
-          iconTheme: theme.iconTheme.copyWith(color: accent),
-        );
-
-        return Theme(
-          data: themed,
-          child: AlertDialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-            title: Text(l10n.edit),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+          const SizedBox(height: 20),
+          // Donut Chart with Centered Mood Face
+          Center(
+            child: SizedBox(
+              width: 180,
+              height: 180,
+              child: Stack(
+                alignment: Alignment.center,
                 children: [
-                  DropdownButtonFormField<MoodLevel>(
-                    initialValue: selectedMood,
-                    decoration: InputDecoration(labelText: l10n.mood),
-                    items: MoodLevel.values
-                        .map(
-                          (m) => DropdownMenuItem(
-                            value: m,
-                            child: Text(_getMoodTitle(m, l10n)),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (v) {
-                      if (v != null) selectedMood = v;
-                    },
+                  PieChart(
+                    PieChartData(
+                      sections: sections,
+                      centerSpaceRadius: 54,
+                      sectionsSpace: 3,
+                      borderData: FlBorderData(show: false),
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<ReasonCategory>(
-                    initialValue: selectedReason,
-                    decoration: InputDecoration(labelText: l10n.selectReason),
-                    items: ReasonCategory.values
-                        .map(
-                          (r) => DropdownMenuItem(
-                            value: r,
-                            child: Text(_getReasonTitle(r, l10n)),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (v) {
-                      if (v != null) selectedReason = v;
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: noteCtrl,
-                    decoration: InputDecoration(labelText: l10n.noteOptional),
-                    maxLines: 3,
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _getMoodIcon(_statistics!.mostCommonMood),
+                        size: 32,
+                        color: _getMoodLevelColor(_statistics!.mostCommonMood),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _getMoodTitle(_statistics!.mostCommonMood, l10n),
+                        style: TextStyle(
+                          color: textColor.withValues(alpha: 0.8),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: Text(l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  final updated = MoodEntry(
-                    id: entry.id,
-                    mood: selectedMood,
-                    subEmotions: entry.subEmotions, // Keep existing for now
-                    reason: selectedReason,
-                    journalText: noteCtrl.text.trim(),
-                    timestamp: entry.timestamp,
-                  );
-                  await _repository.updateMoodEntry(updated);
-                  if (mounted) {
-                    Navigator.pop(ctx);
-                    await _loadData();
-                  }
-                },
-                child: Text(l10n.save),
-              ),
-            ],
           ),
-        );
-      },
+          const SizedBox(height: 24),
+          // 5 TactProgress Bars
+          Column(
+            children: moodOrder.map((mood) {
+              final count = _statistics!.moodDistribution[mood] ?? 0;
+              final percent = total > 0 ? (count / total) : 0.0;
+              final moodColor = _getMoodLevelColor(mood);
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: moodColor.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        _getMoodIcon(mood),
+                        color: moodColor,
+                        size: 16,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      width: 76,
+                      child: Text(
+                        _getMoodTitle(mood, l10n),
+                        style: TextStyle(
+                          color: textColor.withValues(alpha: 0.85),
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: Container(
+                          height: 8,
+                          color: textColor.withValues(alpha: 0.06),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: FractionallySizedBox(
+                              widthFactor: percent.clamp(0.0, 1.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      moodColor,
+                                      moodColor.withValues(alpha: 0.8),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    SizedBox(
+                      width: 68,
+                      child: Text(
+                        '$count (%${(percent * 100).toStringAsFixed(0)})',
+                        textAlign: TextAlign.end,
+                        style: TextStyle(
+                          color: textColor.withValues(alpha: 0.65),
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildCategoryRow(
-    String label,
-    String value,
-    IconData icon,
-    Color color,
+  // 3. Top Patterns Card
+  Widget _buildTopPatternsCard(
+    ThemeData theme,
+    AppLocalizations l10n,
+    Color primaryColor,
     Color textColor,
+    bool isDark,
   ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+    if (_statistics == null) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(22),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF181D27) : Colors.white,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+          BoxShadow(
+            color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.9),
+            blurRadius: 2,
+            offset: const Offset(0, -1),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.topCategories,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              letterSpacing: -0.2,
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildPatternItem(
+            label: l10n.mostCommonMood,
+            value: _getMoodTitle(_statistics!.mostCommonMood, l10n),
+            icon: _getMoodIcon(_statistics!.mostCommonMood),
+            color: _getMoodLevelColor(_statistics!.mostCommonMood),
+            textColor: textColor,
+            isDark: isDark,
+          ),
+          const SizedBox(height: 10),
+          _buildPatternItem(
+            label: l10n.mostCommonEmotion,
+            value: _getSubEmotionTitle(_statistics!.mostCommonSubEmotion, l10n),
+            icon: _getSubEmotionIcon(_statistics!.mostCommonSubEmotion),
+            color: primaryColor,
+            textColor: textColor,
+            isDark: isDark,
+          ),
+          const SizedBox(height: 10),
+          _buildPatternItem(
+            label: l10n.mostCommonReason,
+            value: _getReasonTitle(_statistics!.mostCommonReason, l10n),
+            icon: _getReasonIcon(_statistics!.mostCommonReason),
+            color: const Color(0xFFEC4899), // Pinkish accent
+            textColor: textColor,
+            isDark: isDark,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPatternItem({
+    required String label,
+    required String value,
+    required IconData icon,
+    required Color color,
+    required Color textColor,
+    required bool isDark,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF202735) : const Color(0xFFF7F9FC),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: isDark ? 0.06 : 0.9),
+          width: 1,
+        ),
+      ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
-              shape: BoxShape.circle,
+              color: color.withValues(alpha: 0.16),
+              borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(icon, color: color, size: 24),
+            child: Icon(icon, color: color, size: 22),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -533,17 +990,18 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                 Text(
                   label,
                   style: TextStyle(
-                    color: textColor.withOpacity(0.5),
-                    fontSize: 13,
+                    color: textColor.withValues(alpha: 0.55),
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   value,
                   style: TextStyle(
                     color: textColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
@@ -554,141 +1012,1011 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
     );
   }
 
-  Widget _buildHistoryCard(
-    MoodEntry entry,
+  // ----------------------------------------------------
+  // HISTORY TAB
+  // ----------------------------------------------------
+  Widget _buildHistoryTab(
     ThemeData theme,
     AppLocalizations l10n,
-    Color cardColor,
-    Color chipColor,
     Color primaryColor,
     Color textColor,
+    bool isDark,
   ) {
-    return InkWell(
-      onLongPress: () => _showHistoryEntryActions(entry),
-      borderRadius: BorderRadius.circular(32),
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: cardColor,
-          borderRadius: BorderRadius.circular(32),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    if (_recentEntries.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(28),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF181D27) : Colors.white,
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
+                width: 1.5,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color:
-                        _getMoodColor(entry.mood.index + 1.0).withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    _getMoodIcon(entry.mood),
-                    color: _getMoodColor(entry.mood.index + 1.0),
-                    size: 24,
+                Icon(
+                  Icons.history_rounded,
+                  size: 56,
+                  color: textColor.withValues(alpha: 0.25),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.noHistory,
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return AnimationLimiter(
+      child: ListView.separated(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
+        itemCount: _recentEntries.length,
+        separatorBuilder: (context, index) => const SizedBox(height: 12),
+        itemBuilder: (context, index) {
+          final entry = _recentEntries[index];
+          return AnimationConfiguration.staggeredList(
+            position: index,
+            duration: const Duration(milliseconds: 280),
+            child: SlideAnimation(
+              verticalOffset: 20,
+              child: FadeInAnimation(
+                child: _buildHistoryCard(
+                  entry: entry,
+                  l10n: l10n,
+                  textColor: textColor,
+                  isDark: isDark,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildHistoryCard({
+    required MoodEntry entry,
+    required AppLocalizations l10n,
+    required Color textColor,
+    required bool isDark,
+  }) {
+    final moodColor = _getMoodLevelColor(entry.mood);
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF181D27) : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.8),
+            blurRadius: 2,
+            offset: const Offset(0, -1),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header: Avatar + Title + Time + Actions Button
+          Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      moodColor,
+                      moodColor.withValues(alpha: 0.8),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: moodColor.withValues(alpha: 0.35),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  _getMoodIcon(entry.mood),
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _getMoodTitle(entry.mood, l10n),
+                      style: TextStyle(
+                        color: textColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.access_time_rounded,
+                          size: 13,
+                          color: textColor.withValues(alpha: 0.45),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          _formatDateTime(entry.timestamp),
+                          style: TextStyle(
+                            color: textColor.withValues(alpha: 0.55),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              // More Actions Button
+              GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  _showHistoryEntryActions(entry);
+                },
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isDark
+                        ? const Color(0xFF222938)
+                        : const Color(0xFFF1F4F9),
+                  ),
+                  child: Icon(
+                    Icons.more_horiz_rounded,
+                    size: 18,
+                    color: textColor.withValues(alpha: 0.6),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          // Journal Note Box
+          if (entry.journalText.isNotEmpty) ...[
+            const SizedBox(height: 14),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF202735) : const Color(0xFFF7F9FC),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: isDark ? 0.06 : 0.8),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 3,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: moodColor,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      entry.journalText,
+                      style: TextStyle(
+                        color: textColor.withValues(alpha: 0.85),
+                        fontSize: 13,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          // Tags
+          if (entry.subEmotions.isNotEmpty || entry.reason != ReasonCategory.other) ...[
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                ...entry.subEmotions.map(
+                  (s) => _buildTactileTag(
+                    text: _getSubEmotionTitle(s, l10n),
+                    icon: _getSubEmotionIcon(s),
+                    color: moodColor,
+                    textColor: textColor,
+                    isDark: isDark,
+                  ),
+                ),
+                _buildTactileTag(
+                  text: _getReasonTitle(entry.reason, l10n),
+                  icon: _getReasonIcon(entry.reason),
+                  color: const Color(0xFFEC4899),
+                  textColor: textColor,
+                  isDark: isDark,
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTactileTag({
+    required String text,
+    required IconData icon,
+    required Color color,
+    required Color textColor,
+    required bool isDark,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withValues(alpha: 0.25),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: color),
+          const SizedBox(width: 5),
+          Text(
+            text,
+            style: TextStyle(
+              color: textColor.withValues(alpha: 0.85),
+              fontSize: 11.5,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ----------------------------------------------------
+  // ACTION & EDIT SHEETS
+  // ----------------------------------------------------
+  void _showHistoryEntryActions(MoodEntry entry) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textColor = theme.colorScheme.onSurface;
+    final primaryColor = theme.colorScheme.primary;
+
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? const Color(0xFF161A22).withValues(alpha: 0.94)
+                    : Colors.white.withValues(alpha: 0.94),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(32)),
+                border: Border(
+                  top: BorderSide(
+                    color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.9),
+                    width: 1.5,
+                  ),
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Handle pill
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: textColor.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  // Entry header preview
+                  Row(
                     children: [
-                      Text(
-                        _getMoodTitle(entry.mood, l10n),
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
+                      Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(
+                          color: _getMoodLevelColor(entry.mood).withValues(alpha: 0.16),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Icon(
+                          _getMoodIcon(entry.mood),
+                          color: _getMoodLevelColor(entry.mood),
+                          size: 22,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        _formatDateTime(entry.timestamp),
-                        style: TextStyle(
-                          color: textColor.withOpacity(0.5),
-                          fontSize: 13,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _getMoodTitle(entry.mood, l10n),
+                              style: TextStyle(
+                                color: textColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              _formatDateTime(entry.timestamp),
+                              style: TextStyle(
+                                color: textColor.withValues(alpha: 0.5),
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-            if (entry.journalText.isNotEmpty) ...[
-              const SizedBox(height: 20),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: chipColor,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Text(
-                  entry.journalText,
-                  style: TextStyle(color: textColor, height: 1.4),
-                ),
+                  const SizedBox(height: 20),
+                  // Edit Action
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      _showEditEntrySheet(entry);
+                    },
+                    child: Container(
+                      height: 50,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: primaryColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: primaryColor.withValues(alpha: 0.3),
+                          width: 1.2,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.edit_rounded, color: primaryColor, size: 20),
+                          const SizedBox(width: 10),
+                          Text(
+                            l10n.edit,
+                            style: TextStyle(
+                              color: primaryColor,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  // Delete Action
+                  GestureDetector(
+                    onTap: () async {
+                      Navigator.pop(ctx);
+                      _showDeleteConfirmation(entry);
+                    },
+                    child: Container(
+                      height: 50,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEF4444).withValues(alpha: 0.10),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: const Color(0xFFEF4444).withValues(alpha: 0.25),
+                          width: 1.2,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.delete_outline_rounded,
+                              color: Color(0xFFEF4444), size: 20),
+                          const SizedBox(width: 10),
+                          Text(
+                            l10n.delete,
+                            style: const TextStyle(
+                              color: Color(0xFFEF4444),
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                ...entry.subEmotions.map(
-                  (s) => _buildTag(
-                      _getSubEmotionTitle(s, l10n), chipColor, textColor),
-                ),
-                _buildTag(
-                    _getReasonTitle(entry.reason, l10n), chipColor, textColor),
-              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildTag(String text, Color chipColor, Color textColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: chipColor,
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: textColor.withOpacity(0.8),
-          fontSize: 13,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
+  void _showDeleteConfirmation(MoodEntry entry) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textColor = theme.colorScheme.onSurface;
+
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(22, 14, 22, 32),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? const Color(0xFF161A22).withValues(alpha: 0.95)
+                    : Colors.white.withValues(alpha: 0.95),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(32)),
+                border: Border(
+                  top: BorderSide(
+                    color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.9),
+                    width: 1.5,
+                  ),
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: textColor.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 22),
+                  Container(
+                    width: 54,
+                    height: 54,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEF4444).withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.delete_forever_rounded,
+                      color: Color(0xFFEF4444),
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    l10n.delete,
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    l10n.deleteEntryConfirm,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: textColor.withValues(alpha: 0.65),
+                      fontSize: 13.5,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => Navigator.pop(ctx),
+                          child: Container(
+                            height: 50,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? const Color(0xFF222938)
+                                  : const Color(0xFFF1F4F9),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              l10n.cancel,
+                              style: TextStyle(
+                                color: textColor.withValues(alpha: 0.8),
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () async {
+                            Navigator.pop(ctx);
+                            await _repository.deleteMoodEntry(entry.id);
+                            await _loadData();
+                          },
+                          child: Container(
+                            height: 50,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEF4444),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFFEF4444).withValues(alpha: 0.35),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              l10n.delete,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showEditEntrySheet(MoodEntry entry) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textColor = theme.colorScheme.onSurface;
+    final primaryColor = theme.colorScheme.primary;
+
+    final noteCtrl = TextEditingController(text: entry.journalText);
+    var selectedMood = entry.mood;
+    var selectedReason = entry.reason;
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    12,
+                    20,
+                    MediaQuery.of(ctx).viewInsets.bottom + 28,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF161A22).withValues(alpha: 0.96)
+                        : Colors.white.withValues(alpha: 0.96),
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(32)),
+                    border: Border(
+                      top: BorderSide(
+                        color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.9),
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Container(
+                            width: 40,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: textColor.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        Text(
+                          l10n.edit,
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: 19,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        // 1. Mood Picker Track (2-Row Layout to avoid horizontal squishing)
+                        Builder(
+                          builder: (context) {
+                            Widget buildMoodBtn(MoodLevel m) {
+                              final isSel = selectedMood == m;
+                              final mColor = _getMoodLevelColor(m);
+                              return Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                                  child: _AnalyticsBouncingTapWrapper(
+                                    lowerBound: 0.93,
+                                    duration: const Duration(milliseconds: 110),
+                                    onTap: () {
+                                      HapticFeedback.selectionClick();
+                                      setModalState(() => selectedMood = m);
+                                    },
+                                    child: AnimatedContainer(
+                                      duration: const Duration(milliseconds: 220),
+                                      curve: Curves.easeOutCubic,
+                                      padding: const EdgeInsets.symmetric(vertical: 12),
+                                      decoration: BoxDecoration(
+                                        color: isSel
+                                            ? (isDark
+                                                ? mColor.withValues(alpha: 0.18)
+                                                : mColor.withValues(alpha: 0.10))
+                                            : (isDark
+                                                ? const Color(0xFF222938)
+                                                : const Color(0xFFF6F8FB)),
+                                        borderRadius: BorderRadius.circular(18),
+                                        border: Border.all(
+                                          color: isSel
+                                              ? mColor.withValues(alpha: isDark ? 0.70 : 0.85)
+                                              : Colors.white.withValues(alpha: isDark ? 0.06 : 0.95),
+                                          width: isSel ? 1.6 : 1.2,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withValues(
+                                              alpha: isDark ? (isSel ? 0.22 : 0.12) : (isSel ? 0.05 : 0.02),
+                                            ),
+                                            blurRadius: isSel ? 6 : 3,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                          BoxShadow(
+                                            color: Colors.white.withValues(alpha: isDark ? 0.03 : 0.8),
+                                            blurRadius: 1,
+                                            offset: const Offset(0, -1),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            _getMoodIcon(m),
+                                            size: 24,
+                                            color: isSel ? mColor : textColor.withValues(alpha: 0.5),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          Text(
+                                            _getMoodTitle(m, l10n),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              color: isSel ? mColor : textColor.withValues(alpha: 0.7),
+                                              fontSize: 12,
+                                              fontWeight: isSel ? FontWeight.bold : FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  children: [
+                                    buildMoodBtn(MoodLevel.excellent),
+                                    buildMoodBtn(MoodLevel.good),
+                                    buildMoodBtn(MoodLevel.neutral),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    buildMoodBtn(MoodLevel.bad),
+                                    buildMoodBtn(MoodLevel.terrible),
+                                  ],
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 18),
+                        // 2. Reason Category Chips
+                        Text(
+                          l10n.selectReason,
+                          style: TextStyle(
+                            color: textColor.withValues(alpha: 0.8),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: ReasonCategory.values.map((r) {
+                            final isSel = selectedReason == r;
+                            return _AnalyticsBouncingTapWrapper(
+                              lowerBound: 0.93,
+                              duration: const Duration(milliseconds: 110),
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                setModalState(() => selectedReason = r);
+                              },
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 220),
+                                curve: Curves.easeOutCubic,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isSel
+                                      ? primaryColor
+                                      : (isDark
+                                          ? const Color(0xFF222938)
+                                          : const Color(0xFFF4F6F9)),
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: isSel
+                                        ? Colors.white.withValues(alpha: 0.35)
+                                        : Colors.white.withValues(alpha: isDark ? 0.06 : 0.9),
+                                    width: 1.2,
+                                  ),
+                                  boxShadow: isSel
+                                      ? [
+                                          BoxShadow(
+                                            color: primaryColor.withValues(alpha: 0.20),
+                                            blurRadius: 6,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ]
+                                      : [
+                                          BoxShadow(
+                                            color: Colors.black.withValues(alpha: isDark ? 0.1 : 0.02),
+                                            blurRadius: 3,
+                                            offset: const Offset(0, 1),
+                                          ),
+                                        ],
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    AnimatedSize(
+                                      duration: const Duration(milliseconds: 200),
+                                      curve: Curves.easeOutCubic,
+                                      child: isSel
+                                          ? const Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  Icons.check_rounded,
+                                                  size: 14,
+                                                  color: Colors.white,
+                                                ),
+                                                SizedBox(width: 4),
+                                              ],
+                                            )
+                                          : const SizedBox.shrink(),
+                                    ),
+                                    Text(
+                                      _getReasonTitle(r, l10n),
+                                      style: TextStyle(
+                                        color: isSel
+                                            ? Colors.white
+                                            : textColor.withValues(alpha: 0.8),
+                                        fontSize: 12.5,
+                                        fontWeight: isSel
+                                            ? FontWeight.bold
+                                            : FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                        const SizedBox(height: 18),
+                        // 3. Note Field
+                        Container(
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF222938)
+                                : const Color(0xFFF4F6FA),
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          child: TextField(
+                            controller: noteCtrl,
+                            maxLines: 3,
+                            style: TextStyle(color: textColor, fontSize: 14),
+                            decoration: InputDecoration(
+                              hintText: l10n.noteOptional,
+                              hintStyle: TextStyle(
+                                color: textColor.withValues(alpha: 0.4),
+                              ),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.all(14),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 22),
+                        // 4. Save Button
+                        _AnalyticsBouncingTapWrapper(
+                          lowerBound: 0.96,
+                          duration: const Duration(milliseconds: 110),
+                          onTap: () async {
+                            HapticFeedback.mediumImpact();
+                            final updated = MoodEntry(
+                              id: entry.id,
+                              mood: selectedMood,
+                              subEmotions: entry.subEmotions,
+                              reason: selectedReason,
+                              journalText: noteCtrl.text.trim(),
+                              timestamp: entry.timestamp,
+                            );
+                            await _repository.updateMoodEntry(updated);
+                            if (mounted) {
+                              Navigator.pop(ctx);
+                              await _loadData();
+                            }
+                          },
+                          child: Container(
+                            height: 52,
+                            width: double.infinity,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  primaryColor,
+                                  primaryColor.withValues(alpha: 0.85),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(26),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: primaryColor.withValues(alpha: 0.20),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              l10n.save,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
   // Helper methods
-  Color _getMoodColor(double moodScore) {
-    if (moodScore <= 1.5) return Colors.red;
-    if (moodScore <= 2.5) return Colors.orange;
-    if (moodScore <= 3.5) return Colors.blue;
-    if (moodScore <= 4.5) return Colors.green;
-    return Colors.purple;
+  Color _getMoodLevelColor(MoodLevel m) {
+    switch (m) {
+      case MoodLevel.excellent:
+        return const Color(0xFF3B82F6); // Vibrant Blue
+      case MoodLevel.good:
+        return const Color(0xFF10B981); // Emerald Green
+      case MoodLevel.neutral:
+        return const Color(0xFFF59E0B); // Warm Amber
+      case MoodLevel.bad:
+        return const Color(0xFFF97316); // Bright Orange
+      case MoodLevel.terrible:
+        return const Color(0xFFEF4444); // Crimson Red
+    }
   }
+
+  Color _getMoodScoreColor(double score) {
+    if (score >= 4.5) return const Color(0xFF3B82F6);
+    if (score >= 3.5) return const Color(0xFF10B981);
+    if (score >= 2.5) return const Color(0xFFF59E0B);
+    if (score >= 1.5) return const Color(0xFFF97316);
+    return const Color(0xFFEF4444);
+  }
+
+  Color _getMoodColorByScore(double score) => _getMoodScoreColor(score);
 
   IconData _getMoodIcon(MoodLevel mood) {
     switch (mood) {
       case MoodLevel.terrible:
-        return Icons.sentiment_very_dissatisfied;
+        return Icons.sentiment_very_dissatisfied_rounded;
       case MoodLevel.bad:
-        return Icons.sentiment_dissatisfied;
+        return Icons.sentiment_dissatisfied_rounded;
       case MoodLevel.neutral:
-        return Icons.sentiment_neutral;
+        return Icons.sentiment_neutral_rounded;
       case MoodLevel.good:
-        return Icons.sentiment_satisfied;
+        return Icons.sentiment_satisfied_alt_rounded;
       case MoodLevel.excellent:
-        return Icons.sentiment_very_satisfied;
+        return Icons.sentiment_very_satisfied_rounded;
     }
   }
 
@@ -708,90 +2036,89 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
   }
 
   IconData _getSubEmotionIcon(SubEmotion subEmotion) {
-    // Same mapping as in other screens
     switch (subEmotion) {
       case SubEmotion.exhausted:
-        return Icons.battery_0_bar;
+        return Icons.battery_0_bar_rounded;
       case SubEmotion.helpless:
-        return Icons.help_outline;
+        return Icons.help_outline_rounded;
       case SubEmotion.hopeless:
-        return Icons.cloud_off;
+        return Icons.cloud_off_rounded;
       case SubEmotion.hurt:
-        return Icons.favorite_border;
+        return Icons.favorite_border_rounded;
       case SubEmotion.drained:
         return Icons.water_drop_outlined;
       case SubEmotion.angry:
-        return Icons.flash_on;
+        return Icons.flash_on_rounded;
       case SubEmotion.sad:
-        return Icons.sentiment_dissatisfied;
+        return Icons.sentiment_dissatisfied_rounded;
       case SubEmotion.anxious:
-        return Icons.psychology;
+        return Icons.psychology_rounded;
       case SubEmotion.stressed:
-        return Icons.speed;
+        return Icons.speed_rounded;
       case SubEmotion.demoralized:
-        return Icons.trending_down;
+        return Icons.trending_down_rounded;
       case SubEmotion.indecisive:
-        return Icons.shuffle;
+        return Icons.shuffle_rounded;
       case SubEmotion.tired:
-        return Icons.bedtime;
+        return Icons.bedtime_rounded;
       case SubEmotion.ordinary:
-        return Icons.remove;
+        return Icons.remove_rounded;
       case SubEmotion.calm:
-        return Icons.spa;
+        return Icons.spa_rounded;
       case SubEmotion.empty:
-        return Icons.crop_free;
+        return Icons.crop_free_rounded;
       case SubEmotion.happy:
-        return Icons.sentiment_satisfied;
+        return Icons.sentiment_satisfied_rounded;
       case SubEmotion.cheerful:
-        return Icons.emoji_emotions;
+        return Icons.emoji_emotions_rounded;
       case SubEmotion.excited:
-        return Icons.celebration;
+        return Icons.celebration_rounded;
       case SubEmotion.enthusiastic:
-        return Icons.local_fire_department;
+        return Icons.local_fire_department_rounded;
       case SubEmotion.determined:
-        return Icons.flag;
+        return Icons.flag_rounded;
       case SubEmotion.motivated:
-        return Icons.trending_up;
+        return Icons.trending_up_rounded;
       case SubEmotion.amazing:
-        return Icons.auto_awesome;
+        return Icons.auto_awesome_rounded;
       case SubEmotion.energetic:
-        return Icons.bolt;
+        return Icons.bolt_rounded;
       case SubEmotion.peaceful:
-        return Icons.self_improvement;
+        return Icons.self_improvement_rounded;
       case SubEmotion.grateful:
-        return Icons.favorite;
+        return Icons.favorite_rounded;
       case SubEmotion.loving:
-        return Icons.volunteer_activism;
+        return Icons.volunteer_activism_rounded;
       case SubEmotion.overwhelmed:
-        return Icons.waves;
+        return Icons.waves_rounded;
       case SubEmotion.lonely:
-        return Icons.person_off;
+        return Icons.person_off_rounded;
       case SubEmotion.regretful:
-        return Icons.undo;
+        return Icons.undo_rounded;
       case SubEmotion.insecure:
-        return Icons.lock_open;
+        return Icons.lock_open_rounded;
       case SubEmotion.guilty:
-        return Icons.gavel;
+        return Icons.gavel_rounded;
       case SubEmotion.bored:
-        return Icons.hourglass_empty;
+        return Icons.hourglass_empty_rounded;
       case SubEmotion.numb:
-        return Icons.ac_unit;
+        return Icons.ac_unit_rounded;
       case SubEmotion.confused:
-        return Icons.psychology_alt;
+        return Icons.psychology_alt_rounded;
       case SubEmotion.distracted:
-        return Icons.notifications_off;
+        return Icons.notifications_off_rounded;
       case SubEmotion.proud:
-        return Icons.verified;
+        return Icons.verified_rounded;
       case SubEmotion.confident:
-        return Icons.shield;
+        return Icons.shield_rounded;
       case SubEmotion.hopeful:
-        return Icons.wb_sunny;
+        return Icons.wb_sunny_rounded;
       case SubEmotion.euphoric:
-        return Icons.rocket_launch;
+        return Icons.rocket_launch_rounded;
       case SubEmotion.blessed:
-        return Icons.auto_awesome;
+        return Icons.auto_awesome_rounded;
       case SubEmotion.unstoppable:
-        return Icons.bolt;
+        return Icons.bolt_rounded;
     }
   }
 
@@ -885,23 +2212,23 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
   IconData _getReasonIcon(ReasonCategory reason) {
     switch (reason) {
       case ReasonCategory.academic:
-        return Icons.school;
+        return Icons.school_rounded;
       case ReasonCategory.work:
-        return Icons.work;
+        return Icons.work_rounded;
       case ReasonCategory.relationship:
-        return Icons.favorite;
+        return Icons.favorite_rounded;
       case ReasonCategory.finance:
-        return Icons.attach_money;
+        return Icons.attach_money_rounded;
       case ReasonCategory.health:
-        return Icons.health_and_safety;
+        return Icons.health_and_safety_rounded;
       case ReasonCategory.social:
-        return Icons.people;
+        return Icons.people_rounded;
       case ReasonCategory.personalGrowth:
-        return Icons.psychology;
+        return Icons.psychology_rounded;
       case ReasonCategory.weather:
-        return Icons.wb_sunny;
+        return Icons.wb_sunny_rounded;
       case ReasonCategory.other:
-        return Icons.more_horiz;
+        return Icons.more_horiz_rounded;
     }
   }
 
@@ -932,18 +2259,98 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
     final now = DateTime.now();
     final difference = now.difference(dateTime);
 
-    if (difference.inDays == 0) {
-      return 'Today ${_formatTime(dateTime)}';
-    } else if (difference.inDays == 1) {
-      return 'Yesterday ${_formatTime(dateTime)}';
+    if (difference.inDays == 0 && now.day == dateTime.day) {
+      return 'Bugün ${_formatTime(dateTime)}';
+    } else if (difference.inDays <= 1 || (now.day - dateTime.day == 1 && now.month == dateTime.month)) {
+      return 'Dün ${_formatTime(dateTime)}';
     } else if (difference.inDays < 7) {
-      return '${difference.inDays} days ago';
+      return '${difference.inDays} gün önce';
     } else {
-      return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+      return '${dateTime.day}.${dateTime.month}.${dateTime.year}';
     }
   }
 
   String _formatTime(DateTime dateTime) {
     return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  }
+}
+
+class _AnalyticsBouncingTapWrapper extends StatefulWidget {
+  final Widget child;
+  final VoidCallback onTap;
+  final double lowerBound;
+  final Duration duration;
+
+  const _AnalyticsBouncingTapWrapper({
+    required this.child,
+    required this.onTap,
+    this.lowerBound = 0.94,
+    this.duration = const Duration(milliseconds: 120),
+  });
+
+  @override
+  State<_AnalyticsBouncingTapWrapper> createState() =>
+      _AnalyticsBouncingTapWrapperState();
+}
+
+class _AnalyticsBouncingTapWrapperState
+    extends State<_AnalyticsBouncingTapWrapper>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+      reverseDuration: const Duration(milliseconds: 220),
+    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: widget.lowerBound,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+      reverseCurve: Curves.easeOutBack,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onTapDown(TapDownDetails details) {
+    _controller.forward();
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    _controller.reverse();
+    widget.onTap();
+  }
+
+  void _onTapCancel() {
+    _controller.reverse();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      child: AnimatedBuilder(
+        animation: _scaleAnimation,
+        builder: (context, child) => Transform.scale(
+          scale: _scaleAnimation.value,
+          child: child,
+        ),
+        child: widget.child,
+      ),
+    );
   }
 }

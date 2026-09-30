@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/services.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -5,6 +6,7 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:flutter_timezone/flutter_timezone.dart';
 import '../data/notification_settings_repository.dart';
 import '../../habit/domain/habit_model.dart';
+import '../../habit/domain/habit_repository.dart';
 import '../../../l10n/app_localizations.dart';
 
 class NotificationService {
@@ -26,6 +28,12 @@ class NotificationService {
   static const String _timerChannelDescription =
       'Live timer notifications with controls';
   static const int _timerNotificationId = 9999;
+
+  static const String _timerCompletedChannelId = 'mira_timer_completed_channel';
+  static const String _timerCompletedChannelName = 'Timer Completed Alerts';
+  static const String _timerCompletedChannelDescription =
+      'Sound and vibration alerts when a countdown or pomodoro session completes';
+  static const int _timerCompletedNotificationId = 9998;
 
   Future<void> initialize() async {
     await _configureLocalTimeZone();
@@ -67,11 +75,22 @@ class NotificationService {
       showBadge: true,
     );
 
+    const timerCompletedChannel = AndroidNotificationChannel(
+      _timerCompletedChannelId,
+      _timerCompletedChannelName,
+      description: _timerCompletedChannelDescription,
+      importance: Importance.max,
+      playSound: true,
+      enableVibration: true,
+      showBadge: true,
+    );
+
     final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
 
     await androidPlugin?.createNotificationChannel(androidChannel);
     await androidPlugin?.createNotificationChannel(habitReminderChannel);
+    await androidPlugin?.createNotificationChannel(timerCompletedChannel);
 
     // Request notification permissions
     final notificationPermission =
@@ -190,21 +209,21 @@ class NotificationService {
         if (isRunning)
           AndroidNotificationAction(
             'pause',
-            _l10n?.timerPause ?? '⏸️ Pause',
-            showsUserInterface: true,
+            _l10n?.timerPause ?? '⏸️ Duraklat',
+            showsUserInterface: false,
             cancelNotification: false,
           )
         else
           AndroidNotificationAction(
             'resume',
-            _l10n?.timerResume ?? '▶️ Resume',
-            showsUserInterface: true,
+            _l10n?.timerResume ?? '▶️ Devam Et',
+            showsUserInterface: false,
             cancelNotification: false,
           ),
         AndroidNotificationAction(
           'stop',
-          _l10n?.timerStop ?? '⏹️ Stop',
-          showsUserInterface: true,
+          _l10n?.timerStop ?? '⏹️ Bitir',
+          showsUserInterface: false,
           cancelNotification: false,
         ),
       ],
@@ -232,6 +251,56 @@ class NotificationService {
     );
   }
 
+  /// High-priority alert notification when a countdown or pomodoro session finishes.
+  Future<void> showTimerCompletedNotification({
+    required String title,
+    required String body,
+  }) async {
+    if (!_initialized) return;
+
+    // Cancel ongoing timer chronometer notification
+    await cancelTimerNotification();
+
+    final androidDetails = AndroidNotificationDetails(
+      _timerCompletedChannelId,
+      _timerCompletedChannelName,
+      channelDescription: _timerCompletedChannelDescription,
+      importance: Importance.max,
+      priority: Priority.max,
+      playSound: true,
+      enableVibration: true,
+      vibrationPattern: Int64List.fromList([0, 500, 250, 500, 250, 500]),
+      autoCancel: true,
+      ongoing: false,
+      largeIcon: const DrawableResourceAndroidBitmap(
+        '@drawable/ic_notification_large',
+      ),
+      styleInformation: BigTextStyleInformation(
+        body,
+        contentTitle: title,
+      ),
+    );
+
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    final details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await _plugin.show(
+      _timerCompletedNotificationId,
+      title,
+      body,
+      details,
+      payload: 'timer_completed',
+    );
+  }
+
   Future<void> cancelTimerNotification() async {
     if (!_initialized) return;
     _lastTitle = null;
@@ -255,12 +324,37 @@ class NotificationService {
     print('   Habit reminders: ${repo.habitReminders}');
     print('   Sound: ${repo.sound}');
     print('   Vibration: ${repo.vibration}');
+
+    _onSettingsChanged();
   }
 
   void _onSettingsChanged() {
-    // When settings change, we could reschedule all notifications
-    // For now, just log the change
-    print('🔄 Settings changed - new notifications will use updated settings');
+    if (_shouldShowHabitReminder()) {
+      rescheduleAllHabitReminders();
+    } else {
+      cancelAllHabitReminders();
+    }
+  }
+
+  /// Cancels all habit reminders and reschedules active ones according to latest settings.
+  Future<void> rescheduleAllHabitReminders() async {
+    if (!_initialized) return;
+    try {
+      await cancelAllHabitReminders();
+      if (!_shouldShowHabitReminder()) return;
+
+      final habits = HabitRepository.instance.habits;
+      int count = 0;
+      for (final h in habits) {
+        if (h.reminderEnabled && h.reminderTime != null) {
+          await scheduleHabitReminder(h);
+          count++;
+        }
+      }
+      print('🔄 Rescheduled $count habit reminders');
+    } catch (e) {
+      print('⚠️ Failed to reschedule habit reminders: $e');
+    }
   }
 
   bool _shouldShowNotification() {
@@ -356,7 +450,7 @@ class NotificationService {
 
     final emoji = habit.emoji ?? '✅';
     final title = '$emoji ${habit.title}';
-    final body = _l10n?.habitReminderBody ?? 'Time to complete your habit!';
+    final body = _l10n?.habitReminderBody ?? 'Alışkanlığını tamamlama vakti geldi! 🔥';
 
     try {
       await _plugin.zonedSchedule(

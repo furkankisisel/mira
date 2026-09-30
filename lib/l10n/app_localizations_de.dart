@@ -9,6 +9,79 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get onboardingPlanLocal => 'Yanıtlarına göre başlangıç planın';
+
+  @override
+  String get onboardingPlanAi => 'Yanıtlarına göre AI destekli planın';
+
+  @override
+  String get onboardingPlanAdvice => 'İlk haftan için yol haritası';
+
+  @override
+  String get onboardingPlanReason => 'Neden sana öneriliyor?';
+
+  @override
+  String get onboardingPlanChooseOne =>
+      'İlk hafta birini seçerek başla. Sana uydukça yenilerini ekleyebilirsin.';
+
+  @override
+  String get onboardingPlanSaveError =>
+      'Alışkanlıkların kaydedilemedi. Seçimlerin burada; tekrar deneyebilirsin.';
+
+  @override
+  String get onboardingStoryWelcomeTitle =>
+      'İyi gelen bir hayat,\nsana ait bir ritim.';
+
+  @override
+  String get onboardingStoryWelcomeBody =>
+      'Seni biraz tanıyalım. Mira ile hedeflerini küçük alışkanlıklara dönüştür, gününü planla ve nasıl hissettiğini takip et.';
+
+  @override
+  String get onboardingStoryNote => '12 kısa soru · Kendi hızında';
+
+  @override
+  String get onboardingStoryVisionTitle => 'Hayallerine yer aç.';
+
+  @override
+  String get onboardingStoryVisionBody =>
+      'Vizyon panonla sana ilham veren hedefleri bir araya getir.';
+
+  @override
+  String get onboardingStoryRoutineTitle => 'Küçük adımlar, günlük ilerleme.';
+
+  @override
+  String get onboardingStoryRoutineBody =>
+      'Alışkanlıkların ve haftalık planın, yapmak istediklerine yer açsın.';
+
+  @override
+  String get onboardingStoryBalanceTitle => 'Kendine kulak ver.';
+
+  @override
+  String get onboardingStoryBalanceBody =>
+      'Ruh halini takip et; sana iyi gelen anları fark et.';
+
+  @override
+  String get onboardingStoryConnectionTitle => 'Birlikte ilerle.';
+
+  @override
+  String get onboardingStoryConnectionBody =>
+      'Ortak odalarda hedeflerini paylaş, birbirinizden güç alın.';
+
+  @override
+  String get onboardingStoryAnswerHint => 'Bu ifade seni ne kadar anlatıyor?';
+
+  @override
+  String get onboardingStoryResult => 'Kendimi keşfet';
+
+  @override
+  String get onboardingStoryLoading =>
+      'Yanıtlarından sana özel öneriler hazırlıyoruz…';
+
+  @override
+  String get onboardingStoryError =>
+      'Önerilerini şu an hazırlayamadık. Yanıtların burada; tekrar deneyebilirsin.';
+
+  @override
   String get about => 'Über uns';
 
   @override
@@ -4604,4 +4677,85 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get yourMoodToday => 'Deine heutige Stimmung';
+
+  @override
+  String get activeGoal => 'Aktif Hedef';
+
+  @override
+  String get goals => 'Hedefler';
+
+  @override
+  String todayStepsCount(Object count) {
+    return 'Bugün $count adımın var';
+  }
+
+  @override
+  String todayTasksCount(Object count) {
+    return 'Bugün $count görev var';
+  }
+
+  @override
+  String percentCompleted(Object percent) {
+    return '%$percent tamamlandı';
+  }
+
+  @override
+  String get goalSummary => 'Hedef Özeti';
+
+  @override
+  String get goToGoal => 'Hedefe Git';
+
+  @override
+  String get viewAllGoals => 'Tüm Hedefleri Gör';
+
+  @override
+  String get todaySteps => 'Bugün için Adımlar';
+
+  @override
+  String get todayStepsDone => 'Bugünkü adımlarını tamamladın! 🌟';
+
+  @override
+  String get linkedHabits => 'Bağlı Alışkanlıklar';
+
+  @override
+  String get oneTimeTasks => 'Tek Seferlik Görevler';
+
+  @override
+  String get addSmallStep => 'Bu hedef için küçük adım ekle';
+
+  @override
+  String get addSmallStepSubtitle =>
+      'Hedefe ulaştıran günlük bir eylem belirle';
+
+  @override
+  String get createNewHabit => 'Yeni Alışkanlık Oluştur';
+
+  @override
+  String get createNewHabitSubtitle =>
+      'Bu hedefi destekleyen yeni bir rutin kur';
+
+  @override
+  String get linkExistingHabit => 'Mevcut Alışkanlık Bağla';
+
+  @override
+  String get linkExistingHabitSubtitle =>
+      'Zaten takip ettiğin bir alışkanlığı hedefe ekle';
+
+  @override
+  String get skipForNow => 'Şimdilik Atla';
+
+  @override
+  String get noLinkedHabits => 'Henüz bağlı bir alışkanlık yok';
+
+  @override
+  String get addHabitStep => 'Alışkanlık Ekle';
+
+  @override
+  String get selectHabitsToLink => 'Bağlanacak Alışkanlıkları Seç';
+
+  @override
+  String get setGoal => 'Hedef Belirle';
+
+  @override
+  String get swipeGoalsHint => 'Geçiş için kaydır';
 }

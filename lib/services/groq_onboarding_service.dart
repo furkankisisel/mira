@@ -117,7 +117,7 @@ Generate 5 to 7 habits. Each habit MUST:
 - belong to one of the 3 vision pillars
 - directly address the user's pain, goal, or blocker
 - be realistically sized for their available time and energy
-- include a vision_reason that connects it explicitly to the vision title
+- include a vision_reason: exactly 1 short, motivating sentence (max 8-10 words). Keep it concise, punchy and direct.
 
 Habit types:
 - binary: done or not done

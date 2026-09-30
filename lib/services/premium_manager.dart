@@ -21,9 +21,12 @@ class PremiumManager {
   // Valid promo codes for unlimited premium access
   static const List<String> _validPromoCodes = [];
 
+  /// Temporary test bypass: set to true to grant premium for testing.
+  static const bool _debugForcePremium = false;
+
   /// Whether the user currently has premium.
   bool _isPremium = false;
-  bool get isPremium => _checkPremiumValidity();
+  bool get isPremium => _debugForcePremium || _checkPremiumValidity();
 
   /// Expiry timestamp (milliseconds since epoch)
   int? _expiryTimestamp;
@@ -42,6 +45,7 @@ class PremiumManager {
 
   /// Check if premium is still valid (not expired)
   bool _checkPremiumValidity() {
+    if (_debugForcePremium) return true;
     if (!_isPremium) return false;
 
     if (_expiryTimestamp == null) {

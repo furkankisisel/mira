@@ -1,4 +1,4 @@
-// HabitCard (clean) - adjusted margin + gesture behavior to avoid "panning" gap on swipe/scale
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../domain/habit_types.dart';
 import '../../domain/subtask_model.dart';
@@ -90,9 +90,15 @@ class HabitCard extends StatefulWidget {
 }
 
 class _HabitCardState extends State<HabitCard>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _scale;
+  late final AnimationController _completionController;
+  late final Animation<double> _bounceAnimation;
+  late final Animation<double> _badgeScaleAnimation;
+  late final Animation<double> _sparkleAnimation;
+  late final Animation<double> _rippleAnimation;
+  late final Animation<double> _shimmerAnimation;
   int _brokenTaps = 0;
 
   // ── Drag-to-progress state ──
@@ -120,22 +126,84 @@ class _HabitCardState extends State<HabitCard>
       begin: 1.0,
       end: 0.90,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
+
+    _completionController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    );
+
+    _bounceAnimation = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween(begin: 1.0, end: 1.025).chain(CurveTween(curve: Curves.easeOut)),
+        weight: 35,
+      ),
+      TweenSequenceItem(
+        tween: Tween(begin: 1.025, end: 0.995).chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 35,
+      ),
+      TweenSequenceItem(
+        tween: Tween(begin: 0.995, end: 1.0).chain(CurveTween(curve: Curves.easeOut)),
+        weight: 30,
+      ),
+    ]).animate(_completionController);
+
+    _badgeScaleAnimation = TweenSequence<double>([
+      TweenSequenceItem(
+        tween: Tween(begin: 0.75, end: 1.25).chain(CurveTween(curve: Curves.easeOutBack)),
+        weight: 45,
+      ),
+      TweenSequenceItem(
+        tween: Tween(begin: 1.25, end: 1.0).chain(CurveTween(curve: Curves.bounceOut)),
+        weight: 55,
+      ),
+    ]).animate(CurvedAnimation(
+      parent: _completionController,
+      curve: const Interval(0.0, 0.75),
+    ));
+
+    _sparkleAnimation = CurvedAnimation(
+      parent: _completionController,
+      curve: const Interval(0.1, 0.85, curve: Curves.easeOutCubic),
+    );
+
+    _rippleAnimation = CurvedAnimation(
+      parent: _completionController,
+      curve: const Interval(0.0, 0.65, curve: Curves.easeOutQuad),
+    );
+
+    _shimmerAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+      parent: _completionController,
+      curve: const Interval(0.05, 0.95, curve: Curves.easeInOutCubic),
+    ));
+
+    if (widget.isCompleted) {
+      _completionController.value = 1.0;
+    }
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _completionController.dispose();
     super.dispose();
   }
 
-  Widget _buildStatusIcon(bool isCompleted) {
+  Widget _buildStatusIcon(bool isCompleted, [double progress = 0.0]) {
+    if (isCompleted) {
+      return const Icon(
+        Icons.check_rounded,
+        key: ValueKey('checked'),
+        color: Colors.white,
+        size: 18,
+      );
+    }
     // Timer: Clock icon
     if (widget.habitType == HabitType.timer) {
       return Icon(
-        Icons.timer,
+        Icons.timer_outlined,
         key: const ValueKey('timer-icon'),
-        color: isCompleted ? Colors.white : widget.color,
-        size: 16,
+        color: widget.color,
+        size: 15,
       );
     }
     // Numerical: Hash/Tag icon
@@ -143,19 +211,157 @@ class _HabitCardState extends State<HabitCard>
       return Icon(
         Icons.tag,
         key: const ValueKey('numerical-icon'),
-        color: isCompleted ? Colors.white : widget.color,
-        size: 16,
+        color: widget.color,
+        size: 15,
       );
     }
-    // Simple/Checkbox: Checkmark (only when done)
-    return isCompleted
-        ? const Icon(
-            Icons.check,
-            key: ValueKey('checked'),
-            color: Colors.white,
-            size: 16,
-          )
-        : const SizedBox(key: ValueKey('unchecked'));
+    // Subtasks: Checklist icon
+    if (widget.habitType == HabitType.subtasks) {
+      return Icon(
+        Icons.checklist_rounded,
+        key: const ValueKey('subtask-icon'),
+        color: widget.color,
+        size: 15,
+      );
+    }
+    // Simple/Checkbox: Unchecked percent or empty
+    if (progress > 0.0) {
+      return Text(
+        '${(progress * 100).round()}%',
+        key: const ValueKey('percent-text'),
+        style: TextStyle(
+          color: widget.color,
+          fontSize: 8.5,
+          fontWeight: FontWeight.w800,
+        ),
+      );
+    }
+    return const SizedBox(key: ValueKey('unchecked'));
+  }
+
+  Widget _buildCompletionBadge({
+    required bool done,
+    required ColorScheme cs,
+    required bool isDark,
+    required double effectiveProgress,
+  }) {
+    final bool hasPartialProgress = !done && effectiveProgress > 0.0;
+
+    return AnimatedBuilder(
+      animation: _completionController,
+      builder: (context, _) {
+        final rippleProgress = _rippleAnimation.value;
+        final sparkleProgress = _sparkleAnimation.value;
+        final isCompletedAnimating =
+            _completionController.isAnimating && done;
+
+        return Stack(
+          alignment: Alignment.center,
+          clipBehavior: Clip.none,
+          children: [
+            // Celebratory sparkles burst
+            if (sparkleProgress > 0.0 && sparkleProgress < 1.0)
+              Positioned(
+                left: -20,
+                top: -20,
+                right: -20,
+                bottom: -20,
+                child: IgnorePointer(
+                  child: CustomPaint(
+                    painter: _SparklePainter(
+                      progress: sparkleProgress,
+                      primaryColor: widget.color,
+                    ),
+                  ),
+                ),
+              ),
+
+            // Expanding ripple halo ring
+            if (rippleProgress > 0.0 && rippleProgress < 1.0)
+              IgnorePointer(
+                child: Container(
+                  width: 30 + (rippleProgress * 28),
+                  height: 30 + (rippleProgress * 28),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: widget.color.withValues(
+                        alpha: (1.0 - rippleProgress) * 0.75,
+                      ),
+                      width: 2.0 * (1.0 - rippleProgress * 0.5),
+                    ),
+                  ),
+                ),
+              ),
+
+            // Status Badge Circle
+            ScaleTransition(
+              scale: isCompletedAnimating
+                  ? _badgeScaleAnimation
+                  : const AlwaysStoppedAnimation(1.0),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 240),
+                curve: Curves.easeOutCubic,
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: done
+                      ? widget.color
+                      : (hasPartialProgress
+                          ? widget.color.withValues(alpha: 0.12)
+                          : Color.alphaBlend(
+                              widget.color.withValues(alpha: 0.10),
+                              cs.surfaceContainerHighest,
+                            )),
+                  border: (!done && !hasPartialProgress)
+                      ? Border.all(
+                          color: widget.color.withValues(alpha: 0.25),
+                          width: 1.2,
+                        )
+                      : null,
+                  boxShadow: done
+                      ? [
+                          BoxShadow(
+                            color: widget.color.withValues(alpha: 0.40),
+                            blurRadius: 14,
+                            spreadRadius: 1,
+                            offset: const Offset(0, 3),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Circular progress arc for partial progress
+                    if (hasPartialProgress)
+                      Positioned.fill(
+                        child: CustomPaint(
+                          painter: _StatusRingPainter(
+                            progress: effectiveProgress,
+                            color: widget.color,
+                            trackColor: widget.color.withValues(alpha: 0.15),
+                            strokeWidth: 2.5,
+                          ),
+                        ),
+                      ),
+
+                    // Icon / content
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 200),
+                      switchInCurve: Curves.easeOutBack,
+                      switchOutCurve: Curves.easeIn,
+                      child: _buildStatusIcon(done, effectiveProgress),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   EdgeInsets _defaultMargin(BuildContext context) {
@@ -182,6 +388,13 @@ class _HabitCardState extends State<HabitCard>
         setState(() => _brokenTaps = 0);
       }
     }
+
+    if (!oldWidget.isCompleted && widget.isCompleted) {
+      _completionController.forward(from: 0.0);
+      HapticFeedback.mediumImpact();
+    } else if (oldWidget.isCompleted && !widget.isCompleted) {
+      _completionController.reset();
+    }
   }
 
   void _handleTapDown(TapDownDetails d) {
@@ -193,7 +406,6 @@ class _HabitCardState extends State<HabitCard>
 
   void _handleTapUp(TapUpDetails d) async {
     if (!widget.readOnly) {
-      HapticFeedback.lightImpact();
       // Simple ve checkbox: doğrudan toggle
       if (widget.habitType == HabitType.simple ||
           widget.habitType == HabitType.checkbox) {
@@ -203,12 +415,25 @@ class _HabitCardState extends State<HabitCard>
         if (need > 0) {
           final next = _brokenTaps + 1;
           if (next < need) {
+            HapticFeedback.lightImpact();
             setState(() => _brokenTaps = next);
           } else {
+            if (!widget.isCompleted) {
+              _completionController.forward(from: 0.0);
+              HapticFeedback.mediumImpact();
+            } else {
+              HapticFeedback.lightImpact();
+            }
             widget.onTap();
             if (_brokenTaps != 0) setState(() => _brokenTaps = 0);
           }
         } else {
+          if (!widget.isCompleted) {
+            _completionController.forward(from: 0.0);
+            HapticFeedback.mediumImpact();
+          } else {
+            HapticFeedback.lightImpact();
+          }
           widget.onTap();
           if (_brokenTaps != 0) setState(() => _brokenTaps = 0);
         }
@@ -219,6 +444,7 @@ class _HabitCardState extends State<HabitCard>
       }
       // Numerical ve timer: manuel değer girişi
       else {
+        HapticFeedback.lightImpact();
         _showManualValueDialog();
       }
     }
@@ -268,7 +494,12 @@ class _HabitCardState extends State<HabitCard>
       _isDragging = false;
     });
     if (newValue != widget.currentStreak) {
-      HapticFeedback.mediumImpact();
+      if (widget.targetCount > 0 && newValue >= widget.targetCount) {
+        _completionController.forward(from: 0.0);
+        HapticFeedback.mediumImpact();
+      } else {
+        HapticFeedback.lightImpact();
+      }
       widget.onValueUpdate?.call(newValue);
     }
   }
@@ -900,10 +1131,29 @@ class _HabitCardState extends State<HabitCard>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final bool done = widget.isCompleted;
     final Color completedBg = widget.color;
     final Color onCompleted =
         completedBg.computeLuminance() < 0.5 ? Colors.white : Colors.black;
+
+    double targetProgress = 0.0;
+    if (widget.habitType == HabitType.subtasks &&
+        widget.subtasks != null &&
+        widget.subtasks!.isNotEmpty) {
+      final total = widget.subtasks!.length;
+      final completed = widget.subtasks!.where((s) => s.isCompleted).length;
+      targetProgress = done ? 1.0 : (total > 0 ? (completed / total) : 0.0);
+    } else if (widget.targetCount > 0) {
+      targetProgress = done
+          ? 1.0
+          : (widget.currentStreak / widget.targetCount).clamp(0.0, 1.0);
+    } else {
+      targetProgress = done ? 1.0 : 0.0;
+    }
+
+    final double effectiveProgress =
+        _isDragging ? _dragProgress : targetProgress;
 
     final int need =
         widget.iceEnabled && !done ? widget.requiredBreakTaps.clamp(0, 7) : 0;
@@ -938,137 +1188,253 @@ class _HabitCardState extends State<HabitCard>
             // translucent so parent horizontal drags (PageView/Dismissible) work nicer
             behavior: HitTestBehavior.translucent,
             child: ScaleTransition(
-              scale: _scale,
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: widget.isMuted
-                            ? Colors.transparent
-                            : Color.alphaBlend(
-                                widget.color.withValues(alpha: 0.15),
-                                cs.surfaceContainerHighest,
-                              ),
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: widget.isMuted
-                            ? null
-                            : [
-                                BoxShadow(
-                                  color: done
-                                      ? widget.color.withValues(alpha: 0.2)
-                                      : cs.shadow.withValues(alpha: 0.04),
-                                  blurRadius: 24,
-                                  spreadRadius: -2,
-                                  offset: const Offset(0, 8),
-                                ),
-                              ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            // Capture card width for drag calculations
-                            _cardWidth = constraints.maxWidth;
-
-                            final double baseProgress = widget.targetCount > 0
-                                ? (widget.currentStreak / widget.targetCount).clamp(0.0, 1.0)
-                                : (done ? 1.0 : 0.0);
-                            final double progress = _isDragging ? _dragProgress : baseProgress;
-
-                            return Align(
-                              alignment: Alignment.centerLeft,
-                              child: _isDragging
-                                  ? Container(
-                                      width: constraints.maxWidth * progress,
-                                      height: constraints.maxHeight,
-                                      decoration: BoxDecoration(
-                                        color: widget.color.withValues(alpha: 0.35),
-                                      ),
+              scale: _bounceAnimation,
+              child: ScaleTransition(
+                scale: _scale,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: widget.isMuted
+                              ? Colors.transparent
+                              : (isDark
+                                  ? Color.alphaBlend(
+                                      widget.color.withValues(alpha: 0.16),
+                                      cs.surfaceContainerHighest,
                                     )
-                                  : AnimatedContainer(
-                                      duration: const Duration(milliseconds: 500),
-                                      curve: Curves.easeOutCubic,
-                                      width: constraints.maxWidth * progress,
-                                      height: constraints.maxHeight,
-                                      decoration: BoxDecoration(
-                                        color: done
-                                            ? completedBg
-                                            : widget.color.withValues(alpha: 0.25),
-                                      ),
+                                  : Color.alphaBlend(
+                                      widget.color.withValues(alpha: done ? 0.15 : 0.08),
+                                      Colors.white,
+                                    )),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.12)
+                                : (done
+                                    ? widget.color.withValues(alpha: 0.3)
+                                    : Colors.white.withValues(alpha: 0.95)),
+                            width: 1.2,
+                          ),
+                          boxShadow: widget.isMuted
+                              ? null
+                              : [
+                                  BoxShadow(
+                                    color: done
+                                        ? widget.color.withValues(alpha: isDark ? 0.25 : 0.18)
+                                        : Colors.black.withValues(alpha: isDark ? 0.25 : 0.05),
+                                    blurRadius: done ? 20 : 12,
+                                    spreadRadius: -2,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                  if (!isDark)
+                                    BoxShadow(
+                                      color: Colors.white.withValues(alpha: 0.8),
+                                      blurRadius: 2,
+                                      offset: const Offset(0, -1),
                                     ),
-                            );
-                          },
+                                ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(24),
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              _cardWidth = constraints.maxWidth;
+
+                              return TweenAnimationBuilder<double>(
+                                duration: _isDragging
+                                    ? Duration.zero
+                                    : const Duration(milliseconds: 520),
+                                curve: Curves.easeOutCubic,
+                                tween: Tween<double>(
+                                  begin: 0.0,
+                                  end: effectiveProgress,
+                                ),
+                                builder: (context, animProgress, _) {
+                                  final double fillWidth =
+                                      (constraints.maxWidth * animProgress)
+                                          .clamp(0.0, constraints.maxWidth);
+
+                                  return Stack(
+                                    children: [
+                                      // 1. Progress fill container
+                                      if (animProgress > 0)
+                                        Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Container(
+                                            width: fillWidth,
+                                            height: constraints.maxHeight,
+                                            decoration: BoxDecoration(
+                                              gradient: done
+                                                  ? LinearGradient(
+                                                      begin: Alignment.topLeft,
+                                                      end: Alignment.bottomRight,
+                                                      colors: [
+                                                        widget.color.withValues(
+                                                          alpha: isDark
+                                                              ? 0.88
+                                                              : 0.92,
+                                                        ),
+                                                        widget.color,
+                                                      ],
+                                                    )
+                                                  : LinearGradient(
+                                                      begin: Alignment.centerLeft,
+                                                      end: Alignment.centerRight,
+                                                      colors: [
+                                                        widget.color.withValues(
+                                                          alpha: isDark
+                                                              ? 0.10
+                                                              : 0.07,
+                                                        ),
+                                                        widget.color.withValues(
+                                                          alpha: isDark
+                                                              ? 0.30
+                                                              : 0.24,
+                                                        ),
+                                                      ],
+                                                    ),
+                                            ),
+                                          ),
+                                        ),
+
+                                      // 2. Leading edge indicator (tactile glow line for partial fill)
+                                      if (!done &&
+                                          animProgress > 0.02 &&
+                                          animProgress < 0.99)
+                                        Positioned(
+                                          left: (fillWidth - 3.5).clamp(
+                                            0.0,
+                                            constraints.maxWidth - 3.5,
+                                          ),
+                                          top: 3,
+                                          bottom: 3,
+                                          child: Container(
+                                            width: 3.5,
+                                            decoration: BoxDecoration(
+                                              color: widget.color.withValues(
+                                                alpha: 0.90,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: widget.color.withValues(
+                                                    alpha: 0.55,
+                                                  ),
+                                                  blurRadius: 7,
+                                                  spreadRadius: 0.5,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+
+                                      // 3. Shimmer sweep on completion
+                                      if (done)
+                                        AnimatedBuilder(
+                                          animation: _completionController,
+                                          builder: (context, _) {
+                                            if (_shimmerAnimation.value <= 0.0 ||
+                                                _shimmerAnimation.value >= 1.0) {
+                                              return const SizedBox.shrink();
+                                            }
+                                            return CustomPaint(
+                                              size: Size(
+                                                constraints.maxWidth,
+                                                constraints.maxHeight,
+                                              ),
+                                              painter: _ShimmerPainter(
+                                                progress: _shimmerAnimation.value,
+                                                color: Colors.white.withValues(
+                                                  alpha: 0.35,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Hero(
-                              tag: 'habit_icon_${widget.title}',
-                              child: SizedBox(
-                                width: 44,
-                                height: 44,
-                                child: Center(
-                                  child: (widget.emoji != null &&
-                                          widget.emoji!.isNotEmpty)
-                                      ? Text(
-                                          widget.emoji!,
-                                          style: const TextStyle(fontSize: 24),
-                                        )
-                                      : Icon(
-                                          widget.icon,
-                                          color:
-                                              done ? onCompleted : widget.color,
-                                          size: 24,
-                                        ),
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Hero(
+                                tag: 'habit_icon_${widget.title}',
+                                child: SizedBox(
+                                  width: 44,
+                                  height: 44,
+                                  child: Center(
+                                    child: (widget.emoji != null &&
+                                            widget.emoji!.isNotEmpty)
+                                        ? Text(
+                                            widget.emoji!,
+                                            style: const TextStyle(fontSize: 24),
+                                          )
+                                        : Icon(
+                                            widget.icon,
+                                            color:
+                                                done ? onCompleted : widget.color,
+                                            size: 24,
+                                          ),
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: SizedBox(
-                                height: 44,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      widget.title,
-                                      style:
-                                          theme.textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color:
-                                            done ? onCompleted : cs.onSurface,
-                                        height: widget.description.isEmpty
-                                            ? 1.02
-                                            : null,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    if (widget.description.isNotEmpty)
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 2),
-                                        child: Text(
-                                          widget.description,
-                                          style: theme.textTheme.bodySmall
-                                              ?.copyWith(
-                                            color: done
-                                                ? onCompleted
-                                                : cs.onSurfaceVariant,
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: SizedBox(
+                                  height: 44,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              widget.title,
+                                              style:
+                                                  theme.textTheme.titleMedium?.copyWith(
+                                                fontWeight: FontWeight.w600,
+                                                color:
+                                                    done ? onCompleted : cs.onSurface,
+                                                height: widget.description.isEmpty
+                                                    ? 1.02
+                                                    : null,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                           ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
+                                        ],
                                       ),
+                                      if (widget.description.isNotEmpty)
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 2.5),
+                                          child: Text(
+                                            widget.description,
+                                            style: theme.textTheme.bodySmall
+                                                ?.copyWith(
+                                              color: done
+                                                  ? onCompleted
+                                                  : cs.onSurfaceVariant,
+                                              height: 1.25,
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
                                     // Swipe hint for numerical/timer habits
                                     if (_isProgressDraggable && !_isDragging)
                                       Padding(
@@ -1164,37 +1530,11 @@ class _HabitCardState extends State<HabitCard>
                                 ),
                               )
                             else
-                              AnimatedContainer(
-                                duration: const Duration(milliseconds: 220),
-                                curve: Curves.easeOutCubic,
-                                width: 28,
-                                height: 28,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: done
-                                      ? widget.color
-                                      : Color.alphaBlend(
-                                          widget.color.withValues(alpha: 0.10),
-                                          cs.surfaceContainerHighest,
-                                        ),
-                                  boxShadow: done
-                                      ? [
-                                          BoxShadow(
-                                            color: widget.color.withValues(
-                                              alpha: 0.35,
-                                            ),
-                                            blurRadius: 12,
-                                            offset: const Offset(0, 4),
-                                          ),
-                                        ]
-                                      : null,
-                                ),
-                                child: AnimatedSwitcher(
-                                  duration: const Duration(milliseconds: 180),
-                                  switchInCurve: Curves.easeOut,
-                                  switchOutCurve: Curves.easeIn,
-                                  child: _buildStatusIcon(done),
-                                ),
+                              _buildCompletionBadge(
+                                done: done,
+                                cs: cs,
+                                isDark: isDark,
+                                effectiveProgress: effectiveProgress,
                               ),
                           ],
                         ),
@@ -1295,8 +1635,8 @@ class _HabitCardState extends State<HabitCard>
                             ),
                             child: Text(
                               widget.habitType == HabitType.timer
-                                  ? '${(_dragProgress * widget.targetCount).round()} / ${widget.targetCount} dk'
-                                  : '${(_dragProgress * widget.targetCount).round()} / ${widget.targetCount}${widget.unit != null ? ' ${widget.unit}' : ''}',
+                                  ? '${(_dragProgress * widget.targetCount).round()} / ${widget.targetCount} dk (%${(_dragProgress * 100).round()})'
+                                  : '${(_dragProgress * widget.targetCount).round()} / ${widget.targetCount}${widget.unit != null ? ' ${widget.unit}' : ''} (%${(_dragProgress * 100).round()})',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w700,
@@ -1348,8 +1688,9 @@ class _HabitCardState extends State<HabitCard>
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 class _FrostPainter extends CustomPainter {
@@ -1368,4 +1709,136 @@ class _FrostPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _ShimmerPainter extends CustomPainter {
+  final double progress; // 0.0 to 1.0
+  final Color color;
+
+  _ShimmerPainter({required this.progress, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (progress <= 0.0 || progress >= 1.0) return;
+    final width = size.width;
+    final height = size.height;
+    final currentX = -width * 0.4 + (width * 1.8) * progress;
+
+    final paint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          color.withValues(alpha: 0.0),
+          color.withValues(alpha: 0.40),
+          color.withValues(alpha: 0.0),
+        ],
+        stops: const [0.0, 0.5, 1.0],
+      ).createShader(Rect.fromLTWH(currentX - 60, 0, 120, height));
+
+    canvas.drawRect(Rect.fromLTWH(0, 0, width, height), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _ShimmerPainter oldDelegate) =>
+      oldDelegate.progress != progress || oldDelegate.color != color;
+}
+
+class _SparklePainter extends CustomPainter {
+  final double progress; // 0.0 to 1.0
+  final Color primaryColor;
+
+  _SparklePainter({required this.progress, required this.primaryColor});
+
+  static const _offsets = [
+    Offset(1.0, 0.0),
+    Offset(0.707, 0.707),
+    Offset(0.0, 1.0),
+    Offset(-0.707, 0.707),
+    Offset(-1.0, 0.0),
+    Offset(-0.707, -0.707),
+    Offset(0.0, -1.0),
+    Offset(0.707, -0.707),
+  ];
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (progress <= 0.0 || progress >= 1.0) return;
+    final center = Offset(size.width / 2, size.height / 2);
+    final double distance = 14.0 + progress * 24.0;
+    final double opacity = (1.0 - progress).clamp(0.0, 1.0);
+    final double radius = (1.0 - progress * 0.5) * 2.8;
+
+    final colors = [
+      primaryColor,
+      const Color(0xFFFFD54F), // Amber/gold
+      Colors.white,
+      primaryColor.withValues(alpha: 0.85),
+    ];
+
+    for (int i = 0; i < _offsets.length; i++) {
+      final offset = _offsets[i];
+      final pos = center + offset * distance;
+      final paint = Paint()
+        ..color = colors[i % colors.length].withValues(alpha: opacity)
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(pos, radius, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _SparklePainter oldDelegate) =>
+      oldDelegate.progress != progress ||
+      oldDelegate.primaryColor != primaryColor;
+}
+
+class _StatusRingPainter extends CustomPainter {
+  final double progress;
+  final Color color;
+  final Color trackColor;
+  final double strokeWidth;
+
+  _StatusRingPainter({
+    required this.progress,
+    required this.color,
+    required this.trackColor,
+    this.strokeWidth = 2.5,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (size.width - strokeWidth) / 2;
+
+    // Background track
+    final trackPaint = Paint()
+      ..color = trackColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth;
+    canvas.drawCircle(center, radius, trackPaint);
+
+    // Active progress arc
+    if (progress > 0.0) {
+      final arcPaint = Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = strokeWidth
+        ..strokeCap = StrokeCap.round;
+      const startAngle = -math.pi / 2;
+      final sweepAngle = 2 * math.pi * progress.clamp(0.0, 1.0);
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        startAngle,
+        sweepAngle,
+        false,
+        arcPaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _StatusRingPainter oldDelegate) =>
+      oldDelegate.progress != progress ||
+      oldDelegate.color != color ||
+      oldDelegate.trackColor != trackColor;
 }

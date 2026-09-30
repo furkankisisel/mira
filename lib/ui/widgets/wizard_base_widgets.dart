@@ -27,35 +27,68 @@ class WizardScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: Column(
           children: [
-            // Header with back button and progress
+            // Header with tactile back button and capsule progress
             Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
               child: Row(
                 children: [
-                  // Back/Close button
-                  IconButton(
-                    onPressed:
-                        onBack ?? onClose ?? () => Navigator.pop(context),
-                    icon: Container(
-                      padding: const EdgeInsets.all(8),
+                  // Tactile circular back/close button
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      if (onBack != null) {
+                        onBack!();
+                      } else if (onClose != null) {
+                        onClose!();
+                      } else {
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: Container(
+                      width: 38,
+                      height: 38,
                       decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainerHighest.withOpacity(
-                          0.5,
+                        shape: BoxShape.circle,
+                        color: isDark
+                            ? colorScheme.surfaceContainerHigh
+                            : Colors.white,
+                        border: Border.all(
+                          color: isDark
+                              ? Colors.white.withValues(alpha: 0.12)
+                              : Colors.white.withValues(alpha: 0.95),
+                          width: 1.2,
                         ),
-                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(
+                              alpha: isDark ? 0.25 : 0.05,
+                            ),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                          if (!isDark)
+                            BoxShadow(
+                              color: Colors.white.withValues(alpha: 0.8),
+                              blurRadius: 2,
+                              offset: const Offset(0, -1),
+                            ),
+                        ],
                       ),
-                      child: Icon(
-                        currentStep == 0
-                            ? Icons.close_rounded
-                            : Icons.arrow_back_rounded,
-                        color: colorScheme.onSurface,
-                        size: 20,
+                      child: Center(
+                        child: Icon(
+                          currentStep == 0
+                              ? Icons.close_rounded
+                              : Icons.arrow_back_rounded,
+                          color: colorScheme.onSurface,
+                          size: 19,
+                        ),
                       ),
                     ),
                   ),
@@ -73,7 +106,7 @@ class WizardScaffold extends StatelessWidget {
                   else
                     const Spacer(),
                   // Placeholder for symmetry
-                  const SizedBox(width: 48),
+                  const SizedBox(width: 38),
                 ],
               ),
             ),
@@ -86,7 +119,7 @@ class WizardScaffold extends StatelessWidget {
   }
 }
 
-/// Animasyonlu ilerleme çubuğu
+/// Animasyonlu kapsül ilerleme çubuğu
 class WizardProgressBar extends StatelessWidget {
   const WizardProgressBar({
     super.key,
@@ -101,32 +134,76 @@ class WizardProgressBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final progress = totalSteps > 0 ? (currentStep + 1) / totalSteps : 0.0;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(4),
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0, end: progress),
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOutCubic,
-            builder: (context, value, child) {
-              return LinearProgressIndicator(
-                value: value,
-                backgroundColor: colorScheme.surfaceContainerHighest,
-                valueColor: AlwaysStoppedAnimation(colorScheme.primary),
-                minHeight: 6,
+        Container(
+          height: 8,
+          decoration: BoxDecoration(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : const Color(0xFFE2E8F0),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : Colors.white.withValues(alpha: 0.9),
+              width: 1,
+            ),
+          ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Align(
+                alignment: Alignment.centerLeft,
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0.0, end: progress),
+                  duration: const Duration(milliseconds: 320),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, value, _) {
+                    return Container(
+                      width: constraints.maxWidth * value.clamp(0.0, 1.0),
+                      height: constraints.maxHeight,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            colorScheme.primary,
+                            Color.lerp(colorScheme.primary, Colors.white, 0.2) ??
+                                colorScheme.primary,
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(999),
+                        boxShadow: [
+                          BoxShadow(
+                            color: colorScheme.primary.withValues(alpha: 0.35),
+                            blurRadius: 6,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               );
             },
           ),
         ),
-        const SizedBox(height: 4),
-        Text(
-          '${currentStep + 1} / $totalSteps',
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: colorScheme.onSurface.withOpacity(0.5),
+        const SizedBox(height: 5),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          decoration: BoxDecoration(
+            color: colorScheme.primary.withValues(alpha: 0.09),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            '${currentStep + 1} / $totalSteps',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: colorScheme.primary,
+              fontWeight: FontWeight.w700,
+              fontSize: 11,
+            ),
           ),
         ),
       ],
@@ -316,14 +393,16 @@ class WizardNavigationButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final buttonColor = accentColor ?? colorScheme.primary;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Main action button
+        // Main action button with elevated capsule styling and glowing shadow
         SizedBox(
           width: double.infinity,
+          height: 52,
           child: PrimaryGradientButton(
             onPressed: isNextEnabled
                 ? () {
@@ -333,6 +412,7 @@ class WizardNavigationButtons extends StatelessWidget {
                 : null,
             color: buttonColor,
             elevation: 4,
+            borderRadius: 26,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -341,6 +421,11 @@ class WizardNavigationButtons extends StatelessWidget {
                       (isLastStep
                           ? AppLocalizations.of(context).wizardFinish
                           : AppLocalizations.of(context).wizardNext),
+                  style: const TextStyle(
+                    fontSize: 15.5,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.2,
+                  ),
                 ),
                 if (!isLastStep) ...[
                   const SizedBox(width: 8),
@@ -353,7 +438,7 @@ class WizardNavigationButtons extends StatelessWidget {
 
         // Skip button
         if (showSkip && onSkip != null) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           TextButton(
             onPressed: () {
               HapticFeedback.lightImpact();
@@ -361,7 +446,10 @@ class WizardNavigationButtons extends StatelessWidget {
             },
             child: Text(
               skipLabel ?? AppLocalizations.of(context).wizardSkip,
-              style: TextStyle(color: colorScheme.onSurface.withOpacity(0.6)),
+              style: TextStyle(
+                color: colorScheme.onSurface.withValues(alpha: 0.6),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -547,28 +635,49 @@ class WizardPreviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [color.withOpacity(0.12), color.withOpacity(0.04)],
-        ),
+        color: isDark
+            ? colorScheme.surfaceContainerHigh
+            : Color.alphaBlend(color.withValues(alpha: 0.08), Colors.white),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: color.withOpacity(0.15), width: 1.5),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.12)
+              : Colors.white.withValues(alpha: 0.95),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.05),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
+          ),
+          if (!isDark)
+            BoxShadow(
+              color: Colors.white.withValues(alpha: 0.8),
+              blurRadius: 2,
+              offset: const Offset(0, -1),
+            ),
+        ],
       ),
       child: Row(
         children: [
-          // Emoji Container
+          // Emoji Container with rim border
           Container(
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.16),
               borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: color.withValues(alpha: 0.25),
+                width: 1.2,
+              ),
             ),
             child: Center(
               child: Text(emoji, style: const TextStyle(fontSize: 32)),
@@ -582,44 +691,52 @@ class WizardPreviewCard extends StatelessWidget {
                 Text(
                   title,
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    letterSpacing: -0.2,
                     color: colorScheme.onSurface,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                if (subtitle != null) ...[
-                  const SizedBox(height: 2),
+                if (subtitle != null && subtitle!.isNotEmpty) ...[
+                  const SizedBox(height: 3),
                   Text(
                     subtitle!,
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurface.withOpacity(0.5),
+                      color: colorScheme.onSurface.withValues(alpha: 0.6),
+                      fontSize: 12.5,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
                 if (tags.isNotEmpty) ...[
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   Wrap(
-                    spacing: 8,
+                    spacing: 6,
                     runSpacing: 4,
                     children: tags
                         .map(
                           (tag) => Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
+                              horizontal: 9,
+                              vertical: 3.5,
                             ),
                             decoration: BoxDecoration(
-                              color: color.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(20),
+                              color: color.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(999),
+                              border: Border.all(
+                                color: color.withValues(alpha: 0.2),
+                                width: 1,
+                              ),
                             ),
                             child: Text(
                               tag,
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: color,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 10.5,
                               ),
                             ),
                           ),
@@ -657,7 +774,9 @@ class WizardSelectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final color = selectedColor ?? colorScheme.primary;
 
     return GestureDetector(
@@ -671,10 +790,34 @@ class WizardSelectionCard extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           color: isSelected
-              ? color.withOpacity(0.15)
-              : colorScheme.surfaceContainerHighest.withOpacity(0.5),
+              ? color.withValues(alpha: 0.18)
+              : (isDark
+                  ? colorScheme.surfaceContainerHigh
+                  : Colors.white),
           borderRadius: BorderRadius.circular(borderRadius),
-          border: isSelected ? Border.all(color: color, width: 2) : null,
+          border: Border.all(
+            color: isSelected
+                ? color
+                : (isDark
+                    ? Colors.white.withValues(alpha: 0.12)
+                    : Colors.white.withValues(alpha: 0.95)),
+            width: isSelected ? 2 : 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: isSelected
+                  ? color.withValues(alpha: 0.25)
+                  : Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+              blurRadius: isSelected ? 10 : 6,
+              offset: const Offset(0, 2),
+            ),
+            if (!isDark && !isSelected)
+              BoxShadow(
+                color: Colors.white.withValues(alpha: 0.8),
+                blurRadius: 2,
+                offset: const Offset(0, -1),
+              ),
+          ],
         ),
         child: Center(child: child),
       ),

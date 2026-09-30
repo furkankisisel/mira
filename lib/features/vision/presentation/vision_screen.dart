@@ -22,6 +22,7 @@ import '../../../ui/premium_gate.dart';
 import '../../../design_system/components/primary_gradient_button.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter/services.dart';
+import 'widgets/goal_summary_sheet.dart';
 
 class VisionScreen extends StatefulWidget {
   const VisionScreen({
@@ -146,10 +147,132 @@ class _VisionScreenState extends State<VisionScreen> {
         ),
       ),
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          centerTitle: true,
+          titleTextStyle: TextStyle(
+            color: isDark ? Colors.white : const Color(0xFF1E2430),
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            fontFamily: 'Outfit',
+            letterSpacing: -0.2,
+          ),
+          title: Text(AppLocalizations.of(context).visionBoard),
+          leading: Center(
+            child: GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                Navigator.of(context).maybePop();
+              },
+              child: Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDark ? const Color(0xFF1E2430) : Colors.white,
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.95),
+                    width: 1.2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                    BoxShadow(
+                      color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.8),
+                      blurRadius: 2,
+                      offset: const Offset(0, -1),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 16,
+                  color: isDark ? Colors.white : const Color(0xFF1E2430),
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            // Mode toggle (Board vs Freeform)
+            IconButton(
+              tooltip: _freeform
+                  ? AppLocalizations.of(context).visionBoardViewTooltip
+                  : AppLocalizations.of(context).visionFreeformTooltip,
+              icon: Icon(
+                _freeform
+                    ? Icons.grid_view_rounded
+                    : Icons.auto_awesome_mosaic_rounded,
+                size: 21,
+                color: isDark ? Colors.white70 : const Color(0xFF475569),
+              ),
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                setState(() {
+                  _freeform = !_freeform;
+                  widget.freeformNotifier?.value = _freeform;
+                });
+              },
+            ),
+            // Freeform settings button
+            if (_freeform)
+              IconButton(
+                tooltip: AppLocalizations.of(context).visionSettingsTooltip,
+                icon: Icon(
+                  Icons.tune_rounded,
+                  size: 20,
+                  color: isDark ? Colors.white70 : const Color(0xFF475569),
+                ),
+                onPressed: () => _showFreeformSettings(context),
+              ),
+            // Quick Add button
+            IconButton(
+              tooltip: AppLocalizations.of(context).visionCreateTitle,
+              icon: Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: accent.withValues(alpha: 0.15),
+                ),
+                child: Icon(
+                  Icons.add_rounded,
+                  size: 20,
+                  color: accent,
+                ),
+              ),
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                if (_freeform) {
+                  _showCreateActions();
+                } else {
+                  _handleFabPress();
+                }
+              },
+            ),
+            const SizedBox(width: 8),
+          ],
+        ),
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: _handleFabPress,
-          icon: const Icon(Icons.add),
-          label: Text(AppLocalizations.of(context).createVision),
+          onPressed: () {
+            HapticFeedback.lightImpact();
+            if (_freeform) {
+              _showCreateActions();
+            } else {
+              _handleFabPress();
+            }
+          },
+          icon: const Icon(Icons.add_rounded),
+          label: Text(
+            _freeform
+                ? AppLocalizations.of(context).add
+                : AppLocalizations.of(context).visionCreateTitle,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
         ),
         body: StreamBuilder<List<Vision>>(
           stream: _repo.stream,
@@ -228,10 +351,74 @@ class _VisionScreenState extends State<VisionScreen> {
   }
 
   void _openVision(Vision v) {
-    _showVisionBottomSheet(v);
+    GoalSummarySheet.show(
+      context,
+      visionId: v.id,
+      onEdit: () => _editVision(v),
+      onDelete: () => _deleteVision(v),
+      onLinkHabits: () => _pickHabits(v),
+    );
   }
 
   void _menuFor(Vision v) => _showVisionBottomSheet(v);
+
+  void _showFreeformSettings(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setModalState) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 16, bottom: 8),
+                  child: Text(
+                    l10n.visionSettingsTooltip,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ),
+                SwitchListTile(
+                  title: Text(l10n.roundCorners),
+                  value: _roundCorners,
+                  onChanged: (val) {
+                    setState(() => _roundCorners = val);
+                    widget.roundCornersNotifier?.value = val;
+                    setModalState(() {});
+                  },
+                ),
+                SwitchListTile(
+                  title: Text(l10n.showText),
+                  value: _showText,
+                  onChanged: (val) {
+                    setState(() => _showText = val);
+                    widget.showTextNotifier?.value = val;
+                    setModalState(() {});
+                  },
+                ),
+                SwitchListTile(
+                  title: Text(l10n.showProgress),
+                  value: _showProgress,
+                  onChanged: (val) {
+                    setState(() => _showProgress = val);
+                    widget.showProgressNotifier?.value = val;
+                    setModalState(() {});
+                  },
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   /// Quick add task dialog for board view
   Future<void> _showQuickAddTask(Vision v) async {
@@ -662,58 +849,7 @@ class _VisionScreenState extends State<VisionScreen> {
               ),
               onTap: () async {
                 Navigator.pop(ctx);
-                bool deleteHabits = false;
-                final ok = await showDialog<bool>(
-                      context: context,
-                      builder: (dctx) => StatefulBuilder(
-                        builder: (dctx, setState) => AlertDialog(
-                          title: Text(
-                            AppLocalizations.of(context).deleteVisionTitle,
-                          ),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                AppLocalizations.of(
-                                  context,
-                                ).deleteVisionMessage,
-                              ),
-                              const SizedBox(height: 8),
-                              CheckboxListTile(
-                                contentPadding: EdgeInsets.zero,
-                                value: deleteHabits,
-                                onChanged: (v) =>
-                                    setState(() => deleteHabits = v ?? false),
-                                title: Text(
-                                  AppLocalizations.of(
-                                    context,
-                                  ).alsoDeleteLinkedHabits,
-                                ),
-                              ),
-                            ],
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(dctx, false),
-                              child: Text(AppLocalizations.of(context).cancel),
-                            ),
-                            PrimaryGradientButton(
-                              color: Colors.red[600],
-                              onPressed: () => Navigator.pop(dctx, true),
-                              child: Text(AppLocalizations.of(context).delete),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ) ??
-                    false;
-                if (ok) {
-                  await _repo.removeWithCascade(
-                    v.id,
-                    deleteLinkedHabits: deleteHabits,
-                  );
-                }
+                await _deleteVision(v);
               },
             ),
             const SizedBox(height: 8),
@@ -721,6 +857,61 @@ class _VisionScreenState extends State<VisionScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _deleteVision(Vision v) async {
+    bool deleteHabits = false;
+    final ok = await showDialog<bool>(
+          context: context,
+          builder: (dctx) => StatefulBuilder(
+            builder: (dctx, setState) => AlertDialog(
+              title: Text(
+                AppLocalizations.of(context).deleteVisionTitle,
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    AppLocalizations.of(
+                      context,
+                    ).deleteVisionMessage,
+                  ),
+                  const SizedBox(height: 8),
+                  CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
+                    value: deleteHabits,
+                    onChanged: (v) =>
+                        setState(() => deleteHabits = v ?? false),
+                    title: Text(
+                      AppLocalizations.of(
+                        context,
+                      ).alsoDeleteLinkedHabits,
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dctx, false),
+                  child: Text(AppLocalizations.of(context).cancel),
+                ),
+                PrimaryGradientButton(
+                  color: Colors.red[600],
+                  onPressed: () => Navigator.pop(dctx, true),
+                  child: Text(AppLocalizations.of(context).delete),
+                ),
+              ],
+            ),
+          ),
+        ) ??
+        false;
+    if (ok) {
+      await _repo.removeWithCascade(
+        v.id,
+        deleteLinkedHabits: deleteHabits,
+      );
+    }
   }
 
   /// Opens a dialog to manage one-time tasks for a vision

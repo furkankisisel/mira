@@ -9,13 +9,12 @@ import '../../ui/premium_gate.dart';
 import '../habit/domain/habit_repository.dart';
 import '../habit/domain/habit_types.dart';
 import 'widgets/landscape_timer_screen.dart';
-import 'widgets/tomato_timer_display.dart';
-import 'widgets/football_stopwatch_display.dart';
-import 'widgets/hourglass_timer_display.dart';
+import 'widgets/elite_timer_dial.dart';
 
 class TimerScreen extends StatefulWidget {
-  const TimerScreen({super.key, this.variant});
+  const TimerScreen({super.key, this.variant, this.showAppBar = true});
   final ThemeVariant? variant;
+  final bool showAppBar;
   @override
   State<TimerScreen> createState() => _TimerScreenState();
 }
@@ -128,183 +127,424 @@ class _TimerScreenState extends State<TimerScreen>
     final theme = Theme.of(context);
     final accent = _getAccentColor(context);
     final isDark = theme.brightness == Brightness.dark;
+    final textColor = theme.colorScheme.onSurface;
+    final bgColor = theme.scaffoldBackgroundColor;
 
-    return Theme(
-      data: theme.copyWith(
-        colorScheme: theme.colorScheme.copyWith(primary: accent),
-        appBarTheme: theme.appBarTheme.copyWith(foregroundColor: accent),
-        iconTheme: theme.iconTheme.copyWith(color: accent),
-      ),
-      child: Scaffold(
-        backgroundColor:
-            isDark ? theme.scaffoldBackgroundColor : Colors.grey[50],
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: Text(
-            l10n.timerType,
-            style: theme.textTheme.titleLarge?.copyWith(
-              color: accent,
-              fontWeight: FontWeight.bold,
+    final mainContent = Column(
+      children: [
+        if (widget.showAppBar) ...[
+          _buildTopHeader(context, l10n, accent, textColor, isDark),
+          const SizedBox(height: 6),
+        ] else
+          const SizedBox(height: 10),
+        _buildSlidingCapsuleTabBar(accent, textColor, isDark, l10n),
+        const SizedBox(height: 10),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            physics: const BouncingScrollPhysics(),
+            children: [
+              _buildStopwatch(context),
+              _buildCountdown(context),
+              _buildPomodoro(context),
+            ],
+          ),
+        ),
+      ],
+    );
+
+    return Scaffold(
+      backgroundColor: bgColor,
+      body: widget.showAppBar
+          ? SafeArea(
+              bottom: false,
+              child: mainContent,
+            )
+          : mainContent,
+    );
+  }
+
+  // Unified Top Header with Title, Focus Context, and Action Controls
+  Widget _buildTopHeader(
+    BuildContext context,
+    AppLocalizations l10n,
+    Color accent,
+    Color textColor,
+    bool isDark,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 12, 16, 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Left: Screen Title & Dynamic Focus Context
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  l10n.timerType,
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                AnimatedBuilder(
+                  animation: controller,
+                  builder: (context, _) {
+                    final isHard = controller.hardMode;
+                    final activeHabitId = controller.activeTimerHabitId;
+                    String subtitleText = l10n.timerTabStopwatch;
+                    if (controller.activeMode == TimerMode.countdown) {
+                      subtitleText = l10n.timerTabCountdown;
+                    } else if (controller.activeMode == TimerMode.pomodoro) {
+                      subtitleText = l10n.timerTabPomodoro;
+                    }
+                    if (activeHabitId != null) {
+                      final h = HabitRepository.instance.findById(activeHabitId);
+                      if (h != null) subtitleText = '${h.title} • $subtitleText';
+                    }
+
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: controller.isRunning
+                                ? Colors.green
+                                : (isHard ? Colors.red : accent),
+                            boxShadow: controller.isRunning
+                                ? [
+                                    BoxShadow(
+                                      color: Colors.green.withValues(alpha: 0.4),
+                                      blurRadius: 4,
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                        ),
+                        const SizedBox(width: 7),
+                        Flexible(
+                          child: Text(
+                            subtitleText,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: textColor.withValues(alpha: 0.55),
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ],
             ),
           ),
-          actions: [
-            IconButton(
-              tooltip: AppLocalizations.of(context).hardMode,
-              icon: AnimatedBuilder(
+
+          // Right: Action buttons (Hard Mode & Landscape Desk Clock)
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Hard Mode Toggle Button
+              AnimatedBuilder(
                 animation: controller,
                 builder: (context, _) {
                   final isHardMode = controller.hardMode;
-                  return Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: isHardMode
-                          ? Colors.red.withValues(alpha: 0.1)
-                          : accent.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      isHardMode ? Icons.lock : Icons.lock_open,
-                      color: isHardMode ? Colors.red : accent,
-                      size: 20,
+                  return Tooltip(
+                    message: l10n.hardMode,
+                    child: _BouncingTapWrapper(
+                      lowerBound: 0.90,
+                      duration: const Duration(milliseconds: 100),
+                      onTap: () {
+                        _feedback();
+                        controller.toggleHardMode();
+                      },
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isHardMode
+                              ? Colors.red.withValues(alpha: isDark ? 0.22 : 0.12)
+                              : (isDark ? const Color(0xFF1E2430) : Colors.white),
+                          border: Border.all(
+                            color: isHardMode
+                                ? Colors.red.withValues(alpha: 0.5)
+                                : Colors.white.withValues(alpha: isDark ? 0.10 : 0.95),
+                            width: 1.2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: isHardMode
+                                  ? Colors.red.withValues(alpha: 0.15)
+                                  : Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          isHardMode ? Icons.lock_rounded : Icons.lock_open_rounded,
+                          color: isHardMode ? Colors.red : textColor.withValues(alpha: 0.7),
+                          size: 19,
+                        ),
+                      ),
                     ),
                   );
                 },
               ),
-              onPressed: () {
-                _feedback();
-                controller.toggleHardMode();
-              },
-            ),
-            const SizedBox(width: 8),
-            IconButton(
-              icon: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.stay_current_landscape,
-                  color: accent,
-                  size: 20,
-                ),
-              ),
-              onPressed: () async {
-                // Premium kontrolü
-                if (!await requirePremium(context)) return;
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        LandscapeTimerScreen(variant: widget.variant),
-                  ),
-                );
-              },
-            ),
-            const SizedBox(width: 8),
-          ],
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(56),
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: isDark
-                    ? null
-                    : [
+              const SizedBox(width: 10),
+
+              // Landscape Desk Clock Button
+              Tooltip(
+                message: 'Masa Saati / Yatay Mod',
+                child: _BouncingTapWrapper(
+                  lowerBound: 0.90,
+                  duration: const Duration(milliseconds: 100),
+                  onTap: () async {
+                    if (!await requirePremium(context)) return;
+                    if (!context.mounted) return;
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            LandscapeTimerScreen(variant: widget.variant),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isDark ? const Color(0xFF1E2430) : Colors.white,
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: isDark ? 0.10 : 0.95),
+                        width: 1.2,
+                      ),
+                      boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 10,
+                          color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
+                          blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
                       ],
-              ),
-              child: TabBar(
-                controller: _tabController,
-                onTap: (i) {
-                  if (i == 0) controller.setMode(TimerMode.stopwatch);
-                  if (i == 1) controller.setMode(TimerMode.countdown);
-                  if (i == 2) controller.setMode(TimerMode.pomodoro);
-                },
-                indicator: BoxDecoration(
-                  color: accent,
-                  borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.stay_current_landscape_rounded,
+                      color: textColor.withValues(alpha: 0.7),
+                      size: 19,
+                    ),
+                  ),
                 ),
-                indicatorSize: TabBarIndicatorSize.tab,
-                indicatorPadding: const EdgeInsets.all(4),
-                labelColor: Colors.white,
-                unselectedLabelColor:
-                    isDark ? Colors.white70 : Colors.grey[600],
-                labelStyle: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                ),
-                dividerColor: Colors.transparent,
-                tabs: [
-                  Tab(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.timer_outlined, size: 18),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: Text(
-                            l10n.timerTabStopwatch,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Tab(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.hourglass_bottom_outlined, size: 18),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: Text(
-                            l10n.timerTabCountdown,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Tab(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.local_fire_department_outlined,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: Text(
-                            l10n.timerTabPomodoro,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ),
-            ),
+            ],
           ),
-        ),
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            _buildStopwatch(context),
-            _buildCountdown(context),
-            _buildPomodoro(context),
+        ],
+      ),
+    );
+  }
+
+  // Real-Time Sliding Capsule Tab Switcher
+  Widget _buildSlidingCapsuleTabBar(
+    Color accent,
+    Color textColor,
+    bool isDark,
+    AppLocalizations l10n,
+  ) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Container(
+        height: 48,
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: isDark
+              ? Color.alphaBlend(
+                  accent.withValues(alpha: 0.08),
+                  theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.65),
+                )
+              : Color.alphaBlend(
+                  accent.withValues(alpha: 0.07),
+                  Color.alphaBlend(
+                    Colors.black.withValues(alpha: 0.04),
+                    theme.scaffoldBackgroundColor,
+                  ),
+                ),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.22 : 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+            BoxShadow(
+              color: Colors.white.withValues(alpha: isDark ? 0.03 : 0.8),
+              blurRadius: 1,
+              offset: const Offset(0, -1),
+            ),
           ],
         ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final double pillWidth = (constraints.maxWidth - 2) / 3;
+
+            return Stack(
+              children: [
+                // Real-time sliding indicator pill
+                AnimatedBuilder(
+                  animation: _tabController.animation!,
+                  builder: (context, child) {
+                    final animVal = (_tabController.animation?.value ??
+                            _tabController.index.toDouble())
+                        .clamp(0.0, 2.0);
+                    final leftOffset =
+                        (animVal / 2.0) * (constraints.maxWidth - pillWidth - 2);
+
+                    return Positioned(
+                      left: leftOffset,
+                      top: 0,
+                      bottom: 0,
+                      width: pillWidth,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: accent,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Colors.white.withValues(
+                              alpha: isDark ? 0.25 : 0.35,
+                            ),
+                            width: 1.2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: accent.withValues(alpha: 0.22),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                            BoxShadow(
+                              color: Colors.black.withValues(
+                                alpha: isDark ? 0.20 : 0.04,
+                              ),
+                              blurRadius: 4,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
+                // Interactive 3 tabs
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildSlidingTabItem(
+                        index: 0,
+                        title: l10n.timerTabStopwatch,
+                        icon: Icons.timer_outlined,
+                        textColor: textColor,
+                      ),
+                    ),
+                    Expanded(
+                      child: _buildSlidingTabItem(
+                        index: 1,
+                        title: l10n.timerTabCountdown,
+                        icon: Icons.hourglass_bottom_rounded,
+                        textColor: textColor,
+                      ),
+                    ),
+                    Expanded(
+                      child: _buildSlidingTabItem(
+                        index: 2,
+                        title: l10n.timerTabPomodoro,
+                        icon: Icons.local_fire_department_rounded,
+                        textColor: textColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSlidingTabItem({
+    required int index,
+    required String title,
+    required IconData icon,
+    required Color textColor,
+  }) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        HapticFeedback.selectionClick();
+        _tabController.animateTo(
+          index,
+          duration: const Duration(milliseconds: 320),
+          curve: Curves.easeOutCubic,
+        );
+        if (index == 0) controller.setMode(TimerMode.stopwatch);
+        if (index == 1) controller.setMode(TimerMode.countdown);
+        if (index == 2) controller.setMode(TimerMode.pomodoro);
+      },
+      child: AnimatedBuilder(
+        animation: _tabController.animation!,
+        builder: (context, child) {
+          final animVal = (_tabController.animation?.value ??
+                  _tabController.index.toDouble())
+              .clamp(0.0, 2.0);
+          final diff = (animVal - index).abs();
+          final weight = (1.0 - diff).clamp(0.0, 1.0);
+          final activeColor = Colors.white;
+          final inactiveColor = textColor.withValues(alpha: 0.65);
+          final itemColor = Color.lerp(inactiveColor, activeColor, weight)!;
+
+          return Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  size: 16,
+                  color: itemColor,
+                ),
+                const SizedBox(width: 5),
+                Flexible(
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: itemColor,
+                      fontSize: 12.5,
+                      fontWeight: weight > 0.5 ? FontWeight.w700 : FontWeight.w500,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -454,121 +694,146 @@ class _TimerScreenState extends State<TimerScreen>
     required VoidCallback? onReset,
     VoidCallback? onSettings,
     VoidCallback? onSkip,
+    bool isPomodoro = false,
   }) {
     final l10n = AppLocalizations.of(context);
     final accent = _getAccentColor(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // For Stopwatch mode (no settings/skip), we want symmetry: Reset (Left) - Play - Finish (Right)
-    final isStopwatch = onSkip == null && onSettings == null;
-    final showFinishOnRight = isStopwatch;
+    final leftWidgets = <Widget>[];
+    final rightWidgets = <Widget>[];
+
+    final buttonSize = isPomodoro ? 44.0 : 46.0;
+    final itemSpacing = isPomodoro ? 8.0 : 10.0;
+    final heroMargin = isPomodoro ? 16.0 : 20.0;
+
+    if (isPomodoro) {
+      // 1. Pomodoro layout: Symmetrical 5-button balanced horizon
+      // Left: Reset + Finish (save early)
+      leftWidgets.add(
+        _buildMiniIconAction(
+          icon: Icons.refresh_rounded,
+          tooltip: l10n.reset,
+          onPressed: onReset,
+          size: buttonSize,
+        ),
+      );
+      leftWidgets.add(
+        _buildMiniIconAction(
+          icon: Icons.flag_rounded,
+          tooltip: l10n.finish,
+          onPressed: onFinish,
+          color: const Color(0xFF10B981),
+          size: buttonSize,
+        ),
+      );
+
+      // Right: Skip phase + Settings
+      rightWidgets.add(
+        _buildMiniIconAction(
+          icon: Icons.skip_next_rounded,
+          tooltip: l10n.timerPomodoroSkipPhase,
+          onPressed: onSkip,
+          color: const Color(0xFFF59E0B),
+          size: buttonSize,
+        ),
+      );
+      rightWidgets.add(
+        _buildMiniIconAction(
+          icon: Icons.tune_rounded,
+          tooltip: l10n.settings,
+          onPressed: onSettings,
+          size: buttonSize,
+        ),
+      );
+    } else if (onSettings != null) {
+      // 2. Countdown layout
+      leftWidgets.add(
+        _buildMiniIconAction(
+          icon: Icons.refresh_rounded,
+          tooltip: l10n.reset,
+          onPressed: onReset,
+          size: buttonSize,
+        ),
+      );
+
+      if (onFinish != null) {
+        rightWidgets.add(
+          _buildMiniIconAction(
+            icon: Icons.flag_rounded,
+            tooltip: l10n.finish,
+            onPressed: onFinish,
+            color: const Color(0xFF10B981),
+            size: buttonSize,
+          ),
+        );
+      }
+      rightWidgets.add(
+        _buildMiniIconAction(
+          icon: Icons.tune_rounded,
+          tooltip: l10n.settings,
+          onPressed: onSettings,
+          size: buttonSize,
+        ),
+      );
+    } else {
+      // 3. Stopwatch layout: Classic symmetrical 3-button chronometer
+      leftWidgets.add(
+        _buildMiniIconAction(
+          icon: Icons.refresh_rounded,
+          tooltip: l10n.reset,
+          onPressed: onReset,
+          size: buttonSize,
+        ),
+      );
+      rightWidgets.add(
+        _buildMiniIconAction(
+          icon: Icons.flag_rounded,
+          tooltip: l10n.finish,
+          onPressed: onFinish,
+          color: const Color(0xFF10B981),
+          size: buttonSize,
+        ),
+      );
+    }
 
     final rowContent = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Left side actions (Finish, Reset)
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Show Finish on left ONLY if not moved to right
-            if (!showFinishOnRight && onFinish != null)
-              _buildMiniIconAction(
-                icon: Icons.flag_rounded,
-                tooltip: l10n.finish,
-                onPressed: onFinish,
-                color: accent,
-              ),
-            if (!showFinishOnRight && onFinish != null && onReset != null)
-              const SizedBox(height: 16),
+        // Left satellites
+        for (int i = 0; i < leftWidgets.length; i++) ...[
+          if (i > 0) SizedBox(width: itemSpacing),
+          leftWidgets[i],
+        ],
 
-            if (onReset != null)
-              _buildMiniIconAction(
-                icon: Icons.refresh_rounded,
-                tooltip: l10n.reset,
-                onPressed: onReset,
-              ),
-          ],
+        SizedBox(width: heroMargin),
+
+        // Hero Play / Pause Button
+        _buildHeroPlayButton(
+          isRunning: isRunning,
+          onPlayPause: onPlayPause,
+          accent: accent,
+          isDark: isDark,
         ),
 
-        const SizedBox(width: 24),
+        SizedBox(width: heroMargin),
 
-        // Main play/pause button
-        Material(
-          color: Colors.transparent,
-          shape: const CircleBorder(),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: () {
-              _feedback();
-              onPlayPause();
-            },
-            customBorder: const CircleBorder(),
-            child: Ink(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: isRunning
-                      ? [Colors.orange, Colors.deepOrange]
-                      : [accent, accent.withValues(alpha: 0.8)],
-                ),
-              ),
-              child: Icon(
-                isRunning ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                size: 36,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ),
-
-        const SizedBox(width: 24),
-
-        // Right side actions (Skip, Settings)
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Show Finish on right if requested (Stopwatch mode)
-            if (showFinishOnRight && onFinish != null) ...[
-              _buildMiniIconAction(
-                icon: Icons.flag_rounded,
-                tooltip: l10n.finish,
-                onPressed: onFinish,
-                color: accent,
-              ),
-              if (onSkip != null || onSettings != null)
-                const SizedBox(height: 16),
-            ],
-
-            if (onSkip != null) ...[
-              _buildMiniIconAction(
-                icon: Icons.skip_next_rounded,
-                tooltip: l10n.timerPomodoroSkipPhase,
-                onPressed: onSkip,
-              ),
-              const SizedBox(height: 16),
-            ],
-            if (onSettings != null)
-              _buildMiniIconAction(
-                icon: Icons.tune_rounded,
-                tooltip: l10n.settings,
-                onPressed: onSettings,
-              ),
-          ],
-        ),
+        // Right satellites
+        for (int i = 0; i < rightWidgets.length; i++) ...[
+          if (i > 0) SizedBox(width: itemSpacing),
+          rightWidgets[i],
+        ],
       ],
     );
 
-    // If there's pending content, we need to wrap everything in a Column
+    // If there's pending duration, show modern pending card below buttons
     if (controller.hasPending) {
       return Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           rowContent,
-          const SizedBox(height: 20),
+          const SizedBox(height: 14),
           _buildPendingCard(context),
         ],
       );
@@ -577,60 +842,225 @@ class _TimerScreenState extends State<TimerScreen>
     return rowContent;
   }
 
+  Widget _buildHeroPlayButton({
+    required bool isRunning,
+    required VoidCallback onPlayPause,
+    required Color accent,
+    required bool isDark,
+  }) {
+    final heroGradient = isRunning
+        ? const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFFB923C), Color(0xFFEA580C)],
+          )
+        : LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              accent.withValues(alpha: 0.95),
+              Color.lerp(accent, Colors.black, isDark ? 0.22 : 0.12)!,
+            ],
+          );
+
+    final glowColor = isRunning ? const Color(0xFFEA580C) : accent;
+
+    return _BouncingTapWrapper(
+      lowerBound: 0.91,
+      duration: const Duration(milliseconds: 100),
+      onTap: () {
+        _feedback();
+        onPlayPause();
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 260),
+        curve: Curves.easeOutCubic,
+        width: 70,
+        height: 70,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: heroGradient,
+          border: Border.all(
+            color: Colors.white.withValues(alpha: isDark ? 0.30 : 0.65),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: glowColor.withValues(alpha: isDark ? 0.35 : 0.25),
+              blurRadius: 18,
+              offset: const Offset(0, 6),
+            ),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.28 : 0.08),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Inner concentric highlight ring for watch chronometer pusher feel
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.18),
+                  width: 1.0,
+                ),
+              ),
+            ),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              transitionBuilder: (child, animation) => ScaleTransition(
+                scale: animation,
+                child: child,
+              ),
+              child: isRunning
+                  ? const Icon(
+                      Icons.pause_rounded,
+                      key: ValueKey('pause'),
+                      size: 32,
+                      color: Colors.white,
+                    )
+                  : Padding(
+                      key: const ValueKey('play'),
+                      padding: const EdgeInsets.only(left: 2.5),
+                      child: const Icon(
+                        Icons.play_arrow_rounded,
+                        size: 36,
+                        color: Colors.white,
+                      ),
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildPendingCard(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final accent = _getAccentColor(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final colorScheme = theme.colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final formattedPending = controller.formatDuration(controller.pendingDuration);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.amber.withValues(alpha: isDark ? 0.15 : 0.08),
-            Colors.amber.withValues(alpha: isDark ? 0.08 : 0.04),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
+        color: isDark ? const Color(0xFF1E1E26) : const Color(0xFFFFFBEB),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: Colors.amber.withValues(alpha: isDark ? 0.25 : 0.3),
-          width: 1,
+          color: const Color(0xFFF59E0B).withValues(alpha: isDark ? 0.35 : 0.45),
+          width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.amber.withValues(alpha: 0.08),
+            color: const Color(0xFFF59E0B).withValues(alpha: isDark ? 0.12 : 0.08),
             blurRadius: 12,
-            offset: const Offset(0, 4),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
-      child: Column(
+      child: Row(
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.access_time_filled,
-                color: Colors.amber[700],
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  l10n.timerPendingLabel(
-                    controller.formatDuration(controller.pendingDuration),
-                  ),
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0xFFF59E0B).withValues(alpha: 0.18),
+            ),
+            child: const Icon(
+              Icons.hourglass_top_rounded,
+              color: Color(0xFFF59E0B),
+              size: 19,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Bekleyen Süre',
                   style: TextStyle(
-                    color: Colors.amber[800],
+                    fontSize: 11,
                     fontWeight: FontWeight.w600,
+                    color: isDark
+                        ? const Color(0xFFFCD34D)
+                        : const Color(0xFFB45309),
                   ),
                 ),
+                const SizedBox(height: 1),
+                Text(
+                  formattedPending,
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'monospace',
+                    letterSpacing: 0.5,
+                    color: isDark ? Colors.white : const Color(0xFF78350F),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          _BouncingTapWrapper(
+            lowerBound: 0.92,
+            duration: const Duration(milliseconds: 90),
+            onTap: () {
+              _feedback();
+              _showSaveDialog();
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF59E0B),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFF59E0B).withValues(alpha: 0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-            ],
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.bookmark_add_rounded, size: 14, color: Colors.white),
+                  const SizedBox(width: 4),
+                  Text(
+                    l10n.save,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 4),
+          IconButton(
+            tooltip: 'Yoksay',
+            icon: Icon(
+              Icons.close_rounded,
+              size: 18,
+              color: isDark ? Colors.grey[400] : Colors.grey[600],
+            ),
+            onPressed: () {
+              _feedback();
+              controller.discardPending();
+            },
+            visualDensity: VisualDensity.compact,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
           ),
         ],
       ),
@@ -651,214 +1081,130 @@ class _TimerScreenState extends State<TimerScreen>
     VoidCallback? onSettings,
     VoidCallback? onSkip,
   }) {
-    final l10n = AppLocalizations.of(context);
-    final accent = _getAccentColor(context);
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        // Left side actions
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (onFinish != null)
-              _buildMiniIconAction(
-                icon: Icons.flag_rounded,
-                tooltip: l10n.finish,
-                onPressed: onFinish,
-                color: accent,
-              ),
-            if (onFinish != null && onReset != null) const SizedBox(height: 8),
-            if (onReset != null)
-              _buildMiniIconAction(
-                icon: Icons.refresh_rounded,
-                tooltip: l10n.reset,
-                onPressed: onReset,
-              ),
-          ],
-        ),
-        const SizedBox(width: 14),
-
-        // Center play/pause
-        GestureDetector(
-          onTap: onPlayPause,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: isRunning
-                    ? [Colors.orange, Colors.deepOrange]
-                    : [accent, accent.withValues(alpha: 0.8)],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: (isRunning ? Colors.orange : accent).withValues(
-                    alpha: 0.3,
-                  ),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Icon(
-              isRunning ? Icons.pause_rounded : Icons.play_arrow_rounded,
-              size: 28,
-              color: Colors.white,
-            ),
-          ),
-        ),
-
-        const SizedBox(width: 14),
-
-        // Right side actions
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (onSkip != null) ...[
-              _buildMiniIconAction(
-                icon: Icons.skip_next_rounded,
-                tooltip: l10n.timerPomodoroSkipPhase,
-                onPressed: onSkip,
-              ),
-              const SizedBox(height: 8),
-            ],
-            if (onSettings != null)
-              _buildMiniIconAction(
-                icon: Icons.tune_rounded,
-                tooltip: l10n.settings,
-                onPressed: onSettings,
-              ),
-          ],
-        ),
-      ],
+    return _buildFloatingActionButtons(
+      context,
+      isRunning: isRunning,
+      onPlayPause: onPlayPause,
+      onFinish: onFinish,
+      onReset: onReset,
+      onSettings: onSettings,
+      onSkip: onSkip,
+      isPomodoro: true,
     );
   }
 
   Widget _buildMiniIconAction({
     required IconData icon,
     required String tooltip,
-    required VoidCallback onPressed,
+    required VoidCallback? onPressed,
     Color? color,
+    double size = 46,
   }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final iconColor = color != null
-        ? Colors.white
-        : (isDark ? Colors.grey[200] : Colors.grey[800]);
+    final textColor = theme.colorScheme.onSurface;
+    final isEnabled = onPressed != null;
+
+    final isColored = color != null && isEnabled;
+    final bgColor = isColored
+        ? color.withValues(alpha: isDark ? 0.20 : 0.12)
+        : (isDark ? const Color(0xFF1B202D) : Colors.white);
+    final borderColor = isColored
+        ? color.withValues(alpha: isDark ? 0.40 : 0.30)
+        : (isDark
+            ? Colors.white.withValues(alpha: 0.09)
+            : Colors.black.withValues(alpha: 0.07));
+    final iconColor = isColored
+        ? color
+        : (isEnabled
+            ? textColor.withValues(alpha: 0.78)
+            : textColor.withValues(alpha: 0.28));
 
     return Tooltip(
       message: tooltip,
-      child: GestureDetector(
-        onTap: onPressed,
-        child: Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: color,
-            gradient: color != null
-                ? LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [color, color.withValues(alpha: 0.8)],
-                  )
-                : null,
-            borderRadius: BorderRadius.circular(12),
-            border: color == null
-                ? Border.all(
-                    color: isDark
-                        ? Colors.grey.withValues(alpha: 0.2)
-                        : Colors.grey.withValues(alpha: 0.3),
-                  )
-                : null,
+      child: _BouncingTapWrapper(
+        lowerBound: 0.90,
+        duration: const Duration(milliseconds: 90),
+        onTap: isEnabled
+            ? () {
+                _feedback();
+                onPressed();
+              }
+            : () {},
+        child: AnimatedOpacity(
+          duration: const Duration(milliseconds: 200),
+          opacity: isEnabled ? 1.0 : 0.32,
+          child: Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              color: bgColor,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: borderColor,
+                width: 1.2,
+              ),
+              boxShadow: [
+                if (isEnabled) ...[
+                  BoxShadow(
+                    color: isColored
+                        ? color.withValues(alpha: 0.18)
+                        : Colors.black.withValues(alpha: isDark ? 0.22 : 0.04),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                  if (!isDark && !isColored)
+                    const BoxShadow(
+                      color: Colors.white,
+                      blurRadius: 1,
+                      offset: Offset(0, -1),
+                    ),
+                ],
+              ],
+            ),
+            alignment: Alignment.center,
+            child: Icon(icon, size: size * 0.46, color: iconColor),
           ),
-          alignment: Alignment.center,
-          child: Icon(icon, size: 18, color: iconColor),
         ),
       ),
     );
   }
 
-  Widget _buildCompactButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onPressed,
-    Color? color,
-  }) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final textColor = color != null
-        ? Colors.white
-        : (isDark ? Colors.grey[300] : Colors.grey[800]);
-
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: color,
-          gradient: color != null
-              ? LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [color, color.withValues(alpha: 0.8)],
-                )
-              : null,
-          borderRadius: BorderRadius.circular(12),
-          border: color == null
-              ? Border.all(
-                  color: isDark
-                      ? Colors.grey.withValues(alpha: 0.2)
-                      : Colors.grey.withValues(alpha: 0.3),
-                )
-              : null,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 16, color: textColor),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: TextStyle(
-                color: textColor,
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
+  Widget _buildHistorySectionDivider(bool isDark) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      height: 1,
+      color: isDark
+          ? Colors.white.withValues(alpha: 0.07)
+          : Colors.black.withValues(alpha: 0.06),
     );
   }
 
   Widget _buildStopwatch(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final accent = _getAccentColor(context);
     final isRunning =
         controller.isRunning && controller.activeMode == TimerMode.stopwatch;
     final elapsed = controller.elapsed;
-    final progress = (elapsed.inSeconds % 60) / 60.0;
 
     return Column(
       children: [
-        // Timer Display
+        // Dial Display
         Expanded(
           flex: 5,
           child: Center(
-            child: FootballStopwatchDisplay(
-              elapsed: elapsed,
+            child: EliteTimerDial(
+              mode: TimerDialMode.stopwatch,
+              duration: elapsed,
               isRunning: isRunning,
+              accentColor: accent,
             ),
           ),
         ),
         Expanded(
           flex: 2,
           child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             child: _buildFloatingActionButtons(
               context,
               isRunning: isRunning,
@@ -870,7 +1216,7 @@ class _TimerScreenState extends State<TimerScreen>
           ),
         ),
         if (controller.sessions.isNotEmpty) ...[
-          const Divider(height: 1),
+          _buildHistorySectionDivider(isDark),
           SizedBox(height: _historySectionHeight, child: _buildHistoryList()),
         ],
       ],
@@ -878,33 +1224,43 @@ class _TimerScreenState extends State<TimerScreen>
   }
 
   Widget _buildCountdown(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     final rem = controller.countdownRemaining;
     final total = controller.countdownTotal;
     final hasDuration = controller.hasCountdown;
-    final progress = hasDuration && total.inSeconds > 0
-        ? rem.inSeconds / total.inSeconds
-        : 1.0;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final accent = _getAccentColor(context);
     final isRunning =
         controller.isRunning && controller.activeMode == TimerMode.countdown;
 
     return Column(
       children: [
+        // Dial Display + Quick Presets
         Expanded(
           flex: 5,
-          child: Center(
-            child: hasDuration
-                ? HourglassTimerDisplay(
-                    remaining: rem,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Center(
+                  child: EliteTimerDial(
+                    mode: TimerDialMode.countdown,
+                    duration: rem,
                     totalDuration: total,
                     isRunning: isRunning,
-                  )
-                : _buildSetDurationPrompt(context),
+                    accentColor: accent,
+                    onTap: isRunning ? null : _showCountdownConfigDialog,
+                  ),
+                ),
+              ),
+              _buildCountdownPresetsRow(context, accent, isDark, isRunning),
+              const SizedBox(height: 6),
+            ],
           ),
         ),
         Expanded(
           flex: 2,
           child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             child: _buildFloatingActionButtons(
               context,
               isRunning: isRunning,
@@ -921,79 +1277,136 @@ class _TimerScreenState extends State<TimerScreen>
           ),
         ),
         if (controller.sessions.isNotEmpty) ...[
-          const Divider(height: 1),
+          _buildHistorySectionDivider(isDark),
           SizedBox(height: _historySectionHeight, child: _buildHistoryList()),
         ],
       ],
     );
   }
 
-  Widget _buildSetDurationPrompt(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final accent = _getAccentColor(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final colorScheme = theme.colorScheme;
+  Widget _buildCountdownPresetsRow(
+    BuildContext context,
+    Color accent,
+    bool isDark,
+    bool isRunning,
+  ) {
+    final presets = [5, 15, 25, 30, 45, 60];
+    final currentMinutes = controller.countdownTotal.inMinutes;
 
-    return GestureDetector(
-      onTap: _showCountdownConfigDialog,
-      child: Container(
-        width: 200,
-        height: 200,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isDark
-                ? [
-                    Colors.white.withValues(alpha: 0.08),
-                    Colors.white.withValues(alpha: 0.04),
-                  ]
-                : [Colors.white, accent.withValues(alpha: 0.05)],
-          ),
-          border: Border.all(
-            color: accent.withValues(alpha: isDark ? 0.4 : 0.3),
-            width: 2,
-            strokeAlign: BorderSide.strokeAlignOutside,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: accent.withValues(alpha: 0.1),
-              blurRadius: 20,
-              offset: const Offset(0, 6),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          for (final mins in presets) ...[
+            _buildPresetChip(
+              label: '$mins dk',
+              isSelected: controller.hasCountdown && currentMinutes == mins,
+              accent: accent,
+              isDark: isDark,
+              onTap: isRunning
+                  ? null
+                  : () {
+                      _feedback();
+                      controller.setCountdown(Duration(minutes: mins));
+                      _cdHours.text = '0';
+                      _cdMinutes.text = mins.toString();
+                      _cdSeconds.text = '0';
+                    },
             ),
+            const SizedBox(width: 8),
           ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: accent.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
+          _buildPresetChip(
+            label: 'Özel',
+            icon: Icons.tune_rounded,
+            isSelected: false,
+            accent: accent,
+            isDark: isDark,
+            onTap: isRunning
+                ? null
+                : () {
+                    _feedback();
+                    _showCountdownConfigDialog();
+                  },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPresetChip({
+    required String label,
+    IconData? icon,
+    required bool isSelected,
+    required Color accent,
+    required bool isDark,
+    required VoidCallback? onTap,
+  }) {
+    final isEnabled = onTap != null;
+    final bgColor = isSelected
+        ? accent
+        : (isDark ? const Color(0xFF1B202D) : Colors.white);
+    final borderColor = isSelected
+        ? accent
+        : (isDark
+            ? Colors.white.withValues(alpha: 0.10)
+            : Colors.black.withValues(alpha: 0.08));
+    final textColor = isSelected
+        ? Colors.white
+        : (isDark ? Colors.white70 : const Color(0xFF475569));
+
+    return _BouncingTapWrapper(
+      lowerBound: 0.92,
+      duration: const Duration(milliseconds: 90),
+      onTap: onTap ?? () {},
+      child: Opacity(
+        opacity: isEnabled ? 1.0 : 0.45,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6.5),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: borderColor, width: 1.1),
+            boxShadow: [
+              if (isSelected)
+                BoxShadow(
+                  color: accent.withValues(alpha: 0.35),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                )
+              else
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.20 : 0.03),
+                  blurRadius: 4,
+                  offset: const Offset(0, 1),
+                ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null) ...[
+                Icon(icon, size: 13, color: textColor),
+                const SizedBox(width: 4.5),
+              ],
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                  color: textColor,
+                ),
               ),
-              child: Icon(Icons.add_rounded, size: 32, color: accent),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              l10n.timerSetDurationFirst,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: accent,
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildPomodoro(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     final isRunning =
         controller.isRunning && controller.activeMode == TimerMode.pomodoro;
     final isWorkPhase = controller.pomodoroWorkPhase;
@@ -1005,156 +1418,53 @@ class _TimerScreenState extends State<TimerScreen>
                 0
             ? controller.pomodoroLongBreakDuration
             : controller.pomodoroShortBreakDuration);
-    final progress =
-        total.inSeconds > 0 ? remaining.inSeconds / total.inSeconds : 1.0;
 
     final accent = _getAccentColor(context);
-    final phaseColor = isWorkPhase ? accent : Colors.green;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Column(
       children: [
-        // Pomodoro sessions indicator - more compact
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(controller.pomodoroLongBreakInterval, (
-              index,
-            ) {
-              final isCompleted = index <
-                  controller.pomodoroCompletedWorkSessions %
-                      controller.pomodoroLongBreakInterval;
-              final isCurrent = index ==
-                  controller.pomodoroCompletedWorkSessions %
-                      controller.pomodoroLongBreakInterval;
-
-              return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  width: isCurrent ? 16 : 12,
-                  height: isCurrent ? 16 : 12,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: isCompleted || isCurrent
-                        ? LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [accent, accent.withValues(alpha: 0.7)],
-                          )
-                        : null,
-                    color: isCompleted || isCurrent
-                        ? null
-                        : Colors.grey.withValues(alpha: 0.25),
-                    border: isCurrent
-                        ? Border.all(
-                            color: accent.withValues(alpha: 0.4),
-                            width: 2,
-                          )
-                        : null,
-                    boxShadow: isCompleted || isCurrent
-                        ? [
-                            BoxShadow(
-                              color: accent.withValues(alpha: 0.3),
-                              blurRadius: isCurrent ? 6 : 3,
-                              spreadRadius: 0,
-                            ),
-                          ]
-                        : null,
-                  ),
-                ),
-              );
-            }),
-          ),
-        ),
-        // Timer - same flex as stopwatch and countdown
+        // Dial Display (flex: 5)
         Expanded(
-          flex: 3,
+          flex: 5,
           child: Center(
-            child: TomatoTimerDisplay(
-              remaining: remaining,
+            child: EliteTimerDial(
+              mode: TimerDialMode.pomodoro,
+              duration: remaining,
               totalDuration: total,
               isRunning: isRunning,
+              accentColor: accent,
+              isWorkPhase: isWorkPhase,
+              pomodoroCycle: controller.pomodoroCompletedWorkSessions,
+              pomodoroTotalCycles: controller.pomodoroLongBreakInterval,
+              onTap: isRunning ? null : _showPomodoroConfigDialog,
             ),
           ),
         ),
-        // Phase indicator - compact
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                phaseColor.withValues(alpha: 0.15),
-                phaseColor.withValues(alpha: 0.08),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: phaseColor.withValues(alpha: 0.2),
-              width: 1,
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                isWorkPhase ? Icons.laptop_mac : Icons.coffee,
-                size: 14,
-                color: phaseColor,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                isWorkPhase
-                    ? l10n.timerPomodoroWorkPhase
-                    : l10n.timerPomodoroBreakPhase,
-                style: TextStyle(
-                  color: phaseColor,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 12,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: phaseColor,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '${controller.pomodoroCompletedWorkSessions}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 11,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        // Buttons - same layout as stopwatch and countdown
+
+        // Action Buttons (flex: 2)
         Expanded(
           flex: 2,
           child: Center(
-            child: _buildCompactActionButtons(
-              context,
-              isRunning: isRunning,
-              onPlayPause: () =>
-                  isRunning ? controller.pause() : controller.startPomodoro(),
-              onFinish: controller.finish,
-              onReset: controller.reset,
-              onSettings: _showPomodoroConfigDialog,
-              onSkip: controller.activeMode == TimerMode.pomodoro
-                  ? controller.skipPomodoroPhase
-                  : null,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: _buildCompactActionButtons(
+                context,
+                isRunning: isRunning,
+                onPlayPause: () =>
+                    isRunning ? controller.pause() : controller.startPomodoro(),
+                onFinish: controller.finish,
+                onReset: controller.reset,
+                onSettings: _showPomodoroConfigDialog,
+                onSkip: controller.activeMode == TimerMode.pomodoro
+                    ? controller.skipPomodoroPhase
+                    : null,
+              ),
             ),
           ),
         ),
         if (controller.sessions.isNotEmpty) ...[
-          const Divider(height: 1),
+          _buildHistorySectionDivider(isDark),
           SizedBox(height: _historySectionHeight, child: _buildHistoryList()),
         ],
       ],
@@ -1164,43 +1474,96 @@ class _TimerScreenState extends State<TimerScreen>
   Widget _buildHistoryList() {
     final l10n = AppLocalizations.of(context);
     final sessions = controller.sessions;
-    final theme = Theme.of(context);
     final accent = _getAccentColor(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = Theme.of(context).colorScheme.onSurface;
 
     if (sessions.isEmpty) {
-      return Center(child: Text(l10n.noEntriesYet));
+      return Center(
+        child: Text(
+          l10n.noEntriesYet,
+          style: TextStyle(color: textColor.withValues(alpha: 0.4), fontSize: 13),
+        ),
+      );
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+          padding: const EdgeInsets.fromLTRB(20, 8, 16, 4),
           child: Row(
             children: [
+              Icon(
+                Icons.history_rounded,
+                size: 16,
+                color: textColor.withValues(alpha: 0.6),
+              ),
+              const SizedBox(width: 6),
               Text(
                 l10n.historyTitle,
-                style: theme.textTheme.titleSmall?.copyWith(
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 13,
                   fontWeight: FontWeight.bold,
+                  letterSpacing: -0.2,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  '${sessions.length}',
+                  style: TextStyle(
+                    color: accent,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const Spacer(),
-              if (sessions.isNotEmpty)
-                TextButton(
-                  onPressed: controller.clearHistory,
-                  child: Text(
-                    l10n.clearHistory,
-                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+              _BouncingTapWrapper(
+                lowerBound: 0.90,
+                duration: const Duration(milliseconds: 90),
+                onTap: () {
+                  _feedback();
+                  controller.clearHistory();
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.delete_outline_rounded,
+                        size: 13,
+                        color: textColor.withValues(alpha: 0.5),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        l10n.clearHistory,
+                        style: TextStyle(
+                          color: textColor.withValues(alpha: 0.5),
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+              ),
             ],
           ),
         ),
         Expanded(
           child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
             scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
             itemCount: sessions.length,
             itemBuilder: (context, index) {
               final s = sessions[index];
@@ -1211,59 +1574,35 @@ class _TimerScreenState extends State<TimerScreen>
               };
               final durStr = controller.formatDuration(s.duration);
 
-              return GestureDetector(
+              return _BouncingTapWrapper(
+                lowerBound: 0.93,
+                duration: const Duration(milliseconds: 90),
                 onTap: () => _onSessionTap(index),
-                onLongPress: () => _confirmDeleteSession(index),
                 child: Container(
-                  width: 140,
-                  margin: const EdgeInsets.only(right: 12, bottom: 12),
+                  width: 148,
+                  margin: const EdgeInsets.only(right: 12, bottom: 8, top: 2),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    gradient: s.assigned
-                        ? LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              accent.withValues(alpha: 0.12),
-                              accent.withValues(alpha: 0.06),
-                            ],
-                          )
-                        : null,
                     color: s.assigned
-                        ? null
-                        : (isDark
-                            ? theme.colorScheme.surfaceContainerHighest
-                                .withValues(alpha: 0.4)
-                            : Colors.white),
-                    borderRadius: BorderRadius.circular(16),
-                    border: s.assigned
-                        ? Border.all(
-                            color: accent.withValues(alpha: 0.3),
-                            width: 1.5,
-                          )
-                        : Border.all(
-                            color: isDark
-                                ? theme.colorScheme.outline.withValues(
-                                    alpha: 0.1,
-                                  )
-                                : theme.colorScheme.outlineVariant.withValues(
-                                    alpha: 0.3,
-                                  ),
-                            width: 1,
-                          ),
+                        ? (isDark
+                            ? accent.withValues(alpha: 0.14)
+                            : accent.withValues(alpha: 0.08))
+                        : (isDark ? const Color(0xFF191E2A) : Colors.white),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: s.assigned
+                          ? accent.withValues(alpha: isDark ? 0.45 : 0.35)
+                          : Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
+                      width: 1.2,
+                    ),
                     boxShadow: [
-                      if (s.assigned)
-                        BoxShadow(
-                          color: accent.withValues(alpha: 0.15),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        )
-                      else if (!isDark)
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
+                      BoxShadow(
+                        color: s.assigned
+                            ? accent.withValues(alpha: isDark ? 0.16 : 0.08)
+                            : Colors.black.withValues(alpha: isDark ? 0.22 : 0.04),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
                     ],
                   ),
                   child: Column(
@@ -1272,15 +1611,75 @@ class _TimerScreenState extends State<TimerScreen>
                     children: [
                       Row(
                         children: [
-                          Icon(
-                            _iconForMode(s.mode),
-                            size: 16,
-                            color: s.assigned ? accent : Colors.grey,
+                          Container(
+                            width: 28,
+                            height: 28,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: s.assigned
+                                  ? accent.withValues(alpha: 0.2)
+                                  : (isDark
+                                      ? Colors.white.withValues(alpha: 0.08)
+                                      : const Color(0xFFF1F5F9)),
+                            ),
+                            child: Icon(
+                              _iconForMode(s.mode),
+                              size: 14,
+                              color: s.assigned
+                                  ? accent
+                                  : textColor.withValues(alpha: 0.6),
+                            ),
                           ),
-                          if (s.assigned) ...[
-                            const Spacer(),
-                            Icon(Icons.check_circle, size: 14, color: accent),
-                          ],
+                          const Spacer(),
+                          if (s.assigned)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.green.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.check_circle_rounded,
+                                    size: 11,
+                                    color: Colors.green,
+                                  ),
+                                  SizedBox(width: 3),
+                                  Text(
+                                    'Kaydedildi',
+                                    style: TextStyle(
+                                      color: Colors.green,
+                                      fontSize: 9.5,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: accent.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                '+ Alışkanlık',
+                                style: TextStyle(
+                                  color: accent,
+                                  fontSize: 9.5,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                       Column(
@@ -1289,18 +1688,20 @@ class _TimerScreenState extends State<TimerScreen>
                           Text(
                             durStr,
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 17,
                               fontWeight: FontWeight.bold,
                               fontFamily: 'monospace',
                               color: isDark ? Colors.white : Colors.black87,
+                              letterSpacing: 0.5,
                             ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             modeLabel,
                             style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.grey[600],
+                              fontSize: 11,
+                              color: textColor.withValues(alpha: 0.55),
+                              fontWeight: FontWeight.w500,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -1711,22 +2112,36 @@ class _TimerScreenState extends State<TimerScreen>
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
+              child: _BouncingTapWrapper(
+                lowerBound: 0.94,
+                duration: const Duration(milliseconds: 90),
+                onTap: () {
+                  _feedback();
                   _applyCountdown();
                   Navigator.pop(ctx);
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: accent,
-                  foregroundColor: Colors.white,
+                child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
+                  decoration: BoxDecoration(
+                    color: accent,
                     borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: accent.withValues(alpha: 0.3),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
                   ),
-                ),
-                child: Text(
-                  l10n.save,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  alignment: Alignment.center,
+                  child: Text(
+                    l10n.save,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -1809,38 +2224,40 @@ class _TimerScreenState extends State<TimerScreen>
     int seconds = 0,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final colorScheme = Theme.of(context).colorScheme;
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            accent.withValues(alpha: 0.12),
-            accent.withValues(alpha: 0.06),
+    return _BouncingTapWrapper(
+      lowerBound: 0.90,
+      duration: const Duration(milliseconds: 80),
+      onTap: () {
+        _feedback();
+        _cdHours.text = hours.toString();
+        _cdMinutes.text = minutes.toString();
+        _cdSeconds.text = seconds.toString();
+        setState(() {});
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: accent.withValues(alpha: isDark ? 0.16 : 0.08),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: accent.withValues(alpha: isDark ? 0.35 : 0.25),
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: accent.withValues(alpha: 0.08),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
           ],
         ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: accent.withValues(alpha: 0.2), width: 1),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
-        child: InkWell(
-          onTap: () {
-            _cdHours.text = hours.toString();
-            _cdMinutes.text = minutes.toString();
-            _cdSeconds.text = seconds.toString();
-            setState(() {});
-          },
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            child: Text(
-              label,
-              style: TextStyle(color: accent, fontWeight: FontWeight.w600),
-            ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: accent,
+            fontWeight: FontWeight.w700,
+            fontSize: 13,
           ),
         ),
       ),
@@ -1931,8 +2348,11 @@ class _TimerScreenState extends State<TimerScreen>
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
+              child: _BouncingTapWrapper(
+                lowerBound: 0.94,
+                duration: const Duration(milliseconds: 90),
+                onTap: () {
+                  _feedback();
                   final w = int.tryParse(workCtrl.text) ?? 25;
                   final s = int.tryParse(shortCtrl.text) ?? 5;
                   final l = int.tryParse(longCtrl.text) ?? 15;
@@ -1945,17 +2365,28 @@ class _TimerScreenState extends State<TimerScreen>
                   );
                   Navigator.pop(ctx);
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: accent,
-                  foregroundColor: Colors.white,
+                child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
+                  decoration: BoxDecoration(
+                    color: accent,
                     borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: accent.withValues(alpha: 0.3),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
                   ),
-                ),
-                child: Text(
-                  l10n.save,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  alignment: Alignment.center,
+                  child: Text(
+                    l10n.save,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -2137,3 +2568,82 @@ class _CircularProgressPainter extends CustomPainter {
         oldDelegate.animationValue != animationValue;
   }
 }
+
+class _BouncingTapWrapper extends StatefulWidget {
+  final Widget child;
+  final VoidCallback onTap;
+  final double lowerBound;
+  final Duration duration;
+
+  const _BouncingTapWrapper({
+    required this.child,
+    required this.onTap,
+    this.lowerBound = 0.93,
+    this.duration = const Duration(milliseconds: 110),
+  });
+
+  @override
+  State<_BouncingTapWrapper> createState() => _BouncingTapWrapperState();
+}
+
+class _BouncingTapWrapperState extends State<_BouncingTapWrapper>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+      reverseDuration: const Duration(milliseconds: 220),
+    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: widget.lowerBound,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+      reverseCurve: Curves.easeOutBack,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onTapDown(TapDownDetails details) {
+    _controller.forward();
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    _controller.reverse();
+    widget.onTap();
+  }
+
+  void _onTapCancel() {
+    _controller.reverse();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      child: AnimatedBuilder(
+        animation: _scaleAnimation,
+        builder: (context, child) => Transform.scale(
+          scale: _scaleAnimation.value,
+          child: child,
+        ),
+        child: widget.child,
+      ),
+    );
+  }
+}
+

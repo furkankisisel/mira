@@ -229,22 +229,14 @@ class ThemeSelector extends StatelessWidget {
 
   IconData _getIconForVariant(ThemeVariant variant) {
     return switch (variant) {
-      ThemeVariant.cotton => Icons.spa,
-      ThemeVariant.matcha => Icons.eco,
-      ThemeVariant.lavender => Icons.local_florist,
-      ThemeVariant.sky => Icons.cloud_queue,
-      ThemeVariant.rose => Icons.filter_vintage,
-      ThemeVariant.slate => Icons.layers,
-      ThemeVariant.ocean => Icons.water_drop,
-      ThemeVariant.sunset => Icons.wb_twilight,
-      ThemeVariant.forest => Icons.forest,
-      ThemeVariant.cream => Icons.cookie,
-      ThemeVariant.midnight => Icons.nightlight,
-      ThemeVariant.mauve => Icons.palette,
-      ThemeVariant.blush => Icons.favorite,
-      ThemeVariant.crimson => Icons.whatshot,
-      ThemeVariant.abyss => Icons.nights_stay,
-      ThemeVariant.vintageRed => Icons.history_edu,
+      ThemeVariant.cotton => Icons.spa_rounded,
+      ThemeVariant.terracotta => Icons.fireplace_rounded,
+      ThemeVariant.fjord => Icons.water_rounded,
+      ThemeVariant.sandstone => Icons.grain_rounded,
+      ThemeVariant.moss => Icons.forest_rounded,
+      ThemeVariant.heather => Icons.local_florist_rounded,
+      ThemeVariant.amber => Icons.wb_sunny_rounded,
+      ThemeVariant.basalt => Icons.landscape_rounded,
     };
   }
 }

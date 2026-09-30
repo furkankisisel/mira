@@ -1,4 +1,4 @@
-package com.kisiselapps.mira.widgets
+package com.koralabs.mira.widgets
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -18,7 +18,7 @@ import androidx.glance.layout.*
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
-import com.kisiselapps.mira.MainActivity
+import com.koralabs.mira.MainActivity
 import java.text.NumberFormat
 import java.util.Locale
 

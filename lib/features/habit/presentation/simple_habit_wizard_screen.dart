@@ -94,12 +94,16 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
     super.dispose();
   }
 
-  void _nextPage() async {
+  void _nextPage() {
     if (_currentPage < _totalPages - 1) {
-      // Premium kullanıcı için: Schedule sayfasından (3) preview'e geçerken AI analizi yap
-      final isPremium = context.read<PremiumProvider>().isPremium;
-      if (isPremium && _currentPage == 2) {
-        await _showAiAnalysisDialog();
+      if (_currentPage == 2 && _selectedRhythmWindow == null) {
+        final optimalWindow = _determineOptimalRhythmWindow();
+        final optimalTime = _determineOptimalReminderTime(optimalWindow);
+        setState(() {
+          _selectedRhythmWindow = optimalWindow;
+          _reminderEnabled = true;
+          _reminderTime = optimalTime;
+        });
       }
 
       _pageController.animateToPage(
@@ -110,140 +114,7 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
     }
   }
 
-  Future<void> _showAiAnalysisDialog() async {
-    final l10n = AppLocalizations.of(context);
-    final statusTexts = [
-      l10n.analyzingHabit,
-      l10n.calculatingLifeRhythm,
-      l10n.determiningBestReminder,
-      l10n.finalizingSettingsProgress,
-    ];
 
-    int currentStatus = 0;
-    bool dialogActive = true;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => PopScope(
-        canPop: false,
-        child: StatefulBuilder(
-          builder: (context, setDialogState) {
-            Future.delayed(const Duration(milliseconds: 1200), () {
-              if (dialogActive && currentStatus < statusTexts.length - 1) {
-                setDialogState(() => currentStatus++);
-              }
-            });
-
-            return Center(
-              child: Container(
-                margin: const EdgeInsets.all(32),
-                padding: const EdgeInsets.all(28),
-                decoration: BoxDecoration(
-                  color: Theme.of(ctx).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: _selectedColor.withOpacity(0.2),
-                      blurRadius: 30,
-                      offset: const Offset(0, 12),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 64,
-                      height: 64,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: LinearGradient(
-                          colors: [
-                            _selectedColor,
-                            _selectedColor.withOpacity(0.6),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                      ),
-                      child: const Center(
-                        child: SizedBox(
-                          width: 28,
-                          height: 28,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 3,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      child: Text(
-                        statusTexts[currentStatus],
-                        key: ValueKey(currentStatus),
-                        style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      l10n.determiningBestSettings,
-                      style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(ctx)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.5),
-                          ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: List.generate(
-                          4,
-                          (i) => Container(
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 4),
-                                width: 8,
-                                height: 8,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: i <= currentStatus
-                                      ? _selectedColor
-                                      : Theme.of(ctx)
-                                          .colorScheme
-                                          .outlineVariant,
-                                ),
-                              )),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-
-    await Future.delayed(const Duration(milliseconds: 5000));
-    dialogActive = false;
-
-    final aiRhythmWindow = _determineOptimalRhythmWindow();
-    final aiReminderTime = _determineOptimalReminderTime(aiRhythmWindow);
-
-    setState(() {
-      _selectedRhythmWindow = aiRhythmWindow;
-      _reminderEnabled = true;
-      _reminderTime = aiReminderTime;
-    });
-
-    if (mounted) Navigator.of(context).pop();
-  }
 
   void _previousPage() {
     if (_currentPage > 0) {
@@ -434,6 +305,9 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
 
   Widget _buildNamePage() {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
     final isValid = _nameController.text.trim().isNotEmpty;
 
     return WizardPage(
@@ -447,58 +321,98 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
       ),
       child: Column(
         children: [
-          TextField(
-            controller: _nameController,
-            autofocus: true,
-            textAlign: TextAlign.center,
-            style: Theme.of(
-              context,
-            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
-            decoration: InputDecoration(
-              hintText: l10n.habitNameHint,
-              hintStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+          Container(
+            decoration: BoxDecoration(
+              color: isDark ? colorScheme.surfaceContainerHigh : Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.12)
+                    : Colors.white.withValues(alpha: 0.95),
+                width: 1.2,
               ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide.none,
-              ),
-              filled: true,
-              fillColor: Theme.of(
-                context,
-              ).colorScheme.surfaceContainerHighest.withOpacity(0.5),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 16,
-              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+                if (!isDark)
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    blurRadius: 2,
+                    offset: const Offset(0, -1),
+                  ),
+              ],
             ),
-            onChanged: (_) => setState(() {}),
-            onSubmitted: (_) {
-              if (isValid) _nextPage();
-            },
+            child: TextField(
+              controller: _nameController,
+              autofocus: true,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+              ),
+              decoration: InputDecoration(
+                hintText: l10n.habitNameHint,
+                hintStyle: TextStyle(
+                  color: colorScheme.onSurface.withValues(alpha: 0.35),
+                  fontWeight: FontWeight.w500,
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 18,
+                ),
+              ),
+              onChanged: (_) => setState(() {}),
+              onSubmitted: (_) {
+                if (isValid) _nextPage();
+              },
+            ),
           ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _descriptionController,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            style: Theme.of(context).textTheme.bodyMedium,
-            decoration: InputDecoration(
-              hintText: l10n.descriptionHintOptional,
-              hintStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+          const SizedBox(height: 14),
+          Container(
+            decoration: BoxDecoration(
+              color: isDark ? colorScheme.surfaceContainerHigh : Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.09)
+                    : Colors.white.withValues(alpha: 0.9),
+                width: 1.2,
               ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide.none,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+                if (!isDark)
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    blurRadius: 2,
+                    offset: const Offset(0, -1),
+                  ),
+              ],
+            ),
+            child: TextField(
+              controller: _descriptionController,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurface.withValues(alpha: 0.85),
               ),
-              filled: true,
-              fillColor: Theme.of(
-                context,
-              ).colorScheme.surfaceContainerHighest.withOpacity(0.3),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 12,
+              decoration: InputDecoration(
+                hintText: l10n.descriptionHintOptional,
+                hintStyle: TextStyle(
+                  color: colorScheme.onSurface.withValues(alpha: 0.35),
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 14,
+                ),
               ),
             ),
           ),
@@ -629,6 +543,7 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
           // Sıklık seçimi
           ...frequencies.map((freq) {
             final isSelected = _selectedFrequency == freq.$1;
+            final isDark = theme.brightness == Brightness.dark;
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: InkWell(
@@ -636,23 +551,61 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
                   HapticFeedback.lightImpact();
                   setState(() => _selectedFrequency = freq.$1);
                 },
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(18),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(15),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? _selectedColor.withOpacity(0.1)
-                        : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(14),
-                    border: isSelected
-                        ? Border.all(color: _selectedColor, width: 2)
-                        : null,
+                        ? _selectedColor.withValues(alpha: 0.12)
+                        : (isDark
+                            ? colorScheme.surfaceContainerHigh
+                            : Colors.white),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: isSelected
+                          ? _selectedColor
+                          : (isDark
+                              ? Colors.white.withValues(alpha: 0.12)
+                              : Colors.white.withValues(alpha: 0.95)),
+                      width: isSelected ? 2 : 1.2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: isSelected
+                            ? _selectedColor.withValues(alpha: 0.22)
+                            : Colors.black.withValues(
+                                alpha: isDark ? 0.22 : 0.04,
+                              ),
+                        blurRadius: isSelected ? 12 : 8,
+                        offset: const Offset(0, 2),
+                      ),
+                      if (!isDark && !isSelected)
+                        BoxShadow(
+                          color: Colors.white.withValues(alpha: 0.8),
+                          blurRadius: 2,
+                          offset: const Offset(0, -1),
+                        ),
+                    ],
                   ),
                   child: Row(
                     children: [
-                      Text(freq.$3, style: const TextStyle(fontSize: 24)),
-                      const SizedBox(width: 12),
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? _selectedColor.withValues(alpha: 0.18)
+                              : (isDark
+                                  ? Colors.white.withValues(alpha: 0.08)
+                                  : const Color(0xFFF1F5F9)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(
+                          child: Text(freq.$3, style: const TextStyle(fontSize: 22)),
+                        ),
+                      ),
+                      const SizedBox(width: 14),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -660,21 +613,29 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
                             Text(
                               freq.$2,
                               style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14.5,
                               ),
                             ),
+                            const SizedBox(height: 2),
                             Text(
                               freq.$4,
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurface.withOpacity(0.6),
+                                color: colorScheme.onSurface.withValues(
+                                  alpha: isSelected ? 0.8 : 0.55,
+                                ),
+                                fontSize: 12,
                               ),
                             ),
                           ],
                         ),
                       ),
                       if (isSelected)
-                        Icon(Icons.check_circle,
-                            color: _selectedColor, size: 20),
+                        Icon(
+                          Icons.check_circle_rounded,
+                          color: _selectedColor,
+                          size: 22,
+                        ),
                     ],
                   ),
                 ),
@@ -702,6 +663,7 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     if (_selectedFrequency == 'weekly') {
       final weekdays = [
@@ -746,8 +708,29 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
                   decoration: BoxDecoration(
                     color: isSelected
                         ? _selectedColor
-                        : colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(12),
+                        : (isDark
+                            ? colorScheme.surfaceContainerHigh
+                            : Colors.white),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: isSelected
+                          ? _selectedColor
+                          : (isDark
+                              ? Colors.white.withValues(alpha: 0.12)
+                              : Colors.white.withValues(alpha: 0.95)),
+                      width: 1.2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: isSelected
+                            ? _selectedColor.withValues(alpha: 0.35)
+                            : Colors.black.withValues(
+                                alpha: isDark ? 0.2 : 0.04,
+                              ),
+                        blurRadius: isSelected ? 8 : 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: Center(
                     child: Text(
@@ -755,7 +738,7 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
                       style: TextStyle(
                         color:
                             isSelected ? Colors.white : colorScheme.onSurface,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                         fontSize: 12,
                       ),
                     ),
@@ -914,14 +897,16 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
           // ─── Başlangıç Tarihi ───
           Text(
             l10n.startDate,
-            style: theme.textTheme.titleSmall
-                ?.copyWith(fontWeight: FontWeight.w600),
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: 8),
           Row(
             children: [
               ...quickDates.map((qd) {
                 final isSelected = isSameDay(_startDate, qd.$1);
+                final isDark = theme.brightness == Brightness.dark;
                 return Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(right: 8),
@@ -935,23 +920,50 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? _selectedColor.withOpacity(0.15)
-                              : colorScheme.surfaceContainerHighest
-                                  .withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(12),
-                          border: isSelected
-                              ? Border.all(color: _selectedColor, width: 2)
-                              : null,
+                              ? _selectedColor.withValues(alpha: 0.15)
+                              : (isDark
+                                  ? colorScheme.surfaceContainerHigh
+                                  : Colors.white),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isSelected
+                                ? _selectedColor
+                                : (isDark
+                                    ? Colors.white.withValues(alpha: 0.12)
+                                    : Colors.white.withValues(alpha: 0.95)),
+                            width: isSelected ? 2 : 1.2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: isSelected
+                                  ? _selectedColor.withValues(alpha: 0.25)
+                                  : Colors.black.withValues(
+                                      alpha: isDark ? 0.2 : 0.04,
+                                    ),
+                              blurRadius: isSelected ? 8 : 4,
+                              offset: const Offset(0, 2),
+                            ),
+                            if (!isDark && !isSelected)
+                              BoxShadow(
+                                color: Colors.white.withValues(alpha: 0.8),
+                                blurRadius: 2,
+                                offset: const Offset(0, -1),
+                              ),
+                          ],
                         ),
                         child: Column(
                           children: [
                             Text(qd.$3, style: const TextStyle(fontSize: 18)),
-                            const SizedBox(height: 2),
+                            const SizedBox(height: 3),
                             Text(
                               qd.$2,
                               style: theme.textTheme.bodySmall?.copyWith(
-                                fontWeight: isSelected ? FontWeight.w600 : null,
-                                color: isSelected ? _selectedColor : null,
+                                fontWeight: isSelected
+                                    ? FontWeight.w700
+                                    : FontWeight.w500,
+                                color: isSelected
+                                    ? _selectedColor
+                                    : colorScheme.onSurface,
                               ),
                             ),
                           ],
@@ -972,51 +984,121 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
                   if (picked != null) setState(() => _startDate = picked);
                 },
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                  width: 44,
+                  height: 48,
                   decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(12),
+                    color: theme.brightness == Brightness.dark
+                        ? colorScheme.surfaceContainerHigh
+                        : Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: theme.brightness == Brightness.dark
+                          ? Colors.white.withValues(alpha: 0.12)
+                          : Colors.white.withValues(alpha: 0.95),
+                      width: 1.2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(
+                          alpha: theme.brightness == Brightness.dark
+                              ? 0.2
+                              : 0.04,
+                        ),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                      if (theme.brightness != Brightness.dark)
+                        BoxShadow(
+                          color: Colors.white.withValues(alpha: 0.8),
+                          blurRadius: 2,
+                          offset: const Offset(0, -1),
+                        ),
+                    ],
                   ),
-                  child: Icon(Icons.calendar_today,
-                      color: colorScheme.primary, size: 20),
+                  child: Center(
+                    child: Icon(
+                      Icons.calendar_today_rounded,
+                      color: colorScheme.primary,
+                      size: 19,
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 22),
 
           // ─── Hatırlatıcı ───
           Text(
             l10n.simpleHabitReminderTitle,
-            style: theme.textTheme.titleSmall
-                ?.copyWith(fontWeight: FontWeight.w600),
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: 8),
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               color: _reminderEnabled
-                  ? _selectedColor.withOpacity(0.1)
-                  : colorScheme.surfaceContainerHighest.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(14),
-              border: _reminderEnabled
-                  ? Border.all(color: _selectedColor, width: 2)
-                  : null,
+                  ? _selectedColor.withValues(alpha: 0.1)
+                  : (theme.brightness == Brightness.dark
+                      ? colorScheme.surfaceContainerHigh
+                      : Colors.white),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: _reminderEnabled
+                    ? _selectedColor
+                    : (theme.brightness == Brightness.dark
+                        ? Colors.white.withValues(alpha: 0.12)
+                        : Colors.white.withValues(alpha: 0.95)),
+                width: _reminderEnabled ? 2 : 1.2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: _reminderEnabled
+                      ? _selectedColor.withValues(alpha: 0.22)
+                      : Colors.black.withValues(
+                          alpha: theme.brightness == Brightness.dark
+                              ? 0.2
+                              : 0.04,
+                        ),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+                if (theme.brightness != Brightness.dark && !_reminderEnabled)
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    blurRadius: 2,
+                    offset: const Offset(0, -1),
+                  ),
+              ],
             ),
             child: Row(
               children: [
-                Icon(
-                  _reminderEnabled
-                      ? Icons.notifications_active
-                      : Icons.notifications_off_outlined,
-                  color: _reminderEnabled
-                      ? _selectedColor
-                      : colorScheme.onSurface.withOpacity(0.5),
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _reminderEnabled
+                        ? _selectedColor.withValues(alpha: 0.18)
+                        : colorScheme.surfaceContainerHighest.withValues(
+                            alpha: 0.5,
+                          ),
+                  ),
+                  child: Icon(
+                    _reminderEnabled
+                        ? Icons.notifications_active_rounded
+                        : Icons.notifications_off_outlined,
+                    color: _reminderEnabled
+                        ? _selectedColor
+                        : colorScheme.onSurface.withValues(alpha: 0.5),
+                    size: 20,
+                  ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 14),
                 Expanded(
                   child: _reminderEnabled
                       ? GestureDetector(
@@ -1025,20 +1107,23 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
                               context: context,
                               initialTime: _reminderTime,
                             );
-                            if (picked != null)
+                            if (picked != null) {
                               setState(() => _reminderTime = picked);
+                            }
                           },
                           child: Text(
                             _reminderTime.format(context),
                             style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w700,
                               color: _selectedColor,
                             ),
                           ),
                         )
                       : Text(
                           l10n.reminderDisabled,
-                          style: theme.textTheme.bodyMedium,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                 ),
                 Switch.adaptive(
@@ -1053,19 +1138,20 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 22),
 
           // ─── Ritim Penceresi ─── (Premium)
           Text(
             l10n.rhythmWindowStepTitle,
-            style: theme.textTheme.titleSmall
-                ?.copyWith(fontWeight: FontWeight.w600),
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             l10n.rhythmWindowStepSubtitle,
             style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurface.withOpacity(0.6),
+              color: colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
           const SizedBox(height: 8),
@@ -1074,8 +1160,8 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: colorScheme.tertiaryContainer.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(10),
+                color: colorScheme.tertiaryContainer.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 children: [
@@ -1085,7 +1171,7 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
                     child: Text(
                       l10n.rhythmWindowNoProfileHint,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurface.withOpacity(0.7),
+                        color: colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
                   ),
@@ -1098,6 +1184,7 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
             children: windows.map((w) {
               final isSelected = _selectedRhythmWindow == w.$1;
               final isPremium = context.read<PremiumProvider>().isPremium;
+              final isDark = theme.brightness == Brightness.dark;
               return GestureDetector(
                 onTap: () async {
                   if (!isPremium) {
@@ -1106,23 +1193,43 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
                   }
                   HapticFeedback.lightImpact();
                   setState(
-                      () => _selectedRhythmWindow = isSelected ? null : w.$1);
+                    () => _selectedRhythmWindow = isSelected ? null : w.$1,
+                  );
                 },
                 child: Opacity(
                   opacity: isPremium ? 1.0 : 0.6,
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 9,
+                    ),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? _selectedColor.withOpacity(0.15)
-                          : colorScheme.surfaceContainerHighest
-                              .withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(12),
-                      border: isSelected
-                          ? Border.all(color: _selectedColor, width: 2)
-                          : null,
+                          ? _selectedColor.withValues(alpha: 0.15)
+                          : (isDark
+                              ? colorScheme.surfaceContainerHigh
+                              : Colors.white),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isSelected
+                            ? _selectedColor
+                            : (isDark
+                                ? Colors.white.withValues(alpha: 0.12)
+                                : Colors.white.withValues(alpha: 0.95)),
+                        width: isSelected ? 2 : 1.2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: isSelected
+                              ? _selectedColor.withValues(alpha: 0.22)
+                              : Colors.black.withValues(
+                                  alpha: isDark ? 0.2 : 0.04,
+                                ),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -1189,10 +1296,33 @@ class _SimpleHabitWizardScreenState extends State<SimpleHabitWizardScreen> {
           ),
           const SizedBox(height: 20),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(16),
+              color: theme.brightness == Brightness.dark
+                  ? colorScheme.surfaceContainerHigh
+                  : Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: theme.brightness == Brightness.dark
+                    ? Colors.white.withValues(alpha: 0.12)
+                    : Colors.white.withValues(alpha: 0.95),
+                width: 1.2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(
+                    alpha: theme.brightness == Brightness.dark ? 0.2 : 0.04,
+                  ),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+                if (theme.brightness != Brightness.dark)
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    blurRadius: 2,
+                    offset: const Offset(0, -1),
+                  ),
+              ],
             ),
             child: Column(
               children: [

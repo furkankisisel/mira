@@ -2,30 +2,42 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class DailyTaskDialog extends StatefulWidget {
-  const DailyTaskDialog({super.key});
+  final String? initialTitle;
+  final String? initialDescription;
+  final bool isEditing;
+
+  const DailyTaskDialog({
+    super.key,
+    this.initialTitle,
+    this.initialDescription,
+    this.isEditing = false,
+  });
 
   @override
   State<DailyTaskDialog> createState() => _DailyTaskDialogState();
 }
 
 class _DailyTaskDialogState extends State<DailyTaskDialog> {
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
+  late final TextEditingController _titleController;
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController(text: widget.initialTitle ?? '');
+  }
 
   @override
   void dispose() {
     _titleController.dispose();
-    _descriptionController.dispose();
     super.dispose();
   }
 
   void _createTask() {
     if (_formKey.currentState!.validate()) {
-      // TODO: Implement task creation logic
       final task = {
-        'title': _titleController.text,
-        'description': _descriptionController.text,
+        'title': _titleController.text.trim(),
+        'description': '',
         'date': DateTime.now(),
         'completed': false,
       };
@@ -42,7 +54,11 @@ class _DailyTaskDialogState extends State<DailyTaskDialog> {
 
     return AlertDialog(
       title: Text(
-        l10n.createDailyTask,
+        widget.isEditing
+            ? (l10n.localeName.startsWith('tr')
+                ? 'Görevi Düzenle'
+                : 'Edit Task')
+            : l10n.createDailyTask,
         style: theme.textTheme.headlineSmall?.copyWith(
           fontWeight: FontWeight.w600,
         ),
@@ -70,20 +86,6 @@ class _DailyTaskDialogState extends State<DailyTaskDialog> {
               },
               autofocus: true,
             ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _descriptionController,
-              decoration: InputDecoration(
-                labelText: l10n.taskDescription,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                filled: true,
-                fillColor: colorScheme.surfaceContainerHighest.withOpacity(0.3),
-              ),
-              maxLines: 3,
-              minLines: 2,
-            ),
           ],
         ),
       ),
@@ -92,7 +94,12 @@ class _DailyTaskDialogState extends State<DailyTaskDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: Text(l10n.cancel),
         ),
-        FilledButton(onPressed: _createTask, child: Text(l10n.create)),
+        FilledButton(
+          onPressed: _createTask,
+          child: Text(widget.isEditing
+              ? (l10n.localeName.startsWith('tr') ? 'Kaydet' : 'Save')
+              : l10n.create),
+        ),
       ],
     );
   }

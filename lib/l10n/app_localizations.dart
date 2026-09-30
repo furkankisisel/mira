@@ -122,6 +122,132 @@ abstract class AppLocalizations {
     Locale('zh')
   ];
 
+  /// No description provided for @onboardingPlanLocal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yanıtlarına göre başlangıç planın'**
+  String get onboardingPlanLocal;
+
+  /// No description provided for @onboardingPlanAi.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yanıtlarına göre AI destekli planın'**
+  String get onboardingPlanAi;
+
+  /// No description provided for @onboardingPlanAdvice.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlk haftan için yol haritası'**
+  String get onboardingPlanAdvice;
+
+  /// No description provided for @onboardingPlanReason.
+  ///
+  /// In tr, this message translates to:
+  /// **'Neden sana öneriliyor?'**
+  String get onboardingPlanReason;
+
+  /// No description provided for @onboardingPlanChooseOne.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlk hafta birini seçerek başla. Sana uydukça yenilerini ekleyebilirsin.'**
+  String get onboardingPlanChooseOne;
+
+  /// No description provided for @onboardingPlanSaveError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alışkanlıkların kaydedilemedi. Seçimlerin burada; tekrar deneyebilirsin.'**
+  String get onboardingPlanSaveError;
+
+  /// No description provided for @onboardingStoryWelcomeTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'İyi gelen bir hayat,\nsana ait bir ritim.'**
+  String get onboardingStoryWelcomeTitle;
+
+  /// No description provided for @onboardingStoryWelcomeBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seni biraz tanıyalım. Mira ile hedeflerini küçük alışkanlıklara dönüştür, gününü planla ve nasıl hissettiğini takip et.'**
+  String get onboardingStoryWelcomeBody;
+
+  /// No description provided for @onboardingStoryNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'12 kısa soru · Kendi hızında'**
+  String get onboardingStoryNote;
+
+  /// No description provided for @onboardingStoryVisionTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hayallerine yer aç.'**
+  String get onboardingStoryVisionTitle;
+
+  /// No description provided for @onboardingStoryVisionBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vizyon panonla sana ilham veren hedefleri bir araya getir.'**
+  String get onboardingStoryVisionBody;
+
+  /// No description provided for @onboardingStoryRoutineTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Küçük adımlar, günlük ilerleme.'**
+  String get onboardingStoryRoutineTitle;
+
+  /// No description provided for @onboardingStoryRoutineBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alışkanlıkların ve haftalık planın, yapmak istediklerine yer açsın.'**
+  String get onboardingStoryRoutineBody;
+
+  /// No description provided for @onboardingStoryBalanceTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kendine kulak ver.'**
+  String get onboardingStoryBalanceTitle;
+
+  /// No description provided for @onboardingStoryBalanceBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ruh halini takip et; sana iyi gelen anları fark et.'**
+  String get onboardingStoryBalanceBody;
+
+  /// No description provided for @onboardingStoryConnectionTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Birlikte ilerle.'**
+  String get onboardingStoryConnectionTitle;
+
+  /// No description provided for @onboardingStoryConnectionBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ortak odalarda hedeflerini paylaş, birbirinizden güç alın.'**
+  String get onboardingStoryConnectionBody;
+
+  /// No description provided for @onboardingStoryAnswerHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu ifade seni ne kadar anlatıyor?'**
+  String get onboardingStoryAnswerHint;
+
+  /// No description provided for @onboardingStoryResult.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kendimi keşfet'**
+  String get onboardingStoryResult;
+
+  /// No description provided for @onboardingStoryLoading.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yanıtlarından sana özel öneriler hazırlıyoruz…'**
+  String get onboardingStoryLoading;
+
+  /// No description provided for @onboardingStoryError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Önerilerini şu an hazırlayamadık. Yanıtların burada; tekrar deneyebilirsin.'**
+  String get onboardingStoryError;
+
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
@@ -8159,7 +8285,7 @@ abstract class AppLocalizations {
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:
-  /// **'Vizyon'**
+  /// **'Hedefler'**
   String get vision;
 
   /// Auto-generated metadata
@@ -8605,6 +8731,150 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bugünkü Ruh Halin'**
   String get yourMoodToday;
+
+  /// No description provided for @activeGoal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aktif Hedef'**
+  String get activeGoal;
+
+  /// No description provided for @goals.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedefler'**
+  String get goals;
+
+  /// No description provided for @todayStepsCount.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün {count} adımın var'**
+  String todayStepsCount(Object count);
+
+  /// No description provided for @todayTasksCount.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün {count} görev var'**
+  String todayTasksCount(Object count);
+
+  /// No description provided for @percentCompleted.
+  ///
+  /// In tr, this message translates to:
+  /// **'%{percent} tamamlandı'**
+  String percentCompleted(Object percent);
+
+  /// No description provided for @goalSummary.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedef Özeti'**
+  String get goalSummary;
+
+  /// No description provided for @goToGoal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedefe Git'**
+  String get goToGoal;
+
+  /// No description provided for @viewAllGoals.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tüm Hedefleri Gör'**
+  String get viewAllGoals;
+
+  /// No description provided for @todaySteps.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugün için Adımlar'**
+  String get todaySteps;
+
+  /// No description provided for @todayStepsDone.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bugünkü adımlarını tamamladın! 🌟'**
+  String get todayStepsDone;
+
+  /// No description provided for @linkedHabits.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bağlı Alışkanlıklar'**
+  String get linkedHabits;
+
+  /// No description provided for @oneTimeTasks.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tek Seferlik Görevler'**
+  String get oneTimeTasks;
+
+  /// No description provided for @addSmallStep.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu hedef için küçük adım ekle'**
+  String get addSmallStep;
+
+  /// No description provided for @addSmallStepSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedefe ulaştıran günlük bir eylem belirle'**
+  String get addSmallStepSubtitle;
+
+  /// No description provided for @createNewHabit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni Alışkanlık Oluştur'**
+  String get createNewHabit;
+
+  /// No description provided for @createNewHabitSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu hedefi destekleyen yeni bir rutin kur'**
+  String get createNewHabitSubtitle;
+
+  /// No description provided for @linkExistingHabit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mevcut Alışkanlık Bağla'**
+  String get linkExistingHabit;
+
+  /// No description provided for @linkExistingHabitSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Zaten takip ettiğin bir alışkanlığı hedefe ekle'**
+  String get linkExistingHabitSubtitle;
+
+  /// No description provided for @skipForNow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şimdilik Atla'**
+  String get skipForNow;
+
+  /// No description provided for @noLinkedHabits.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz bağlı bir alışkanlık yok'**
+  String get noLinkedHabits;
+
+  /// No description provided for @addHabitStep.
+  ///
+  /// In tr, this message translates to:
+  /// **'Alışkanlık Ekle'**
+  String get addHabitStep;
+
+  /// No description provided for @selectHabitsToLink.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bağlanacak Alışkanlıkları Seç'**
+  String get selectHabitsToLink;
+
+  /// No description provided for @setGoal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hedef Belirle'**
+  String get setGoal;
+
+  /// No description provided for @swipeGoalsHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geçiş için kaydır'**
+  String get swipeGoalsHint;
 }
 
 class _AppLocalizationsDelegate

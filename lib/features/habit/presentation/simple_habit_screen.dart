@@ -7,6 +7,7 @@ import '../../../providers/premium_provider.dart';
 import '../../../ui/premium_gate.dart';
 import '../../rhythm/domain/live_rhythm_model.dart';
 import '../domain/habit_model.dart';
+import '../domain/habit_repository.dart';
 import '../domain/habit_types.dart';
 
 /// Minimalist basit alışkanlık oluşturma ekranı.
@@ -353,42 +354,200 @@ class _SimpleHabitScreenState extends State<SimpleHabitScreen>
   }
 
   Widget _buildAppBar(ThemeData theme, ColorScheme colorScheme, bool isDark) {
+    final l10n = AppLocalizations.of(context);
     return SliverAppBar(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: Colors.transparent,
       elevation: 0,
+      scrolledUnderElevation: 0,
       pinned: true,
-      expandedHeight: 80,
-      leading: IconButton(
-        icon: Container(
-          padding: const EdgeInsets.all(8),
+      leadingWidth: 56,
+      leading: Center(
+        child: Container(
+          width: 38,
+          height: 38,
           decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
-            borderRadius: BorderRadius.circular(12),
+            shape: BoxShape.circle,
+            color: isDark ? colorScheme.surfaceContainerHigh : Colors.white,
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.12)
+                  : Colors.white.withValues(alpha: 0.95),
+              width: 1.2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.05),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+              if (!isDark)
+                BoxShadow(
+                  color: Colors.white.withValues(alpha: 0.8),
+                  blurRadius: 2,
+                  offset: const Offset(0, -1),
+                ),
+            ],
           ),
-          child: Icon(
-            Icons.close_rounded,
-            color: colorScheme.onSurface,
-            size: 20,
+          child: IconButton(
+            padding: EdgeInsets.zero,
+            iconSize: 18,
+            icon: const Icon(Icons.close_rounded),
+            onPressed: () => Navigator.pop(context),
           ),
         ),
-        onPressed: () => Navigator.pop(context),
       ),
-      flexibleSpace: FlexibleSpaceBar(
-        centerTitle: true,
-        title: Text(
-          widget.isEditing
-              ? AppLocalizations.of(context).edit
-              : AppLocalizations.of(context).newHabit,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: colorScheme.onSurface,
+      centerTitle: true,
+      title: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        decoration: BoxDecoration(
+          color: isDark ? colorScheme.surfaceContainerHigh : Colors.white,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.12)
+                : Colors.white.withValues(alpha: 0.95),
+            width: 1.2,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+            if (!isDark)
+              BoxShadow(
+                color: Colors.white.withValues(alpha: 0.8),
+                blurRadius: 2,
+                offset: const Offset(0, -1),
+              ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 22,
+              height: 22,
+              decoration: BoxDecoration(
+                color: _selectedColor.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  _selectedEmoji,
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                widget.isEditing
+                    ? (_nameController.text.trim().isNotEmpty
+                        ? _nameController.text.trim()
+                        : l10n.edit)
+                    : l10n.newHabit,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                  letterSpacing: -0.2,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+            ),
+            if (widget.isEditing) ...[
+              const SizedBox(width: 5),
+              Text(
+                '• ${l10n.edit}',
+                style: TextStyle(
+                  color: colorScheme.onSurface.withValues(alpha: 0.5),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ],
         ),
       ),
+      actions: [
+        if (widget.isEditing)
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isDark ? colorScheme.surfaceContainerHigh : Colors.white,
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.12)
+                      : Colors.white.withValues(alpha: 0.95),
+                  width: 1.2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.05),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                  if (!isDark)
+                    BoxShadow(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      blurRadius: 2,
+                      offset: const Offset(0, -1),
+                    ),
+                ],
+              ),
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                iconSize: 18,
+                tooltip: l10n.delete,
+                icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+                onPressed: _confirmAndDeleteHabit,
+              ),
+            ),
+          ),
+      ],
     );
   }
 
+  Future<void> _confirmAndDeleteHabit() async {
+    if (widget.existingHabit == null) return;
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+        title: Text(l10n.delete),
+        content: Text(l10n.deleteHabitConfirm(widget.existingHabit!.title)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await HabitRepository.instance.removeHabit(widget.existingHabit!.id);
+      if (mounted) Navigator.pop(context);
+    }
+  }
+
   Widget _buildPreviewCard(ThemeData theme, ColorScheme colorScheme) {
+    final isDark = theme.brightness == Brightness.dark;
     final name = _nameController.text.isEmpty
         ? AppLocalizations.of(context).habitName
         : _nameController.text;
@@ -398,31 +557,51 @@ class _SimpleHabitScreenState extends State<SimpleHabitScreen>
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            _selectedColor.withOpacity(0.12),
-            _selectedColor.withOpacity(0.04),
-          ],
+        color: isDark
+            ? colorScheme.surfaceContainerHigh.withValues(alpha: 0.6)
+            : Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : const Color(0xFFF1F5F9),
+          width: 1.2,
         ),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: _selectedColor.withOpacity(0.15), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
+          ),
+          if (!isDark)
+            BoxShadow(
+              color: Colors.white.withValues(alpha: 0.8),
+              blurRadius: 2,
+              offset: const Offset(0, -1),
+            ),
+        ],
       ),
       child: Row(
         children: [
           // Emoji Container
           Container(
-            width: 64,
-            height: 64,
+            width: 60,
+            height: 60,
             decoration: BoxDecoration(
-              color: _selectedColor.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(18),
+              color: _selectedColor.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: _selectedColor.withValues(alpha: 0.2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
             child: Center(
-              child: Text(_selectedEmoji, style: const TextStyle(fontSize: 32)),
+              child: Text(_selectedEmoji, style: const TextStyle(fontSize: 30)),
             ),
           ),
           const SizedBox(width: 16),
@@ -1440,21 +1619,26 @@ class _SimpleHabitScreenState extends State<SimpleHabitScreen>
 
   Widget _buildSaveButton(ThemeData theme, ColorScheme colorScheme) {
     final canSave = _nameController.text.trim().isNotEmpty;
+    final isDark = theme.brightness == Brightness.dark;
 
     return GestureDetector(
-      onTap: canSave ? _saveHabit : null,
+      onTap: () {
+        HapticFeedback.mediumImpact();
+        if (canSave) _saveHabit();
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 18),
         decoration: BoxDecoration(
-          color:
-              canSave ? _selectedColor : colorScheme.outline.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(16),
+          color: canSave
+              ? _selectedColor
+              : (isDark ? Colors.white12 : Colors.black.withValues(alpha: 0.08)),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: canSave
               ? [
                   BoxShadow(
-                    color: _selectedColor.withOpacity(0.3),
+                    color: _selectedColor.withValues(alpha: 0.35),
                     blurRadius: 16,
                     offset: const Offset(0, 6),
                   ),
@@ -1467,10 +1651,11 @@ class _SimpleHabitScreenState extends State<SimpleHabitScreen>
                 ? AppLocalizations.of(context).saveChanges
                 : AppLocalizations.of(context).createHabit,
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
               color: canSave
                   ? Colors.white
-                  : colorScheme.onSurface.withOpacity(0.3),
+                  : colorScheme.onSurface.withValues(alpha: 0.35),
             ),
           ),
         ),

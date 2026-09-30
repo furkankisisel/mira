@@ -12,7 +12,11 @@ class AuthRepository extends ChangeNotifier {
 
   static const _prefGuestKey = 'auth_is_guest';
 
+  static const String _webClientId =
+      '593291053883-6do8ebqpuckulj7pgntk9cnmlbpod4fb.apps.googleusercontent.com';
+
   final GoogleSignIn _googleSignIn = GoogleSignIn(
+    serverClientId: _webClientId,
     scopes: <String>[
       'email',
       'profile',
@@ -150,6 +154,7 @@ class AuthRepository extends ChangeNotifier {
       notifyListeners();
       return _account;
     } on PlatformException catch (e) {
+      debugPrint('Google Sign-In PlatformException: ${e.code} - ${e.message}');
       // Map common Google Play Services errors to clearer messages.
       final raw = '${e.code}: ${e.message ?? ''}'.toLowerCase();
       if (e.code == 'sign_in_failed' && (e.message?.contains('10:') ?? false)) {
@@ -162,7 +167,8 @@ class AuthRepository extends ChangeNotifier {
       }
       notifyListeners();
       return null;
-    } catch (e) {
+    } catch (e, st) {
+      debugPrint('Google Sign-In unexpected error: $e\n$st');
       _lastError = e.toString();
       notifyListeners();
       return null;

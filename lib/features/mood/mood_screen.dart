@@ -1,4 +1,6 @@
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 import 'package:mira/l10n/app_localizations.dart';
 
@@ -135,23 +137,43 @@ class _MoodScreenState extends State<MoodScreen> {
     }
   }
 
+  Color _getMoodColor(MoodLevel m) {
+    switch (m) {
+      case MoodLevel.excellent:
+        return const Color(0xFF3B82F6); // Vibrant Blue
+      case MoodLevel.good:
+        return const Color(0xFF10B981); // Emerald Green
+      case MoodLevel.neutral:
+        return const Color(0xFFF59E0B); // Warm Amber
+      case MoodLevel.bad:
+        return const Color(0xFFF97316); // Bright Orange
+      case MoodLevel.terrible:
+        return const Color(0xFFEF4444); // Crimson Red
+    }
+  }
+
+  IconData _getMoodIconData(MoodLevel m) {
+    switch (m) {
+      case MoodLevel.excellent:
+        return Icons.sentiment_very_satisfied_rounded;
+      case MoodLevel.good:
+        return Icons.sentiment_satisfied_alt_rounded;
+      case MoodLevel.neutral:
+        return Icons.sentiment_neutral_rounded;
+      case MoodLevel.bad:
+        return Icons.sentiment_dissatisfied_rounded;
+      case MoodLevel.terrible:
+        return Icons.sentiment_very_dissatisfied_rounded;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Determine whether to use dark or light mode based on brightness,
-    // or just use the current theme dynamically
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-
-    // Core Dynamic Theme Integration
     final ThemeData theme = Theme.of(context);
     final Color bgColor = theme.scaffoldBackgroundColor;
-    final Color cardColor = theme.colorScheme.surface;
     final Color primaryColor = theme.colorScheme.primary;
     final Color textColor = theme.colorScheme.onSurface;
-
-    // Dynamic chip color (darken or lighten based on background brightness)
-    final Color chipColor = isDark
-        ? Colors.white.withOpacity(0.08)
-        : Colors.black.withOpacity(0.05);
 
     return Theme(
       data: theme,
@@ -160,52 +182,122 @@ class _MoodScreenState extends State<MoodScreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          centerTitle: false,
-          iconTheme: IconThemeData(color: textColor),
+          scrolledUnderElevation: 0,
+          centerTitle: true,
           titleTextStyle: TextStyle(
             color: textColor,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
             fontFamily: 'Outfit',
+            letterSpacing: -0.2,
           ),
           title: Text(AppLocalizations.of(context).moodScreenTitle),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-            onPressed: () => Navigator.of(context).pop(),
+          leading: Center(
+            child: GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                Navigator.of(context).pop();
+              },
+              child: Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isDark ? const Color(0xFF1E2430) : Colors.white,
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.95),
+                    width: 1.2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                    BoxShadow(
+                      color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.8),
+                      blurRadius: 2,
+                      offset: const Offset(0, -1),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 16,
+                  color: textColor,
+                ),
+              ),
+            ),
           ),
           actions: [
-            IconButton(
-              icon: const Icon(Icons.history_rounded),
-              tooltip: AppLocalizations.of(context).historyTooltip,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        MoodAnalyticsScreen(variant: widget.variant),
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Center(
+                child: GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            MoodAnalyticsScreen(variant: widget.variant),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isDark ? const Color(0xFF1E2430) : Colors.white,
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.95),
+                        width: 1.2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 3),
+                        ),
+                        BoxShadow(
+                          color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.8),
+                          blurRadius: 2,
+                          offset: const Offset(0, -1),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.history_rounded,
+                      size: 20,
+                      color: textColor,
+                    ),
                   ),
-                );
-              },
+                ),
+              ),
             ),
           ],
         ),
         body: _loading
             ? Center(child: CircularProgressIndicator(color: primaryColor))
-            : _buildInputContent(
-                context, cardColor, primaryColor, chipColor, textColor),
+            : _buildInputContent(context, primaryColor, textColor, isDark),
       ),
     );
   }
 
-  Widget _buildInputContent(BuildContext context, Color cardColor,
-      Color primaryColor, Color chipColor, Color textColor) {
+  Widget _buildInputContent(
+    BuildContext context,
+    Color primaryColor,
+    Color textColor,
+    bool isDark,
+  ) {
     List<SubEmotion> availableSubEmotions = [];
     if (_selectedMood != null) {
       availableSubEmotions = _getExpandedSubEmotionsForMood(_selectedMood!);
     }
 
-    // Slightly faded text for descriptions
-    final Color hintColor = textColor.withOpacity(0.5);
+    final Color hintColor = textColor.withValues(alpha: 0.5);
+    final cardBg = isDark ? const Color(0xFF181D27) : Colors.white;
 
     return Column(
       children: [
@@ -214,10 +306,26 @@ class _MoodScreenState extends State<MoodScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(22),
               decoration: BoxDecoration(
-                color: cardColor,
+                color: cardBg,
                 borderRadius: BorderRadius.circular(32),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: isDark ? 0.10 : 0.95),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.05),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.9),
+                    blurRadius: 2,
+                    offset: const Offset(0, -1),
+                  ),
+                ],
               ),
               child: AnimationLimiter(
                 child: Column(
@@ -227,114 +335,74 @@ class _MoodScreenState extends State<MoodScreen> {
                       AppLocalizations.of(context).howAreYouFeeling,
                       style: TextStyle(
                         color: textColor,
-                        fontSize: 24,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
+                        letterSpacing: -0.3,
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    ...MoodLevel.values.reversed.map((m) {
-                      final isSelected = _selectedMood == m;
-                      return Column(
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              setState(() {
-                                _selectedMood = m;
-                                _selectedSubEmotions.clear();
-                              });
-                            },
-                            borderRadius: BorderRadius.circular(16),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              child: Row(
-                                children: [
-                                  // Custom Radio natively styled
-                                  Container(
-                                    width: 24,
-                                    height: 24,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: isSelected
-                                            ? primaryColor
-                                            : hintColor,
-                                        width: 2,
-                                      ),
-                                      color: isSelected
-                                          ? primaryColor.withOpacity(0.2)
-                                          : Colors.transparent,
-                                    ),
-                                    child: isSelected
-                                        ? Center(
-                                            child: Icon(Icons.check,
-                                                size: 16, color: primaryColor))
-                                        : null,
-                                  ),
-                                  const SizedBox(width: 16),
-                                  _getMoodFace(m),
-                                  const SizedBox(width: 16),
-                                  Text(
-                                    _getMoodTitle(m),
-                                    style: TextStyle(
-                                      color: textColor,
-                                      fontSize: 18,
-                                      fontWeight: isSelected
-                                          ? FontWeight.w600
-                                          : FontWeight.w400,
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  if (isSelected && m == MoodLevel.terrible)
-                                    const Icon(Icons.favorite,
-                                        color: Colors.redAccent, size: 16),
-                                ],
-                              ),
-                            ),
-                          ),
-                          if (m != MoodLevel.values.first)
-                            Divider(
-                                color: textColor.withOpacity(0.1), height: 1),
-                        ],
-                      );
-                    }),
-                    const SizedBox(height: 24),
-                    Text(
-                      AppLocalizations.of(context).moodLevelDescription,
-                      style: TextStyle(color: hintColor, fontSize: 13),
-                    ),
+                    const SizedBox(height: 18),
+
+                    // Hero Expressive Mood Showcase Card
+                    _buildMoodHeroCard(context, textColor, isDark),
+                    const SizedBox(height: 18),
+
+                    // Tactile Claymorphic Mood Selector Track
+                    _buildMoodSelectorTrack(context, textColor, isDark),
+
                     if (_selectedMood != null) ...[
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 32),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Expanded(
                             child: Text(
                               AppLocalizations.of(context).whichEmotionsExpress,
                               style: TextStyle(
                                 color: textColor,
-                                fontSize: 22,
+                                fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 height: 1.2,
                               ),
                             ),
                           ),
-                          Icon(Icons.keyboard_arrow_down_rounded,
-                              color: hintColor),
+                          if (_selectedSubEmotions.isNotEmpty)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: primaryColor.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: primaryColor.withValues(alpha: 0.35),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                '${_selectedSubEmotions.length}',
+                                style: TextStyle(
+                                  color: primaryColor,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
                       Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
+                        spacing: 8,
+                        runSpacing: 8,
                         children: availableSubEmotions.map((sub) {
                           final isSelected = _selectedSubEmotions.contains(sub);
                           return _buildCustomChip(
                             label: _getSubEmotionLabel(sub),
                             isSelected: isSelected,
                             primaryColor: primaryColor,
-                            chipColor: chipColor,
                             textColor: textColor,
+                            isDark: isDark,
                             onTap: () {
                               setState(() {
                                 if (isSelected) {
@@ -347,34 +415,68 @@ class _MoodScreenState extends State<MoodScreen> {
                           );
                         }).toList(),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 12),
                       Text(
                         AppLocalizations.of(context).emotionDescription,
                         style: TextStyle(
-                            color: hintColor, fontSize: 13, height: 1.4),
-                      ),
-                      const SizedBox(height: 48),
-                      Text(
-                        AppLocalizations.of(context).whyDoYouFeelThisWay,
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          height: 1.2,
+                          color: hintColor,
+                          fontSize: 12.5,
+                          height: 1.4,
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 32),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              AppLocalizations.of(context).whyDoYouFeelThisWay,
+                              style: TextStyle(
+                                color: textColor,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                height: 1.2,
+                              ),
+                            ),
+                          ),
+                          if (_selectedReason != null)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: primaryColor.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: primaryColor.withValues(alpha: 0.35),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                _getReasonLabel(_selectedReason!),
+                                style: TextStyle(
+                                  color: primaryColor,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
                       Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
+                        spacing: 8,
+                        runSpacing: 8,
                         children: ReasonCategory.values.map((reason) {
                           final isSelected = _selectedReason == reason;
                           return _buildCustomChip(
                             label: _getReasonLabel(reason),
                             isSelected: isSelected,
                             primaryColor: primaryColor,
-                            chipColor: chipColor,
                             textColor: textColor,
+                            isDark: isDark,
                             onTap: () {
                               setState(() {
                                 _selectedReason = isSelected ? null : reason;
@@ -383,32 +485,49 @@ class _MoodScreenState extends State<MoodScreen> {
                           );
                         }).toList(),
                       ),
-                      const SizedBox(height: 48),
+                      const SizedBox(height: 32),
                       Text(
                         AppLocalizations.of(context).anythingElseToAdd,
                         style: TextStyle(
                           color: textColor,
-                          fontSize: 22,
+                          fontSize: 19,
                           fontWeight: FontWeight.bold,
                           height: 1.2,
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
                       Container(
                         decoration: BoxDecoration(
-                          color: chipColor,
-                          borderRadius: BorderRadius.circular(24),
+                          color: isDark
+                              ? const Color(0xFF1E2430)
+                              : const Color(0xFFF6F8FB),
+                          borderRadius: BorderRadius.circular(22),
+                          border: Border.all(
+                            color: Colors.white.withValues(
+                              alpha: isDark ? 0.08 : 0.95,
+                            ),
+                            width: 1.2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(
+                                alpha: isDark ? 0.2 : 0.03,
+                              ),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
                         ),
                         child: TextField(
                           controller: _noteCtrl,
                           maxLines: 4,
-                          style: TextStyle(color: textColor),
+                          style: TextStyle(color: textColor, fontSize: 15),
                           decoration: InputDecoration(
                             hintText:
                                 AppLocalizations.of(context).addMoodNoteHint,
                             hintStyle: TextStyle(color: hintColor, height: 1.4),
                             border: InputBorder.none,
-                            contentPadding: const EdgeInsets.all(24),
+                            contentPadding: const EdgeInsets.all(20),
                           ),
                         ),
                       ),
@@ -416,9 +535,9 @@ class _MoodScreenState extends State<MoodScreen> {
                   ].asMap().entries.map((e) {
                     return AnimationConfiguration.staggeredList(
                       position: e.key,
-                      duration: const Duration(milliseconds: 375),
+                      duration: const Duration(milliseconds: 320),
                       child: SlideAnimation(
-                        verticalOffset: 50.0,
+                        verticalOffset: 30.0,
                         child: FadeInAnimation(
                           child: e.value,
                         ),
@@ -433,28 +552,71 @@ class _MoodScreenState extends State<MoodScreen> {
         // Bottom Action Area
         Container(
           padding:
-              const EdgeInsets.only(left: 24, right: 24, top: 16, bottom: 32),
-          color: Colors.transparent, // Background shows through
-          child: SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: _selectedMood == null ? null : _saveToday,
-              style: FilledButton.styleFrom(
-                backgroundColor: primaryColor,
-                disabledBackgroundColor: primaryColor.withOpacity(0.3),
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(32),
+              const EdgeInsets.only(left: 20, right: 20, top: 12, bottom: 28),
+          color: Colors.transparent,
+          child: _BouncingTapWrapper(
+            lowerBound: 0.96,
+            duration: const Duration(milliseconds: 110),
+            onTap: _selectedMood == null
+                ? () {}
+                : () {
+                    HapticFeedback.mediumImpact();
+                    _saveToday();
+                  },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOutCubic,
+              height: 54,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: _selectedMood != null
+                    ? LinearGradient(
+                        colors: [
+                          primaryColor,
+                          primaryColor.withValues(alpha: 0.85),
+                        ],
+                      )
+                    : null,
+                color: _selectedMood == null
+                    ? (isDark
+                        ? Colors.white10
+                        : Colors.black.withValues(alpha: 0.08))
+                    : null,
+                borderRadius: BorderRadius.circular(27),
+                border: Border.all(
+                  color: _selectedMood != null
+                      ? Colors.white.withValues(alpha: 0.35)
+                      : Colors.transparent,
+                  width: 1.2,
                 ),
+                boxShadow: _selectedMood != null
+                    ? [
+                        BoxShadow(
+                          color: primaryColor.withValues(alpha: 0.22),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ]
+                    : null,
               ),
+              alignment: Alignment.center,
               child: Text(
                 _selectedMood == null
                     ? AppLocalizations.of(context).moodNext
                     : AppLocalizations.of(context).moodSave,
-                style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: _selectedMood == null
+                      ? textColor.withValues(alpha: 0.4)
+                      : Colors.white,
+                  letterSpacing: 0.3,
+                ),
               ),
             ),
           ),
@@ -463,66 +625,447 @@ class _MoodScreenState extends State<MoodScreen> {
     );
   }
 
-  Widget _buildCustomChip(
-      {required String label,
-      required bool isSelected,
-      required Color primaryColor,
-      required Color chipColor,
-      required Color textColor,
-      required VoidCallback onTap}) {
-    // Dynamic text color for selected vs unselected based on overall contrasting brightness
-    final Color selectedTextColor =
-        ThemeData.estimateBrightnessForColor(primaryColor) == Brightness.dark
-            ? Colors.white
-            : Colors.black;
-
-    return GestureDetector(
-      onTap: onTap,
+  Widget _buildCustomChip({
+    required String label,
+    required bool isSelected,
+    required Color primaryColor,
+    required Color textColor,
+    required bool isDark,
+    required VoidCallback onTap,
+  }) {
+    return _BouncingTapWrapper(
+      lowerBound: 0.93,
+      duration: const Duration(milliseconds: 110),
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap();
+      },
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? primaryColor : chipColor,
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? selectedTextColor : textColor.withOpacity(0.8),
-            fontSize: 15,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+          color: isSelected
+              ? primaryColor
+              : (isDark ? const Color(0xFF222938) : const Color(0xFFF4F6F9)),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected
+                ? Colors.white.withValues(alpha: 0.35)
+                : Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
+            width: 1.2,
           ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: primaryColor.withValues(alpha: 0.20),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ]
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.03),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: isDark ? 0.04 : 0.8),
+                    blurRadius: 1,
+                    offset: const Offset(0, -1),
+                  ),
+                ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AnimatedSize(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOutCubic,
+              child: isSelected
+                  ? const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.check_rounded,
+                          size: 15,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 6),
+                      ],
+                    )
+                  : const SizedBox.shrink(),
+            ),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.white : textColor.withValues(alpha: 0.85),
+                fontSize: 13.5,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _getMoodFace(MoodLevel m) {
-    Color color;
-    IconData icon;
+    return Icon(_getMoodIconData(m), color: _getMoodColor(m), size: 36);
+  }
+
+  Widget _buildMoodHeroCard(BuildContext context, Color textColor, bool isDark) {
+    final l10n = AppLocalizations.of(context);
+    final bool hasSelection = _selectedMood != null;
+    final Color activeColor =
+        hasSelection ? _getMoodColor(_selectedMood!) : const Color(0xFF6366F1);
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 260),
+      curve: Curves.easeOutCubic,
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+      decoration: BoxDecoration(
+        color: hasSelection
+            ? (isDark
+                ? activeColor.withValues(alpha: 0.12)
+                : activeColor.withValues(alpha: 0.06))
+            : (isDark ? const Color(0xFF1E2430) : const Color(0xFFF7F9FC)),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: hasSelection
+              ? activeColor.withValues(alpha: isDark ? 0.35 : 0.45)
+              : Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+          BoxShadow(
+            color: Colors.white.withValues(alpha: isDark ? 0.03 : 0.8),
+            blurRadius: 1,
+            offset: const Offset(0, -1),
+          ),
+        ],
+      ),
+      child: hasSelection
+          ? Row(
+              children: [
+                // Clean Avatar Orb (Matte, refined, no neon glare)
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: activeColor.withValues(alpha: isDark ? 0.22 : 0.14),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: activeColor.withValues(alpha: 0.4),
+                      width: 1.2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    _getMoodIconData(_selectedMood!),
+                    color: activeColor,
+                    size: 28,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                // Texts
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            _getMoodTitle(_selectedMood!),
+                            style: TextStyle(
+                              color: textColor,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Outfit',
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                          const Spacer(),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 9,
+                              vertical: 3.5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: activeColor.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: activeColor.withValues(alpha: 0.3),
+                                width: 1,
+                              ),
+                            ),
+                            child: Text(
+                              _getMoodLevelScoreLabel(_selectedMood!),
+                              style: TextStyle(
+                                color: activeColor,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        _getMoodDescription(_selectedMood!),
+                        style: TextStyle(
+                          color: textColor.withValues(alpha: 0.8),
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        _getMoodPoeticNote(_selectedMood!),
+                        style: TextStyle(
+                          color: activeColor,
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            )
+          : Row(
+              children: [
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF222938)
+                        : const Color(0xFFEDF2F7),
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.8),
+                      width: 1.2,
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.auto_awesome_rounded,
+                    color: isDark ? Colors.white70 : const Color(0xFF64748B),
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        l10n.howAreYouFeeling,
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Outfit',
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        l10n.moodFlowSubtitle,
+                        style: TextStyle(
+                          color: textColor.withValues(alpha: 0.6),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+    );
+  }
+
+  // 2-Row Tactile Mood Buttons (Spacious, perfectly fits emoji and text, fluid & no glare)
+  Widget _buildMoodSelectorTrack(
+    BuildContext context,
+    Color textColor,
+    bool isDark,
+  ) {
+    const row1Moods = [
+      MoodLevel.excellent,
+      MoodLevel.good,
+      MoodLevel.neutral,
+    ];
+    const row2Moods = [
+      MoodLevel.bad,
+      MoodLevel.terrible,
+    ];
+
+    return Column(
+      children: [
+        // Satır 1: Mükemmel, İyi, Normal (3 öğe - rahat genişlik)
+        Row(
+          children: row1Moods.map((m) {
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: _buildMoodButton(m, textColor, isDark),
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 8),
+        // Satır 2: Kötü, Berbat (2 öğe - ferah ve tam oturan genişlik)
+        Row(
+          children: row2Moods.map((m) {
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: _buildMoodButton(m, textColor, isDark),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMoodButton(
+    MoodLevel m,
+    Color textColor,
+    bool isDark,
+  ) {
+    final isSelected = _selectedMood == m;
+    final moodColor = _getMoodColor(m);
+
+    return _BouncingTapWrapper(
+        lowerBound: 0.93,
+        duration: const Duration(milliseconds: 110),
+        onTap: () {
+          HapticFeedback.selectionClick();
+          setState(() {
+            _selectedMood = m;
+            _selectedSubEmotions.clear();
+          });
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOutCubic,
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? (isDark
+                    ? moodColor.withValues(alpha: 0.18)
+                    : moodColor.withValues(alpha: 0.10))
+                : (isDark ? const Color(0xFF1E2430) : const Color(0xFFF6F8FB)),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isSelected
+                  ? moodColor.withValues(alpha: isDark ? 0.70 : 0.85)
+                  : Colors.white.withValues(alpha: isDark ? 0.06 : 0.95),
+              width: isSelected ? 1.6 : 1.2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(
+                  alpha: isDark ? (isSelected ? 0.25 : 0.15) : (isSelected ? 0.05 : 0.02),
+                ),
+                blurRadius: isSelected ? 8 : 4,
+                offset: const Offset(0, 2),
+              ),
+              BoxShadow(
+                color: Colors.white.withValues(alpha: isDark ? 0.03 : 0.8),
+                blurRadius: 1,
+                offset: const Offset(0, -1),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                _getMoodIconData(m),
+                color: isSelected ? moodColor : textColor.withValues(alpha: 0.5),
+                size: 26,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                _getMoodTitle(m),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: isSelected
+                      ? (isDark ? Colors.white : moodColor)
+                      : textColor.withValues(alpha: 0.75),
+                  fontSize: 12.5,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                  letterSpacing: -0.2,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+  }
+
+  String _getMoodLevelScoreLabel(MoodLevel m) {
     switch (m) {
       case MoodLevel.excellent:
-        color = const Color(0xFF63A4FF); // Soft blue
-        icon = Icons.sentiment_very_satisfied_rounded;
-        break;
+        return '5/5';
       case MoodLevel.good:
-        color = const Color(0xFF4CAF50); // Soft green
-        icon = Icons.sentiment_satisfied_alt_rounded;
-        break;
+        return '4/5';
       case MoodLevel.neutral:
-        color = const Color(0xFFFFC107); // Warm yellow
-        icon = Icons.sentiment_neutral_rounded;
-        break;
+        return '3/5';
       case MoodLevel.bad:
-        color = const Color(0xFFFF7043); // Orange
-        icon = Icons.sentiment_dissatisfied_rounded;
-        break;
+        return '2/5';
       case MoodLevel.terrible:
-        color = const Color(0xFFEF5350); // Red
-        icon = Icons.sentiment_very_dissatisfied_rounded;
-        break;
+        return '1/5';
     }
-    return Icon(icon, color: color, size: 40);
+  }
+
+  String _getMoodDescription(MoodLevel m) {
+    final l10n = AppLocalizations.of(context);
+    switch (m) {
+      case MoodLevel.excellent:
+        return l10n.moodExcellentDesc;
+      case MoodLevel.good:
+        return l10n.moodGoodDesc;
+      case MoodLevel.neutral:
+        return l10n.moodNeutralDesc;
+      case MoodLevel.bad:
+        return l10n.moodBadDesc;
+      case MoodLevel.terrible:
+        return l10n.moodTerribleDesc;
+    }
+  }
+
+  String _getMoodPoeticNote(MoodLevel m) {
+    switch (m) {
+      case MoodLevel.excellent:
+        return '✨ Enerjin parlıyor, anın tadını çıkar';
+      case MoodLevel.good:
+        return '🌱 Huzurlu ve dengeli bir akıştasın';
+      case MoodLevel.neutral:
+        return '☕ Durgun ve sakin bir gün, dinlen';
+      case MoodLevel.bad:
+        return '🌧️ Kendine nazik davran, dinlenmeye vakit ayır';
+      case MoodLevel.terrible:
+        return '⚡ Her fırtına diner, kendine zaman tanı';
+    }
   }
 
   String _getMoodTitle(MoodLevel m) {
@@ -654,5 +1197,83 @@ class _MoodScreenState extends State<MoodScreen> {
       case ReasonCategory.other:
         return l10n.reasonOther;
     }
+  }
+}
+
+class _BouncingTapWrapper extends StatefulWidget {
+  final Widget child;
+  final VoidCallback onTap;
+  final double lowerBound;
+  final Duration duration;
+
+  const _BouncingTapWrapper({
+    required this.child,
+    required this.onTap,
+    this.lowerBound = 0.94,
+    this.duration = const Duration(milliseconds: 120),
+  });
+
+  @override
+  State<_BouncingTapWrapper> createState() => _BouncingTapWrapperState();
+}
+
+class _BouncingTapWrapperState extends State<_BouncingTapWrapper>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: widget.duration,
+      reverseDuration: const Duration(milliseconds: 220),
+    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: widget.lowerBound,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+      reverseCurve: Curves.easeOutBack,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _onTapDown(TapDownDetails details) {
+    _controller.forward();
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    _controller.reverse();
+    widget.onTap();
+  }
+
+  void _onTapCancel() {
+    _controller.reverse();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapDown: _onTapDown,
+      onTapUp: _onTapUp,
+      onTapCancel: _onTapCancel,
+      child: AnimatedBuilder(
+        animation: _scaleAnimation,
+        builder: (context, child) => Transform.scale(
+          scale: _scaleAnimation.value,
+          child: child,
+        ),
+        child: widget.child,
+      ),
+    );
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:io' as io;
 import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
 import '../../design_system/theme/theme_variations.dart';
@@ -8,6 +9,9 @@ import '../../core/settings/settings_repository.dart';
 import '../notifications/presentation/notification_settings_screen.dart';
 import 'privacy_security_screen.dart';
 import 'auth_repository.dart';
+import 'profile_screen.dart';
+import 'profile_repository.dart';
+import '../gamification/gamification_repository.dart';
 import '../onboarding/presentation/onboarding_screen.dart';
 import '../rhythm/presentation/rhythm_onboarding_screen.dart';
 import '../../features/backup/backup_page.dart';
@@ -42,11 +46,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     AuthRepository.instance.initialize();
     AuthRepository.instance.addListener(_onAuthChange);
+    ProfileRepository.instance.initialize();
+    ProfileRepository.instance.addListener(_onAuthChange);
+    GamificationRepository.instance.initialize();
+    GamificationRepository.instance.addListener(_onAuthChange);
   }
 
   @override
   void dispose() {
     AuthRepository.instance.removeListener(_onAuthChange);
+    ProfileRepository.instance.removeListener(_onAuthChange);
+    GamificationRepository.instance.removeListener(_onAuthChange);
     super.dispose();
   }
 
@@ -85,7 +95,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         builder: (context, scrollController) => SingleChildScrollView(
           controller: scrollController,
           child: ThemeSelector(
-            currentVariant: widget.currentVariant ?? ThemeVariant.matcha,
+            currentVariant: widget.currentVariant ?? ThemeVariant.cotton,
             onVariantChanged: (variant) {
               widget.onVariantChanged?.call(variant);
               Navigator.pop(context);
@@ -157,6 +167,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 const SizedBox(height: 12),
+                const _TopProfileBanner(),
+                const SizedBox(height: 16),
                 _SettingsSection(
                   title: l10n.appearance,
                   children: [
@@ -333,7 +345,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         subtitle: Text(l10n.guestAccount),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () async {
-                          await AuthRepository.instance.signIn();
+                          final acc = await AuthRepository.instance.signIn();
+                          if (acc == null && context.mounted) {
+                            final err = AuthRepository.instance.lastError;
+                            if (err != null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(err),
+                                  duration: const Duration(seconds: 5),
+                                ),
+                              );
+                            }
+                          }
                         },
                       )
                     else
@@ -352,6 +375,175 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _TopProfileBanner extends StatelessWidget {
+  const _TopProfileBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final profile = ProfileRepository.instance;
+    final gamification = GamificationRepository.instance;
+    final l10n = AppLocalizations.of(context);
+    final isTr = l10n.localeName.startsWith('tr');
+
+    final name = profile.name.trim().isNotEmpty
+        ? profile.name.trim()
+        : (isTr ? 'Gezgin' : 'User');
+    final level = gamification.level;
+    final xp = gamification.xpIntoLevel;
+    final xpNext = gamification.xpPerLevel;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: cs.outlineVariant.withValues(alpha: 0.5),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: cs.shadow.withValues(alpha: isDark ? 0.25 : 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => Scaffold(
+                  appBar: AppBar(
+                    title: Text(isTr ? 'Profil' : 'Profile'),
+                  ),
+                  body: const ProfileScreen(),
+                ),
+              ),
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                // Avatar with level badge
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    CircleAvatar(
+                      radius: 30,
+                      backgroundColor: cs.primaryContainer,
+                      backgroundImage: (profile.avatarPath != null &&
+                              profile.avatarPath!.isNotEmpty)
+                          ? FileImage(io.File(profile.avatarPath!))
+                          : (profile.avatarUrl != null &&
+                                  profile.avatarUrl!.isNotEmpty)
+                              ? NetworkImage(profile.avatarUrl!)
+                                  as ImageProvider
+                              : null,
+                      child: (profile.avatarPath == null ||
+                                  profile.avatarPath!.isEmpty) &&
+                              (profile.avatarUrl == null ||
+                                  profile.avatarUrl!.isEmpty)
+                          ? Icon(Icons.person_rounded,
+                              size: 30, color: cs.primary)
+                          : null,
+                    ),
+                    Positioned(
+                      bottom: -2,
+                      right: -2,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 5, vertical: 1.5),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF59E0B),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: cs.surface, width: 1.5),
+                        ),
+                        child: Text(
+                          'Lv.$level',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 14),
+                // User info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.1,
+                            ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: cs.primary.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.bolt_rounded,
+                                    size: 13, color: cs.primary),
+                                const SizedBox(width: 2),
+                                Text(
+                                  '$xp / $xpNext XP',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: cs.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            isTr ? 'Profili Gör' : 'View Profile',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: cs.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 14,
+                  color: cs.onSurfaceVariant.withValues(alpha: 0.6),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -381,7 +573,7 @@ class _SettingsSection extends StatelessWidget {
           elevation: 0,
           color: Theme.of(context).colorScheme.surfaceContainerLow,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
             side: BorderSide(
               color: Theme.of(
                 context,

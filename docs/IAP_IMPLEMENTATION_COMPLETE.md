@@ -11,7 +11,7 @@
 
 #### 2. **`lib/config/constants.dart`** (Updated)
 - Subscription configuration:
-  - Package: `com.kisiselapps.mira`
+  - Package: `com.koralabs.mira`
   - Product ID: `mira_plus`
   - Base plans: `mira-month` (monthly), `mira-year` (yearly)
   - Entitlement ID: `premium`

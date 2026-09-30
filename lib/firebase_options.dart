@@ -68,7 +68,7 @@ class DefaultFirebaseOptions {
         '593291053883-e5askargi4p2cb1vghe9fh3llgiqfj7b.apps.googleusercontent.com',
     iosClientId:
         '593291053883-jngmu7luvem85sjm7523501jeeurto11.apps.googleusercontent.com',
-    iosBundleId: 'com.kisiselapps.mira',
+    iosBundleId: 'com.koralabs.mira',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -81,7 +81,7 @@ class DefaultFirebaseOptions {
         '593291053883-e5askargi4p2cb1vghe9fh3llgiqfj7b.apps.googleusercontent.com',
     iosClientId:
         '593291053883-jngmu7luvem85sjm7523501jeeurto11.apps.googleusercontent.com',
-    iosBundleId: 'com.kisiselapps.mira',
+    iosBundleId: 'com.koralabs.mira',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

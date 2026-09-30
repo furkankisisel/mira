@@ -5,7 +5,7 @@ class PremiumProvider extends ChangeNotifier {
   final PremiumService _service = PremiumService();
 
   bool _isPremium = false;
-  bool _loading = true;
+  bool _loading = false;
 
   bool get isPremium => _isPremium;
   bool get isLoading => _loading;

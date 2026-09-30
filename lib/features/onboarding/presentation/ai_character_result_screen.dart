@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../vision/domain/ai_vision_dto.dart';
 import '../../habit/domain/habit_repository.dart';
+import '../../habit/domain/habit_model.dart';
 
 /// AI Character result screen showing personality type and habit recommendations
 class AiCharacterResultScreen extends StatefulWidget {
   final AiVisionDto result;
+  final bool usesStarterPlan;
 
-  const AiCharacterResultScreen({super.key, required this.result});
+  const AiCharacterResultScreen(
+      {super.key, required this.result, this.usesStarterPlan = false});
 
   @override
   State<AiCharacterResultScreen> createState() =>
@@ -17,19 +20,15 @@ class AiCharacterResultScreen extends StatefulWidget {
 class _AiCharacterResultScreenState extends State<AiCharacterResultScreen> {
   late final Set<int> _selectedHabitIndices;
   bool _isAdding = false;
+  final _addedHabitIndices = <int>{};
+  final _preparedHabits = <int, Habit>{};
 
   @override
   void initState() {
     super.initState();
-    // Select all by default
-    _selectedHabitIndices = List.generate(
-      widget.result.habits.length,
-      (i) => i,
-    ).toSet();
+    // A small start is more manageable than adopting the entire plan at once.
+    _selectedHabitIndices = widget.result.habits.isEmpty ? <int>{} : {0};
   }
-
-  String _dateStr(DateTime d) =>
-      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
   Color _parseColor(String? colorCode) {
     if (colorCode == null || colorCode.isEmpty) return Colors.blue;
@@ -42,6 +41,7 @@ class _AiCharacterResultScreenState extends State<AiCharacterResultScreen> {
   }
 
   Future<void> _addSelectedHabits() async {
+    if (_isAdding) return;
     if (_selectedHabitIndices.isEmpty) {
       _navigateToHome();
       return;
@@ -53,13 +53,23 @@ class _AiCharacterResultScreenState extends State<AiCharacterResultScreen> {
 
     try {
       final repository = HabitRepository.instance;
+      await repository.initialize();
 
       for (final index in _selectedHabitIndices) {
+        if (_addedHabitIndices.contains(index)) continue;
         if (index < widget.result.habits.length) {
           final aiHabit = widget.result.habits[index];
-          final habit = aiHabit.toHabit();
-          // The repository will handle all the required fields including ID uniqueness
-          await repository.addHabit(habit);
+          final habit = _preparedHabits.putIfAbsent(index, () {
+            final item = aiHabit.toHabit();
+            item.description = aiHabit.description.trim();
+            return item;
+          });
+          if (repository.habits.any((existing) => existing.id == habit.id)) {
+            await repository.updateHabit(habit);
+          } else {
+            await repository.addHabit(habit);
+          }
+          _addedHabitIndices.add(index);
         }
       }
 
@@ -71,13 +81,13 @@ class _AiCharacterResultScreenState extends State<AiCharacterResultScreen> {
             duration: const Duration(seconds: 2),
           ),
         );
+        _navigateToHome();
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            // Use hardcoded prefix for error to avoid l10n key issues
-            content: Text('Error: $e'),
+            content: Text(AppLocalizations.of(context).onboardingPlanSaveError),
             duration: const Duration(seconds: 2),
           ),
         );
@@ -87,7 +97,6 @@ class _AiCharacterResultScreenState extends State<AiCharacterResultScreen> {
         setState(() {
           _isAdding = false;
         });
-        _navigateToHome();
       }
     }
   }
@@ -124,7 +133,9 @@ class _AiCharacterResultScreenState extends State<AiCharacterResultScreen> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        "AI Analysis Result", // Localize later or use generic l10n
+                        widget.usesStarterPlan
+                            ? l10n.onboardingPlanLocal
+                            : l10n.onboardingPlanAi,
                         style: theme.textTheme.labelMedium?.copyWith(
                           color: theme.colorScheme.onPrimaryContainer,
                           fontWeight: FontWeight.bold,
@@ -255,7 +266,7 @@ class _AiCharacterResultScreenState extends State<AiCharacterResultScreen> {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                l10n.selectHabitsToAdd,
+                                l10n.onboardingPlanChooseOne,
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurface
                                       .withOpacity(0.6),
@@ -283,15 +294,17 @@ class _AiCharacterResultScreenState extends State<AiCharacterResultScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: InkWell(
-                      onTap: () {
-                        setState(() {
-                          if (isSelected) {
-                            _selectedHabitIndices.remove(index);
-                          } else {
-                            _selectedHabitIndices.add(index);
-                          }
-                        });
-                      },
+                      onTap: _isAdding
+                          ? null
+                          : () {
+                              setState(() {
+                                if (isSelected) {
+                                  _selectedHabitIndices.remove(index);
+                                } else {
+                                  _selectedHabitIndices.add(index);
+                                }
+                              });
+                            },
                       borderRadius: BorderRadius.circular(16),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
@@ -343,9 +356,19 @@ class _AiCharacterResultScreenState extends State<AiCharacterResultScreen> {
                                       height: 1.3,
                                       fontSize: 12,
                                     ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
                                   ),
+                                  if (recommendation.rationale?.isNotEmpty ??
+                                      false) ...[
+                                    const SizedBox(height: 12),
+                                    Text(l10n.onboardingPlanReason,
+                                        style: theme.textTheme.labelMedium
+                                            ?.copyWith(
+                                                fontWeight: FontWeight.w700)),
+                                    const SizedBox(height: 4),
+                                    Text(recommendation.rationale!,
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(height: 1.5)),
+                                  ],
                                 ],
                               ),
                             ),
@@ -380,6 +403,38 @@ class _AiCharacterResultScreenState extends State<AiCharacterResultScreen> {
               ),
             ),
 
+            if (widget.result.tasks.isNotEmpty)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(l10n.onboardingPlanAdvice,
+                            style: theme.textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 16),
+                        ...widget.result.tasks.asMap().entries.map((entry) =>
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CircleAvatar(
+                                        radius: 13,
+                                        child: Text('${entry.key + 1}',
+                                            style:
+                                                const TextStyle(fontSize: 12))),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                        child: Text(entry.value,
+                                            style: theme.textTheme.bodyMedium
+                                                ?.copyWith(height: 1.5))),
+                                  ]),
+                            )),
+                      ]),
+                ),
+              ),
             // Bottom spacing
             const SliverToBoxAdapter(child: SizedBox(height: 100)),
           ],
@@ -399,8 +454,8 @@ class _AiCharacterResultScreenState extends State<AiCharacterResultScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : _selectedHabitIndices.isNotEmpty
-                ? const Icon(Icons.rocket_launch_rounded, size: 20)
-                : const Icon(Icons.skip_next_rounded, size: 20),
+                    ? const Icon(Icons.rocket_launch_rounded, size: 20)
+                    : const Icon(Icons.skip_next_rounded, size: 20),
             label: Text(
               _selectedHabitIndices.isEmpty
                   ? l10n.skipOnboarding
