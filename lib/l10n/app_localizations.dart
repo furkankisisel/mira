@@ -8881,6 +8881,30 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Geçiş için kaydır'**
   String get swipeGoalsHint;
+
+  /// No description provided for @notebookTapToOpen.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açmak için dokun'**
+  String get notebookTapToOpen;
+
+  /// No description provided for @closeNotebookCover.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kapağı kapat'**
+  String get closeNotebookCover;
+
+  /// No description provided for @editDailyTask.
+  ///
+  /// In tr, this message translates to:
+  /// **'Görevi Düzenle'**
+  String get editDailyTask;
+
+  /// No description provided for @deleteDailyTask.
+  ///
+  /// In tr, this message translates to:
+  /// **'Görevi Sil'**
+  String get deleteDailyTask;
 }
 
 class _AppLocalizationsDelegate

@@ -5835,5 +5835,9 @@
     "addHabitStep": "Alışkanlık Ekle",
     "selectHabitsToLink": "Bağlanacak Alışkanlıkları Seç",
     "setGoal": "Hedef Belirle",
-    "swipeGoalsHint": "Geçiş için kaydır"
+    "swipeGoalsHint": "Geçiş için kaydır",
+    "notebookTapToOpen": "Açmak için dokun",
+    "closeNotebookCover": "Kapağı kapat",
+    "editDailyTask": "Görevi Düzenle",
+    "deleteDailyTask": "Görevi Sil"
 }

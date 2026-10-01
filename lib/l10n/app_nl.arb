@@ -5826,5 +5826,9 @@
     "yourCharacterType": "Jouw karaktertype",
     "yourEmail": "Jouw e-mail",
     "yourEmailAddress": "Jouw e-mailadres",
-    "yourMoodToday": "Jouw stemming vandaag"
+    "yourMoodToday": "Jouw stemming vandaag",
+    "notebookTapToOpen": "Tik om te openen",
+    "closeNotebookCover": "Omslag sluiten",
+    "editDailyTask": "Taak bewerken",
+    "deleteDailyTask": "Taak verwijderen"
 }

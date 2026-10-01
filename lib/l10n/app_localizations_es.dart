@@ -4751,4 +4751,16 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get swipeGoalsHint => 'Geçiş için kaydır';
+
+  @override
+  String get notebookTapToOpen => 'Toca para abrir';
+
+  @override
+  String get closeNotebookCover => 'Cerrar portada';
+
+  @override
+  String get editDailyTask => 'Editar tarea';
+
+  @override
+  String get deleteDailyTask => 'Eliminar tarea';
 }

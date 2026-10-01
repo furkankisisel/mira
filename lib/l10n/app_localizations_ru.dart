@@ -4711,4 +4711,16 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get swipeGoalsHint => 'Geçiş için kaydır';
+
+  @override
+  String get notebookTapToOpen => 'Нажмите, чтобы открыть';
+
+  @override
+  String get closeNotebookCover => 'Закрыть обложку';
+
+  @override
+  String get editDailyTask => 'Редактировать задачу';
+
+  @override
+  String get deleteDailyTask => 'Удалить задачу';
 }

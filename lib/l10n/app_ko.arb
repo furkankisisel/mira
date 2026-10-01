@@ -5826,5 +5826,9 @@
     "yourCharacterType": "당신의 캐릭터 유형",
     "yourEmail": "이메일",
     "yourEmailAddress": "이메일 주소",
-    "yourMoodToday": "오늘의 기분"
+    "yourMoodToday": "오늘의 기분",
+    "notebookTapToOpen": "탭하여 열기",
+    "closeNotebookCover": "표지 닫기",
+    "editDailyTask": "할 일 수정",
+    "deleteDailyTask": "할 일 삭제"
 }

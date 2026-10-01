@@ -5826,5 +5826,9 @@
     "yourCharacterType": "あなたのキャラクタータイプ",
     "yourEmail": "メールアドレス",
     "yourEmailAddress": "メールアドレス",
-    "yourMoodToday": "今日の気分"
+    "yourMoodToday": "今日の気分",
+    "notebookTapToOpen": "タップして開く",
+    "closeNotebookCover": "カバーを閉じる",
+    "editDailyTask": "タスクを編集",
+    "deleteDailyTask": "タスクを削除"
 }

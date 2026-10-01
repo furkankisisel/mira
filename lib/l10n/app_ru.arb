@@ -5826,5 +5826,9 @@
     "yourCharacterType": "Ваш тип личности",
     "yourEmail": "Ваш email",
     "yourEmailAddress": "Ваш email адрес",
-    "yourMoodToday": "Ваше настроение сегодня"
+    "yourMoodToday": "Ваше настроение сегодня",
+    "notebookTapToOpen": "Нажмите, чтобы открыть",
+    "closeNotebookCover": "Закрыть обложку",
+    "editDailyTask": "Редактировать задачу",
+    "deleteDailyTask": "Удалить задачу"
 }

@@ -5826,5 +5826,9 @@
     "yourCharacterType": "نوع شخصيتك",
     "yourEmail": "بريدك الإلكتروني",
     "yourEmailAddress": "عنوان بريدك الإلكتروني",
-    "yourMoodToday": "مزاجك اليوم"
+    "yourMoodToday": "مزاجك اليوم",
+    "notebookTapToOpen": "انقر للفتح",
+    "closeNotebookCover": "إغلاق الغلاف",
+    "editDailyTask": "تعديل المهمة",
+    "deleteDailyTask": "حذف المهمة"
 }

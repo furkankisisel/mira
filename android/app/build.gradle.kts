@@ -10,12 +10,15 @@ plugins {
 
 import java.util.Properties
 import java.io.FileInputStream
-
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
 
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    InputStreamReader(FileInputStream(keystorePropertiesFile), StandardCharsets.UTF_8).use { reader ->
+        keystoreProperties.load(reader)
+    }
 }
 
 android {
@@ -26,7 +29,12 @@ android {
     // Determine if a valid keystore file is present
     val hasKeystoreProps = keystorePropertiesFile.exists()
     val storeFilePropForCheck: String? = keystoreProperties.getProperty("storeFile")
-    val resolvedStoreFileForCheck = if (!storeFilePropForCheck.isNullOrBlank()) file(storeFilePropForCheck) else null
+    val resolvedStoreFileForCheck: java.io.File? = when {
+        !storeFilePropForCheck.isNullOrBlank() && file(storeFilePropForCheck).exists() -> file(storeFilePropForCheck)
+        file("key.jks").exists() -> file("key.jks")
+        rootProject.file("key.jks").exists() -> rootProject.file("key.jks")
+        else -> null
+    }
     val hasValidKeystore = hasKeystoreProps && (resolvedStoreFileForCheck?.exists() == true)
 
     compileOptions {
@@ -52,16 +60,15 @@ android {
 
     signingConfigs {
         // Only create the release signing config when a VALID keystore file is present to avoid errors.
-        if (hasValidKeystore) {
+        if (hasValidKeystore && resolvedStoreFileForCheck != null) {
             create("release") {
                 val keyAliasProp: String? = keystoreProperties.getProperty("keyAlias")
                 val keyPasswordProp: String? = keystoreProperties.getProperty("keyPassword")
-                val storeFileProp: String? = keystoreProperties.getProperty("storeFile")
                 val storePasswordProp: String? = keystoreProperties.getProperty("storePassword")
 
                 if (!keyAliasProp.isNullOrBlank()) keyAlias = keyAliasProp
                 if (!keyPasswordProp.isNullOrBlank()) keyPassword = keyPasswordProp
-                if (!storeFileProp.isNullOrBlank()) storeFile = file(storeFileProp)
+                storeFile = resolvedStoreFileForCheck
                 if (!storePasswordProp.isNullOrBlank()) storePassword = storePasswordProp
             }
         }

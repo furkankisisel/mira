@@ -5866,5 +5866,9 @@
     "addHabitStep": "Add Habit",
     "selectHabitsToLink": "Select Habits to Link",
     "setGoal": "Set Goal",
-    "swipeGoalsHint": "Swipe to switch"
+    "swipeGoalsHint": "Swipe to switch",
+    "notebookTapToOpen": "Tap to open",
+    "closeNotebookCover": "Close cover",
+    "editDailyTask": "Edit Task",
+    "deleteDailyTask": "Delete Task"
 }

@@ -4722,4 +4722,16 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get swipeGoalsHint => 'Geçiş için kaydır';
+
+  @override
+  String get notebookTapToOpen => 'खोलने के लिए टैप करें';
+
+  @override
+  String get closeNotebookCover => 'कवर बंद करें';
+
+  @override
+  String get editDailyTask => 'कार्य संपादित करें';
+
+  @override
+  String get deleteDailyTask => 'कार्य हटाएं';
 }

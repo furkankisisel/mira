@@ -5826,5 +5826,9 @@
     "yourCharacterType": "Tu tipo de personaje",
     "yourEmail": "Tu dirección de correo",
     "yourEmailAddress": "Tu dirección de correo electrónico",
-    "yourMoodToday": "Tu estado de ánimo de hoy"
+    "yourMoodToday": "Tu estado de ánimo de hoy",
+    "notebookTapToOpen": "Toca para abrir",
+    "closeNotebookCover": "Cerrar portada",
+    "editDailyTask": "Editar tarea",
+    "deleteDailyTask": "Eliminar tarea"
 }

@@ -4605,4 +4605,16 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get swipeGoalsHint => 'Geçiş için kaydır';
+
+  @override
+  String get notebookTapToOpen => '탭하여 열기';
+
+  @override
+  String get closeNotebookCover => '표지 닫기';
+
+  @override
+  String get editDailyTask => '할 일 수정';
+
+  @override
+  String get deleteDailyTask => '할 일 삭제';
 }

@@ -1,3 +1,6 @@
+import 'dart:io' as io;
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -533,11 +536,291 @@ class _VisionCardSurface extends StatelessWidget {
     this.isInteractive = true,
   });
 
+  Widget? _buildCoverImage(String? path) {
+    if (path == null || path.trim().isEmpty) return null;
+    final trimmed = path.trim();
+    final isNetwork =
+        trimmed.startsWith('http://') || trimmed.startsWith('https://');
+    if (isNetwork) {
+      return Image.network(
+        trimmed,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+      );
+    }
+    final isFile = trimmed.startsWith('/') ||
+        trimmed.contains('\\') ||
+        trimmed.contains(':\\');
+    if (isFile) {
+      final file = io.File(trimmed);
+      if (!file.existsSync()) return null;
+      return Image.file(
+        file,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+      );
+    }
+    return Image.asset(
+      trimmed,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      height: double.infinity,
+      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final visionColor = Color(vision.colorValue);
     final percent = (progress * 100).toInt();
+    final coverWidget = _buildCoverImage(vision.coverImage);
+    final hasCover = coverWidget != null;
+
+    if (hasCover) {
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: visionColor.withOpacity(0.50),
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: visionColor.withOpacity(0.22),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 5,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(18.8),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Base Tint
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: visionColor.withOpacity(0.2),
+                ),
+              ),
+              // Cover Image
+              coverWidget,
+              // Gradient Overlay for Maximum Readability
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.42),
+                        Colors.black.withOpacity(0.25),
+                        Colors.black.withOpacity(0.78),
+                      ],
+                      stops: const [0.0, 0.40, 1.0],
+                    ),
+                  ),
+                ),
+              ),
+              // Card Content
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 11, 12, 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Top Row
+                    Row(
+                      children: [
+                        Container(
+                          width: 26,
+                          height: 26,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.35),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.22),
+                              width: 1,
+                            ),
+                          ),
+                          child: Text(
+                            vision.emoji?.isNotEmpty == true
+                                ? vision.emoji!
+                                : '🎯',
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            AppLocalizations.of(context).visionBoard,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12.5,
+                              color: Colors.white.withOpacity(0.95),
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black.withOpacity(0.6),
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (pageInfo != null) ...[
+                          const SizedBox(width: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 5, vertical: 1.5),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.45),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.18),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  pageInfo!,
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(width: 2),
+                                Icon(
+                                  Icons.unfold_more_rounded,
+                                  size: 11,
+                                  color: Colors.white.withOpacity(0.85),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+
+                    const SizedBox(height: 7),
+
+                    // Title
+                    Text(
+                      vision.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 13,
+                        height: 1.2,
+                        color: Colors.white,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black.withOpacity(0.75),
+                            blurRadius: 6,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const Spacer(),
+
+                    // Progress Bar & Percentage
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(3),
+                            child: LinearProgressIndicator(
+                              value: progress.clamp(0.0, 1.0),
+                              minHeight: 4.5,
+                              backgroundColor: Colors.white.withOpacity(0.28),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                HSLColor.fromColor(visionColor).lightness < 0.4
+                                    ? HSLColor.fromColor(visionColor)
+                                        .withLightness(0.65)
+                                        .toColor()
+                                    : visionColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          '%$percent',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: HSLColor.fromColor(visionColor).lightness <
+                                    0.4
+                                ? HSLColor.fromColor(visionColor)
+                                    .withLightness(0.75)
+                                    .toColor()
+                                : Colors.white,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black.withOpacity(0.6),
+                                blurRadius: 4,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 5),
+
+                    // Today's Action Snippet
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.arrow_forward_rounded,
+                          size: 11,
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                        const SizedBox(width: 3),
+                        Expanded(
+                          child: Text(
+                            todayAction,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white.withOpacity(0.95),
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black.withOpacity(0.7),
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 11, 12, 10),
@@ -701,7 +984,7 @@ class _VisionCardSurface extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 2. DAILY TASKS SCROLL CARD (Aşağı / Yukarı Kaydırılabilir Scroll Görevler)
+// 2. DAILY TASKS SCROLL CARD (Defter Kapağı & Animasyonlu Görev Listesi)
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _DailyTasksScrollCard extends StatefulWidget {
@@ -717,23 +1000,42 @@ class _DailyTasksScrollCard extends StatefulWidget {
   State<_DailyTasksScrollCard> createState() => _DailyTasksScrollCardState();
 }
 
-class _DailyTasksScrollCardState extends State<_DailyTasksScrollCard> {
+class _DailyTasksScrollCardState extends State<_DailyTasksScrollCard>
+    with SingleTickerProviderStateMixin {
   final DailyTaskRepository _taskRepo = DailyTaskRepository.instance;
+  late AnimationController _coverController;
 
   @override
   void initState() {
     super.initState();
     _taskRepo.addListener(_onTasksChanged);
+    _coverController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 360),
+    );
   }
 
   @override
   void dispose() {
     _taskRepo.removeListener(_onTasksChanged);
+    _coverController.dispose();
     super.dispose();
   }
 
   void _onTasksChanged() {
     if (mounted) setState(() {});
+  }
+
+  void _openCover() {
+    if (_coverController.isAnimating || _coverController.value == 1.0) return;
+    HapticFeedback.mediumImpact();
+    _coverController.forward();
+  }
+
+  void _closeCover() {
+    if (_coverController.isAnimating || _coverController.value == 0.0) return;
+    HapticFeedback.lightImpact();
+    _coverController.reverse();
   }
 
   Future<void> _toggleTask(DailyTask task) async {
@@ -755,6 +1057,11 @@ class _DailyTasksScrollCardState extends State<_DailyTasksScrollCard> {
 
   void _showQuickAddDialog() async {
     HapticFeedback.lightImpact();
+    // Auto-open cover if it is closed so user sees the task they add
+    if (_coverController.value < 1.0) {
+      _coverController.forward();
+    }
+
     if (widget.onAddTask != null) {
       widget.onAddTask!();
       return;
@@ -792,127 +1099,185 @@ class _DailyTasksScrollCardState extends State<_DailyTasksScrollCard> {
     final tasks = _taskRepo.tasksForDateWithCarryover(dayKey);
     final completedCount = tasks.where((t) => t.isDone).length;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant.withOpacity(0.45),
-          width: 1.2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // Header Row
-          Padding(
-            padding: const EdgeInsets.fromLTRB(11, 10, 8, 4),
-            child: Row(
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        // 1. Inside Task List Container
+        Positioned.fill(
+          child: Container(
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: theme.colorScheme.outlineVariant.withOpacity(0.45),
+                width: 1.2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Column(
               children: [
-                Container(
-                  width: 26,
-                  height: 26,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.checklist_rounded,
-                    color: theme.colorScheme.primary,
-                    size: 15,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    l10n.dailyTaskTitle,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 12.5,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                if (tasks.isNotEmpty) ...[
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 5, vertical: 1.5),
-                    decoration: BoxDecoration(
-                      color: completedCount == tasks.length
-                          ? Colors.green.withOpacity(0.15)
-                          : theme.colorScheme.surfaceContainerHighest
-                              .withOpacity(0.6),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      '$completedCount/${tasks.length}',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: completedCount == tasks.length
-                            ? Colors.green[700]
-                            : theme.colorScheme.onSurfaceVariant,
+                // Header Row
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 8, 8, 4),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 26,
+                        height: 26,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.checklist_rounded,
+                          color: theme.colorScheme.primary,
+                          size: 15,
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          l10n.dailyTaskTitle,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12.5,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (tasks.isNotEmpty) ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 5, vertical: 1.5),
+                          decoration: BoxDecoration(
+                            color: completedCount == tasks.length
+                                ? Colors.green.withOpacity(0.15)
+                                : theme.colorScheme.surfaceContainerHighest
+                                    .withOpacity(0.6),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            '$completedCount/${tasks.length}',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: completedCount == tasks.length
+                                  ? Colors.green[700]
+                                  : theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                      ],
+                      // Quick Add Button
+                      InkWell(
+                        onTap: _showQuickAddDialog,
+                        borderRadius: BorderRadius.circular(8),
+                        child: Padding(
+                          padding: const EdgeInsets.all(3.0),
+                          child: Icon(
+                            Icons.add_circle_outline_rounded,
+                            size: 18,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 2),
+                      // Close Notebook Cover Button
+                      InkWell(
+                        onTap: _closeCover,
+                        borderRadius: BorderRadius.circular(8),
+                        child: Tooltip(
+                          message: l10n.closeNotebookCover,
+                          child: Padding(
+                            padding: const EdgeInsets.all(3.0),
+                            child: Icon(
+                              Icons.menu_book_rounded,
+                              size: 17,
+                              color: theme.colorScheme.onSurfaceVariant
+                                  .withOpacity(0.7),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 4),
-                ],
-                // Quick Add Button
-                InkWell(
-                  onTap: _showQuickAddDialog,
-                  borderRadius: BorderRadius.circular(8),
-                  child: Padding(
-                    padding: const EdgeInsets.all(3.0),
-                    child: Icon(
-                      Icons.add_circle_outline_rounded,
-                      size: 18,
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
+                ),
+
+                const Divider(height: 1, thickness: 0.7),
+
+                // Scrollable Task List
+                Expanded(
+                  child: tasks.isEmpty
+                      ? _buildEmptyState(theme, l10n)
+                      : RawScrollbar(
+                          thumbVisibility: false,
+                          thickness: 2.5,
+                          radius: const Radius.circular(3),
+                          child: ListView.separated(
+                            padding: const EdgeInsets.fromLTRB(9, 6, 9, 8),
+                            physics: const BouncingScrollPhysics(
+                              parent: AlwaysScrollableScrollPhysics(),
+                            ),
+                            itemCount: tasks.length,
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(height: 5),
+                            itemBuilder: (context, index) {
+                              final task = tasks[index];
+                              return _DailyTaskMiniRow(
+                                task: task,
+                                onToggle: () => _toggleTask(task),
+                                onLongPress: () => _showTaskOptions(task),
+                              );
+                            },
+                          ),
+                        ),
                 ),
               ],
             ),
           ),
+        ),
 
-          const Divider(height: 1, thickness: 0.7),
+        // 2. The Notebook Cover (Animated 3D Swing)
+        AnimatedBuilder(
+          animation: _coverController,
+          builder: (context, child) {
+            if (_coverController.value >= 1.0) {
+              return const SizedBox.shrink();
+            }
+            final angle = _coverController.value * (math.pi / 1.85);
+            final opacity =
+                (1.0 - (_coverController.value * 1.25)).clamp(0.0, 1.0);
 
-          // Scrollable Task List
-          Expanded(
-            child: tasks.isEmpty
-                ? _buildEmptyState(theme, l10n)
-                : RawScrollbar(
-                    thumbVisibility: false,
-                    thickness: 2.5,
-                    radius: const Radius.circular(3),
-                    child: ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(9, 6, 9, 8),
-                      physics: const BouncingScrollPhysics(
-                        parent: AlwaysScrollableScrollPhysics(),
-                      ),
-                      itemCount: tasks.length,
-                      separatorBuilder: (_, __) =>
-                          const SizedBox(height: 5),
-                      itemBuilder: (context, index) {
-                        final task = tasks[index];
-                        return _DailyTaskMiniRow(
-                          task: task,
-                          onToggle: () => _toggleTask(task),
-                          onLongPress: () => _showTaskOptions(task),
-                        );
-                      },
-                    ),
-                  ),
+            return Positioned.fill(
+              child: Transform(
+                alignment: Alignment.centerLeft,
+                transform: Matrix4.identity()
+                  ..setEntry(3, 2, 0.0012)
+                  ..rotateY(-angle),
+                child: Opacity(
+                  opacity: opacity,
+                  child: child,
+                ),
+              ),
+            );
+          },
+          child: _NotebookCover(
+            date: widget.date,
+            taskCount: tasks.length,
+            completedCount: completedCount,
+            onTap: _openCover,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -921,7 +1286,6 @@ class _DailyTasksScrollCardState extends State<_DailyTasksScrollCard> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context);
-    final isTr = l10n.localeName.startsWith('tr');
 
     showModalBottomSheet(
       context: context,
@@ -1001,7 +1365,7 @@ class _DailyTasksScrollCardState extends State<_DailyTasksScrollCard> {
                   color: theme.colorScheme.primary,
                 ),
                 title: Text(
-                  isTr ? 'Görevi Düzenle' : 'Edit Task',
+                  l10n.editDailyTask,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     color: theme.colorScheme.onSurface,
@@ -1039,7 +1403,7 @@ class _DailyTasksScrollCardState extends State<_DailyTasksScrollCard> {
                   color: Colors.redAccent,
                 ),
                 title: Text(
-                  isTr ? 'Görevi Sil' : 'Delete Task',
+                  l10n.deleteDailyTask,
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     color: Colors.redAccent,
@@ -1099,6 +1463,284 @@ class _DailyTasksScrollCardState extends State<_DailyTasksScrollCard> {
     );
   }
 }
+
+/// A handcrafted notebook cover design resembling an authentic moleskine / journal.
+class _NotebookCover extends StatelessWidget {
+  final DateTime date;
+  final int taskCount;
+  final int completedCount;
+  final VoidCallback onTap;
+
+  const _NotebookCover({
+    required this.date,
+    required this.taskCount,
+    required this.completedCount,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Harmonize leather tone with theme
+    final baseColor = isDark
+        ? const Color(0xFF1E222D)
+        : Color.lerp(theme.colorScheme.primary, const Color(0xFF2B3340), 0.70)!;
+    final darkerColor = isDark
+        ? const Color(0xFF141720)
+        : Color.lerp(theme.colorScheme.primary, const Color(0xFF1D222B), 0.85)!;
+
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [baseColor, darkerColor],
+          ),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withOpacity(0.12)
+                : theme.colorScheme.primary.withOpacity(0.3),
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.18),
+              blurRadius: 12,
+              offset: const Offset(2, 4),
+            ),
+            BoxShadow(
+              color: (isDark ? Colors.black : theme.colorScheme.primary)
+                  .withOpacity(0.08),
+              blurRadius: 4,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(18.8),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Subtle cover texture overlay (diagonal pinstripes / leather grain simulation)
+              CustomPaint(
+                painter: _NotebookTexturePainter(
+                  stripeColor: isDark
+                      ? Colors.white.withOpacity(0.02)
+                      : Colors.white.withOpacity(0.035),
+                ),
+              ),
+
+              // Left: Notebook Spine (Defter Sırtı) with stitching marks
+              Positioned(
+                top: 0,
+                bottom: 0,
+                left: 0,
+                width: 16,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.24),
+                    border: Border(
+                      right: BorderSide(
+                        color: Colors.white.withOpacity(0.10),
+                        width: 1.0,
+                      ),
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: List.generate(
+                      4,
+                      (_) => Container(
+                        width: 3.5,
+                        height: 7,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFD4AF37).withOpacity(0.55),
+                          borderRadius: BorderRadius.circular(1.5),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // Right: Elastic band strap (Moleskine strap)
+              Positioned(
+                top: 0,
+                bottom: 0,
+                right: 16,
+                width: 7.5,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.38),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.22),
+                        blurRadius: 2,
+                        offset: const Offset(-1, 0),
+                      ),
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.22),
+                        blurRadius: 2,
+                        offset: const Offset(1, 0),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Center: Embossed Label Plate (Etiket Alanı)
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.fromLTRB(26, 12, 28, 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF262C38)
+                        : const Color(0xFFFAF7F2),
+                    borderRadius: BorderRadius.circular(11),
+                    border: Border.all(
+                      color: const Color(0xFFD4AF37).withOpacity(0.65),
+                      width: 1.2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.20),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.menu_book_rounded,
+                        size: 20,
+                        color: isDark
+                            ? const Color(0xFFE5C97A)
+                            : const Color(0xFF9E782F),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        l10n.dailyTaskTitle.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.0,
+                          color: isDark
+                              ? Colors.white.withOpacity(0.95)
+                              : const Color(0xFF2C2520),
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 3),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            l10n.notebookTapToOpen,
+                            style: TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w500,
+                              fontStyle: FontStyle.italic,
+                              color: isDark
+                                  ? Colors.white.withOpacity(0.60)
+                                  : const Color(0xFF7A6E65),
+                            ),
+                          ),
+                          const SizedBox(width: 3),
+                          Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 8,
+                            color: isDark
+                                ? Colors.white.withOpacity(0.55)
+                                : const Color(0xFF7A6E65),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Bottom Ribbon bookmark indicator if tasks exist
+              if (taskCount > 0)
+                Positioned(
+                  bottom: 7,
+                  left: 24,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: completedCount == taskCount
+                          ? Colors.green.withOpacity(0.25)
+                          : const Color(0xFFD4AF37).withOpacity(0.22),
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(
+                        color: completedCount == taskCount
+                            ? Colors.green.withOpacity(0.5)
+                            : const Color(0xFFD4AF37).withOpacity(0.5),
+                        width: 0.8,
+                      ),
+                    ),
+                    child: Text(
+                      '$completedCount/$taskCount',
+                      style: TextStyle(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w700,
+                        color: completedCount == taskCount
+                            ? Colors.greenAccent[100]
+                            : const Color(0xFFF3DE98),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Subtle notebook texture painter for a leather/cloth grain feel.
+class _NotebookTexturePainter extends CustomPainter {
+  final Color stripeColor;
+
+  _NotebookTexturePainter({required this.stripeColor});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = stripeColor
+      ..strokeWidth = 1.0;
+
+    // Draw faint subtle diagonal texture lines across cover
+    const step = 8.0;
+    for (double x = -size.height; x < size.width; x += step) {
+      canvas.drawLine(
+        Offset(x, 0),
+        Offset(x + size.height, size.height),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _NotebookTexturePainter oldDelegate) =>
+      oldDelegate.stripeColor != stripeColor;
+}
+
 
 class _DailyTaskMiniRow extends StatelessWidget {
   final DailyTask task;

@@ -5826,5 +5826,9 @@
     "yourCharacterType": "आपका चरित्र प्रकार",
     "yourEmail": "आपका ईमेल पता",
     "yourEmailAddress": "आपका ईमेल पता",
-    "yourMoodToday": "आपका आज का मूड"
+    "yourMoodToday": "आपका आज का मूड",
+    "notebookTapToOpen": "खोलने के लिए टैप करें",
+    "closeNotebookCover": "कवर बंद करें",
+    "editDailyTask": "कार्य संपादित करें",
+    "deleteDailyTask": "कार्य हटाएं"
 }

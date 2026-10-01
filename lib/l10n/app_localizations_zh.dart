@@ -4585,4 +4585,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get swipeGoalsHint => 'Geçiş için kaydır';
+
+  @override
+  String get notebookTapToOpen => '点击打开';
+
+  @override
+  String get closeNotebookCover => '合上封面';
+
+  @override
+  String get editDailyTask => '编辑任务';
+
+  @override
+  String get deleteDailyTask => '删除任务';
 }

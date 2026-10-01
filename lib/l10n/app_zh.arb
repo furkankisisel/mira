@@ -5826,5 +5826,9 @@
     "yourCharacterType": "您的性格类型",
     "yourEmail": "您的电子邮件",
     "yourEmailAddress": "您的电子邮件地址",
-    "yourMoodToday": "你今天的情绪"
+    "yourMoodToday": "你今天的情绪",
+    "notebookTapToOpen": "点击打开",
+    "closeNotebookCover": "合上封面",
+    "editDailyTask": "编辑任务",
+    "deleteDailyTask": "删除任务"
 }

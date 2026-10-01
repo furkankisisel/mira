@@ -4703,4 +4703,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get swipeGoalsHint => 'Swipe to switch';
+
+  @override
+  String get notebookTapToOpen => 'Tap to open';
+
+  @override
+  String get closeNotebookCover => 'Close cover';
+
+  @override
+  String get editDailyTask => 'Edit Task';
+
+  @override
+  String get deleteDailyTask => 'Delete Task';
 }
