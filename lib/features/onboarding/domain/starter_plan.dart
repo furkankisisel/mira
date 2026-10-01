@@ -28,8 +28,8 @@ class StarterPlan {
           'type': 'timer',
           'duration_minutes': minutes,
           'target_value': minutes,
-          'frequency': days == null ? 'daily' : 'weekly',
-          'days': days ?? ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+          'frequency': 'daily',
+          'days': ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
           'category': category,
           'emoji': emoji,
           'color_code': '#71836A',
@@ -39,12 +39,11 @@ class StarterPlan {
     final planning = likesStructure
         ? habit(
             t('Haftana küçük bir plan', 'Make a small weekly plan'),
-            t('Pazar günü akşam yemeğinden sonra 3 dakika ayır. Haftanın tek önceliğini ve ona atacağın ilk adımı takvimine yaz. Yoğun bir günde yalnızca önceliği yazman yeterli.',
-                'After dinner on Sunday, spend 3 minutes writing one priority and its first step in your calendar. On a busy day, just write the priority.'),
+            t('Akşam yemeğinden sonra 3 dakika ayır. Günün ve haftanın önceliğini ve ona atacağın ilk adımı takvimine yaz. Yoğun bir günde yalnızca önceliği yazman yeterli.',
+                'After dinner, spend 3 minutes writing your priority and its first step in your calendar. On a busy day, just write the priority.'),
             t('Düzen ve planlamayla ilgili yanıtların yapılandırılmış bir yaklaşımı tercih edebileceğini gösteriyor. Tek öncelik, planı uygulanabilir tutmana yardımcı olabilir.',
                 'Your planning answers suggest you may enjoy structure. One priority can help keep the plan manageable.'),
             minutes: 3,
-            days: ['sun'],
             emoji: '🗓️')
         : habit(
             t('Yarın için tek küçük adım', 'One small step for tomorrow'),
@@ -75,22 +74,20 @@ class StarterPlan {
     final growth = likesCompany
         ? habit(
             t('Bir kişiye içten bir mesaj', 'Send one thoughtful message'),
-            t('Salı ve cuma öğle molandan sonra 2 dakika ayır. Görüşmek istediğin birine nasıl olduğunu soran kısa bir mesaj yaz. Yanıt alma zorunluluğu yok; çok yoğunsan mesaj taslağı yeter.',
-                'After your lunch break on Tuesday and Friday, take 2 minutes to check in with someone you would like to connect with. A reply is not required; a draft is enough on a busy day.'),
+            t('Öğle molandan sonra 2 dakika ayır. Görüşmek istediğin birine nasıl olduğunu soran kısa bir mesaj yaz. Yanıt alma zorunluluğu yok; çok yoğunsan mesaj taslağı yeter.',
+                'After your lunch break, take 2 minutes to check in with someone you would like to connect with. A reply is not required; a draft is enough on a busy day.'),
             t('Sosyal ortam ve grup etkinliği yanıtların birlikte vakit geçirmekten hoşlanabileceğini gösteriyor. Bu küçük adım, bağ kurmaya düzenli bir yer açar.',
                 'Your social and group activity answers suggest you may enjoy company. This small step makes regular room for connection.'),
-            days: ['tue', 'fri'],
             category: 'Social',
             emoji: '💬')
         : likesVariety
             ? habit(
                 t('Merakına beş dakika', 'Five minutes of curiosity'),
-                t('Pazartesi, çarşamba ve cuma bir molanın ardından 5 dakika ayır. Merak ettiğin konuda bir sayfa oku veya küçük bir çizim dene. Haftanın sonunda aklında kalan bir şeyi not et. Zor günlerde tek cümle oku.',
-                    'After a break on Monday, Wednesday and Friday, spend 5 minutes reading a page or trying a small sketch about something that interests you. Note one thing you remember at the end of the week. On a hard day, read one sentence.'),
+                t('Bir molanın ardından 5 dakika ayır. Merak ettiğin konuda bir sayfa oku veya küçük bir çizim dene. Günün sonunda aklında kalan bir şeyi not et. Zor günlerde tek cümle oku.',
+                    'After a break, spend 5 minutes reading a page or trying a small sketch about something that interests you. Note one thing you remember at the end of the day. On a hard day, read one sentence.'),
                 t('Yeni deneyim, yaratıcılık ve farklı yöntem sorularındaki yanıtların keşfe açık olduğunu düşündürüyor. Konuyu sen seçerken süreyi küçük tutuyoruz.',
                     'Your novelty, creativity and variety answers suggest you may enjoy exploration. You choose the topic while keeping the commitment small.'),
                 minutes: 5,
-                days: ['mon', 'wed', 'fri'],
                 category: 'Study',
                 emoji: '📖')
             : habit(

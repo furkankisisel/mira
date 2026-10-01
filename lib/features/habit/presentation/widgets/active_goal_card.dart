@@ -81,7 +81,8 @@ class ActiveGoalCard extends StatefulWidget {
           return true;
         }
         final int weekdayIndex = date.weekday - 1; // 0=Mon, 6=Sun
-        return habit.selectedWeekdays!.contains(weekdayIndex);
+        return habit.selectedWeekdays!.contains(weekdayIndex) ||
+            habit.selectedWeekdays!.contains(date.weekday);
       case 'monthly':
       case 'specificMonthDays':
         if (habit.selectedMonthDays == null ||

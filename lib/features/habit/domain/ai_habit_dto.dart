@@ -267,6 +267,11 @@ class AiHabitDto {
       if (useProvidedDays) {
         finalSelectedWeekdays =
             days.map((d) => dayMap[d]).whereType<int>().toList();
+        final todayIndex = now.weekday - 1;
+        if (!finalSelectedWeekdays.contains(todayIndex)) {
+          finalSelectedWeekdays.add(todayIndex);
+          finalSelectedWeekdays.sort();
+        }
       } else {
         // Default to current weekday (0-6)
         finalSelectedWeekdays = [now.weekday - 1];

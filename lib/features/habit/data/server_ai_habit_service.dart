@@ -491,7 +491,7 @@ Return JSON only with this exact schema:
    "title": "Specific action, at most 40 characters",
    "description": "A concrete everyday cue + action + duration, then a smaller version for a hard day. Avoid assumed clock times.",
    "rationale": "Which answers led to this suggestion and why this small action may help. No diagnoses or promises.",
-   "frequency": "daily or weekly",
+   "frequency": "daily",
    "days": ["mon","tue","wed","thu","fri","sat","sun"],
    "type": "timer", "duration_minutes": 2, "target_value": 2,
    "category": "Productivity", "emoji": "🌱", "color_code": "#71836A", "is_task": false
@@ -500,8 +500,7 @@ Return JSON only with this exact schema:
 Provide exactly THREE distinct, low-burden habit options. Each must take 1-5 minutes,
 except one optional learning activity up to 10 minutes. The user will choose ONE
 initial habit. Use "timer" with an integer duration_minutes, or "simple" for a
-single check-off action. For daily use all seven day codes; for weekly use only the
-actual scheduled days. No supplements, medication, restrictive diets, strenuous
+single check-off action. All habits must be daily (using all seven day codes). No supplements, medication, restrictive diets, strenuous
 exercise or sleep prescriptions. Keep general suggestions within the quiz evidence.
 The supplied starter plan is a baseline; preserve its manageable commitments and
 improve specificity rather than adding demands. Respond entirely in the requested

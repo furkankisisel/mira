@@ -602,10 +602,30 @@ class HabitRepository extends ChangeNotifier {
   void _ensureToday() {
     final now = DateTime.now();
     final today = _dateStr(now);
+    final todayIndex = now.weekday - 1;
+    bool needsPersist = false;
+
     for (final h in _habits) {
       h.applyDailyReset(now);
 
-      // Auto-reset focus logic removed to persist focus across days
+      // Heal habits created from onboarding/recommendations that got restricted to other weekdays:
+      // If a habit has currentStreak == 0 and its selectedWeekdays does not include today,
+      // ensure today's weekday is included so the user sees their habit immediately on day 1!
+      if (h.selectedWeekdays != null &&
+          h.selectedWeekdays!.isNotEmpty &&
+          (h.frequencyType == 'specificWeekdays' || h.frequencyType == 'weekly') &&
+          h.currentStreak == 0) {
+        if (!h.selectedWeekdays!.contains(todayIndex) &&
+            !h.selectedWeekdays!.contains(now.weekday)) {
+          h.selectedWeekdays!.add(todayIndex);
+          h.selectedWeekdays!.sort();
+          needsPersist = true;
+        }
+      }
+    }
+
+    if (needsPersist) {
+      _persist();
     }
   }
 

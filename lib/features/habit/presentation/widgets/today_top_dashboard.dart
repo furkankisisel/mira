@@ -145,7 +145,8 @@ class _VisionDeckSwipeCardState extends State<_VisionDeckSwipeCard>
           return true;
         }
         final int weekdayIndex = date.weekday - 1; // 0=Mon, 6=Sun
-        return habit.selectedWeekdays!.contains(weekdayIndex);
+        return habit.selectedWeekdays!.contains(weekdayIndex) ||
+            habit.selectedWeekdays!.contains(date.weekday);
       case 'monthly':
       case 'specificMonthDays':
         if (habit.selectedMonthDays == null ||
@@ -1293,7 +1294,9 @@ class _DailyTasksScrollCardState extends State<_DailyTasksScrollCard>
       builder: (sheetContext) => Container(
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E2235) : Colors.white,
+          // Keep the long-press task sheet in the active app palette instead
+          // of forcing a blue-gray dark surface.
+          color: theme.colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: isDark

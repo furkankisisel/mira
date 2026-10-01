@@ -110,7 +110,8 @@ class _GoalSummarySheetState extends State<GoalSummarySheet> {
           return true;
         }
         final int weekdayIndex = now.weekday - 1; // 0=Mon, 6=Sun
-        return habit.selectedWeekdays!.contains(weekdayIndex);
+        return habit.selectedWeekdays!.contains(weekdayIndex) ||
+            habit.selectedWeekdays!.contains(now.weekday);
       case 'monthly':
       case 'specificMonthDays':
         if (habit.selectedMonthDays == null ||

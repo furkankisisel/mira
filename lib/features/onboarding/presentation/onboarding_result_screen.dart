@@ -234,21 +234,27 @@ class _OnboardingResultScreenState extends State<OnboardingResultScreen> {
       case 'weekdays':
         frequency = 'weekly';
         frequencyType = 'specificWeekdays';
-        selectedWeekdays = [1, 2, 3, 4, 5];
+        selectedWeekdays = [0, 1, 2, 3, 4];
         break;
       case 'weekends':
         frequency = 'weekly';
         frequencyType = 'specificWeekdays';
-        selectedWeekdays = [6, 7];
+        selectedWeekdays = [5, 6];
         break;
       case 'weekly':
         frequency = 'weekly';
         frequencyType = 'specificWeekdays';
-        selectedWeekdays = [1]; // Pazartesi
+        selectedWeekdays = [now.weekday - 1];
         break;
       default: // 'daily'
         frequency = 'daily';
         frequencyType = 'daily';
+        selectedWeekdays = [0, 1, 2, 3, 4, 5, 6];
+    }
+
+    if (selectedWeekdays != null && !selectedWeekdays.contains(now.weekday - 1)) {
+      selectedWeekdays.add(now.weekday - 1);
+      selectedWeekdays.sort();
     }
 
     return Habit(

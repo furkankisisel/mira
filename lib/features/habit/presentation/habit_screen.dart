@@ -387,7 +387,8 @@ class HabitScreenState extends State<HabitScreen>
         // Habit model might expect 1-7 or 0-6.
         // Let's handle 0-indexed (Mon=0) to match wizard.
         final int weekdayIndex = date.weekday - 1; // 0=Mon, 6=Sun
-        return habit.selectedWeekdays!.contains(weekdayIndex);
+        return habit.selectedWeekdays!.contains(weekdayIndex) ||
+            habit.selectedWeekdays!.contains(date.weekday);
 
       case 'monthly': // Legacy/Wizard compatibility
       case 'specificMonthDays':
@@ -473,9 +474,11 @@ class HabitScreenState extends State<HabitScreen>
                 filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF141923).withValues(alpha: 0.94)
-                        : Colors.white.withValues(alpha: 0.94),
+                    // The daily calendar must inherit the active palette;
+                    // a fixed navy sheet conflicted with warm themes.
+                    color: colorScheme.surfaceContainerHigh.withValues(
+                      alpha: 0.94,
+                    ),
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
                     border: Border.all(
                       color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.95),
@@ -543,7 +546,7 @@ class HabitScreenState extends State<HabitScreen>
                               height: 36,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: isDark ? const Color(0xFF1E2430) : Colors.white,
+                                color: colorScheme.surfaceContainerHigh,
                                 border: Border.all(
                                   color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.95),
                                   width: 1.2,
@@ -576,7 +579,7 @@ class HabitScreenState extends State<HabitScreen>
                               height: 36,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: isDark ? const Color(0xFF1E2430) : Colors.white,
+                                color: colorScheme.surfaceContainerHigh,
                                 border: Border.all(
                                   color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.95),
                                   width: 1.2,
@@ -838,6 +841,7 @@ class HabitScreenState extends State<HabitScreen>
     required ValueChanged<DateTime> onTap,
   }) {
     final isSelected = _isSameDay(targetDate, selectedDate);
+    final colorScheme = Theme.of(context).colorScheme;
     return Expanded(
       child: GestureDetector(
         onTap: () => onTap(targetDate),
@@ -847,7 +851,7 @@ class HabitScreenState extends State<HabitScreen>
           decoration: BoxDecoration(
             color: isSelected
                 ? primaryColor.withValues(alpha: 0.15)
-                : (isDark ? const Color(0xFF1E2430) : const Color(0xFFF4F6F9)),
+                : colorScheme.surfaceContainerHigh,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: isSelected
