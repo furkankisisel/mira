@@ -8654,6 +8654,12 @@ abstract class AppLocalizations {
   /// **'Bir mesaj yaz...'**
   String get writeMessage;
 
+  /// No description provided for @xpEarned.
+  ///
+  /// In tr, this message translates to:
+  /// **'{amount} XP kazanıldı'**
+  String xpEarned(Object amount);
+
   /// Auto-generated metadata
   ///
   /// In tr, this message translates to:

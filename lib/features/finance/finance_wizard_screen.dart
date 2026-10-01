@@ -181,8 +181,9 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
 
           return Container(
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E1E24) : Colors.white,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+              color: scheme.surfaceContainerHigh,
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(28)),
             ),
             child: SafeArea(
               child: SingleChildScrollView(
@@ -223,7 +224,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                           height: 80,
                           decoration: BoxDecoration(
                             color: isDark
-                                ? scheme.surfaceContainerHighest.withValues(alpha: 0.5)
+                                ? scheme.surfaceContainerHighest
+                                    .withValues(alpha: 0.5)
                                 : Colors.black.withValues(alpha: 0.04),
                             shape: BoxShape.circle,
                             border: Border.all(
@@ -244,7 +246,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                             onChanged: (v) {
                               if (v.characters.length > 1) {
                                 emojiCtrl.text = v.characters.last;
-                                emojiCtrl.selection = TextSelection.fromPosition(
+                                emojiCtrl.selection =
+                                    TextSelection.fromPosition(
                                   TextPosition(offset: emojiCtrl.text.length),
                                 );
                               }
@@ -258,7 +261,9 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                       const SizedBox(height: 8),
                       Center(
                         child: Text(
-                          AppLocalizations.of(ctx).chooseEmoji.replaceAll(':', ''),
+                          AppLocalizations.of(ctx)
+                              .chooseEmoji
+                              .replaceAll(':', ''),
                           style: TextStyle(
                             fontSize: 12,
                             color: scheme.onSurfaceVariant,
@@ -276,7 +281,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                           ),
                           filled: true,
                           fillColor: isDark
-                              ? scheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                              ? scheme.surfaceContainerHighest
+                                  .withValues(alpha: 0.3)
                               : Colors.black.withValues(alpha: 0.03),
                         ),
                       ),
@@ -318,7 +324,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                             ),
                             onPressed: () {
                               if (nameCtrl.text.trim().isEmpty ||
-                                  (selectedEmoji == null || selectedEmoji!.isEmpty)) {
+                                  (selectedEmoji == null ||
+                                      selectedEmoji!.isEmpty)) {
                                 return;
                               }
                               Navigator.pop(ctx, true);
@@ -365,7 +372,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E1E24) : Colors.white,
+          color: Theme.of(ctx).colorScheme.surfaceContainerHigh,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -382,7 +389,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.delete_outline, color: Color(0xFFF43F5E)),
+                leading:
+                    const Icon(Icons.delete_outline, color: Color(0xFFF43F5E)),
                 title: Text(
                   AppLocalizations.of(ctx).deleteCategoryTitle,
                   style: const TextStyle(color: Color(0xFFF43F5E)),
@@ -451,8 +459,9 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
 
           return Container(
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E1E24) : Colors.white,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+              color: scheme.surfaceContainerHigh,
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(28)),
             ),
             child: SafeArea(
               child: SingleChildScrollView(
@@ -493,7 +502,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                           height: 80,
                           decoration: BoxDecoration(
                             color: isDark
-                                ? scheme.surfaceContainerHighest.withValues(alpha: 0.5)
+                                ? scheme.surfaceContainerHighest
+                                    .withValues(alpha: 0.5)
                                 : Colors.black.withValues(alpha: 0.04),
                             shape: BoxShape.circle,
                             border: Border.all(
@@ -514,7 +524,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                             onChanged: (v) {
                               if (v.characters.length > 1) {
                                 emojiCtrl.text = v.characters.last;
-                                emojiCtrl.selection = TextSelection.fromPosition(
+                                emojiCtrl.selection =
+                                    TextSelection.fromPosition(
                                   TextPosition(offset: emojiCtrl.text.length),
                                 );
                               }
@@ -537,14 +548,16 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                           ),
                           filled: true,
                           fillColor: isDark
-                              ? scheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                              ? scheme.surfaceContainerHighest
+                                  .withValues(alpha: 0.3)
                               : Colors.black.withValues(alpha: 0.03),
                         ),
                       ),
                       const SizedBox(height: 16),
                       const Text(
                         'Hızlı Öneriler',
-                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.w700),
                       ),
                       const SizedBox(height: 8),
                       SizedBox(
@@ -753,7 +766,9 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: isSelected ? color.withValues(alpha: 0.2) : Colors.transparent,
+                color: isSelected
+                    ? color.withValues(alpha: 0.2)
+                    : Colors.transparent,
                 shape: BoxShape.circle,
               ),
               alignment: Alignment.center,
@@ -809,7 +824,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             decoration: BoxDecoration(
               color: isDark
-                  ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.45)
+                  ? theme.colorScheme.surfaceContainerHighest
+                      .withValues(alpha: 0.45)
                   : Colors.white,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
@@ -844,7 +860,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                       child: IntrinsicWidth(
                         child: TextField(
                           controller: _amountCtrl,
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
                           textAlign: TextAlign.center,
                           autofocus: true,
                           style: TextStyle(
@@ -858,7 +875,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                             hintStyle: TextStyle(
                               fontSize: 38,
                               fontWeight: FontWeight.w900,
-                              color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                              color: theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.2),
                             ),
                             border: InputBorder.none,
                             isDense: true,
@@ -881,7 +899,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                     return ActionChip(
                       label: Text('+$v$currencySymbol'),
                       padding: const EdgeInsets.symmetric(horizontal: 4),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                       onPressed: () => _quickAddAmount(v.toDouble()),
                     );
                   }).toList(),
@@ -922,9 +941,11 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
               ),
               filled: true,
               fillColor: isDark
-                  ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                  ? theme.colorScheme.surfaceContainerHighest
+                      .withValues(alpha: 0.3)
                   : Colors.grey.withValues(alpha: 0.08),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
             ),
             onSubmitted: (_) => _nextPage(),
           ),
@@ -990,20 +1011,24 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                   },
                   borderRadius: BorderRadius.circular(14),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 10),
                     decoration: BoxDecoration(
                       color: isDark
-                          ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
+                          ? colorScheme.surfaceContainerHighest
+                              .withValues(alpha: 0.4)
                           : Colors.grey.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Column(
                       children: [
-                        Icon(Icons.calendar_month_rounded, size: 20, color: colorScheme.primary),
+                        Icon(Icons.calendar_month_rounded,
+                            size: 20, color: colorScheme.primary),
                         const SizedBox(height: 3),
                         Text(
                           DateFormat.MMMd().format(_selectedDate),
-                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                          style: const TextStyle(
+                              fontSize: 11, fontWeight: FontWeight.w600),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -1031,21 +1056,30 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
               color: _isRecurring
                   ? _accentColor.withValues(alpha: 0.1)
                   : (isDark
-                      ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
+                      ? colorScheme.surfaceContainerHighest
+                          .withValues(alpha: 0.4)
                       : Colors.grey.withValues(alpha: 0.08)),
               borderRadius: BorderRadius.circular(18),
-              border: _isRecurring ? Border.all(color: _accentColor, width: 1.5) : null,
+              border: _isRecurring
+                  ? Border.all(color: _accentColor, width: 1.5)
+                  : null,
             ),
             child: Row(
               children: [
                 Icon(
-                  _isRecurring ? Icons.repeat_rounded : Icons.repeat_one_rounded,
-                  color: _isRecurring ? _accentColor : colorScheme.onSurfaceVariant,
+                  _isRecurring
+                      ? Icons.repeat_rounded
+                      : Icons.repeat_one_rounded,
+                  color: _isRecurring
+                      ? _accentColor
+                      : colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    _isRecurring ? 'Aylık Tekrarlayan İşlem' : 'Tek Seferlik İşlem',
+                    _isRecurring
+                        ? 'Aylık Tekrarlayan İşlem'
+                        : 'Tek Seferlik İşlem',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
@@ -1132,11 +1166,15 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                     ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
                     : Colors.grey.withValues(alpha: 0.08)),
             borderRadius: BorderRadius.circular(14),
-            border: isSelected ? Border.all(color: _accentColor, width: 1.5) : null,
+            border:
+                isSelected ? Border.all(color: _accentColor, width: 1.5) : null,
           ),
           child: Column(
             children: [
-              Icon(icon, size: 20, color: isSelected ? _accentColor : colorScheme.onSurfaceVariant),
+              Icon(icon,
+                  size: 20,
+                  color:
+                      isSelected ? _accentColor : colorScheme.onSurfaceVariant),
               const SizedBox(height: 3),
               Text(
                 label,
@@ -1176,7 +1214,8 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
                   ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
                   : Colors.grey.withValues(alpha: 0.08)),
           borderRadius: BorderRadius.circular(14),
-          border: isSelected ? Border.all(color: _accentColor, width: 1.5) : null,
+          border:
+              isSelected ? Border.all(color: _accentColor, width: 1.5) : null,
         ),
         child: Text(
           title,
@@ -1221,14 +1260,16 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
             style: FilledButton.styleFrom(
               backgroundColor: _accentColor,
               padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   l10n.save,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(width: 8),
                 const Icon(Icons.check_rounded, size: 20),
@@ -1321,7 +1362,8 @@ class _CategoryGrid extends StatelessWidget {
                   else
                     Icon(c.icon, size: 17, color: Color(c.colorValue)),
                   const SizedBox(width: 8),
-                  Text(c.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                  Text(c.name,
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
                 ],
               ),
               onSelected: (_) => onSelect(c),
@@ -1335,10 +1377,16 @@ class _CategoryGrid extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                color: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary
+                      .withValues(alpha: 0.4),
                   width: 1,
                 ),
               ),
@@ -1410,7 +1458,8 @@ class _EmojiGrid extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isSel
                           ? scheme.primary.withValues(alpha: 0.2)
-                          : scheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                          : scheme.surfaceContainerHighest
+                              .withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(10),
                       border: isSel
                           ? Border.all(color: scheme.primary, width: 1.5)

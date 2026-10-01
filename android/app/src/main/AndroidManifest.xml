@@ -11,13 +11,9 @@
     <!-- Exact alarm permissions for Android 12+ -->
     <!-- Removed: this app does not provide calendar/alarm core functionality; exact alarm permission not required. -->
     <!-- Explicitly remove any injected exact-alarm permissions from libraries/plugins -->
-    <!-- Foreground service permission for Android 9+ -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <!-- For Android 14+ (API 34+) we need specific foreground service type -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     
     <application
-        android:label="mira"
+        android:label="Mira"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:enableOnBackInvokedCallback="true"
@@ -49,7 +45,7 @@
         <!-- Default Notification Icon -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_stat_miralogo" />
+            android:resource="@drawable/ic_stat_mira_v2" />
 
         <!-- AdMob App ID -->
         <meta-data
@@ -62,28 +58,6 @@
             android:name="flutterEmbedding"
             android:value="2" />
         
-        <!-- Background Service for Timer -->
-        <service
-            android:name="id.flutter.flutter_background_service.BackgroundService"
-            android:foregroundServiceType="specialUse"
-            android:exported="false"
-            tools:replace="android:exported">
-            <property
-                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="Timer tracking for habit formation" />
-        </service>
-
-        <!-- Timer Action Receiver -->
-        <receiver
-            android:name=".TimerActionReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.koralabs.mira.TIMER_PAUSE" />
-                <action android:name="com.koralabs.mira.TIMER_RESUME" />
-                <action android:name="com.koralabs.mira.TIMER_STOP" />
-            </intent-filter>
-        </receiver>
-
         <!-- Scheduled Notification Receiver -->
         <receiver
             android:exported="false"

@@ -26,12 +26,16 @@ class AppLogo extends StatelessWidget {
   /// How to inscribe the image into the space.
   final BoxFit fit;
 
-  static const String _pngPath = 'assets/icons/miralogo.png';
+  static const String _darkPath = 'assets/icons/mira_logo_dark.png';
+  static const String _lightPath = 'assets/icons/mira_logo_light.png';
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final assetPath = isDark ? _darkPath : _lightPath;
+
     final image = Image.asset(
-      _pngPath,
+      assetPath,
       width: size,
       height: size,
       fit: fit,

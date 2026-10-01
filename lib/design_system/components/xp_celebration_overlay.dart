@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Ultra-modern, tactile, and aesthetic XP celebration banner with
 /// spring physics, glowing claymorphic capsule, and subtle particle sparkles.
@@ -133,6 +134,7 @@ class _XpCelebrationToastState extends State<XpCelebrationToast>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return AnimatedBuilder(
       animation: _controller,
@@ -236,7 +238,7 @@ class _XpCelebrationToastState extends State<XpCelebrationToast>
 
                         // Points text
                         Text(
-                          '+${widget.amount} XP',
+                          l10n.xpEarned(widget.amount),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 15,
@@ -253,26 +255,6 @@ class _XpCelebrationToastState extends State<XpCelebrationToast>
                           ),
                         ),
 
-                        const SizedBox(width: 6),
-
-                        // Mini "Kazanıldı" pill
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.18),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Text(
-                            'KAZANILDI',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 9,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 0.6,
-                              decoration: TextDecoration.none,
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),

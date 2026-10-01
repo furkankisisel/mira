@@ -98,7 +98,8 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
     HapticFeedback.selectionClick();
     setState(() {
       if (_mode == PeriodMode.month) {
-        _selectedPeriod = DateTime(_selectedPeriod.year, _selectedPeriod.month + delta, 1);
+        _selectedPeriod =
+            DateTime(_selectedPeriod.year, _selectedPeriod.month + delta, 1);
         _plannedMonthlySpend = _budgetRepo.getBudgetForMonth(
           DateTime(_selectedPeriod.year, _selectedPeriod.month, 1),
         );
@@ -159,11 +160,13 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
                   pinned: true,
                   elevation: 0,
                   scrolledUnderElevation: 0,
-                  backgroundColor: theme.scaffoldBackgroundColor.withValues(alpha: 0.95),
+                  backgroundColor:
+                      theme.scaffoldBackgroundColor.withValues(alpha: 0.95),
                   leading: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                          size: 20),
                       style: IconButton.styleFrom(
                         backgroundColor: isDark
                             ? Colors.white.withValues(alpha: 0.08)
@@ -187,7 +190,8 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
                 ),
 
                 SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
                       // ── 1. Mode Switcher (Month / Year) & Period Capsule ──
@@ -222,7 +226,8 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
                           isTr: isTr,
                           onSave: (v) async {
                             await _budgetRepo.setBudgetForMonth(
-                              DateTime(_selectedPeriod.year, _selectedPeriod.month, 1),
+                              DateTime(_selectedPeriod.year,
+                                  _selectedPeriod.month, 1),
                               v,
                             );
                             if (mounted) {
@@ -237,7 +242,9 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
                       _buildSectionHeader(
                         title: _mode == PeriodMode.month
                             ? (isTr ? 'Günlük Nakit Akışı' : l10n.monthlyTrend)
-                            : (isTr ? 'Yıllık Gelişim & Trend' : l10n.yearlyProgress),
+                            : (isTr
+                                ? 'Yıllık Gelişim & Trend'
+                                : l10n.yearlyProgress),
                         icon: Icons.insights_rounded,
                         scheme: scheme,
                       ),
@@ -261,7 +268,9 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
 
                       // ── 5. Expense Distribution Donut Chart ──
                       _buildSectionHeader(
-                        title: isTr ? 'Gider Dağılımı' : l10n.expenseDistributionPie,
+                        title: isTr
+                            ? 'Gider Dağılımı'
+                            : l10n.expenseDistributionPie,
                         icon: Icons.pie_chart_rounded,
                         scheme: scheme,
                       ),
@@ -273,14 +282,17 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
                         transactions: expenses,
                         locale: locale,
                         isTr: isTr,
-                        onSelect: (catId) => _showCategoryDetails(context, catId),
+                        onSelect: (catId) =>
+                            _showCategoryDetails(context, catId),
                       ),
 
                       const SizedBox(height: 24),
 
                       // ── 6. Category Breakdown List ──
                       _buildSectionHeader(
-                        title: isTr ? 'Kategori Dağılımı' : l10n.breakdownByCategory,
+                        title: isTr
+                            ? 'Kategori Dağılımı'
+                            : l10n.breakdownByCategory,
                         icon: Icons.category_rounded,
                         scheme: scheme,
                       ),
@@ -292,7 +304,8 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
                         catRepo: _catRepo,
                         locale: locale,
                         isTr: isTr,
-                        onSelect: (catId) => _showCategoryDetails(context, catId),
+                        onSelect: (catId) =>
+                            _showCategoryDetails(context, catId),
                       ),
 
                       const SizedBox(height: 40),
@@ -424,7 +437,8 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
                       );
                       if (picked != null) {
                         setState(() {
-                          _selectedPeriod = DateTime(picked.year, picked.month, 1);
+                          _selectedPeriod =
+                              DateTime(picked.year, picked.month, 1);
                           _plannedMonthlySpend = _budgetRepo.getBudgetForMonth(
                             DateTime(picked.year, picked.month, 1),
                           );
@@ -514,7 +528,9 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
               fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
               color: isSelected
                   ? scheme.primary
-                  : (isDark ? Colors.white.withValues(alpha: 0.6) : Colors.black54),
+                  : (isDark
+                      ? Colors.white.withValues(alpha: 0.6)
+                      : Colors.black54),
             ),
           ),
         ),
@@ -556,7 +572,7 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
 
         return Container(
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1E1E24) : Colors.white,
+            color: scheme.surfaceContainerHigh,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           ),
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
@@ -591,8 +607,10 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
                         ),
                         alignment: Alignment.center,
                         child: catEmoji != null && catEmoji.isNotEmpty
-                            ? Text(catEmoji, style: const TextStyle(fontSize: 22))
-                            : Icon(Icons.category_rounded, color: color, size: 22),
+                            ? Text(catEmoji,
+                                style: const TextStyle(fontSize: 22))
+                            : Icon(Icons.category_rounded,
+                                color: color, size: 22),
                       ),
                       const SizedBox(width: 14),
                       Expanded(
@@ -601,11 +619,12 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
                           children: [
                             Text(
                               name,
-                              style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 18,
-                                    letterSpacing: -0.3,
-                                  ),
+                              style:
+                                  Theme.of(ctx).textTheme.titleLarge?.copyWith(
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 18,
+                                        letterSpacing: -0.3,
+                                      ),
                             ),
                             Text(
                               isTr
@@ -620,9 +639,11 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF43F5E).withValues(alpha: 0.12),
+                          color:
+                              const Color(0xFFF43F5E).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -645,15 +666,17 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
                         ? Center(
                             child: Text(
                               l10n.noExpenseInThisCategory,
-                              style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
-                                    color: scheme.onSurfaceVariant,
-                                  ),
+                              style:
+                                  Theme.of(ctx).textTheme.bodyMedium?.copyWith(
+                                        color: scheme.onSurfaceVariant,
+                                      ),
                             ),
                           )
                         : ListView.separated(
                             physics: const BouncingScrollPhysics(),
                             itemCount: txs.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 6),
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(height: 6),
                             itemBuilder: (_, i) {
                               final t = txs[i];
                               return Container(
@@ -663,7 +686,8 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
                                 ),
                                 decoration: BoxDecoration(
                                   color: isDark
-                                      ? scheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                                      ? scheme.surfaceContainerHighest
+                                          .withValues(alpha: 0.3)
                                       : Colors.grey.withValues(alpha: 0.05),
                                   borderRadius: BorderRadius.circular(14),
                                 ),
@@ -671,7 +695,8 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
                                   children: [
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             t.title,
@@ -684,7 +709,8 @@ class _FinanceAnalysisScreenState extends State<FinanceAnalysisScreen> {
                                           Text(
                                             DateFormat(
                                               'dd MMMM yyyy',
-                                              Localizations.localeOf(ctx).toString(),
+                                              Localizations.localeOf(ctx)
+                                                  .toString(),
                                             ).format(t.date),
                                             style: TextStyle(
                                               fontSize: 11,
@@ -741,14 +767,17 @@ class _FinancialSummaryCard extends StatelessWidget {
     final scheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
 
-    final currencySymbol = NumberFormat.simpleCurrency(locale: locale).currencySymbol;
+    final currencySymbol =
+        NumberFormat.simpleCurrency(locale: locale).currencySymbol;
     final numFmt = NumberFormat('#,##0', locale);
 
     final isPositiveNet = net >= 0;
-    final netColor = isPositiveNet ? const Color(0xFF10B981) : const Color(0xFFF43F5E);
+    final netColor =
+        isPositiveNet ? const Color(0xFF10B981) : const Color(0xFFF43F5E);
 
     // Savings rate if income > 0
-    final double? savingsRate = income > 0 ? ((net / income) * 100).clamp(0, 100).toDouble() : null;
+    final double? savingsRate =
+        income > 0 ? ((net / income) * 100).clamp(0, 100).toDouble() : null;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -786,7 +815,8 @@ class _FinancialSummaryCard extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                 decoration: BoxDecoration(
                   color: netColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(10),
@@ -795,7 +825,9 @@ class _FinancialSummaryCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      isPositiveNet ? Icons.check_circle_outline_rounded : Icons.warning_amber_rounded,
+                      isPositiveNet
+                          ? Icons.check_circle_outline_rounded
+                          : Icons.warning_amber_rounded,
                       size: 13,
                       color: netColor,
                     ),
@@ -853,7 +885,8 @@ class _FinancialSummaryCard extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF10B981).withValues(alpha: isDark ? 0.12 : 0.08),
+                    color: const Color(0xFF10B981)
+                        .withValues(alpha: isDark ? 0.12 : 0.08),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Row(
@@ -907,7 +940,8 @@ class _FinancialSummaryCard extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF43F5E).withValues(alpha: isDark ? 0.12 : 0.08),
+                    color: const Color(0xFFF43F5E)
+                        .withValues(alpha: isDark ? 0.12 : 0.08),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Row(
@@ -976,7 +1010,9 @@ class _FinancialSummaryCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
-                    color: savingsRate > 20 ? const Color(0xFF10B981) : scheme.onSurface,
+                    color: savingsRate > 20
+                        ? const Color(0xFF10B981)
+                        : scheme.onSurface,
                   ),
                 ),
               ],
@@ -1043,12 +1079,17 @@ class _CategoryBreakdown extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+          color: Theme.of(context)
+              .colorScheme
+              .surfaceContainerHighest
+              .withValues(alpha: 0.4),
           borderRadius: BorderRadius.circular(20),
         ),
         alignment: Alignment.center,
         child: Text(
-          isTr ? 'Bu dönemde henüz kategori verisi yok' : AppLocalizations.of(context).noDataThisMonth,
+          isTr
+              ? 'Bu dönemde henüz kategori verisi yok'
+              : AppLocalizations.of(context).noDataThisMonth,
           style: TextStyle(
             fontSize: 13,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -1072,7 +1113,8 @@ class _CategoryBreakdown extends StatelessWidget {
                   ? Theme.of(context).colorScheme.primary
                   : _colorForEmoji(cats[e.key]?.emoji, cats[e.key]?.type),
               value: e.value,
-              progress: (e.value.abs() / (maxVal > 0 ? maxVal : 1)).clamp(0.0, 1.0),
+              progress:
+                  (e.value.abs() / (maxVal > 0 ? maxVal : 1)).clamp(0.0, 1.0),
               locale: locale,
               onTap: onSelect,
             ),
@@ -1108,11 +1150,13 @@ class _CategoryRow extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
-    final currencySymbol = NumberFormat.simpleCurrency(locale: locale).currencySymbol;
+    final currencySymbol =
+        NumberFormat.simpleCurrency(locale: locale).currencySymbol;
     final numFmt = NumberFormat('#,##0', locale);
 
     final isIncome = value >= 0;
-    final amountColor = isIncome ? const Color(0xFF10B981) : const Color(0xFFF43F5E);
+    final amountColor =
+        isIncome ? const Color(0xFF10B981) : const Color(0xFFF43F5E);
 
     return Container(
       decoration: BoxDecoration(
@@ -1154,7 +1198,8 @@ class _CategoryRow extends StatelessWidget {
                       alignment: Alignment.center,
                       child: emoji != null && emoji!.isNotEmpty
                           ? Text(emoji!, style: const TextStyle(fontSize: 20))
-                          : Icon(Icons.category_rounded, color: color, size: 20),
+                          : Icon(Icons.category_rounded,
+                              color: color, size: 20),
                     ),
                     const SizedBox(width: 14),
                     Expanded(
@@ -1231,16 +1276,19 @@ class _MonthlyTrendChart extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
-    final currencySymbol = NumberFormat.simpleCurrency(locale: locale).currencySymbol;
+    final currencySymbol =
+        NumberFormat.simpleCurrency(locale: locale).currencySymbol;
 
-    final end = DateTime(month.year, month.month + 1, 1).subtract(const Duration(days: 1));
+    final end = DateTime(month.year, month.month + 1, 1)
+        .subtract(const Duration(days: 1));
     final days = end.day;
 
     final totals = List<double>.generate(days, (_) => 0.0);
     for (final tx in transactions) {
       final dayIdx = tx.date.day - 1;
       if (dayIdx >= 0 && dayIdx < days) {
-        totals[dayIdx] += tx.type == TransactionType.expense ? -tx.amount : tx.amount;
+        totals[dayIdx] +=
+            tx.type == TransactionType.expense ? -tx.amount : tx.amount;
       }
     }
 
@@ -1318,9 +1366,12 @@ class _MonthlyTrendChart extends StatelessWidget {
                 alignment: BarChartAlignment.spaceBetween,
                 barGroups: groups,
                 titlesData: FlTitlesData(
-                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  leftTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
@@ -1328,7 +1379,13 @@ class _MonthlyTrendChart extends StatelessWidget {
                       getTitlesWidget: (v, meta) {
                         final d = v.toInt();
                         if (d > days) return const SizedBox.shrink();
-                        if (d == 1 || d == 5 || d == 10 || d == 15 || d == 20 || d == 25 || d == days) {
+                        if (d == 1 ||
+                            d == 5 ||
+                            d == 10 ||
+                            d == 15 ||
+                            d == 20 ||
+                            d == 25 ||
+                            d == days) {
                           return Padding(
                             padding: const EdgeInsets.only(top: 6),
                             child: Text(
@@ -1358,8 +1415,11 @@ class _MonthlyTrendChart extends StatelessWidget {
                 ),
                 barTouchData: BarTouchData(
                   touchTooltipData: BarTouchTooltipData(
-                    getTooltipColor: (_) => isDark ? const Color(0xFF27272A) : const Color(0xFF1E293B),
-                    tooltipPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    getTooltipColor: (_) => isDark
+                        ? const Color(0xFF27272A)
+                        : const Color(0xFF1E293B),
+                    tooltipPadding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                       final val = rod.toY;
                       final isPos = val >= 0;
@@ -1372,9 +1432,12 @@ class _MonthlyTrendChart extends StatelessWidget {
                         ),
                         children: [
                           TextSpan(
-                            text: '${isPos ? '+' : ''}$currencySymbol${val.toStringAsFixed(0)}',
+                            text:
+                                '${isPos ? '+' : ''}$currencySymbol${val.toStringAsFixed(0)}',
                             style: TextStyle(
-                              color: isPos ? const Color(0xFF6EE7B7) : const Color(0xFFFDA4AF),
+                              color: isPos
+                                  ? const Color(0xFF6EE7B7)
+                                  : const Color(0xFFFDA4AF),
                               fontWeight: FontWeight.w800,
                               fontSize: 12,
                             ),
@@ -1433,13 +1496,15 @@ class _YearlyTrendChart extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
-    final currencySymbol = NumberFormat.simpleCurrency(locale: locale).currencySymbol;
+    final currencySymbol =
+        NumberFormat.simpleCurrency(locale: locale).currencySymbol;
 
     final months = List<double>.generate(12, (_) => 0.0);
     for (final tx in transactions) {
       if (tx.date.year != year) continue;
       final idx = tx.date.month - 1;
-      months[idx] += tx.type == TransactionType.expense ? -tx.amount : tx.amount;
+      months[idx] +=
+          tx.type == TransactionType.expense ? -tx.amount : tx.amount;
     }
 
     final groups = <BarChartGroupData>[];
@@ -1497,9 +1562,12 @@ class _YearlyTrendChart extends StatelessWidget {
                 alignment: BarChartAlignment.spaceBetween,
                 barGroups: groups,
                 titlesData: FlTitlesData(
-                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  leftTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
@@ -1507,11 +1575,14 @@ class _YearlyTrendChart extends StatelessWidget {
                       getTitlesWidget: (v, meta) {
                         final m = v.toInt();
                         if (m < 1 || m > 12) return const SizedBox.shrink();
-                        final monthName = DateFormat.MMM(locale).format(DateTime(year, m, 1));
+                        final monthName =
+                            DateFormat.MMM(locale).format(DateTime(year, m, 1));
                         return Padding(
                           padding: const EdgeInsets.only(top: 6),
                           child: Text(
-                            monthName.length > 3 ? monthName.substring(0, 3) : monthName,
+                            monthName.length > 3
+                                ? monthName.substring(0, 3)
+                                : monthName,
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w600,
@@ -1535,11 +1606,15 @@ class _YearlyTrendChart extends StatelessWidget {
                 ),
                 barTouchData: BarTouchData(
                   touchTooltipData: BarTouchTooltipData(
-                    getTooltipColor: (_) => isDark ? const Color(0xFF27272A) : const Color(0xFF1E293B),
-                    tooltipPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    getTooltipColor: (_) => isDark
+                        ? const Color(0xFF27272A)
+                        : const Color(0xFF1E293B),
+                    tooltipPadding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                       final m = group.x.toInt();
-                      final monthName = DateFormat.MMMM(locale).format(DateTime(year, m, 1));
+                      final monthName =
+                          DateFormat.MMMM(locale).format(DateTime(year, m, 1));
                       final val = rod.toY;
                       final isPos = val >= 0;
                       return BarTooltipItem(
@@ -1551,9 +1626,12 @@ class _YearlyTrendChart extends StatelessWidget {
                         ),
                         children: [
                           TextSpan(
-                            text: '${isPos ? '+' : ''}$currencySymbol${val.toStringAsFixed(0)}',
+                            text:
+                                '${isPos ? '+' : ''}$currencySymbol${val.toStringAsFixed(0)}',
                             style: TextStyle(
-                              color: isPos ? const Color(0xFF6EE7B7) : const Color(0xFFFDA4AF),
+                              color: isPos
+                                  ? const Color(0xFF6EE7B7)
+                                  : const Color(0xFFFDA4AF),
                               fontWeight: FontWeight.w800,
                               fontSize: 12,
                             ),
@@ -1598,7 +1676,8 @@ class _ExpensePieChart extends StatelessWidget {
     final scheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
     final cats = {for (final c in catRepo.all()) c.id: c};
-    final expenses = transactions.where((t) => t.type == TransactionType.expense).toList();
+    final expenses =
+        transactions.where((t) => t.type == TransactionType.expense).toList();
 
     if (expenses.isEmpty) {
       return Container(
@@ -1616,7 +1695,9 @@ class _ExpensePieChart extends StatelessWidget {
         ),
         alignment: Alignment.center,
         child: Text(
-          isTr ? 'Bu dönemde harcama kaydı yok' : AppLocalizations.of(context).noExpenses,
+          isTr
+              ? 'Bu dönemde harcama kaydı yok'
+              : AppLocalizations.of(context).noExpenses,
           style: TextStyle(
             color: scheme.onSurfaceVariant,
             fontSize: 13,
@@ -1631,7 +1712,8 @@ class _ExpensePieChart extends StatelessWidget {
       byCat.update(id, (v) => v + tx.amount, ifAbsent: () => tx.amount);
     }
     final total = byCat.values.fold<double>(0, (s, e) => s + e);
-    final entries = byCat.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    final entries = byCat.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
 
     final sections = <PieChartSectionData>[];
     final colorMap = <String, Color>{};
@@ -1656,7 +1738,8 @@ class _ExpensePieChart extends StatelessWidget {
       );
     }
 
-    final currencySymbol = NumberFormat.simpleCurrency(locale: locale).currencySymbol;
+    final currencySymbol =
+        NumberFormat.simpleCurrency(locale: locale).currencySymbol;
     final numFmt = NumberFormat('#,##0', locale);
 
     return Container(
@@ -1738,7 +1821,8 @@ class _ExpensePieChart extends StatelessWidget {
                   onTap: () => onSelect?.call(e.key == '_none' ? null : e.key),
                   borderRadius: BorderRadius.circular(8),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 4),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 3, horizontal: 4),
                     child: Row(
                       children: [
                         Container(
@@ -1751,7 +1835,8 @@ class _ExpensePieChart extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         if (cat?.emoji != null && cat!.emoji!.isNotEmpty) ...[
-                          Text(cat.emoji!, style: const TextStyle(fontSize: 14)),
+                          Text(cat.emoji!,
+                              style: const TextStyle(fontSize: 14)),
                           const SizedBox(width: 6),
                         ],
                         Expanded(
@@ -1774,7 +1859,8 @@ class _ExpensePieChart extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
                             color: color.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(6),
@@ -1824,7 +1910,8 @@ class _BudgetPlanner extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
-    final currencySymbol = NumberFormat.simpleCurrency(locale: locale).currencySymbol;
+    final currencySymbol =
+        NumberFormat.simpleCurrency(locale: locale).currencySymbol;
     final numFmt = NumberFormat('#,##0', locale);
 
     final target = plannedMonthlySpend;
@@ -1844,8 +1931,11 @@ class _BudgetPlanner extends StatelessWidget {
     final now = DateTime.now();
     final isCurrentMonth = month.year == now.year && month.month == now.month;
     final endOfMonth = DateTime(month.year, month.month + 1, 0).day;
-    final remainingDays = isCurrentMonth ? (endOfMonth - now.day + 1).clamp(1, endOfMonth) : endOfMonth;
-    final double dailyAllowance = (remaining > 0 && remainingDays > 0) ? (remaining / remainingDays) : 0;
+    final remainingDays = isCurrentMonth
+        ? (endOfMonth - now.day + 1).clamp(1, endOfMonth)
+        : endOfMonth;
+    final double dailyAllowance =
+        (remaining > 0 && remainingDays > 0) ? (remaining / remainingDays) : 0;
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -1890,7 +1980,9 @@ class _BudgetPlanner extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    isTr ? 'Aylık Bütçe Planı' : AppLocalizations.of(context).savingsBudgetPlan,
+                    isTr
+                        ? 'Aylık Bütçe Planı'
+                        : AppLocalizations.of(context).savingsBudgetPlan,
                     style: const TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 15,
@@ -1932,7 +2024,8 @@ class _BudgetPlanner extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: FilledButton.tonalIcon(
                   style: FilledButton.styleFrom(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
                   ),
                   onPressed: () async {
                     final newTarget = await _showEditBudgetSheet(
@@ -1946,7 +2039,8 @@ class _BudgetPlanner extends StatelessWidget {
                     }
                   },
                   icon: const Icon(Icons.add_rounded, size: 18),
-                  label: Text(isTr ? 'Bütçe Hedefi Belirle' : 'Set Budget Goal'),
+                  label:
+                      Text(isTr ? 'Bütçe Hedefi Belirle' : 'Set Budget Goal'),
                 ),
               ),
             ),
@@ -2024,20 +2118,30 @@ class _BudgetPlanner extends StatelessWidget {
                   child: Row(
                     children: [
                       Icon(
-                        remaining >= 0 ? Icons.savings_outlined : Icons.report_problem_outlined,
+                        remaining >= 0
+                            ? Icons.savings_outlined
+                            : Icons.report_problem_outlined,
                         size: 16,
-                        color: remaining >= 0 ? const Color(0xFF10B981) : const Color(0xFFF43F5E),
+                        color: remaining >= 0
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFFF43F5E),
                       ),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           remaining >= 0
-                              ? (isTr ? 'Kalan: $currencySymbol${numFmt.format(remaining)}' : 'Left: $currencySymbol${numFmt.format(remaining)}')
-                              : (isTr ? 'Aşıldı: $currencySymbol${numFmt.format(remaining.abs())}' : 'Exceeded: $currencySymbol${numFmt.format(remaining.abs())}'),
+                              ? (isTr
+                                  ? 'Kalan: $currencySymbol${numFmt.format(remaining)}'
+                                  : 'Left: $currencySymbol${numFmt.format(remaining)}')
+                              : (isTr
+                                  ? 'Aşıldı: $currencySymbol${numFmt.format(remaining.abs())}'
+                                  : 'Exceeded: $currencySymbol${numFmt.format(remaining.abs())}'),
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: remaining >= 0 ? const Color(0xFF10B981) : const Color(0xFFF43F5E),
+                            color: remaining >= 0
+                                ? const Color(0xFF10B981)
+                                : const Color(0xFFF43F5E),
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -2047,7 +2151,9 @@ class _BudgetPlanner extends StatelessWidget {
                 ),
                 if (remaining > 0)
                   Text(
-                    isTr ? 'Günlük: $currencySymbol${numFmt.format(dailyAllowance)}' : 'Daily: $currencySymbol${numFmt.format(dailyAllowance)}',
+                    isTr
+                        ? 'Günlük: $currencySymbol${numFmt.format(dailyAllowance)}'
+                        : 'Daily: $currencySymbol${numFmt.format(dailyAllowance)}',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -2085,7 +2191,7 @@ Future<double?> _showEditBudgetSheet({
 
       return Container(
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E1E24) : Colors.white,
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         ),
         padding: EdgeInsets.fromLTRB(
@@ -2132,7 +2238,8 @@ Future<double?> _showEditBudgetSheet({
 
               TextField(
                 controller: controller,
-                keyboardType: const TextInputType.numberWithOptions(decimal: false),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: false),
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 autofocus: true,
                 style: const TextStyle(
@@ -2151,7 +2258,8 @@ Future<double?> _showEditBudgetSheet({
                       ),
                     ),
                   ),
-                  prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+                  prefixIconConstraints:
+                      const BoxConstraints(minWidth: 0, minHeight: 0),
                   filled: true,
                   fillColor: isDark
                       ? scheme.surfaceContainerHighest.withValues(alpha: 0.4)
@@ -2170,7 +2278,8 @@ Future<double?> _showEditBudgetSheet({
                 children: [5000, 10000, 20000, 35000, 50000].map((v) {
                   return ActionChip(
                     label: Text('+$v'),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                     onPressed: () {
                       final cur = int.tryParse(controller.text) ?? 0;
                       controller.text = (cur + v).toString();
@@ -2184,7 +2293,8 @@ Future<double?> _showEditBudgetSheet({
                 width: double.infinity,
                 child: FilledButton(
                   style: FilledButton.styleFrom(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                   onPressed: () {
@@ -2193,7 +2303,8 @@ Future<double?> _showEditBudgetSheet({
                   },
                   child: Text(
                     isTr ? 'Bütçeyi Kaydet' : 'Save Budget',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                 ),
               ),
@@ -2220,11 +2331,12 @@ Future<DateTime?> showCustomMonthPicker({
       return StatefulBuilder(
         builder: (context, setState) {
           return Dialog(
-            backgroundColor: isDark ? const Color(0xFF1E1E24) : Colors.white,
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24),
             ),
-            insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+            insetPadding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
             child: Padding(
               padding: const EdgeInsets.all(18.0),
               child: Column(
@@ -2265,7 +2377,8 @@ Future<DateTime?> showCustomMonthPicker({
                       final label = DateFormat.MMM(
                         Localizations.localeOf(context).toString(),
                       ).format(DateTime(year, m, 1));
-                      final selected = (year == initial.year && m == initial.month);
+                      final selected =
+                          (year == initial.year && m == initial.month);
 
                       return GestureDetector(
                         onTap: () {
@@ -2277,7 +2390,8 @@ Future<DateTime?> showCustomMonthPicker({
                             color: selected
                                 ? scheme.primary
                                 : (isDark
-                                    ? scheme.surfaceContainerHighest.withValues(alpha: 0.35)
+                                    ? scheme.surfaceContainerHighest
+                                        .withValues(alpha: 0.35)
                                     : Colors.grey.withValues(alpha: 0.08)),
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -2286,7 +2400,8 @@ Future<DateTime?> showCustomMonthPicker({
                             label,
                             style: TextStyle(
                               fontSize: 13,
-                              fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                              fontWeight:
+                                  selected ? FontWeight.w800 : FontWeight.w600,
                               color: selected ? scheme.onPrimary : null,
                             ),
                           ),
@@ -2305,9 +2420,11 @@ Future<DateTime?> showCustomMonthPicker({
                       const SizedBox(width: 8),
                       FilledButton.tonal(
                         style: FilledButton.styleFrom(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
                         ),
-                        onPressed: () => Navigator.of(context).pop(DateTime.now()),
+                        onPressed: () =>
+                            Navigator.of(context).pop(DateTime.now()),
                         child: const Text('Bu Ay'),
                       ),
                     ],
@@ -2336,7 +2453,7 @@ Future<int?> showCustomYearPicker({
     context: context,
     builder: (ctx) {
       return Dialog(
-        backgroundColor: isDark ? const Color(0xFF1E1E24) : Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
         child: Padding(
@@ -2380,7 +2497,8 @@ Future<int?> showCustomYearPicker({
                           color: selected
                               ? scheme.primary
                               : (isDark
-                                  ? scheme.surfaceContainerHighest.withValues(alpha: 0.35)
+                                  ? scheme.surfaceContainerHighest
+                                      .withValues(alpha: 0.35)
                                   : Colors.grey.withValues(alpha: 0.08)),
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -2389,7 +2507,8 @@ Future<int?> showCustomYearPicker({
                           y.toString(),
                           style: TextStyle(
                             fontSize: 14,
-                            fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                            fontWeight:
+                                selected ? FontWeight.w800 : FontWeight.w600,
                             color: selected ? scheme.onPrimary : null,
                           ),
                         ),
@@ -2419,8 +2538,12 @@ extension on _FinanceAnalysisScreenState {
   }
 
   List<FinanceTransaction> _aggregateIncomesForYear(int year) =>
-      _aggregateForYear(year).where((e) => e.type == TransactionType.income).toList();
+      _aggregateForYear(year)
+          .where((e) => e.type == TransactionType.income)
+          .toList();
 
   List<FinanceTransaction> _aggregateExpensesForYear(int year) =>
-      _aggregateForYear(year).where((e) => e.type == TransactionType.expense).toList();
+      _aggregateForYear(year)
+          .where((e) => e.type == TransactionType.expense)
+          .toList();
 }

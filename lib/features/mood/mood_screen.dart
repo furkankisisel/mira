@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
@@ -171,6 +170,7 @@ class _MoodScreenState extends State<MoodScreen> {
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final ThemeData theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final Color bgColor = theme.scaffoldBackgroundColor;
     final Color primaryColor = theme.colorScheme.primary;
     final Color textColor = theme.colorScheme.onSurface;
@@ -203,19 +203,23 @@ class _MoodScreenState extends State<MoodScreen> {
                 height: 38,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isDark ? const Color(0xFF1E2430) : Colors.white,
+                  color: colorScheme.surfaceContainerHigh,
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.95),
+                    color: colorScheme.outlineVariant.withValues(
+                      alpha: isDark ? 0.45 : 0.7,
+                    ),
                     width: 1.2,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.05),
+                      color:
+                          Colors.black.withValues(alpha: isDark ? 0.35 : 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),
                     BoxShadow(
-                      color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.8),
+                      color:
+                          Colors.white.withValues(alpha: isDark ? 0.05 : 0.8),
                       blurRadius: 2,
                       offset: const Offset(0, -1),
                     ),
@@ -249,19 +253,23 @@ class _MoodScreenState extends State<MoodScreen> {
                     height: 38,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isDark ? const Color(0xFF1E2430) : Colors.white,
+                      color: colorScheme.surfaceContainerHigh,
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.95),
+                        color: colorScheme.outlineVariant.withValues(
+                          alpha: isDark ? 0.45 : 0.7,
+                        ),
                         width: 1.2,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.05),
+                          color: Colors.black
+                              .withValues(alpha: isDark ? 0.35 : 0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 3),
                         ),
                         BoxShadow(
-                          color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.8),
+                          color: Colors.white
+                              .withValues(alpha: isDark ? 0.05 : 0.8),
                           blurRadius: 2,
                           offset: const Offset(0, -1),
                         ),
@@ -297,7 +305,8 @@ class _MoodScreenState extends State<MoodScreen> {
     }
 
     final Color hintColor = textColor.withValues(alpha: 0.5);
-    final cardBg = isDark ? const Color(0xFF181D27) : Colors.white;
+    final colorScheme = Theme.of(context).colorScheme;
+    final cardBg = colorScheme.surfaceContainerHigh;
 
     return Column(
       children: [
@@ -311,7 +320,9 @@ class _MoodScreenState extends State<MoodScreen> {
                 color: cardBg,
                 borderRadius: BorderRadius.circular(32),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: isDark ? 0.10 : 0.95),
+                  color: colorScheme.outlineVariant.withValues(
+                    alpha: isDark ? 0.45 : 0.7,
+                  ),
                   width: 1.5,
                 ),
                 boxShadow: [
@@ -498,13 +509,11 @@ class _MoodScreenState extends State<MoodScreen> {
                       const SizedBox(height: 16),
                       Container(
                         decoration: BoxDecoration(
-                          color: isDark
-                              ? const Color(0xFF1E2430)
-                              : const Color(0xFFF6F8FB),
+                          color: colorScheme.surfaceContainerHigh,
                           borderRadius: BorderRadius.circular(22),
                           border: Border.all(
-                            color: Colors.white.withValues(
-                              alpha: isDark ? 0.08 : 0.95,
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: isDark ? 0.45 : 0.7,
                             ),
                             width: 1.2,
                           ),
@@ -597,7 +606,8 @@ class _MoodScreenState extends State<MoodScreen> {
                           offset: const Offset(0, 4),
                         ),
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+                          color: Colors.black
+                              .withValues(alpha: isDark ? 0.2 : 0.04),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
@@ -633,6 +643,7 @@ class _MoodScreenState extends State<MoodScreen> {
     required bool isDark,
     required VoidCallback onTap,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
     return _BouncingTapWrapper(
       lowerBound: 0.93,
       duration: const Duration(milliseconds: 110),
@@ -645,14 +656,15 @@ class _MoodScreenState extends State<MoodScreen> {
         curve: Curves.easeOutCubic,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected
-              ? primaryColor
-              : (isDark ? const Color(0xFF222938) : const Color(0xFFF4F6F9)),
+          color:
+              isSelected ? primaryColor : colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected
                 ? Colors.white.withValues(alpha: 0.35)
-                : Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
+                : colorScheme.outlineVariant.withValues(
+                    alpha: isDark ? 0.45 : 0.7,
+                  ),
             width: 1.2,
           ),
           boxShadow: isSelected
@@ -699,7 +711,9 @@ class _MoodScreenState extends State<MoodScreen> {
             Text(
               label,
               style: TextStyle(
-                color: isSelected ? Colors.white : textColor.withValues(alpha: 0.85),
+                color: isSelected
+                    ? Colors.white
+                    : textColor.withValues(alpha: 0.85),
                 fontSize: 13.5,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
               ),
@@ -714,8 +728,10 @@ class _MoodScreenState extends State<MoodScreen> {
     return Icon(_getMoodIconData(m), color: _getMoodColor(m), size: 36);
   }
 
-  Widget _buildMoodHeroCard(BuildContext context, Color textColor, bool isDark) {
+  Widget _buildMoodHeroCard(
+      BuildContext context, Color textColor, bool isDark) {
     final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     final bool hasSelection = _selectedMood != null;
     final Color activeColor =
         hasSelection ? _getMoodColor(_selectedMood!) : const Color(0xFF6366F1);
@@ -730,12 +746,13 @@ class _MoodScreenState extends State<MoodScreen> {
             ? (isDark
                 ? activeColor.withValues(alpha: 0.12)
                 : activeColor.withValues(alpha: 0.06))
-            : (isDark ? const Color(0xFF1E2430) : const Color(0xFFF7F9FC)),
+            : colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: hasSelection
               ? activeColor.withValues(alpha: isDark ? 0.35 : 0.45)
-              : Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
+              : colorScheme.outlineVariant
+                  .withValues(alpha: isDark ? 0.45 : 0.7),
           width: 1.2,
         ),
         boxShadow: [
@@ -767,7 +784,8 @@ class _MoodScreenState extends State<MoodScreen> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+                        color:
+                            Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
                         blurRadius: 6,
                         offset: const Offset(0, 2),
                       ),
@@ -852,12 +870,14 @@ class _MoodScreenState extends State<MoodScreen> {
                   width: 46,
                   height: 46,
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF222938)
-                        : const Color(0xFFEDF2F7),
+                    color:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(15),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.8),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .outlineVariant
+                          .withValues(alpha: isDark ? 0.45 : 0.7),
                       width: 1.2,
                     ),
                   ),
@@ -950,76 +970,81 @@ class _MoodScreenState extends State<MoodScreen> {
   ) {
     final isSelected = _selectedMood == m;
     final moodColor = _getMoodColor(m);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return _BouncingTapWrapper(
-        lowerBound: 0.93,
-        duration: const Duration(milliseconds: 110),
-        onTap: () {
-          HapticFeedback.selectionClick();
-          setState(() {
-            _selectedMood = m;
-            _selectedSubEmotions.clear();
-          });
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOutCubic,
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-          decoration: BoxDecoration(
+      lowerBound: 0.93,
+      duration: const Duration(milliseconds: 110),
+      onTap: () {
+        HapticFeedback.selectionClick();
+        setState(() {
+          _selectedMood = m;
+          _selectedSubEmotions.clear();
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? (isDark
+                  ? moodColor.withValues(alpha: 0.18)
+                  : moodColor.withValues(alpha: 0.10))
+              : colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
             color: isSelected
-                ? (isDark
-                    ? moodColor.withValues(alpha: 0.18)
-                    : moodColor.withValues(alpha: 0.10))
-                : (isDark ? const Color(0xFF1E2430) : const Color(0xFFF6F8FB)),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isSelected
-                  ? moodColor.withValues(alpha: isDark ? 0.70 : 0.85)
-                  : Colors.white.withValues(alpha: isDark ? 0.06 : 0.95),
-              width: isSelected ? 1.6 : 1.2,
+                ? moodColor.withValues(alpha: isDark ? 0.70 : 0.85)
+                : colorScheme.outlineVariant.withValues(
+                    alpha: isDark ? 0.45 : 0.7,
+                  ),
+            width: isSelected ? 1.6 : 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(
+                alpha: isDark
+                    ? (isSelected ? 0.25 : 0.15)
+                    : (isSelected ? 0.05 : 0.02),
+              ),
+              blurRadius: isSelected ? 8 : 4,
+              offset: const Offset(0, 2),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(
-                  alpha: isDark ? (isSelected ? 0.25 : 0.15) : (isSelected ? 0.05 : 0.02),
-                ),
-                blurRadius: isSelected ? 8 : 4,
-                offset: const Offset(0, 2),
-              ),
-              BoxShadow(
-                color: Colors.white.withValues(alpha: isDark ? 0.03 : 0.8),
-                blurRadius: 1,
-                offset: const Offset(0, -1),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                _getMoodIconData(m),
-                color: isSelected ? moodColor : textColor.withValues(alpha: 0.5),
-                size: 26,
-              ),
-              const SizedBox(height: 6),
-              Text(
-                _getMoodTitle(m),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: isSelected
-                      ? (isDark ? Colors.white : moodColor)
-                      : textColor.withValues(alpha: 0.75),
-                  fontSize: 12.5,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  letterSpacing: -0.2,
-                ),
-              ),
-            ],
-          ),
+            BoxShadow(
+              color: Colors.white.withValues(alpha: isDark ? 0.03 : 0.8),
+              blurRadius: 1,
+              offset: const Offset(0, -1),
+            ),
+          ],
         ),
-      );
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              _getMoodIconData(m),
+              color: isSelected ? moodColor : textColor.withValues(alpha: 0.5),
+              size: 26,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              _getMoodTitle(m),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: isSelected
+                    ? (isDark ? Colors.white : moodColor)
+                    : textColor.withValues(alpha: 0.75),
+                fontSize: 12.5,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                letterSpacing: -0.2,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   String _getMoodLevelScoreLabel(MoodLevel m) {

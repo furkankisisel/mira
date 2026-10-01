@@ -4618,6 +4618,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get writeMessage => 'Scrivi un messaggio...';
 
   @override
+  String xpEarned(Object amount) {
+    return '$amount XP guadagnati';
+  }
+
+  @override
   String xpProgressSummary(Object current, Object toNext, Object total) {
     return '$current / $total XP • $toNext XP per il livello successivo';
   }

@@ -4458,6 +4458,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get writeMessage => '写条消息...';
 
   @override
+  String xpEarned(Object amount) {
+    return '获得 $amount XP';
+  }
+
+  @override
   String xpProgressSummary(Object current, Object toNext, Object total) {
     return '$current / $total XP • 距离升级还差 $toNext XP';
   }

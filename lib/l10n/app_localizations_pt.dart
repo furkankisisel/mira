@@ -4605,6 +4605,11 @@ class AppLocalizationsPt extends AppLocalizations {
   String get writeMessage => 'Escreva uma mensagem...';
 
   @override
+  String xpEarned(Object amount) {
+    return '$amount XP ganhos';
+  }
+
+  @override
   String xpProgressSummary(Object current, Object toNext, Object total) {
     return '$current / $total XP • $toNext XP para o próximo nível';
   }

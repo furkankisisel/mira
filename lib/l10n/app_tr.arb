@@ -5798,6 +5798,7 @@
     "worldTheme": "Dünya",
     "worldThemeDesc": "Tüm renklerin uyumu",
     "writeMessage": "Bir mesaj yaz...",
+    "xpEarned": "{amount} XP kazanıldı",
     "xpProgressSummary": "{current} / {total} XP • Sonraki seviye için {toNext} XP",
     "xpToNextLevel": "{toNext} XP sonraki seviyeye",
     "yearly": "Yıllık",

@@ -172,6 +172,7 @@ class _TimerScreenState extends State<TimerScreen>
     Color textColor,
     bool isDark,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 16, 6),
       child: Row(
@@ -205,8 +206,10 @@ class _TimerScreenState extends State<TimerScreen>
                       subtitleText = l10n.timerTabPomodoro;
                     }
                     if (activeHabitId != null) {
-                      final h = HabitRepository.instance.findById(activeHabitId);
-                      if (h != null) subtitleText = '${h.title} • $subtitleText';
+                      final h =
+                          HabitRepository.instance.findById(activeHabitId);
+                      if (h != null)
+                        subtitleText = '${h.title} • $subtitleText';
                     }
 
                     return Row(
@@ -224,7 +227,8 @@ class _TimerScreenState extends State<TimerScreen>
                             boxShadow: controller.isRunning
                                 ? [
                                     BoxShadow(
-                                      color: Colors.green.withValues(alpha: 0.4),
+                                      color:
+                                          Colors.green.withValues(alpha: 0.4),
                                       blurRadius: 4,
                                     ),
                                   ]
@@ -276,27 +280,35 @@ class _TimerScreenState extends State<TimerScreen>
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: isHardMode
-                              ? Colors.red.withValues(alpha: isDark ? 0.22 : 0.12)
-                              : (isDark ? const Color(0xFF1E2430) : Colors.white),
+                              ? Colors.red
+                                  .withValues(alpha: isDark ? 0.22 : 0.12)
+                              : colorScheme.surfaceContainerHigh,
                           border: Border.all(
                             color: isHardMode
                                 ? Colors.red.withValues(alpha: 0.5)
-                                : Colors.white.withValues(alpha: isDark ? 0.10 : 0.95),
+                                : colorScheme.outlineVariant.withValues(
+                                    alpha: isDark ? 0.45 : 0.7,
+                                  ),
                             width: 1.2,
                           ),
                           boxShadow: [
                             BoxShadow(
                               color: isHardMode
                                   ? Colors.red.withValues(alpha: 0.15)
-                                  : Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
+                                  : Colors.black
+                                      .withValues(alpha: isDark ? 0.25 : 0.04),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
                           ],
                         ),
                         child: Icon(
-                          isHardMode ? Icons.lock_rounded : Icons.lock_open_rounded,
-                          color: isHardMode ? Colors.red : textColor.withValues(alpha: 0.7),
+                          isHardMode
+                              ? Icons.lock_rounded
+                              : Icons.lock_open_rounded,
+                          color: isHardMode
+                              ? Colors.red
+                              : textColor.withValues(alpha: 0.7),
                           size: 19,
                         ),
                       ),
@@ -308,7 +320,7 @@ class _TimerScreenState extends State<TimerScreen>
 
               // Landscape Desk Clock Button
               Tooltip(
-                message: 'Masa Saati / Yatay Mod',
+                message: l10n.fullScreen,
                 child: _BouncingTapWrapper(
                   lowerBound: 0.90,
                   duration: const Duration(milliseconds: 100),
@@ -327,14 +339,17 @@ class _TimerScreenState extends State<TimerScreen>
                     height: 40,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: isDark ? const Color(0xFF1E2430) : Colors.white,
+                      color: colorScheme.surfaceContainerHigh,
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: isDark ? 0.10 : 0.95),
+                        color: colorScheme.outlineVariant.withValues(
+                          alpha: isDark ? 0.45 : 0.7,
+                        ),
                         width: 1.2,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
+                          color: Colors.black
+                              .withValues(alpha: isDark ? 0.25 : 0.04),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -372,18 +387,20 @@ class _TimerScreenState extends State<TimerScreen>
           color: isDark
               ? Color.alphaBlend(
                   accent.withValues(alpha: 0.08),
-                  theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.65),
+                  theme.colorScheme.surfaceContainerHigh,
                 )
               : Color.alphaBlend(
                   accent.withValues(alpha: 0.07),
                   Color.alphaBlend(
                     Colors.black.withValues(alpha: 0.04),
-                    theme.scaffoldBackgroundColor,
+                    theme.colorScheme.surfaceContainerLow,
                   ),
                 ),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
+            color: theme.colorScheme.outlineVariant.withValues(
+              alpha: isDark ? 0.45 : 0.7,
+            ),
             width: 1.2,
           ),
           boxShadow: [
@@ -412,8 +429,8 @@ class _TimerScreenState extends State<TimerScreen>
                     final animVal = (_tabController.animation?.value ??
                             _tabController.index.toDouble())
                         .clamp(0.0, 2.0);
-                    final leftOffset =
-                        (animVal / 2.0) * (constraints.maxWidth - pillWidth - 2);
+                    final leftOffset = (animVal / 2.0) *
+                        (constraints.maxWidth - pillWidth - 2);
 
                     return Positioned(
                       left: leftOffset,
@@ -536,7 +553,8 @@ class _TimerScreenState extends State<TimerScreen>
                     style: TextStyle(
                       color: itemColor,
                       fontSize: 12.5,
-                      fontWeight: weight > 0.5 ? FontWeight.w700 : FontWeight.w500,
+                      fontWeight:
+                          weight > 0.5 ? FontWeight.w700 : FontWeight.w500,
                       letterSpacing: -0.2,
                     ),
                   ),
@@ -943,22 +961,26 @@ class _TimerScreenState extends State<TimerScreen>
 
   Widget _buildPendingCard(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final formattedPending = controller.formatDuration(controller.pendingDuration);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final formattedPending =
+        controller.formatDuration(controller.pendingDuration);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E26) : const Color(0xFFFFFBEB),
+        color: theme.colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: const Color(0xFFF59E0B).withValues(alpha: isDark ? 0.35 : 0.45),
+          color:
+              const Color(0xFFF59E0B).withValues(alpha: isDark ? 0.35 : 0.45),
           width: 1.2,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFF59E0B).withValues(alpha: isDark ? 0.12 : 0.08),
+            color:
+                const Color(0xFFF59E0B).withValues(alpha: isDark ? 0.12 : 0.08),
             blurRadius: 12,
             offset: const Offset(0, 3),
           ),
@@ -986,7 +1008,7 @@ class _TimerScreenState extends State<TimerScreen>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Bekleyen Süre',
+                  l10n.timerPendingDurationLabel(formattedPending),
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -1032,7 +1054,8 @@ class _TimerScreenState extends State<TimerScreen>
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.bookmark_add_rounded, size: 14, color: Colors.white),
+                  const Icon(Icons.bookmark_add_rounded,
+                      size: 14, color: Colors.white),
                   const SizedBox(width: 4),
                   Text(
                     l10n.save,
@@ -1048,7 +1071,7 @@ class _TimerScreenState extends State<TimerScreen>
           ),
           const SizedBox(width: 4),
           IconButton(
-            tooltip: 'Yoksay',
+            tooltip: l10n.skip,
             icon: Icon(
               Icons.close_rounded,
               size: 18,
@@ -1101,6 +1124,7 @@ class _TimerScreenState extends State<TimerScreen>
     double size = 46,
   }) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
     final textColor = theme.colorScheme.onSurface;
     final isEnabled = onPressed != null;
@@ -1108,12 +1132,10 @@ class _TimerScreenState extends State<TimerScreen>
     final isColored = color != null && isEnabled;
     final bgColor = isColored
         ? color.withValues(alpha: isDark ? 0.20 : 0.12)
-        : (isDark ? const Color(0xFF1B202D) : Colors.white);
+        : colorScheme.surfaceContainerHigh;
     final borderColor = isColored
         ? color.withValues(alpha: isDark ? 0.40 : 0.30)
-        : (isDark
-            ? Colors.white.withValues(alpha: 0.09)
-            : Colors.black.withValues(alpha: 0.07));
+        : colorScheme.outlineVariant.withValues(alpha: isDark ? 0.45 : 0.7);
     final iconColor = isColored
         ? color
         : (isEnabled
@@ -1302,7 +1324,7 @@ class _TimerScreenState extends State<TimerScreen>
         children: [
           for (final mins in presets) ...[
             _buildPresetChip(
-              label: '$mins dk',
+              label: '$mins ${AppLocalizations.of(context).minutesSuffixShort}',
               isSelected: controller.hasCountdown && currentMinutes == mins,
               accent: accent,
               isDark: isDark,
@@ -1319,7 +1341,7 @@ class _TimerScreenState extends State<TimerScreen>
             const SizedBox(width: 8),
           ],
           _buildPresetChip(
-            label: 'Özel',
+            label: AppLocalizations.of(context).custom,
             icon: Icons.tune_rounded,
             isSelected: false,
             accent: accent,
@@ -1344,18 +1366,13 @@ class _TimerScreenState extends State<TimerScreen>
     required bool isDark,
     required VoidCallback? onTap,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
     final isEnabled = onTap != null;
-    final bgColor = isSelected
-        ? accent
-        : (isDark ? const Color(0xFF1B202D) : Colors.white);
+    final bgColor = isSelected ? accent : colorScheme.surfaceContainerHigh;
     final borderColor = isSelected
         ? accent
-        : (isDark
-            ? Colors.white.withValues(alpha: 0.10)
-            : Colors.black.withValues(alpha: 0.08));
-    final textColor = isSelected
-        ? Colors.white
-        : (isDark ? Colors.white70 : const Color(0xFF475569));
+        : colorScheme.outlineVariant.withValues(alpha: isDark ? 0.45 : 0.7);
+    final textColor = isSelected ? Colors.white : colorScheme.onSurfaceVariant;
 
     return _BouncingTapWrapper(
       lowerBound: 0.92,
@@ -1475,14 +1492,16 @@ class _TimerScreenState extends State<TimerScreen>
     final l10n = AppLocalizations.of(context);
     final sessions = controller.sessions;
     final accent = _getAccentColor(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = Theme.of(context).colorScheme.onSurface;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textColor = theme.colorScheme.onSurface;
 
     if (sessions.isEmpty) {
       return Center(
         child: Text(
           l10n.noEntriesYet,
-          style: TextStyle(color: textColor.withValues(alpha: 0.4), fontSize: 13),
+          style:
+              TextStyle(color: textColor.withValues(alpha: 0.4), fontSize: 13),
         ),
       );
     }
@@ -1511,7 +1530,8 @@ class _TimerScreenState extends State<TimerScreen>
               ),
               const SizedBox(width: 6),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
                 decoration: BoxDecoration(
                   color: accent.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(10),
@@ -1534,7 +1554,8 @@ class _TimerScreenState extends State<TimerScreen>
                   controller.clearHistory();
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -1587,19 +1608,22 @@ class _TimerScreenState extends State<TimerScreen>
                         ? (isDark
                             ? accent.withValues(alpha: 0.14)
                             : accent.withValues(alpha: 0.08))
-                        : (isDark ? const Color(0xFF191E2A) : Colors.white),
+                        : theme.colorScheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
                       color: s.assigned
                           ? accent.withValues(alpha: isDark ? 0.45 : 0.35)
-                          : Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
+                          : theme.colorScheme.outlineVariant.withValues(
+                              alpha: isDark ? 0.45 : 0.7,
+                            ),
                       width: 1.2,
                     ),
                     boxShadow: [
                       BoxShadow(
                         color: s.assigned
                             ? accent.withValues(alpha: isDark ? 0.16 : 0.08)
-                            : Colors.black.withValues(alpha: isDark ? 0.22 : 0.04),
+                            : Colors.black
+                                .withValues(alpha: isDark ? 0.22 : 0.04),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -1641,7 +1665,7 @@ class _TimerScreenState extends State<TimerScreen>
                                 color: Colors.green.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Row(
+                              child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(
@@ -1651,8 +1675,8 @@ class _TimerScreenState extends State<TimerScreen>
                                   ),
                                   SizedBox(width: 3),
                                   Text(
-                                    'Kaydedildi',
-                                    style: TextStyle(
+                                    l10n.saved,
+                                    style: const TextStyle(
                                       color: Colors.green,
                                       fontSize: 9.5,
                                       fontWeight: FontWeight.bold,
@@ -1672,7 +1696,7 @@ class _TimerScreenState extends State<TimerScreen>
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
-                                '+ Alışkanlık',
+                                '+ ${l10n.addHabit}',
                                 style: TextStyle(
                                   color: accent,
                                   fontSize: 9.5,
@@ -2646,4 +2670,3 @@ class _BouncingTapWrapperState extends State<_BouncingTapWrapper>
     );
   }
 }
-

@@ -78,6 +78,7 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
     bool isTr,
   ) {
     final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     switch (type) {
       case ChronoType.morning:
         return _ChronoVisuals(
@@ -88,8 +89,8 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
           primary: isDark ? const Color(0xFFFBBF24) : const Color(0xFFD97706),
           secondary: isDark ? const Color(0xFFFB923C) : const Color(0xFFEA580C),
           glow: const Color(0xFFF59E0B),
-          bgStart: isDark ? const Color(0xFF261D15) : const Color(0xFFFEF8EE),
-          bgEnd: isDark ? const Color(0xFF1E1712) : const Color(0xFFFFFDF8),
+          bgStart: colorScheme.surfaceContainerHigh,
+          bgEnd: colorScheme.surface,
           description: isTr
               ? 'Biyolojik saatin gün ışığıyla kusursuz bir senkron içinde. Sabahın ilk saatlerinde kortizol ve zihinsel berraklığın zirveye çıkar. En zorlu analitik ve yaratıcı işlerini öğleden önceye planlayarak doğal enerjini en üst seviyede kullanabilirsin.'
               : 'Your circadian rhythm peaks with natural dawn light. Cortisol and cognitive acuity are highest in the morning hours. Scheduling your most demanding focus tasks before noon harnesses your innate peak flow.',
@@ -103,8 +104,8 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
           primary: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5),
           secondary: isDark ? const Color(0xFFC084FC) : const Color(0xFF9333EA),
           glow: const Color(0xFF6366F1),
-          bgStart: isDark ? const Color(0xFF16162C) : const Color(0xFFF3F3FE),
-          bgEnd: isDark ? const Color(0xFF101124) : const Color(0xFFF9F9FF),
+          bgStart: colorScheme.surfaceContainerHigh,
+          bgEnd: colorScheme.surface,
           description: isTr
               ? 'Bilişsel zirven ve yaratıcı derinleşmen günün ikinci yarısında ve akşam başlar. Sabahları hafif tempoyla başlayıp enerjini korumak, akşam saatlerindeki derin çalışma bloklarını paha biçilmez kılar.'
               : 'Your peak clarity and deep focus awaken in the afternoon and evening hours. Easing into mornings and reserving your major deep work blocks for later unlocks your greatest creative output.',
@@ -119,8 +120,8 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
           primary: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0284C7),
           secondary: isDark ? const Color(0xFF34D399) : const Color(0xFF059669),
           glow: const Color(0xFF0EA5E9),
-          bgStart: isDark ? const Color(0xFF141E28) : const Color(0xFFF2F8FD),
-          bgEnd: isDark ? const Color(0xFF101720) : const Color(0xFFFAFDFE),
+          bgStart: colorScheme.surfaceContainerHigh,
+          bgEnd: colorScheme.surface,
           description: isTr
               ? 'Günün doğal akışına mükemmel uyum sağlayan esnek ve dengeli bir biyolojik saate sahipsin. Sabahları sabit enerjiyle başlayıp, gün boyunca odak ve aktivite arasında ritmik ve istikrarlı bir geçiş sağlarsın.'
               : 'You possess a resilient, balanced biological clock that synchronizes comfortably with everyday routines, maintaining steady mental energy and smooth physical rhythm throughout the day.',
@@ -146,14 +147,15 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
       isTr,
     );
 
-    final titleColor = isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A);
-    final subtitleColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
-    final surfaceColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final titleColor = theme.colorScheme.onSurface;
+    final subtitleColor = theme.colorScheme.onSurfaceVariant;
+    final surfaceColor = theme.colorScheme.surfaceContainerHigh;
 
-    final flexPercent = (widget.profile.flexibilityScore * 100).round().clamp(60, 96);
+    final flexPercent =
+        (widget.profile.flexibilityScore * 100).round().clamp(60, 96);
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0B0F17) : const Color(0xFFF8FAFC),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: Stack(
         children: [
           // Ambient Radial Light Glow Behind Hero
@@ -233,7 +235,8 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
                                     color: visuals.primary,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: visuals.primary.withValues(alpha: 0.6),
+                                        color: visuals.primary
+                                            .withValues(alpha: 0.6),
                                         blurRadius: 6,
                                       ),
                                     ],
@@ -259,8 +262,10 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
                               isDark: isDark,
                               isTr: isTr,
                               badge: isTr ? 'ZİHİNSEL ODAK' : 'DEEP FOCUS',
-                              title: isTr ? 'Odak Akışı' : l10n.rhythmWindowFocus,
-                              time: _formatTimeRange(widget.profile.focusWindow),
+                              title:
+                                  isTr ? 'Odak Akışı' : l10n.rhythmWindowFocus,
+                              time:
+                                  _formatTimeRange(widget.profile.focusWindow),
                               hint: l10n.rhythmFocusHint,
                               iconSymbol: '🧠',
                               primary: isDark
@@ -279,8 +284,11 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
                               isDark: isDark,
                               isTr: isTr,
                               badge: isTr ? 'ZİRVE GÜÇ' : 'PEAK POWER',
-                              title: isTr ? 'Enerji Zamanı' : l10n.rhythmWindowEnergy,
-                              time: _formatTimeRange(widget.profile.energyWindow),
+                              title: isTr
+                                  ? 'Enerji Zamanı'
+                                  : l10n.rhythmWindowEnergy,
+                              time:
+                                  _formatTimeRange(widget.profile.energyWindow),
                               hint: l10n.rhythmEnergyHint,
                               iconSymbol: '⚡',
                               primary: isDark
@@ -299,8 +307,10 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
                               isDark: isDark,
                               isTr: isTr,
                               badge: isTr ? 'HAFİF AKIŞ' : 'EASY FLOW',
-                              title: isTr ? 'Hafif Tempo' : l10n.rhythmWindowLight,
-                              time: _formatTimeRange(widget.profile.lightWindow),
+                              title:
+                                  isTr ? 'Hafif Tempo' : l10n.rhythmWindowLight,
+                              time:
+                                  _formatTimeRange(widget.profile.lightWindow),
                               hint: l10n.rhythmLightHint,
                               iconSymbol: '🌤️',
                               primary: isDark
@@ -319,8 +329,11 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
                               isDark: isDark,
                               isTr: isTr,
                               badge: isTr ? 'TEFEKKÜR & UYKU' : 'EVENING REST',
-                              title: isTr ? 'İçsel Yansıma' : l10n.rhythmWindowReflection,
-                              time: _formatTimeRange(widget.profile.reflectionWindow),
+                              title: isTr
+                                  ? 'İçsel Yansıma'
+                                  : l10n.rhythmWindowReflection,
+                              time: _formatTimeRange(
+                                  widget.profile.reflectionWindow),
                               hint: l10n.rhythmReflectionHint,
                               iconSymbol: '🌙',
                               primary: isDark
@@ -387,7 +400,8 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
               child: Icon(
                 Icons.arrow_back_ios_new_rounded,
                 size: 17,
-                color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF334155),
+                color:
+                    isDark ? const Color(0xFFE2E8F0) : const Color(0xFF334155),
               ),
             ),
           ),
@@ -533,8 +547,10 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              visuals.primary.withValues(alpha: isDark ? 0.28 : 0.20),
-                              visuals.secondary.withValues(alpha: isDark ? 0.22 : 0.12),
+                              visuals.primary
+                                  .withValues(alpha: isDark ? 0.28 : 0.20),
+                              visuals.secondary
+                                  .withValues(alpha: isDark ? 0.22 : 0.12),
                             ],
                           ),
                           border: Border.all(
@@ -627,8 +643,8 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
                         color: isDark
-                          ? Colors.white.withValues(alpha: 0.08)
-                          : Colors.black.withValues(alpha: 0.06),
+                            ? Colors.white.withValues(alpha: 0.08)
+                            : Colors.black.withValues(alpha: 0.06),
                         width: 1,
                       ),
                     ),
@@ -641,7 +657,9 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          isTr ? 'Biyolojik Esneklik:' : 'Circadian Flexibility:',
+                          isTr
+                              ? 'Biyolojik Esneklik:'
+                              : 'Circadian Flexibility:',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -755,7 +773,9 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
                       // Night to dawn (00:00 - focus start)
                       Expanded(
                         flex: widget.profile.focusWindow.startHour,
-                        child: Container(color: const Color(0xFF4F46E5).withValues(alpha: 0.6)),
+                        child: Container(
+                            color:
+                                const Color(0xFF4F46E5).withValues(alpha: 0.6)),
                       ),
                       // Focus window
                       Expanded(
@@ -780,7 +800,8 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
                       ),
                       // Remainder of day / night
                       Expanded(
-                        flex: (24 - widget.profile.lightWindow.endHour).clamp(1, 24),
+                        flex: (24 - widget.profile.lightWindow.endHour)
+                            .clamp(1, 24),
                         child: Container(color: const Color(0xFF4F46E5)),
                       ),
                     ],
@@ -790,7 +811,9 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
 
               // Current time marker pin
               Positioned(
-                left: (MediaQuery.of(context).size.width - 76) * currentHourRatio - 5,
+                left: (MediaQuery.of(context).size.width - 76) *
+                        currentHourRatio -
+                    5,
                 top: -5,
                 child: Container(
                   width: 12,
@@ -805,7 +828,8 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
                         offset: const Offset(0, 2),
                       ),
                     ],
-                    border: Border.all(color: const Color(0xFF0284C7), width: 2),
+                    border:
+                        Border.all(color: const Color(0xFF0284C7), width: 2),
                   ),
                 ),
               ),

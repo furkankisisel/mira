@@ -5813,6 +5813,7 @@
     "worldTheme": "ワールド",
     "worldThemeDesc": "すべての色の調和",
     "writeMessage": "メッセージを書く...",
+    "xpEarned": "{amount} XP 獲得",
     "xpProgressSummary": "{current} / {total} XP • 次のレベルまであと {toNext} XP",
     "xpToNextLevel": "次のレベルまで",
     "yearly": "毎年",

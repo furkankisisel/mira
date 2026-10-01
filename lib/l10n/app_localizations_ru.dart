@@ -4584,6 +4584,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get writeMessage => 'Написать...';
 
   @override
+  String xpEarned(Object amount) {
+    return 'Получено $amount XP';
+  }
+
+  @override
   String xpProgressSummary(Object current, Object toNext, Object total) {
     return '$current / $total XP • $toNext XP до уровня';
   }

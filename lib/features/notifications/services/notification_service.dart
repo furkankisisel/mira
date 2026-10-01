@@ -38,7 +38,7 @@ class NotificationService {
   Future<void> initialize() async {
     await _configureLocalTimeZone();
 
-    const androidSettings = AndroidInitializationSettings('ic_stat_miralogo');
+    const androidSettings = AndroidInitializationSettings('ic_stat_mira_v2');
     const iosSettings = DarwinInitializationSettings(
       requestSoundPermission: true,
       requestBadgePermission: true,
@@ -190,7 +190,9 @@ class NotificationService {
       usesChronometer: usesChronometer,
       chronometerCountDown: chronometerCountDown,
       when: when, // Milliseconds since epoch
-      showWhen: true, // Required to show the time
+      // The chronometer is the useful time indicator; a separate timestamp is noise.
+      showWhen: false,
+      subText: 'Mira  •  Odak sayacı',
       // Use BigTextStyle for better text visibility instead of MediaStyle
       styleInformation: BigTextStyleInformation(
         body,
@@ -203,27 +205,30 @@ class NotificationService {
       ),
 
       largeIcon: const DrawableResourceAndroidBitmap(
-        '@drawable/ic_notification_large',
+        '@drawable/ic_notification_large_v2',
       ),
       actions: <AndroidNotificationAction>[
         if (isRunning)
           AndroidNotificationAction(
             'pause',
-            _l10n?.timerPause ?? '⏸️ Duraklat',
-            showsUserInterface: false,
+            _l10n?.timerPause ?? 'Duraklat',
+            // Let Flutter receive the action reliably, including when the app
+            // is backgrounded. The old background-only callback was dropped by
+            // Android and left the timer visibly running.
+            showsUserInterface: true,
             cancelNotification: false,
           )
         else
           AndroidNotificationAction(
             'resume',
-            _l10n?.timerResume ?? '▶️ Devam Et',
-            showsUserInterface: false,
+            _l10n?.timerResume ?? 'Devam et',
+            showsUserInterface: true,
             cancelNotification: false,
           ),
         AndroidNotificationAction(
           'stop',
-          _l10n?.timerStop ?? '⏹️ Bitir',
-          showsUserInterface: false,
+          _l10n?.timerStop ?? 'Bitir',
+          showsUserInterface: true,
           cancelNotification: false,
         ),
       ],
@@ -273,8 +278,9 @@ class NotificationService {
       autoCancel: true,
       ongoing: false,
       largeIcon: const DrawableResourceAndroidBitmap(
-        '@drawable/ic_notification_large',
+        '@drawable/ic_notification_large_v2',
       ),
+      subText: 'Mira • Sayaç tamamlandı',
       styleInformation: BigTextStyleInformation(
         body,
         contentTitle: title,
@@ -433,8 +439,10 @@ class NotificationService {
       playSound: playSound,
       enableVibration: vibrate,
       largeIcon: const DrawableResourceAndroidBitmap(
-        '@drawable/ic_notification_large',
+        '@drawable/ic_notification_large_v2',
       ),
+      // Makes the notification understandable even in its collapsed state.
+      subText: 'Mira • Alışkanlık hatırlatıcısı',
     );
 
     final iosDetails = DarwinNotificationDetails(
@@ -449,8 +457,9 @@ class NotificationService {
     );
 
     final emoji = habit.emoji ?? '✅';
-    final title = '$emoji ${habit.title}';
-    final body = _l10n?.habitReminderBody ?? 'Alışkanlığını tamamlama vakti geldi! 🔥';
+    final title = 'Alışkanlık zamanı: $emoji ${habit.title}';
+    final body = _l10n?.habitReminderBody ??
+        'Bugünkü alışkanlığını tamamlamak için küçük bir adım at. 🔥';
 
     try {
       await _plugin.zonedSchedule(

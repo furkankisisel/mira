@@ -40,7 +40,8 @@ class _RoomMiniPodiumPreviewState extends State<RoomMiniPodiumPreview> {
   }
 
   void _initStreams() {
-    _membersSub = RoomService.instance.streamMembers(widget.roomId).listen((members) {
+    _membersSub =
+        RoomService.instance.streamMembers(widget.roomId).listen((members) {
       if (mounted) {
         setState(() {
           _members = members;
@@ -49,7 +50,8 @@ class _RoomMiniPodiumPreviewState extends State<RoomMiniPodiumPreview> {
       }
     });
 
-    _habitsSub = RoomService.instance.streamRoomHabits(widget.roomId).listen((habits) {
+    _habitsSub =
+        RoomService.instance.streamRoomHabits(widget.roomId).listen((habits) {
       if (mounted) {
         setState(() => _habits = habits);
         _updateProgressSubs(habits);
@@ -89,6 +91,7 @@ class _RoomMiniPodiumPreviewState extends State<RoomMiniPodiumPreview> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context);
     final isTr = l10n.localeName.startsWith('tr');
@@ -109,12 +112,10 @@ class _RoomMiniPodiumPreviewState extends State<RoomMiniPodiumPreview> {
 
     final currentUid = FirebaseAuth.instance.currentUser?.uid;
 
-    final containerBg = isDark
-        ? const Color(0xFF131722).withValues(alpha: 0.65)
-        : const Color(0xFFF8FAFC);
-    final containerBorder = isDark
-        ? Colors.white.withValues(alpha: 0.07)
-        : Colors.black.withValues(alpha: 0.05);
+    final containerBg =
+        colorScheme.surfaceContainerHighest.withValues(alpha: 0.82);
+    final containerBorder =
+        colorScheme.outlineVariant.withValues(alpha: isDark ? 0.45 : 0.7);
 
     return IgnorePointer(
       child: Container(
@@ -139,15 +140,19 @@ class _RoomMiniPodiumPreviewState extends State<RoomMiniPodiumPreview> {
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.8,
-                    color: isDark ? const Color(0xFFFBBF24) : const Color(0xFFD97706),
+                    color: isDark
+                        ? const Color(0xFFFBBF24)
+                        : const Color(0xFFD97706),
                   ),
                 ),
                 const Spacer(),
                 if (first != null && first.totalPoints > 0)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF59E0B).withValues(alpha: isDark ? 0.20 : 0.12),
+                      color: const Color(0xFFF59E0B)
+                          .withValues(alpha: isDark ? 0.20 : 0.12),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Row(
@@ -263,7 +268,9 @@ class _RoomMiniPodiumPreviewState extends State<RoomMiniPodiumPreview> {
             height: avatarSize,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.03),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.04)
+                  : Colors.black.withValues(alpha: 0.03),
               border: Border.all(
                 color: isDark ? Colors.white10 : Colors.black12,
                 width: 1,
@@ -291,9 +298,12 @@ class _RoomMiniPodiumPreviewState extends State<RoomMiniPodiumPreview> {
               color: isDark
                   ? Colors.white.withValues(alpha: 0.02)
                   : Colors.black.withValues(alpha: 0.02),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(8)),
               border: Border.all(
-                color: isDark ? Colors.white.withValues(alpha: 0.06) : Colors.black.withValues(alpha: 0.05),
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.06)
+                    : Colors.black.withValues(alpha: 0.05),
                 width: 0.9,
               ),
             ),
@@ -334,7 +344,9 @@ class _RoomMiniPodiumPreviewState extends State<RoomMiniPodiumPreview> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isCurrent ? primaryColor : primaryColor.withValues(alpha: 0.70),
+                  color: isCurrent
+                      ? primaryColor
+                      : primaryColor.withValues(alpha: 0.70),
                   width: isCurrent ? 1.8 : 1.4,
                 ),
                 boxShadow: isLeader
@@ -352,7 +364,8 @@ class _RoomMiniPodiumPreviewState extends State<RoomMiniPodiumPreview> {
                     ? Image.network(
                         score.avatarUrl!,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => _avatarFallback(score.displayName, primaryColor, isDark),
+                        errorBuilder: (_, __, ___) => _avatarFallback(
+                            score.displayName, primaryColor, isDark),
                       )
                     : _avatarFallback(score.displayName, primaryColor, isDark),
               ),
@@ -368,7 +381,7 @@ class _RoomMiniPodiumPreviewState extends State<RoomMiniPodiumPreview> {
                     shape: BoxShape.circle,
                     color: const Color(0xFF10B981),
                     border: Border.all(
-                      color: isDark ? const Color(0xFF131722) : Colors.white,
+                      color: Theme.of(context).colorScheme.surfaceContainerHigh,
                       width: 1.2,
                     ),
                   ),
@@ -387,7 +400,8 @@ class _RoomMiniPodiumPreviewState extends State<RoomMiniPodiumPreview> {
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 9.5,
-            fontWeight: isCurrent || isLeader ? FontWeight.w800 : FontWeight.w600,
+            fontWeight:
+                isCurrent || isLeader ? FontWeight.w800 : FontWeight.w600,
             color: isDark
                 ? (isCurrent ? Colors.white : Colors.white70)
                 : (isCurrent ? Colors.black : Colors.black87),
@@ -411,8 +425,10 @@ class _RoomMiniPodiumPreviewState extends State<RoomMiniPodiumPreview> {
             ),
             border: Border(
               top: BorderSide(color: accentColor, width: 1.4),
-              left: BorderSide(color: accentColor.withValues(alpha: 0.40), width: 0.8),
-              right: BorderSide(color: accentColor.withValues(alpha: 0.40), width: 0.8),
+              left: BorderSide(
+                  color: accentColor.withValues(alpha: 0.40), width: 0.8),
+              right: BorderSide(
+                  color: accentColor.withValues(alpha: 0.40), width: 0.8),
             ),
             boxShadow: [
               BoxShadow(
@@ -470,10 +486,15 @@ class _RoomMiniPodiumPreviewState extends State<RoomMiniPodiumPreview> {
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF131722).withValues(alpha: 0.4) : const Color(0xFFF8FAFC),
+        color: Theme.of(context)
+            .colorScheme
+            .surfaceContainerHighest
+            .withValues(alpha: 0.75),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.04) : Colors.black.withValues(alpha: 0.03),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.04)
+              : Colors.black.withValues(alpha: 0.03),
         ),
       ),
       child: Column(
@@ -503,7 +524,8 @@ class _RoomMiniPodiumPreviewState extends State<RoomMiniPodiumPreview> {
                   height: 32,
                   decoration: BoxDecoration(
                     color: placeholderColor,
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(8)),
                   ),
                 ),
               ),
@@ -514,7 +536,8 @@ class _RoomMiniPodiumPreviewState extends State<RoomMiniPodiumPreview> {
                   height: 44,
                   decoration: BoxDecoration(
                     color: placeholderColor,
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(8)),
                   ),
                 ),
               ),
@@ -524,7 +547,8 @@ class _RoomMiniPodiumPreviewState extends State<RoomMiniPodiumPreview> {
                   height: 24,
                   decoration: BoxDecoration(
                     color: placeholderColor,
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(8)),
                   ),
                 ),
               ),

@@ -57,9 +57,10 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final backgroundColor = isDark
-        ? theme.colorScheme.surface
-        : theme.colorScheme.surface;
+    final backgroundColor = theme.colorScheme.surface;
+    final iconAsset = isDark
+        ? 'assets/icons/mira_logo_dark.png'
+        : 'assets/icons/mira_logo_light.png';
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -79,27 +80,30 @@ class _SplashScreenState extends State<SplashScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Logo
-              ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.asset(
-                  'assets/icons/miralogo.png',
-                  width: 120,
-                  height: 120,
-                  fit: BoxFit.cover,
-                ),
+              // Logo: clean transparent floating pillars
+              Image.asset(
+                iconAsset,
+                width: 96,
+                height: 96,
+                fit: BoxFit.contain,
               ),
 
               const SizedBox(width: 0),
 
               // "Mira" text with green gradient
               ShaderMask(
-                shaderCallback: (bounds) => const LinearGradient(
-                  colors: [
-                    Color.fromARGB(255, 35, 100, 37), // Green 500
-                    Color.fromARGB(255, 79, 158, 83), // Green 400
-                    Color(0xFF81C784), // Green 300
-                  ],
+                shaderCallback: (bounds) => LinearGradient(
+                  colors: isDark
+                      ? const [
+                          Color(0xFFA5D6A7), // Soft luminous green
+                          Color(0xFF81C784),
+                          Color(0xFFE8F5E9), // Clean light sage highlight
+                        ]
+                      : const [
+                          Color.fromARGB(255, 35, 100, 37), // Green 500
+                          Color.fromARGB(255, 79, 158, 83), // Green 400
+                          Color(0xFF81C784), // Green 300
+                        ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ).createShader(bounds),

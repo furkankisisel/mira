@@ -5813,6 +5813,7 @@
     "worldTheme": "월드",
     "worldThemeDesc": "모든 색상의 조화",
     "writeMessage": "메시지를 작성하세요...",
+    "xpEarned": "{amount} XP 획득",
     "xpProgressSummary": "{current} / {total} XP • 다음 레벨까지 {toNext} XP",
     "xpToNextLevel": "다음 레벨까지",
     "yearly": "매년",

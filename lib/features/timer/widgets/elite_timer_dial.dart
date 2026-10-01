@@ -66,8 +66,7 @@ class _EliteTimerDialState extends State<EliteTimerDial>
         _pulseController.repeat(reverse: true);
       } else {
         _pulseController.animateTo(0.0,
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.easeOut);
+            duration: const Duration(milliseconds: 400), curve: Curves.easeOut);
       }
     }
   }
@@ -106,13 +105,15 @@ class _EliteTimerDialState extends State<EliteTimerDial>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context);
     final activeColor = _resolvePhaseColor(context);
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final availableMax = math.min(constraints.maxWidth, constraints.maxHeight);
+        final availableMax =
+            math.min(constraints.maxWidth, constraints.maxHeight);
         final dialSize = widget.size ??
             (availableMax.isFinite && availableMax > 120
                 ? availableMax.clamp(230.0, 280.0)
@@ -141,6 +142,10 @@ class _EliteTimerDialState extends State<EliteTimerDial>
                           pulseValue: _pulseController.value,
                           isRunning: widget.isRunning,
                           accentColor: activeColor,
+                          surfaceColor: colorScheme.surface,
+                          surfaceContainerColor:
+                              colorScheme.surfaceContainerHigh,
+                          onSurfaceColor: colorScheme.onSurface,
                           isDark: isDark,
                           mode: widget.mode,
                         ),
@@ -154,7 +159,8 @@ class _EliteTimerDialState extends State<EliteTimerDial>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             // 1. Top Context Pill
-                            _buildTopContextPill(context, activeColor, isDark, l10n),
+                            _buildTopContextPill(
+                                context, activeColor, isDark, l10n),
 
                             const SizedBox(height: 10),
 
@@ -164,7 +170,8 @@ class _EliteTimerDialState extends State<EliteTimerDial>
                             const SizedBox(height: 10),
 
                             // 3. Integrated Bottom Indicators
-                            _buildBottomIndicator(context, activeColor, isDark, l10n),
+                            _buildBottomIndicator(
+                                context, activeColor, isDark, l10n),
                           ],
                         ),
                       ),
@@ -204,7 +211,9 @@ class _EliteTimerDialState extends State<EliteTimerDial>
           icon = Icons.touch_app_rounded;
         } else {
           final totalMins = widget.totalDuration!.inMinutes;
-          label = totalMins > 0 ? 'HEDEF: $totalMins DK' : l10n.timerTabCountdown.toUpperCase();
+          label = totalMins > 0
+              ? l10n.targetShort('$totalMins ${l10n.minutesSuffixShort}')
+              : l10n.timerTabCountdown.toUpperCase();
           icon = Icons.hourglass_empty_rounded;
         }
         break;
@@ -267,11 +276,12 @@ class _EliteTimerDialState extends State<EliteTimerDial>
     );
   }
 
-  Widget _buildHeroDigits(BuildContext context, Color activeColor, bool isDark) {
+  Widget _buildHeroDigits(
+      BuildContext context, Color activeColor, bool isDark) {
     final textTheme = Theme.of(context).textTheme;
-    final primaryTextColor = isDark ? Colors.white : const Color(0xFF1E293B);
-    final mutedTextColor =
-        isDark ? Colors.white.withValues(alpha: 0.50) : const Color(0xFF64748B);
+    final colorScheme = Theme.of(context).colorScheme;
+    final primaryTextColor = colorScheme.onSurface;
+    final mutedTextColor = colorScheme.onSurfaceVariant;
 
     if (widget.mode == TimerDialMode.stopwatch) {
       final hours = widget.duration.inHours;
@@ -360,23 +370,22 @@ class _EliteTimerDialState extends State<EliteTimerDial>
     bool isDark,
     AppLocalizations l10n,
   ) {
-    final mutedTextColor =
-        isDark ? Colors.white.withValues(alpha: 0.45) : const Color(0xFF64748B);
+    final mutedTextColor = Theme.of(context).colorScheme.onSurfaceVariant;
 
     switch (widget.mode) {
       case TimerDialMode.stopwatch:
         final statusText = widget.isRunning
-            ? 'ÇALIŞIYOR'
-            : (widget.duration.inSeconds > 0 ? 'DURAKLATILDI' : 'HAZIR');
+            ? l10n.runningLabel
+            : (widget.duration.inSeconds > 0
+                ? l10n.timerPause.toUpperCase()
+                : l10n.timerSetDurationFirst.toUpperCase());
         return Text(
           statusText,
           style: TextStyle(
             fontSize: 10.5,
             fontWeight: FontWeight.w700,
             letterSpacing: 1.5,
-            color: widget.isRunning
-                ? activeColor
-                : mutedTextColor,
+            color: widget.isRunning ? activeColor : mutedTextColor,
           ),
         );
 
@@ -388,7 +397,7 @@ class _EliteTimerDialState extends State<EliteTimerDial>
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Süre belirlemek için dokunun',
+                l10n.timerSetDurationFirst,
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w500,
@@ -396,7 +405,8 @@ class _EliteTimerDialState extends State<EliteTimerDial>
                 ),
               ),
               const SizedBox(width: 4),
-              Icon(Icons.arrow_forward_ios_rounded, size: 10, color: activeColor),
+              Icon(Icons.arrow_forward_ios_rounded,
+                  size: 10, color: activeColor),
             ],
           );
         }
@@ -407,7 +417,11 @@ class _EliteTimerDialState extends State<EliteTimerDial>
         final pctInt = (pct * 100).toInt();
 
         return Text(
-          widget.isRunning ? '%$pctInt Tamamlandı' : 'Kalan: ${_formatSimple(widget.duration)}',
+          widget.isRunning
+              ? l10n.percentCompleted(pctInt)
+              : l10n.timerPendingDurationLabel(
+                  _formatSimple(widget.duration),
+                ),
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w600,
@@ -458,7 +472,7 @@ class _EliteTimerDialState extends State<EliteTimerDial>
             ),
             const SizedBox(height: 5),
             Text(
-              'Tur ${currentCycleIndex + 1} / $totalCycles',
+              '${l10n.timerPomodoroCompletedWork(currentCycleIndex + 1)} / $totalCycles',
               style: TextStyle(
                 fontSize: 10.5,
                 fontWeight: FontWeight.w600,
@@ -485,6 +499,9 @@ class _EliteDialPainter extends CustomPainter {
     required this.pulseValue,
     required this.isRunning,
     required this.accentColor,
+    required this.surfaceColor,
+    required this.surfaceContainerColor,
+    required this.onSurfaceColor,
     required this.isDark,
     required this.mode,
   });
@@ -493,6 +510,9 @@ class _EliteDialPainter extends CustomPainter {
   final double pulseValue;
   final bool isRunning;
   final Color accentColor;
+  final Color surfaceColor;
+  final Color surfaceContainerColor;
+  final Color onSurfaceColor;
   final bool isDark;
   final TimerDialMode mode;
 
@@ -516,9 +536,7 @@ class _EliteDialPainter extends CustomPainter {
       ..shader = ui.Gradient.linear(
         Offset(center.dx, center.dy - radius),
         Offset(center.dx, center.dy + radius),
-        isDark
-            ? [const Color(0xFF191F2D), const Color(0xFF111520)]
-            : [Colors.white, const Color(0xFFF3F6FA)],
+        [surfaceContainerColor, surfaceColor],
       );
     canvas.drawCircle(center, radius, discPaint);
 
@@ -526,17 +544,14 @@ class _EliteDialPainter extends CustomPainter {
     final discBorder = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.2
-      ..color = isDark
-          ? Colors.white.withValues(alpha: 0.08)
-          : Colors.black.withValues(alpha: 0.05);
+      ..color = onSurfaceColor.withValues(alpha: isDark ? 0.08 : 0.05);
     canvas.drawCircle(center, radius, discBorder);
 
     // 3. Precision Radial Micro-Ticks (60 ticks around circumference)
     final tickStartRadius = radius - 4;
     final majorTickColor = accentColor.withValues(alpha: isDark ? 0.65 : 0.50);
-    final minorTickColor = isDark
-        ? Colors.white.withValues(alpha: 0.16)
-        : Colors.black.withValues(alpha: 0.12);
+    final minorTickColor =
+        onSurfaceColor.withValues(alpha: isDark ? 0.16 : 0.12);
 
     final tickPaint = Paint()..strokeCap = StrokeCap.round;
 
@@ -564,9 +579,7 @@ class _EliteDialPainter extends CustomPainter {
     final trackBgPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 6.5
-      ..color = isDark
-          ? Colors.white.withValues(alpha: 0.06)
-          : Colors.black.withValues(alpha: 0.05);
+      ..color = onSurfaceColor.withValues(alpha: isDark ? 0.06 : 0.05);
     canvas.drawCircle(center, trackRadius, trackBgPaint);
 
     // 5. Active Progress Arc
@@ -619,6 +632,9 @@ class _EliteDialPainter extends CustomPainter {
         oldDelegate.pulseValue != pulseValue ||
         oldDelegate.isRunning != isRunning ||
         oldDelegate.accentColor != accentColor ||
+        oldDelegate.surfaceColor != surfaceColor ||
+        oldDelegate.surfaceContainerColor != surfaceContainerColor ||
+        oldDelegate.onSurfaceColor != onSurfaceColor ||
         oldDelegate.isDark != isDark ||
         oldDelegate.mode != mode;
   }

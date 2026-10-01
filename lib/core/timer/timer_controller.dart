@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart'; // Added for WidgetsBindingObserver
-import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/habit/domain/habit_repository.dart';
 import '../../features/habit/domain/habit_types.dart';
@@ -63,8 +62,6 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
     NotificationService.instance.setTimerActionHandler(
       _handleNotificationAction,
     );
-    // Initialize background service
-    _initializeBackgroundService();
     // Setup MethodChannel for native timer actions
     _setupMethodChannel();
     // Session'ları yükle
@@ -83,8 +80,6 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
 
   Timer? _timer;
   DateTime? _currentStart; // aktif çalışma başlangıç zamanı
-  final FlutterBackgroundService _backgroundService =
-      FlutterBackgroundService();
   static const MethodChannel _methodChannel = MethodChannel(
     'com.koralabs.mira/timer_actions',
   );
@@ -541,7 +536,8 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
 
               NotificationService.instance.showTimerCompletedNotification(
                 title: displayTitle,
-                body: 'Hedeflenen odaklanma süresi tamamlandı. Harika bir seans!',
+                body:
+                    'Hedeflenen odaklanma süresi tamamlandı. Harika bir seans!',
               );
               Vibration.vibrate(pattern: [0, 500, 200, 500]);
             }
@@ -614,14 +610,14 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
       TimerMode.stopwatch => 'Kronometre',
       TimerMode.countdown => 'Geri Sayım',
       TimerMode.pomodoro =>
-        _pomodoroWorkPhase ? 'Pomodoro - Çalışma' : 'Pomodoro - Mola',
+        _pomodoroWorkPhase ? 'Pomodoro · Çalışma' : 'Pomodoro · Mola',
     };
 
     // If waiting/paused, just show static time
     if (!isRunning) {
       NotificationService.instance.showTimerNotification(
-        title: modeLabel,
-        body: formattedTime, // Static time
+        title: '$modeLabel · Duraklatıldı',
+        body: '$formattedTime · Devam etmek için bildirimi kullan',
         isRunning: false,
         usesChronometer: false,
       );
@@ -833,72 +829,10 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
     notifyListeners();
   }
 
-  // Background Service Methods
-  Future<void> _initializeBackgroundService() async {
-    try {
-      await _backgroundService.configure(
-        iosConfiguration: IosConfiguration(
-          autoStart: false,
-          onForeground: onStart,
-          onBackground: onIosBackground,
-        ),
-        androidConfiguration: AndroidConfiguration(
-          onStart: onStart,
-          isForegroundMode: true,
-          autoStart: false,
-          autoStartOnBoot: false,
-        ),
-      );
-    } catch (e) {
-      print('Background service initialization error: $e');
-    }
-  }
+  // The timer persists its start time and publishes its own meaningful Mira
+  // notification. A separate foreground service only added Android's generic
+  // “Background Service — Preparing” notification, without doing timer work.
+  Future<void> _startBackgroundService() async {}
 
-  Future<void> _startBackgroundService() async {
-    try {
-      final isRunning = await _backgroundService.isRunning();
-      if (!isRunning) {
-        await _backgroundService.startService();
-      }
-    } catch (e) {
-      print('Failed to start background service: $e');
-    }
-  }
-
-  Future<void> _stopBackgroundService() async {
-    try {
-      final isRunning = await _backgroundService.isRunning();
-      if (isRunning) {
-        _backgroundService.invoke('stop');
-      }
-    } catch (e) {
-      print('Failed to stop background service: $e');
-    }
-  }
-
-  @pragma('vm:entry-point')
-  static void onStart(ServiceInstance service) {
-    // This will be executed when the service starts
-    if (service is AndroidServiceInstance) {
-      service.on('stop').listen((event) {
-        service.stopSelf();
-      });
-    }
-
-    // Keep the service alive
-    Timer.periodic(const Duration(seconds: 1), (timer) async {
-      if (service is AndroidServiceInstance) {
-        if (!await service.isForegroundService()) {
-          timer.cancel();
-          return;
-        }
-      }
-      // Service is running, timer controller handles the actual timer logic
-    });
-  }
-
-  @pragma('vm:entry-point')
-  static Future<bool> onIosBackground(ServiceInstance service) async {
-    return true;
-  }
+  Future<void> _stopBackgroundService() async {}
 }

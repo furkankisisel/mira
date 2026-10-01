@@ -5813,6 +5813,7 @@
     "worldTheme": "Monde",
     "worldThemeDesc": "Harmonie des couleurs",
     "writeMessage": "Écrire un message...",
+    "xpEarned": "{amount} XP gagnés",
     "xpProgressSummary": "{current} / {total} XP • {toNext} XP restants",
     "xpToNextLevel": "jusqu'au niveau suivant",
     "yearly": "Annuel",

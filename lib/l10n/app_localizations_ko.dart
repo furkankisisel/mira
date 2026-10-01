@@ -4478,6 +4478,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get writeMessage => '메시지를 작성하세요...';
 
   @override
+  String xpEarned(Object amount) {
+    return '$amount XP 획득';
+  }
+
+  @override
   String xpProgressSummary(Object current, Object toNext, Object total) {
     return '$current / $total XP • 다음 레벨까지 $toNext XP';
   }

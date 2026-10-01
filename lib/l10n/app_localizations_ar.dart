@@ -4550,6 +4550,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get writeMessage => 'اكتب رسالة...';
 
   @override
+  String xpEarned(Object amount) {
+    return 'تم كسب $amount نقطة XP';
+  }
+
+  @override
   String xpProgressSummary(Object current, Object toNext, Object total) {
     return '$current / $total نقطة خبرة • $toNext نقطة خبرة إلى المستوى التالي';
   }

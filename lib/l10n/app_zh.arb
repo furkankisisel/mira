@@ -5813,6 +5813,7 @@
     "worldTheme": "世界",
     "worldThemeDesc": "所有色彩的和谐",
     "writeMessage": "写条消息...",
+    "xpEarned": "获得 {amount} XP",
     "xpProgressSummary": "{current} / {total} XP • 距离升级还差 {toNext} XP",
     "xpToNextLevel": "距离升级",
     "yearly": "每年",

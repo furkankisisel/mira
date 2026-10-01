@@ -31,7 +31,6 @@ import '../domain/room_score_model.dart';
 import 'widgets/room_podium_widget.dart';
 import 'widgets/room_overall_leaderboard.dart';
 
-
 /// Detail view for a social room — live dashboard + notes.
 class RoomDetailScreen extends StatelessWidget {
   const RoomDetailScreen({super.key, required this.room});
@@ -43,6 +42,7 @@ class RoomDetailScreen extends StatelessWidget {
     final isOwner = currentUid == room.ownerId;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final colorScheme = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
@@ -55,7 +55,10 @@ class RoomDetailScreen extends StatelessWidget {
                 width: 34,
                 height: 34,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary
+                      .withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 alignment: Alignment.center,
@@ -67,7 +70,10 @@ class RoomDetailScreen extends StatelessWidget {
               child: Text(
                 room.name,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17, letterSpacing: -0.2),
+                style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 17,
+                    letterSpacing: -0.2),
               ),
             ),
           ],
@@ -80,9 +86,10 @@ class RoomDetailScreen extends StatelessWidget {
               height: 38,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isDark ? const Color(0xFF222838) : Colors.white,
+                color: colorScheme.surfaceContainerHigh,
                 border: Border.all(
-                  color: isDark ? Colors.white.withValues(alpha: 0.10) : Colors.black.withValues(alpha: 0.06),
+                  color: colorScheme.outlineVariant
+                      .withValues(alpha: isDark ? 0.45 : 0.7),
                   width: 1.1,
                 ),
                 boxShadow: [
@@ -109,9 +116,10 @@ class RoomDetailScreen extends StatelessWidget {
               height: 38,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isDark ? const Color(0xFF222838) : Colors.white,
+                color: colorScheme.surfaceContainerHigh,
                 border: Border.all(
-                  color: isDark ? Colors.white.withValues(alpha: 0.10) : Colors.black.withValues(alpha: 0.06),
+                  color: colorScheme.outlineVariant
+                      .withValues(alpha: isDark ? 0.45 : 0.7),
                   width: 1.1,
                 ),
                 boxShadow: [
@@ -125,7 +133,8 @@ class RoomDetailScreen extends StatelessWidget {
               child: PopupMenuButton<String>(
                 padding: EdgeInsets.zero,
                 iconSize: 19,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18)),
                 onSelected: (v) => _handleMenu(context, v, isOwner),
                 itemBuilder: (_) => <PopupMenuEntry<String>>[
                   PopupMenuItem(
@@ -142,9 +151,12 @@ class RoomDetailScreen extends StatelessWidget {
                       value: 'delete',
                       child: ListTile(
                         dense: true,
-                        leading: const Icon(Icons.delete_outline_rounded, color: Colors.red),
+                        leading: const Icon(Icons.delete_outline_rounded,
+                            color: Colors.red),
                         title: Text(l10n.deleteRoomTitle,
-                            style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w600)),
+                            style: const TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.w600)),
                         contentPadding: EdgeInsets.zero,
                       ),
                     )
@@ -153,9 +165,12 @@ class RoomDetailScreen extends StatelessWidget {
                       value: 'leave',
                       child: ListTile(
                         dense: true,
-                        leading: const Icon(Icons.exit_to_app_rounded, color: Colors.red),
+                        leading: const Icon(Icons.exit_to_app_rounded,
+                            color: Colors.red),
                         title: Text(l10n.leaveRoomTitle,
-                            style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w600)),
+                            style: const TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.w600)),
                         contentPadding: EdgeInsets.zero,
                       ),
                     ),
@@ -180,12 +195,10 @@ class RoomDetailScreen extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1B202D) : Colors.white,
+        color: cs.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.12)
-              : Colors.black.withValues(alpha: 0.08),
+          color: cs.outlineVariant.withValues(alpha: isDark ? 0.45 : 0.7),
           width: 1.2,
         ),
         boxShadow: [
@@ -243,7 +256,7 @@ class RoomDetailScreen extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
-      backgroundColor: isDark ? const Color(0xFF181D29) : Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -410,7 +423,9 @@ class RoomDetailScreen extends StatelessWidget {
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).taskAddedSnackbar(title))),
+          SnackBar(
+              content:
+                  Text(AppLocalizations.of(context).taskAddedSnackbar(title))),
         );
       }
     }
@@ -425,7 +440,7 @@ class RoomDetailScreen extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: isDark ? const Color(0xFF181D29) : Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -551,7 +566,7 @@ class RoomDetailScreen extends StatelessWidget {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: isDark ? const Color(0xFF181D29) : Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -667,7 +682,9 @@ class RoomDetailScreen extends StatelessWidget {
       case 'code':
         Clipboard.setData(ClipboardData(text: room.inviteCode));
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).inviteCodeCopiedSnackbar)),
+          SnackBar(
+              content:
+                  Text(AppLocalizations.of(context).inviteCodeCopiedSnackbar)),
         );
         break;
       case 'leave':
@@ -898,7 +915,8 @@ class _AddOptionCardState extends State<_AddOptionCard>
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: widget.iconColor.withValues(alpha: isDark ? 0.20 : 0.12),
+                  color:
+                      widget.iconColor.withValues(alpha: isDark ? 0.20 : 0.12),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(widget.icon, color: widget.iconColor, size: 22),
@@ -940,7 +958,8 @@ class _AddOptionCardState extends State<_AddOptionCard>
               ),
               Icon(
                 Icons.chevron_right_rounded,
-                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                color:
+                    theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                 size: 20,
               ),
             ],
@@ -962,7 +981,8 @@ class RoomBody extends StatefulWidget {
 }
 
 class _RoomBodyState extends State<RoomBody> {
-  int _selectedTab = 0; // 0: Sıralama & Podyum, 1: Alışkanlıklar & Görevler, 2: Notlar & Akış
+  int _selectedTab =
+      0; // 0: Sıralama & Podyum, 1: Alışkanlıklar & Görevler, 2: Notlar & Akış
 
   List<RoomMember> _members = [];
   List<RoomHabit> _habits = [];
@@ -979,11 +999,13 @@ class _RoomBodyState extends State<RoomBody> {
   }
 
   void _initStreams() {
-    _membersSub = RoomService.instance.streamMembers(widget.roomId).listen((members) {
+    _membersSub =
+        RoomService.instance.streamMembers(widget.roomId).listen((members) {
       if (mounted) setState(() => _members = members);
     });
 
-    _habitsSub = RoomService.instance.streamRoomHabits(widget.roomId).listen((habits) {
+    _habitsSub =
+        RoomService.instance.streamRoomHabits(widget.roomId).listen((habits) {
       if (mounted) {
         setState(() => _habits = habits);
         _updateProgressSubs(habits);
@@ -1101,9 +1123,7 @@ class _RoomBodyState extends State<RoomBody> {
       margin: const EdgeInsets.fromLTRB(16, 10, 16, 4),
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: isDark
-            ? const Color(0xFF141924)
-            : const Color(0xFFF1F5F9),
+        color: isDark ? const Color(0xFF141924) : const Color(0xFFF1F5F9),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isDark
@@ -1248,7 +1268,8 @@ class _MembersBar extends StatelessWidget {
                   Text(
                     l10n.membersCountText(members.length),
                     style: theme.textTheme.labelMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+                      color:
+                          theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -1259,7 +1280,8 @@ class _MembersBar extends StatelessWidget {
               height: 100,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 itemCount: members.length,
                 separatorBuilder: (context, _) => const SizedBox(width: 12),
                 itemBuilder: (context, index) {
@@ -1271,13 +1293,19 @@ class _MembersBar extends StatelessWidget {
                       listenable: ProfileRepository.instance,
                       builder: (context, _) {
                         final profile = ProfileRepository.instance;
-                        final name = isMe ? (profile.name.isNotEmpty ? profile.name : m.displayName) : m.displayName;
-                        
+                        final name = isMe
+                            ? (profile.name.isNotEmpty
+                                ? profile.name
+                                : m.displayName)
+                            : m.displayName;
+
                         ImageProvider? avatar;
                         if (isMe) {
-                          if (profile.avatarPath != null && profile.avatarPath!.isNotEmpty) {
+                          if (profile.avatarPath != null &&
+                              profile.avatarPath!.isNotEmpty) {
                             avatar = FileImage(io.File(profile.avatarPath!));
-                          } else if (profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty) {
+                          } else if (profile.avatarUrl != null &&
+                              profile.avatarUrl!.isNotEmpty) {
                             avatar = NetworkImage(profile.avatarUrl!);
                           }
                         } else if (m.avatarUrl != null) {
@@ -1288,10 +1316,12 @@ class _MembersBar extends StatelessWidget {
                           width: 85,
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.surfaceContainerLow.withOpacity(0.6),
+                            color: theme.colorScheme.surfaceContainerLow
+                                .withOpacity(0.6),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: theme.colorScheme.outlineVariant.withOpacity(0.3),
+                              color: theme.colorScheme.outlineVariant
+                                  .withOpacity(0.3),
                             ),
                             boxShadow: [
                               BoxShadow(
@@ -1308,15 +1338,20 @@ class _MembersBar extends StatelessWidget {
                                 tag: 'member_avatar_${m.uid}',
                                 child: CircleAvatar(
                                   radius: 22,
-                                  backgroundColor: avatar == null ? theme.colorScheme.primaryContainer : null,
+                                  backgroundColor: avatar == null
+                                      ? theme.colorScheme.primaryContainer
+                                      : null,
                                   backgroundImage: avatar,
                                   child: avatar == null
                                       ? Text(
-                                          name.isNotEmpty ? name[0].toUpperCase() : '?',
+                                          name.isNotEmpty
+                                              ? name[0].toUpperCase()
+                                              : '?',
                                           style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
-                                            color: theme.colorScheme.onPrimaryContainer,
+                                            color: theme
+                                                .colorScheme.onPrimaryContainer,
                                           ),
                                         )
                                       : null,
@@ -1541,10 +1576,12 @@ class _HabitCard extends StatelessWidget {
                       const SizedBox(height: 2),
                       // Show overall completion summary
                       StreamBuilder<List<MemberProgress>>(
-                        stream: RoomService.instance.streamHabitProgress(roomId, habit.id),
+                        stream: RoomService.instance
+                            .streamHabitProgress(roomId, habit.id),
                         builder: (ctx, snap) {
                           final progress = snap.data ?? [];
-                          final completed = progress.where((p) => p.isCompleted).length;
+                          final completed =
+                              progress.where((p) => p.isCompleted).length;
                           final total = progress.length;
                           if (total == 0) return const SizedBox.shrink();
                           return Text(
@@ -1563,31 +1600,37 @@ class _HabitCard extends StatelessWidget {
                 // Edit/Delete menu — only visible to creator
                 if (FirebaseAuth.instance.currentUser?.uid == habit.createdBy)
                   PopupMenuButton<String>(
-                    icon: Icon(Icons.more_vert, size: 18,
-                        color: theme.colorScheme.onSurfaceVariant),
+                    icon: Icon(Icons.more_vert,
+                        size: 18, color: theme.colorScheme.onSurfaceVariant),
                     tooltip: AppLocalizations.of(context).editDeleteTooltip,
                     onSelected: (val) async {
                       if (val == 'delete') {
                         final confirm = await showDialog<bool>(
                           context: context,
                           builder: (_) => AlertDialog(
-                            title: Text(AppLocalizations.of(context).deleteHabitTitle),
-                            content: Text(AppLocalizations.of(context).deleteHabitConfirm(habit.title)),
+                            title: Text(
+                                AppLocalizations.of(context).deleteHabitTitle),
+                            content: Text(AppLocalizations.of(context)
+                                .deleteHabitConfirm(habit.title)),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context, false),
-                                child: Text(AppLocalizations.of(context).cancelButton),
+                                child: Text(
+                                    AppLocalizations.of(context).cancelButton),
                               ),
                               TextButton(
                                 onPressed: () => Navigator.pop(context, true),
-                                style: TextButton.styleFrom(foregroundColor: Colors.red),
-                                child: Text(AppLocalizations.of(context).deleteButton),
+                                style: TextButton.styleFrom(
+                                    foregroundColor: Colors.red),
+                                child: Text(
+                                    AppLocalizations.of(context).deleteButton),
                               ),
                             ],
                           ),
                         );
                         if (confirm == true) {
-                          await RoomService.instance.deleteRoomHabit(roomId, habit.id);
+                          await RoomService.instance
+                              .deleteRoomHabit(roomId, habit.id);
                         }
                       } else if (val == 'edit') {
                         final localHabit = HabitRepository.instance.habits
@@ -1597,7 +1640,9 @@ class _HabitCard extends StatelessWidget {
                         if (localHabit == null) {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(AppLocalizations.of(context).editOnlyPersonalHabits)),
+                              SnackBar(
+                                  content: Text(AppLocalizations.of(context)
+                                      .editOnlyPersonalHabits)),
                             );
                           }
                           return;
@@ -1607,23 +1652,26 @@ class _HabitCard extends StatelessWidget {
                           await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => AdvancedHabitScreen(existingHabit: localHabit),
+                              builder: (_) => AdvancedHabitScreen(
+                                  existingHabit: localHabit),
                             ),
                           );
                         } else {
                           await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => SimpleHabitScreen(existingHabit: localHabit),
+                              builder: (_) =>
+                                  SimpleHabitScreen(existingHabit: localHabit),
                             ),
                           );
                         }
 
-                        final updatedLocal = HabitRepository.instance.findById(localHabit.id);
+                        final updatedLocal =
+                            HabitRepository.instance.findById(localHabit.id);
                         if (updatedLocal != null) {
                           await RoomService.instance.updateRoomHabit(
                             roomId: roomId,
-                            habit: habit, 
+                            habit: habit,
                             newTitle: updatedLocal.title,
                             newEmoji: updatedLocal.emoji,
                             newColorValue: updatedLocal.color.value,
@@ -1646,8 +1694,10 @@ class _HabitCard extends StatelessWidget {
                         value: 'delete',
                         child: ListTile(
                           dense: true,
-                          leading: const Icon(Icons.delete_outline, color: Colors.red),
-                          title: Text(AppLocalizations.of(context).deleteButton, style: const TextStyle(color: Colors.red)),
+                          leading: const Icon(Icons.delete_outline,
+                              color: Colors.red),
+                          title: Text(AppLocalizations.of(context).deleteButton,
+                              style: const TextStyle(color: Colors.red)),
                           contentPadding: EdgeInsets.zero,
                         ),
                       ),
@@ -1658,8 +1708,7 @@ class _HabitCard extends StatelessWidget {
           ),
           // Leaderboard (replaces old flat progress tiles)
           StreamBuilder<List<MemberProgress>>(
-            stream:
-                RoomService.instance.streamHabitProgress(roomId, habit.id),
+            stream: RoomService.instance.streamHabitProgress(roomId, habit.id),
             builder: (context, snap) {
               final progress = snap.data ?? [];
               return RoomLeaderboard(
@@ -1694,10 +1743,12 @@ class _NudgeBanner extends StatelessWidget {
         if (nudges.isEmpty) return const SizedBox.shrink();
 
         return Column(
-          children: nudges.map((nudge) => _NudgeCard(
-            nudge: nudge,
-            roomId: roomId,
-          )).toList(),
+          children: nudges
+              .map((nudge) => _NudgeCard(
+                    nudge: nudge,
+                    roomId: roomId,
+                  ))
+              .toList(),
         );
       },
     );
@@ -1762,7 +1813,8 @@ class _NudgeCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  AppLocalizations.of(context).nudgeNotification(nudge.fromName),
+                  AppLocalizations.of(context)
+                      .nudgeNotification(nudge.fromName),
                   style: theme.textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFFFF6B35),
@@ -1815,7 +1867,7 @@ class _NotesFeed extends StatelessWidget {
             child: Text(
               AppLocalizations.of(context).noNotesYet,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
           );
@@ -1875,7 +1927,8 @@ class _NoteCard extends StatelessWidget {
           else
             CircleAvatar(
               radius: 16,
-              backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.15),
+              backgroundColor:
+                  theme.colorScheme.primary.withValues(alpha: 0.15),
               child: Text(
                 post.authorName.isNotEmpty
                     ? post.authorName[0].toUpperCase()
@@ -1927,7 +1980,8 @@ class _NoteCard extends StatelessWidget {
               icon: Icon(
                 Icons.close,
                 size: 15,
-                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                color:
+                    theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
               ),
               onPressed: () async {
                 await RoomService.instance.deletePost(post.roomId, post.id);
@@ -1945,7 +1999,8 @@ class _NoteCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final diff = DateTime.now().difference(dt);
     if (diff.inMinutes < 1) return l10n.justNow;
-    if (diff.inMinutes < 60) return '${diff.inMinutes} ${l10n.minutesSuffixShort}';
+    if (diff.inMinutes < 60)
+      return '${diff.inMinutes} ${l10n.minutesSuffixShort}';
     if (diff.inHours < 24) return '${diff.inHours} ${l10n.hoursSuffixShort}';
     if (diff.inDays < 7) return '${diff.inDays} ${l10n.daysSuffixShort}';
     return '${dt.day}.${dt.month}.${dt.year}';

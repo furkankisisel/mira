@@ -18,7 +18,18 @@ class _CreateRoomDialogState extends State<CreateRoomDialog> {
   bool _loading = false;
 
   static const _emojis = [
-    '🏠', '🎯', '🔥', '💪', '🌟', '🏆', '📚', '🧘', '🏃', '🎨', '🚀', '💡',
+    '🏠',
+    '🎯',
+    '🔥',
+    '💪',
+    '🌟',
+    '🏆',
+    '📚',
+    '🧘',
+    '🏃',
+    '🎨',
+    '🚀',
+    '💡',
   ];
 
   @override
@@ -43,8 +54,10 @@ class _CreateRoomDialogState extends State<CreateRoomDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-            content: Text(AppLocalizations.of(context).createRoomSuccessSnackbar),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            content:
+                Text(AppLocalizations.of(context).createRoomSuccessSnackbar),
           ),
         );
       }
@@ -54,7 +67,8 @@ class _CreateRoomDialogState extends State<CreateRoomDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             content: Text('${AppLocalizations.of(context).errorPrefix}$e'),
           ),
         );
@@ -70,18 +84,17 @@ class _CreateRoomDialogState extends State<CreateRoomDialog> {
     final l10n = AppLocalizations.of(context);
     final accent = cs.primary;
 
-    final dialogBg = isDark ? const Color(0xFF181D29) : Colors.white;
-    final inputBg = isDark ? const Color(0xFF111520) : const Color(0xFFF6F8FC);
-    final inputBorder = isDark
-        ? Colors.white.withValues(alpha: 0.10)
-        : Colors.black.withValues(alpha: 0.08);
+    final dialogBg = cs.surfaceContainerHigh;
+    final inputBg = cs.surfaceContainerLow;
+    final inputBorder =
+        cs.outlineVariant.withValues(alpha: isDark ? 0.45 : 0.7);
 
     return Dialog(
       backgroundColor: dialogBg,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(28),
         side: BorderSide(
-          color: isDark ? Colors.white.withValues(alpha: 0.10) : Colors.black.withValues(alpha: 0.05),
+          color: cs.outlineVariant.withValues(alpha: isDark ? 0.45 : 0.7),
           width: 1.2,
         ),
       ),
@@ -229,13 +242,16 @@ class _CreateRoomDialogState extends State<CreateRoomDialog> {
                       fontSize: 14,
                     ),
                     border: InputBorder.none,
-                    prefixIcon: Icon(Icons.groups_rounded, color: accent, size: 20),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    prefixIcon:
+                        Icon(Icons.groups_rounded, color: accent, size: 20),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 14),
                     counterText: '',
                   ),
                   textCapitalization: TextCapitalization.sentences,
                   maxLength: 30,
-                  style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                      fontSize: 14.5, fontWeight: FontWeight.w600),
                   onSubmitted: (_) => _create(),
                 ),
               ),
@@ -275,16 +291,19 @@ class _CreateRoomDialogState extends State<CreateRoomDialog> {
                           gradient: LinearGradient(
                             colors: [
                               accent,
-                              Color.lerp(accent, Colors.black, isDark ? 0.20 : 0.10)!,
+                              Color.lerp(
+                                  accent, Colors.black, isDark ? 0.20 : 0.10)!,
                             ],
                           ),
                           border: Border.all(
-                            color: Colors.white.withValues(alpha: isDark ? 0.25 : 0.50),
+                            color: Colors.white
+                                .withValues(alpha: isDark ? 0.25 : 0.50),
                             width: 1.2,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: accent.withValues(alpha: isDark ? 0.35 : 0.25),
+                              color: accent.withValues(
+                                  alpha: isDark ? 0.35 : 0.25),
                               blurRadius: 14,
                               offset: const Offset(0, 4),
                             ),
@@ -303,7 +322,8 @@ class _CreateRoomDialogState extends State<CreateRoomDialog> {
                             : Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.check_rounded, color: Colors.white, size: 18),
+                                  const Icon(Icons.check_rounded,
+                                      color: Colors.white, size: 18),
                                   const SizedBox(width: 6),
                                   Text(
                                     l10n.createButton,

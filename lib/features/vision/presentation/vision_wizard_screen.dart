@@ -248,7 +248,8 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                 filled: true,
                 fillColor: isDark
                     ? Colors.white.withValues(alpha: 0.06)
-                    : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                    : theme.colorScheme.surfaceContainerHighest
+                        .withValues(alpha: 0.5),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 18,
@@ -276,7 +277,8 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                      color: theme.colorScheme.onSurfaceVariant
+                          .withValues(alpha: 0.6),
                     ),
                   ),
                 ),
@@ -297,11 +299,14 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                     : const Color(0xFFF8FAFC),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05),
+                  color: isDark
+                      ? Colors.white10
+                      : Colors.black.withValues(alpha: 0.05),
                 ),
               ),
               child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
                 leading: Container(
                   width: 36,
                   height: 36,
@@ -309,11 +314,13 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                     color: _selectedColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(Icons.event_outlined, color: _selectedColor, size: 20),
+                  child: Icon(Icons.event_outlined,
+                      color: _selectedColor, size: 20),
                 ),
                 title: Text(
                   l10n.endDate,
-                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13.5),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w600, fontSize: 13.5),
                 ),
                 subtitle: Text(
                   _endDate != null
@@ -324,7 +331,8 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                     color: _endDate != null
                         ? _selectedColor
                         : theme.colorScheme.onSurfaceVariant,
-                    fontWeight: _endDate != null ? FontWeight.w600 : FontWeight.normal,
+                    fontWeight:
+                        _endDate != null ? FontWeight.w600 : FontWeight.normal,
                   ),
                 ),
                 trailing: Row(
@@ -341,7 +349,8 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                 onTap: () async {
                   final picked = await showDatePicker(
                     context: context,
-                    initialDate: _endDate ?? _startDate.add(const Duration(days: 30)),
+                    initialDate:
+                        _endDate ?? _startDate.add(const Duration(days: 30)),
                     firstDate: _startDate,
                     lastDate: DateTime.now().add(const Duration(days: 365 * 3)),
                   );
@@ -402,10 +411,13 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                       decoration: BoxDecoration(
                         color: isSelected
                             ? _selectedColor.withValues(alpha: 0.15)
-                            : (isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFF1F5F9)),
+                            : (isDark
+                                ? Colors.white.withValues(alpha: 0.05)
+                                : const Color(0xFFF1F5F9)),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: isSelected ? _selectedColor : Colors.transparent,
+                          color:
+                              isSelected ? _selectedColor : Colors.transparent,
                           width: 1.5,
                         ),
                       ),
@@ -649,7 +661,8 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, size: 20, color: Colors.grey),
+            const Icon(Icons.chevron_right_rounded,
+                size: 20, color: Colors.grey),
           ],
         ),
       ),
@@ -663,7 +676,7 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: isDark ? const Color(0xFF181D29) : Colors.white,
+      backgroundColor: theme.colorScheme.surfaceContainerHigh,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -723,7 +736,8 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                             activeColor: _selectedColor,
                             title: Text(
                               h.title,
-                              style: const TextStyle(fontWeight: FontWeight.w600),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w600),
                             ),
                             secondary: Text(h.emoji ?? '🎯',
                                 style: const TextStyle(fontSize: 20)),
@@ -861,8 +875,8 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                 if (_linkedHabitIds.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: _selectedColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),

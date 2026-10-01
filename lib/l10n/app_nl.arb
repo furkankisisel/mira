@@ -5813,6 +5813,7 @@
     "worldTheme": "Wereld",
     "worldThemeDesc": "Harmonie van alle kleuren",
     "writeMessage": "Schrijf een bericht...",
+    "xpEarned": "{amount} XP verdiend",
     "xpProgressSummary": "{current} / {total} XP • {toNext} XP tot volgend niveau",
     "xpToNextLevel": "tot volgend niveau",
     "yearly": "Jaarlijks",

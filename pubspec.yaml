@@ -64,8 +64,6 @@ dependencies:
   # For rendering SVG assets if needed for scalable logo variants
   flutter_svg: ^2.0.10
   # For background timer execution
-  flutter_background_service: ^5.0.5
-  flutter_background_service_android: ^6.2.4
   in_app_purchase_android: ^0.5.3
   device_info_plus: ^11.2.0
 
@@ -90,6 +88,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  image: ^4.10.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -141,9 +140,9 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: assets/icons/miralogo.png
-  adaptive_icon_background: "#E8F5E9"
-  adaptive_icon_foreground: assets/icons/miralogo.png
+  # The light icon is the default launcher icon. Android's dark-mode variant
+  # is copied into the qualified mipmap-night resources after generation.
+  image_path: assets/icons/mira_app_icon_light.png
   remove_alpha_ios: true
 
 # Note: flutter_native_splash will be replaced with custom splash screen

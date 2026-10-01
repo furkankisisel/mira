@@ -26,7 +26,9 @@ class _JoinRoomDialogState extends State<JoinRoomDialog> {
   Future<void> _pasteFromClipboard() async {
     HapticFeedback.lightImpact();
     final data = await Clipboard.getData(Clipboard.kTextPlain);
-    final text = data?.text?.trim().toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '') ?? '';
+    final text =
+        data?.text?.trim().toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '') ??
+            '';
     if (text.isNotEmpty) {
       final code = text.length > 6 ? text.substring(0, 6) : text;
       _codeCtrl.text = code;
@@ -37,7 +39,8 @@ class _JoinRoomDialogState extends State<JoinRoomDialog> {
   Future<void> _join() async {
     final code = _codeCtrl.text.trim().toUpperCase();
     if (code.length != 6) {
-      setState(() => _error = AppLocalizations.of(context).invalidCodeLengthError);
+      setState(
+          () => _error = AppLocalizations.of(context).invalidCodeLengthError);
       return;
     }
     HapticFeedback.lightImpact();
@@ -62,8 +65,10 @@ class _JoinRoomDialogState extends State<JoinRoomDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-            content: Text(AppLocalizations.of(context).joinRoomSuccessSnackbar(roomName)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            content: Text(
+                AppLocalizations.of(context).joinRoomSuccessSnackbar(roomName)),
           ),
         );
       }
@@ -85,18 +90,17 @@ class _JoinRoomDialogState extends State<JoinRoomDialog> {
     final l10n = AppLocalizations.of(context);
     final accent = const Color(0xFFF59E0B); // Warm amber for invite/key
 
-    final dialogBg = isDark ? const Color(0xFF181D29) : Colors.white;
-    final inputBg = isDark ? const Color(0xFF111520) : const Color(0xFFF6F8FC);
-    final inputBorder = isDark
-        ? Colors.white.withValues(alpha: 0.10)
-        : Colors.black.withValues(alpha: 0.08);
+    final dialogBg = cs.surfaceContainerHigh;
+    final inputBg = cs.surfaceContainerLow;
+    final inputBorder =
+        cs.outlineVariant.withValues(alpha: isDark ? 0.45 : 0.7);
 
     return Dialog(
       backgroundColor: dialogBg,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(28),
         side: BorderSide(
-          color: isDark ? Colors.white.withValues(alpha: 0.10) : Colors.black.withValues(alpha: 0.05),
+          color: cs.outlineVariant.withValues(alpha: isDark ? 0.45 : 0.7),
           width: 1.2,
         ),
       ),
@@ -130,7 +134,8 @@ class _JoinRoomDialogState extends State<JoinRoomDialog> {
                       ],
                     ),
                     alignment: Alignment.center,
-                    child: const Icon(Icons.vpn_key_rounded, color: Color(0xFFF59E0B), size: 24),
+                    child: const Icon(Icons.vpn_key_rounded,
+                        color: Color(0xFFF59E0B), size: 24),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
@@ -184,7 +189,8 @@ class _JoinRoomDialogState extends State<JoinRoomDialog> {
                     width: 1.2,
                   ),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 child: Row(
                   children: [
                     Expanded(
@@ -203,7 +209,8 @@ class _JoinRoomDialogState extends State<JoinRoomDialog> {
                         textCapitalization: TextCapitalization.characters,
                         maxLength: 6,
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9]')),
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'[A-Za-z0-9]')),
                           UpperCaseTextFormatter(),
                         ],
                         style: TextStyle(
@@ -211,7 +218,8 @@ class _JoinRoomDialogState extends State<JoinRoomDialog> {
                           fontWeight: FontWeight.w800,
                           letterSpacing: 6,
                           fontFamily: 'monospace',
-                          color: isDark ? Colors.white : const Color(0xFF0F172A),
+                          color:
+                              isDark ? Colors.white : const Color(0xFF0F172A),
                         ),
                         onChanged: (_) {
                           if (_error != null) setState(() => _error = null);
@@ -223,19 +231,22 @@ class _JoinRoomDialogState extends State<JoinRoomDialog> {
                     GestureDetector(
                       onTap: _pasteFromClipboard,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
                           color: accent.withValues(alpha: isDark ? 0.20 : 0.12),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: accent.withValues(alpha: isDark ? 0.35 : 0.25),
+                            color:
+                                accent.withValues(alpha: isDark ? 0.35 : 0.25),
                             width: 1,
                           ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.content_paste_rounded, size: 14, color: accent),
+                            Icon(Icons.content_paste_rounded,
+                                size: 14, color: accent),
                             const SizedBox(width: 4),
                             Text(
                               'Yapıştır',
@@ -307,12 +318,14 @@ class _JoinRoomDialogState extends State<JoinRoomDialog> {
                             ],
                           ),
                           border: Border.all(
-                            color: Colors.white.withValues(alpha: isDark ? 0.25 : 0.50),
+                            color: Colors.white
+                                .withValues(alpha: isDark ? 0.25 : 0.50),
                             width: 1.2,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: accent.withValues(alpha: isDark ? 0.35 : 0.25),
+                              color: accent.withValues(
+                                  alpha: isDark ? 0.35 : 0.25),
                               blurRadius: 14,
                               offset: const Offset(0, 4),
                             ),
@@ -331,7 +344,8 @@ class _JoinRoomDialogState extends State<JoinRoomDialog> {
                             : Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.login_rounded, color: Colors.white, size: 18),
+                                  const Icon(Icons.login_rounded,
+                                      color: Colors.white, size: 18),
                                   const SizedBox(width: 6),
                                   Text(
                                     l10n.joinButton,

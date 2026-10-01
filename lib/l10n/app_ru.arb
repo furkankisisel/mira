@@ -5813,6 +5813,7 @@
     "worldTheme": "Мир",
     "worldThemeDesc": "Гармония всех цветов",
     "writeMessage": "Написать...",
+    "xpEarned": "Получено {amount} XP",
     "xpProgressSummary": "{current} / {total} XP • {toNext} XP до уровня",
     "xpToNextLevel": "до след. уровня",
     "yearly": "Ежегодно",

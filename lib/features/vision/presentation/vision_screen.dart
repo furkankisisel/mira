@@ -136,6 +136,7 @@ class _VisionScreenState extends State<VisionScreen> {
     // If global theme is 'world', override locally to 'earth' so Vision and its popups share earth look.
     final bool isDark = theme.brightness == Brightness.dark;
     final ThemeData localTheme = Theme.of(context);
+    final colorScheme = localTheme.colorScheme;
     final accent = localTheme.colorScheme.primary;
 
     return Theme(
@@ -153,7 +154,7 @@ class _VisionScreenState extends State<VisionScreen> {
           scrolledUnderElevation: 0,
           centerTitle: true,
           titleTextStyle: TextStyle(
-            color: isDark ? Colors.white : const Color(0xFF1E2430),
+            color: colorScheme.onSurface,
             fontSize: 18,
             fontWeight: FontWeight.w700,
             fontFamily: 'Outfit',
@@ -171,19 +172,23 @@ class _VisionScreenState extends State<VisionScreen> {
                 height: 38,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isDark ? const Color(0xFF1E2430) : Colors.white,
+                  color: colorScheme.surfaceContainerHigh,
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.95),
+                    color: colorScheme.outlineVariant.withValues(
+                      alpha: isDark ? 0.45 : 0.7,
+                    ),
                     width: 1.2,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.05),
+                      color:
+                          Colors.black.withValues(alpha: isDark ? 0.35 : 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),
                     BoxShadow(
-                      color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.8),
+                      color:
+                          Colors.white.withValues(alpha: isDark ? 0.05 : 0.8),
                       blurRadius: 2,
                       offset: const Offset(0, -1),
                     ),
@@ -192,7 +197,7 @@ class _VisionScreenState extends State<VisionScreen> {
                 child: Icon(
                   Icons.arrow_back_ios_new_rounded,
                   size: 16,
-                  color: isDark ? Colors.white : const Color(0xFF1E2430),
+                  color: colorScheme.onSurface,
                 ),
               ),
             ),
@@ -208,7 +213,7 @@ class _VisionScreenState extends State<VisionScreen> {
                     ? Icons.grid_view_rounded
                     : Icons.auto_awesome_mosaic_rounded,
                 size: 21,
-                color: isDark ? Colors.white70 : const Color(0xFF475569),
+                color: colorScheme.onSurfaceVariant,
               ),
               onPressed: () {
                 HapticFeedback.lightImpact();
@@ -225,7 +230,7 @@ class _VisionScreenState extends State<VisionScreen> {
                 icon: Icon(
                   Icons.tune_rounded,
                   size: 20,
-                  color: isDark ? Colors.white70 : const Color(0xFF475569),
+                  color: colorScheme.onSurfaceVariant,
                 ),
                 onPressed: () => _showFreeformSettings(context),
               ),
@@ -881,8 +886,7 @@ class _VisionScreenState extends State<VisionScreen> {
                   CheckboxListTile(
                     contentPadding: EdgeInsets.zero,
                     value: deleteHabits,
-                    onChanged: (v) =>
-                        setState(() => deleteHabits = v ?? false),
+                    onChanged: (v) => setState(() => deleteHabits = v ?? false),
                     title: Text(
                       AppLocalizations.of(
                         context,

@@ -21,6 +21,7 @@ class SocialHubScreen extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
     final isGuest = user == null || user.isAnonymous;
     final theme = Theme.of(context);
+    final cs = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context);
     final bgColor = theme.scaffoldBackgroundColor;
@@ -31,7 +32,8 @@ class SocialHubScreen extends StatelessWidget {
           ? AppBar(
               title: Text(
                 l10n.socialRoomsTitle,
-                style: const TextStyle(fontWeight: FontWeight.w800, letterSpacing: -0.3),
+                style: const TextStyle(
+                    fontWeight: FontWeight.w800, letterSpacing: -0.3),
               ),
               actions: [
                 IconButton(
@@ -57,7 +59,7 @@ class SocialHubScreen extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
-      backgroundColor: isDark ? const Color(0xFF181D29) : Colors.white,
+      backgroundColor: cs.surfaceContainerHigh,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
@@ -138,6 +140,7 @@ class _SheetActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final cs = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
 
     return InkWell(
@@ -149,10 +152,10 @@ class _SheetActionCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1F2636) : const Color(0xFFF8FAFC),
+          color: cs.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06),
+            color: cs.outlineVariant.withValues(alpha: isDark ? 0.45 : 0.7),
             width: 1.1,
           ),
         ),
@@ -179,7 +182,8 @@ class _SheetActionCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w700, fontSize: 14.5),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -193,7 +197,9 @@ class _SheetActionCard extends StatelessWidget {
               ),
             ),
             Icon(Icons.arrow_forward_ios_rounded,
-                size: 14, color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
+                size: 14,
+                color:
+                    theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
           ],
         ),
       ),
@@ -236,7 +242,8 @@ class _EliteGuestPrompt extends StatelessWidget {
                 ),
               ),
               alignment: Alignment.center,
-              child: Icon(Icons.people_alt_rounded, size: 44, color: cs.primary),
+              child:
+                  Icon(Icons.people_alt_rounded, size: 44, color: cs.primary),
             ),
             const SizedBox(height: 22),
             Text(
@@ -308,7 +315,8 @@ class _EliteRoomList extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                   decoration: BoxDecoration(
                     color: cs.primary.withValues(alpha: isDark ? 0.20 : 0.12),
                     borderRadius: BorderRadius.circular(10),
@@ -415,16 +423,12 @@ class _QuickActionButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           gradient: isPrimary ? primaryBg : null,
-          color: isPrimary
-              ? null
-              : (isDark ? const Color(0xFF1A1F2C) : Colors.white),
+          color: isPrimary ? null : cs.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isPrimary
                 ? Colors.white.withValues(alpha: isDark ? 0.25 : 0.50)
-                : (isDark
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : Colors.black.withValues(alpha: 0.07)),
+                : cs.outlineVariant.withValues(alpha: isDark ? 0.45 : 0.7),
             width: 1.1,
           ),
           boxShadow: [
@@ -443,7 +447,9 @@ class _QuickActionButton extends StatelessWidget {
             Icon(
               icon,
               size: 18,
-              color: isPrimary ? Colors.white : (isDark ? Colors.white70 : const Color(0xFF334155)),
+              color: isPrimary
+                  ? Colors.white
+                  : (isDark ? Colors.white70 : const Color(0xFF334155)),
             ),
             const SizedBox(width: 6),
             Text(
@@ -451,7 +457,9 @@ class _QuickActionButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: isPrimary ? Colors.white : (isDark ? Colors.white : const Color(0xFF1E293B)),
+                color: isPrimary
+                    ? Colors.white
+                    : (isDark ? Colors.white : const Color(0xFF1E293B)),
               ),
             ),
           ],
@@ -575,10 +583,8 @@ class _EliteRoomCard extends StatelessWidget {
     final currentUid = FirebaseAuth.instance.currentUser?.uid;
     final isOwner = room.ownerId == currentUid;
 
-    final cardBg = isDark ? const Color(0xFF181D29) : Colors.white;
-    final cardBorder = isDark
-        ? Colors.white.withValues(alpha: 0.08)
-        : Colors.black.withValues(alpha: 0.06);
+    final cardBg = cs.surfaceContainerHigh;
+    final cardBorder = cs.outlineVariant.withValues(alpha: isDark ? 0.45 : 0.7);
 
     return InkWell(
       onTap: () {
@@ -667,9 +673,10 @@ class _EliteRoomCard extends StatelessWidget {
                         children: [
                           // Member count pill
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: isDark ? const Color(0xFF222938) : const Color(0xFFF1F5F9),
+                              color: cs.surfaceContainerHighest,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
@@ -682,7 +689,8 @@ class _EliteRoomCard extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  AppLocalizations.of(context).memberCountText(room.memberCount),
+                                  AppLocalizations.of(context)
+                                      .memberCountText(room.memberCount),
                                   style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w600,
@@ -696,12 +704,15 @@ class _EliteRoomCard extends StatelessWidget {
                           // Owner badge
                           if (isOwner)
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 7, vertical: 3),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF59E0B).withValues(alpha: isDark ? 0.20 : 0.12),
+                                color: const Color(0xFFF59E0B)
+                                    .withValues(alpha: isDark ? 0.20 : 0.12),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
-                                  color: const Color(0xFFF59E0B).withValues(alpha: isDark ? 0.35 : 0.25),
+                                  color: const Color(0xFFF59E0B)
+                                      .withValues(alpha: isDark ? 0.35 : 0.25),
                                   width: 0.9,
                                 ),
                               ),
@@ -733,7 +744,7 @@ class _EliteRoomCard extends StatelessWidget {
                   height: 34,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isDark ? const Color(0xFF222838) : const Color(0xFFF8FAFC),
+                    color: cs.surfaceContainerHighest,
                     border: Border.all(
                       color: isDark
                           ? Colors.white.withValues(alpha: 0.06)

@@ -25,6 +25,7 @@ class RoomPodiumWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (scores.isEmpty) return const SizedBox.shrink();
+    final colorScheme = Theme.of(context).colorScheme;
 
     final first = scores.isNotEmpty ? scores[0] : null;
     final second = scores.length > 1 ? scores[1] : null;
@@ -41,14 +42,13 @@ class RoomPodiumWidget extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            isDark ? const Color(0xFF1E2333) : const Color(0xFFF1F5F9),
-            isDark ? const Color(0xFF141824) : Colors.white,
+            colorScheme.surfaceContainerHigh,
+            colorScheme.surface,
           ],
         ),
         border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.10)
-              : Colors.black.withValues(alpha: 0.06),
+          color:
+              colorScheme.outlineVariant.withValues(alpha: isDark ? 0.45 : 0.7),
           width: 1.2,
         ),
         boxShadow: [
@@ -182,7 +182,8 @@ class RoomPodiumWidget extends StatelessWidget {
               color: isDark
                   ? Colors.white.withValues(alpha: 0.03)
                   : Colors.black.withValues(alpha: 0.02),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16)),
               border: Border.all(
                 color: isDark ? Colors.white10 : Colors.black12,
                 width: 1,
@@ -250,12 +251,13 @@ class RoomPodiumWidget extends StatelessWidget {
                   padding: const EdgeInsets.all(2.5),
                   child: ClipOval(
                     child: Container(
-                      color: isDark ? const Color(0xFF1E2333) : Colors.white,
+                      color: Theme.of(context).colorScheme.surfaceContainerHigh,
                       child: score.avatarUrl != null
                           ? Image.network(
                               score.avatarUrl!,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => _avatarFallback(score),
+                              errorBuilder: (_, __, ___) =>
+                                  _avatarFallback(score),
                             )
                           : _avatarFallback(score),
                     ),
@@ -267,7 +269,8 @@ class RoomPodiumWidget extends StatelessWidget {
               Positioned(
                 bottom: -6,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                   decoration: BoxDecoration(
                     color: primaryColor,
                     borderRadius: BorderRadius.circular(10),
@@ -304,7 +307,9 @@ class RoomPodiumWidget extends StatelessWidget {
               letterSpacing: -0.2,
               color: isCurrent
                   ? (isDark ? const Color(0xFF38BDF8) : const Color(0xFF0284C7))
-                  : (isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E293B)),
+                  : (isDark
+                      ? const Color(0xFFF1F5F9)
+                      : const Color(0xFF1E293B)),
             ),
           ),
           const SizedBox(height: 2),
@@ -340,7 +345,8 @@ class RoomPodiumWidget extends StatelessWidget {
                   primaryColor.withValues(alpha: isDark ? 0.12 : 0.08),
                 ],
               ),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16)),
               border: Border.all(
                 color: primaryColor.withValues(alpha: 0.35),
                 width: 1.5,
@@ -353,7 +359,8 @@ class RoomPodiumWidget extends StatelessWidget {
                 // Gap difference label
                 if (rank == 1)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: primaryColor.withValues(alpha: 0.25),
                       borderRadius: BorderRadius.circular(6),

@@ -106,12 +106,14 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.05),
+                      color:
+                          Colors.black.withValues(alpha: isDark ? 0.35 : 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),
                     BoxShadow(
-                      color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.8),
+                      color:
+                          Colors.white.withValues(alpha: isDark ? 0.05 : 0.8),
                       blurRadius: 2,
                       offset: const Offset(0, -1),
                     ),
@@ -140,8 +142,10 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                       controller: _tabController,
                       physics: const BouncingScrollPhysics(),
                       children: [
-                        _buildOverviewTab(theme, l10n, primaryColor, textColor, isDark),
-                        _buildHistoryTab(theme, l10n, primaryColor, textColor, isDark),
+                        _buildOverviewTab(
+                            theme, l10n, primaryColor, textColor, isDark),
+                        _buildHistoryTab(
+                            theme, l10n, primaryColor, textColor, isDark),
                       ],
                     ),
                   ),
@@ -167,7 +171,10 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
           color: isDark
               ? Color.alphaBlend(
                   primaryColor.withValues(alpha: 0.08),
-                  Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.65),
+                  Theme.of(context)
+                      .colorScheme
+                      .surfaceContainerHighest
+                      .withValues(alpha: 0.65),
                 )
               : Color.alphaBlend(
                   primaryColor.withValues(alpha: 0.07),
@@ -316,7 +323,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                   style: TextStyle(
                     color: itemColor,
                     fontSize: 13.5,
-                    fontWeight: weight > 0.5 ? FontWeight.w700 : FontWeight.w500,
+                    fontWeight:
+                        weight > 0.5 ? FontWeight.w700 : FontWeight.w500,
                     letterSpacing: -0.1,
                   ),
                 ),
@@ -343,10 +351,12 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF181D27) : Colors.white,
+              color: theme.colorScheme.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(32),
               border: Border.all(
-                color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
+                color: theme.colorScheme.outlineVariant.withValues(
+                  alpha: isDark ? 0.45 : 0.7,
+                ),
                 width: 1.5,
               ),
               boxShadow: [
@@ -367,7 +377,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                     color: primaryColor.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.mood_rounded, size: 36, color: primaryColor),
+                  child:
+                      Icon(Icons.mood_rounded, size: 36, color: primaryColor),
                 ),
                 const SizedBox(height: 18),
                 Text(
@@ -450,7 +461,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
             moodColor.withValues(alpha: isDark ? 0.06 : 0.02),
           ],
         ),
-        color: isDark ? const Color(0xFF181D27) : Colors.white,
+        color: theme.colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(28),
         border: Border.all(
           color: moodColor.withValues(alpha: isDark ? 0.35 : 0.5),
@@ -548,7 +559,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: moodColor.withValues(alpha: 0.16),
                   borderRadius: BorderRadius.circular(16),
@@ -583,14 +595,16 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
             children: [
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
                     color: isDark
                         ? Colors.black.withValues(alpha: 0.25)
                         : Colors.white.withValues(alpha: 0.8),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: isDark ? 0.06 : 0.8),
+                      color:
+                          Colors.white.withValues(alpha: isDark ? 0.06 : 0.8),
                       width: 1,
                     ),
                   ),
@@ -621,14 +635,16 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
               const SizedBox(width: 10),
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
                     color: isDark
                         ? Colors.black.withValues(alpha: 0.25)
                         : Colors.white.withValues(alpha: 0.8),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: isDark ? 0.06 : 0.8),
+                      color:
+                          Colors.white.withValues(alpha: isDark ? 0.06 : 0.8),
                       width: 1,
                     ),
                   ),
@@ -697,7 +713,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
       width: double.infinity,
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF181D27) : Colors.white,
+        color: theme.colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(28),
         border: Border.all(
           color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
@@ -732,11 +748,10 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: isDark
-                      ? const Color(0xFF222938)
-                      : const Color(0xFFF1F4F9),
+                  color: theme.colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -890,10 +905,12 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
       width: double.infinity,
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF181D27) : Colors.white,
+        color: theme.colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(28),
         border: Border.all(
-          color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
+          color: theme.colorScheme.outlineVariant.withValues(
+            alpha: isDark ? 0.45 : 0.7,
+          ),
           width: 1.5,
         ),
         boxShadow: [
@@ -964,7 +981,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF202735) : const Color(0xFFF7F9FC),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: Colors.white.withValues(alpha: isDark ? 0.06 : 0.9),
@@ -1030,7 +1047,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF181D27) : Colors.white,
+              color: theme.colorScheme.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(32),
               border: Border.all(
                 color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
@@ -1079,6 +1096,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                   l10n: l10n,
                   textColor: textColor,
                   isDark: isDark,
+                  surfaceColor: theme.colorScheme.surfaceContainerHigh,
+                  surfaceMutedColor: theme.colorScheme.surfaceContainerHighest,
                 ),
               ),
             ),
@@ -1093,13 +1112,15 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
     required AppLocalizations l10n,
     required Color textColor,
     required bool isDark,
+    required Color surfaceColor,
+    required Color surfaceMutedColor,
   }) {
     final moodColor = _getMoodLevelColor(entry.mood);
 
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF181D27) : Colors.white,
+        color: surfaceColor,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
@@ -1197,9 +1218,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                   height: 32,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isDark
-                        ? const Color(0xFF222938)
-                        : const Color(0xFFF1F4F9),
+                    color: surfaceMutedColor,
                   ),
                   child: Icon(
                     Icons.more_horiz_rounded,
@@ -1217,7 +1236,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF202735) : const Color(0xFFF7F9FC),
+                color:
+                    isDark ? const Color(0xFF202735) : const Color(0xFFF7F9FC),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: Colors.white.withValues(alpha: isDark ? 0.06 : 0.8),
@@ -1251,7 +1271,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
             ),
           ],
           // Tags
-          if (entry.subEmotions.isNotEmpty || entry.reason != ReasonCategory.other) ...[
+          if (entry.subEmotions.isNotEmpty ||
+              entry.reason != ReasonCategory.other) ...[
             const SizedBox(height: 12),
             Wrap(
               spacing: 6,
@@ -1370,7 +1391,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                         width: 38,
                         height: 38,
                         decoration: BoxDecoration(
-                          color: _getMoodLevelColor(entry.mood).withValues(alpha: 0.16),
+                          color: _getMoodLevelColor(entry.mood)
+                              .withValues(alpha: 0.16),
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Icon(
@@ -1425,7 +1447,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.edit_rounded, color: primaryColor, size: 20),
+                          Icon(Icons.edit_rounded,
+                              color: primaryColor, size: 20),
                           const SizedBox(width: 10),
                           Text(
                             l10n.edit,
@@ -1453,7 +1476,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                         color: const Color(0xFFEF4444).withValues(alpha: 0.10),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: const Color(0xFFEF4444).withValues(alpha: 0.25),
+                          color:
+                              const Color(0xFFEF4444).withValues(alpha: 0.25),
                           width: 1.2,
                         ),
                       ),
@@ -1598,7 +1622,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                               borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFFEF4444).withValues(alpha: 0.35),
+                                  color: const Color(0xFFEF4444)
+                                      .withValues(alpha: 0.35),
                                   blurRadius: 10,
                                   offset: const Offset(0, 4),
                                 ),
@@ -1645,7 +1670,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
         return StatefulBuilder(
           builder: (context, setModalState) {
             return ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(32)),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
                 child: Container(
@@ -1663,7 +1689,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                         const BorderRadius.vertical(top: Radius.circular(32)),
                     border: Border(
                       top: BorderSide(
-                        color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.9),
+                        color:
+                            Colors.white.withValues(alpha: isDark ? 0.12 : 0.9),
                         width: 1.5,
                       ),
                     ),
@@ -1701,7 +1728,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                               final mColor = _getMoodLevelColor(m);
                               return Expanded(
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 4),
                                   child: _AnalyticsBouncingTapWrapper(
                                     lowerBound: 0.93,
                                     duration: const Duration(milliseconds: 110),
@@ -1710,34 +1738,42 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                                       setModalState(() => selectedMood = m);
                                     },
                                     child: AnimatedContainer(
-                                      duration: const Duration(milliseconds: 220),
+                                      duration:
+                                          const Duration(milliseconds: 220),
                                       curve: Curves.easeOutCubic,
-                                      padding: const EdgeInsets.symmetric(vertical: 12),
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 12),
                                       decoration: BoxDecoration(
                                         color: isSel
                                             ? (isDark
                                                 ? mColor.withValues(alpha: 0.18)
-                                                : mColor.withValues(alpha: 0.10))
+                                                : mColor.withValues(
+                                                    alpha: 0.10))
                                             : (isDark
                                                 ? const Color(0xFF222938)
                                                 : const Color(0xFFF6F8FB)),
                                         borderRadius: BorderRadius.circular(18),
                                         border: Border.all(
                                           color: isSel
-                                              ? mColor.withValues(alpha: isDark ? 0.70 : 0.85)
-                                              : Colors.white.withValues(alpha: isDark ? 0.06 : 0.95),
+                                              ? mColor.withValues(
+                                                  alpha: isDark ? 0.70 : 0.85)
+                                              : Colors.white.withValues(
+                                                  alpha: isDark ? 0.06 : 0.95),
                                           width: isSel ? 1.6 : 1.2,
                                         ),
                                         boxShadow: [
                                           BoxShadow(
                                             color: Colors.black.withValues(
-                                              alpha: isDark ? (isSel ? 0.22 : 0.12) : (isSel ? 0.05 : 0.02),
+                                              alpha: isDark
+                                                  ? (isSel ? 0.22 : 0.12)
+                                                  : (isSel ? 0.05 : 0.02),
                                             ),
                                             blurRadius: isSel ? 6 : 3,
                                             offset: const Offset(0, 2),
                                           ),
                                           BoxShadow(
-                                            color: Colors.white.withValues(alpha: isDark ? 0.03 : 0.8),
+                                            color: Colors.white.withValues(
+                                                alpha: isDark ? 0.03 : 0.8),
                                             blurRadius: 1,
                                             offset: const Offset(0, -1),
                                           ),
@@ -1749,7 +1785,10 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                                           Icon(
                                             _getMoodIcon(m),
                                             size: 24,
-                                            color: isSel ? mColor : textColor.withValues(alpha: 0.5),
+                                            color: isSel
+                                                ? mColor
+                                                : textColor.withValues(
+                                                    alpha: 0.5),
                                           ),
                                           const SizedBox(height: 5),
                                           Text(
@@ -1757,9 +1796,14 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
-                                              color: isSel ? mColor : textColor.withValues(alpha: 0.7),
+                                              color: isSel
+                                                  ? mColor
+                                                  : textColor.withValues(
+                                                      alpha: 0.7),
                                               fontSize: 12,
-                                              fontWeight: isSel ? FontWeight.bold : FontWeight.w600,
+                                              fontWeight: isSel
+                                                  ? FontWeight.bold
+                                                  : FontWeight.w600,
                                             ),
                                           ),
                                         ],
@@ -1831,20 +1875,23 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                                   border: Border.all(
                                     color: isSel
                                         ? Colors.white.withValues(alpha: 0.35)
-                                        : Colors.white.withValues(alpha: isDark ? 0.06 : 0.9),
+                                        : Colors.white.withValues(
+                                            alpha: isDark ? 0.06 : 0.9),
                                     width: 1.2,
                                   ),
                                   boxShadow: isSel
                                       ? [
                                           BoxShadow(
-                                            color: primaryColor.withValues(alpha: 0.20),
+                                            color: primaryColor.withValues(
+                                                alpha: 0.20),
                                             blurRadius: 6,
                                             offset: const Offset(0, 2),
                                           ),
                                         ]
                                       : [
                                           BoxShadow(
-                                            color: Colors.black.withValues(alpha: isDark ? 0.1 : 0.02),
+                                            color: Colors.black.withValues(
+                                                alpha: isDark ? 0.1 : 0.02),
                                             blurRadius: 3,
                                             offset: const Offset(0, 1),
                                           ),
@@ -1854,7 +1901,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     AnimatedSize(
-                                      duration: const Duration(milliseconds: 200),
+                                      duration:
+                                          const Duration(milliseconds: 200),
                                       curve: Curves.easeOutCubic,
                                       child: isSel
                                           ? const Row(
@@ -1951,7 +1999,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                                   offset: const Offset(0, 4),
                                 ),
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+                                  color: Colors.black
+                                      .withValues(alpha: isDark ? 0.2 : 0.04),
                                   blurRadius: 4,
                                   offset: const Offset(0, 2),
                                 ),
@@ -2261,7 +2310,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
 
     if (difference.inDays == 0 && now.day == dateTime.day) {
       return 'Bugün ${_formatTime(dateTime)}';
-    } else if (difference.inDays <= 1 || (now.day - dateTime.day == 1 && now.month == dateTime.month)) {
+    } else if (difference.inDays <= 1 ||
+        (now.day - dateTime.day == 1 && now.month == dateTime.month)) {
       return 'Dün ${_formatTime(dateTime)}';
     } else if (difference.inDays < 7) {
       return '${difference.inDays} gün önce';

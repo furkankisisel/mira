@@ -5813,6 +5813,7 @@
     "worldTheme": "विश्व",
     "worldThemeDesc": "सभी रंगों का सामंजस्य",
     "writeMessage": "एक संदेश लिखें...",
+    "xpEarned": "{amount} XP अर्जित",
     "xpProgressSummary": "{current} / {total} XP • अगले स्तर के लिए {toNext} XP",
     "xpToNextLevel": "अगले स्तर तक",
     "yearly": "वार्षिक",

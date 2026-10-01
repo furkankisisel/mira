@@ -257,7 +257,9 @@ class _WeeklyScheduleScreenState extends State<WeeklyScheduleScreen> {
               child: Container(
                 width: _timeColumnWidth - 8,
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E2430) : const Color(0xFFF6F8FB),
+                  // This must follow the selected theme.  A fixed blue-gray
+                  // surface remained visible in warm and Cotton themes.
+                  color: colorScheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: Colors.white.withValues(alpha: isDark ? 0.08 : 0.95),
@@ -265,7 +267,8 @@ class _WeeklyScheduleScreenState extends State<WeeklyScheduleScreen> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+                      color:
+                          Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
                       blurRadius: 4,
                       offset: const Offset(0, 1.5),
                     ),
@@ -320,24 +323,21 @@ class _WeeklyScheduleScreenState extends State<WeeklyScheduleScreen> {
                               ],
                             )
                           : null,
-                      color: isToday
-                          ? null
-                          : (isDark
-                              ? const Color(0xFF181F2B)
-                              : const Color(0xFFF9FAFC)),
+                      color: isToday ? null : colorScheme.surfaceContainerHigh,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color: isToday
                             ? colorScheme.primary.withValues(alpha: 0.6)
-                            : Colors.white.withValues(
-                                alpha: isDark ? 0.06 : 0.9,
+                            : colorScheme.outlineVariant.withValues(
+                                alpha: isDark ? 0.45 : 0.7,
                               ),
                         width: isToday ? 1.4 : 1,
                       ),
                       boxShadow: isToday
                           ? [
                               BoxShadow(
-                                color: colorScheme.primary.withValues(alpha: 0.25),
+                                color:
+                                    colorScheme.primary.withValues(alpha: 0.25),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),
@@ -357,7 +357,8 @@ class _WeeklyScheduleScreenState extends State<WeeklyScheduleScreen> {
                               ),
                             ],
                     ),
-                    margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -509,8 +510,8 @@ class _WeeklyScheduleScreenState extends State<WeeklyScheduleScreen> {
 
       for (int i = 0; i < dayEvents.length; i++) {
         final event = dayEvents[i];
-        final colInfo =
-            columnAssignments[event] ?? const _ColInfo(colIndex: 0, totalCols: 1);
+        final colInfo = columnAssignments[event] ??
+            const _ColInfo(colIndex: 0, totalCols: 1);
 
         final top = (event.startHour - _startHour) * _hourHeight +
             (event.startMinute / 60) * _hourHeight;
@@ -650,9 +651,8 @@ class _WeeklyScheduleScreenState extends State<WeeklyScheduleScreen> {
                         event.location ?? (isCompleted ? '✓ Tamamlandı' : ''),
                         style: TextStyle(
                           fontSize: 8,
-                          color: isCompleted
-                              ? Colors.greenAccent
-                              : Colors.white70,
+                          color:
+                              isCompleted ? Colors.greenAccent : Colors.white70,
                           fontWeight:
                               isCompleted ? FontWeight.w600 : FontWeight.normal,
                         ),
@@ -746,7 +746,8 @@ class _WeeklyScheduleScreenState extends State<WeeklyScheduleScreen> {
     return widgets;
   }
 
-  Map<ScheduleEvent, _ColInfo> _computeEventColumns(List<ScheduleEvent> events) {
+  Map<ScheduleEvent, _ColInfo> _computeEventColumns(
+      List<ScheduleEvent> events) {
     final result = <ScheduleEvent, _ColInfo>{};
     if (events.isEmpty) return result;
 
@@ -937,8 +938,8 @@ class _WeeklyScheduleScreenState extends State<WeeklyScheduleScreen> {
       if (isToday) {
         HabitRepository.instance.setManualProgress(habit.id, newProgress);
       } else {
-        HabitRepository.instance.setManualProgressForDate(
-            habit.id, targetDate, newProgress);
+        HabitRepository.instance
+            .setManualProgressForDate(habit.id, targetDate, newProgress);
       }
     }
 
@@ -1106,9 +1107,8 @@ class _WeeklyScheduleScreenState extends State<WeeklyScheduleScreen> {
                                 : event.location!,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
-                              fontWeight: isHabit
-                                  ? FontWeight.w600
-                                  : FontWeight.normal,
+                              fontWeight:
+                                  isHabit ? FontWeight.w600 : FontWeight.normal,
                             ),
                           ),
                         ),
@@ -1244,9 +1244,41 @@ class _WeeklyScheduleScreenState extends State<WeeklyScheduleScreen> {
     ];
 
     const List<String> quickEmojis = [
-      '🎯', '⭐', '❤️', '🔥', '📚', '💪', '🧘‍♀️', '🏃‍♂️', '🎨', '✈️', '💰', '🎵',
-      '✨', '✅', '🚀', '💡', '⏰', '🥗', '☕', '💤', '🏠', '🌱', '☀️', '🌊',
-      '🌈', '💻', '📱', '✍️', '🎮', '🎬', '🐶', '🍕', '🛒', '🎁', '🔔'
+      '🎯',
+      '⭐',
+      '❤️',
+      '🔥',
+      '📚',
+      '💪',
+      '🧘‍♀️',
+      '🏃‍♂️',
+      '🎨',
+      '✈️',
+      '💰',
+      '🎵',
+      '✨',
+      '✅',
+      '🚀',
+      '💡',
+      '⏰',
+      '🥗',
+      '☕',
+      '💤',
+      '🏠',
+      '🌱',
+      '☀️',
+      '🌊',
+      '🌈',
+      '💻',
+      '📱',
+      '✍️',
+      '🎮',
+      '🎬',
+      '🐶',
+      '🍕',
+      '🛒',
+      '🎁',
+      '🔔'
     ];
 
     Color selectedColor = editEvent?.color ?? presetColors[0];

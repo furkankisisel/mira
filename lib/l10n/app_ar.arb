@@ -5813,6 +5813,7 @@
     "worldTheme": "العالم",
     "worldThemeDesc": "انسجام جميع الألوان",
     "writeMessage": "اكتب رسالة...",
+    "xpEarned": "تم كسب {amount} نقطة XP",
     "xpProgressSummary": "{current} / {total} نقطة خبرة • {toNext} نقطة خبرة إلى المستوى التالي",
     "xpToNextLevel": "حتى المستوى التالي",
     "yearly": "سنويًا",

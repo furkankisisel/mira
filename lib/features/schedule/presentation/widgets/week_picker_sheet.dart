@@ -70,7 +70,8 @@ class _WeekPickerSheetContent extends StatefulWidget {
   final DateTime initialWeekStart;
 
   @override
-  State<_WeekPickerSheetContent> createState() => _WeekPickerSheetContentState();
+  State<_WeekPickerSheetContent> createState() =>
+      _WeekPickerSheetContentState();
 }
 
 class _WeekPickerSheetContentState extends State<_WeekPickerSheetContent> {
@@ -161,12 +162,12 @@ class _WeekPickerSheetContentState extends State<_WeekPickerSheetContent> {
         filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: Container(
           decoration: BoxDecoration(
-            color: isDark
-                ? const Color(0xFF141923).withValues(alpha: 0.94)
-                : Colors.white.withValues(alpha: 0.94),
+            color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.94),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
             border: Border.all(
-              color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.95),
+              color: colorScheme.outlineVariant.withValues(
+                alpha: isDark ? 0.45 : 0.7,
+              ),
               width: 1.5,
             ),
             boxShadow: [
@@ -246,9 +247,7 @@ class _WeekPickerSheetContentState extends State<_WeekPickerSheetContent> {
                         vertical: 7,
                       ),
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? const Color(0xFF1E2430)
-                            : const Color(0xFFF2F4F7),
+                        color: colorScheme.surfaceContainerHigh,
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
                           color: Colors.white.withValues(
@@ -287,7 +286,7 @@ class _WeekPickerSheetContentState extends State<_WeekPickerSheetContent> {
                       height: 34,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: isDark ? const Color(0xFF1E2430) : Colors.white,
+                        color: colorScheme.surfaceContainerHigh,
                         border: Border.all(
                           color: Colors.white.withValues(
                             alpha: isDark ? 0.12 : 0.95,
@@ -319,9 +318,7 @@ class _WeekPickerSheetContentState extends State<_WeekPickerSheetContent> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                 decoration: BoxDecoration(
-                  color: isDark
-                      ? const Color(0xFF1E2430)
-                      : const Color(0xFFF7F8FA),
+                  color: colorScheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: Colors.white.withValues(
@@ -358,10 +355,10 @@ class _WeekPickerSheetContentState extends State<_WeekPickerSheetContent> {
                         height: 34,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isDark ? const Color(0xFF252D3D) : Colors.white,
+                          color: colorScheme.surfaceContainerHighest,
                           border: Border.all(
-                            color: Colors.white.withValues(
-                              alpha: isDark ? 0.10 : 0.9,
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: isDark ? 0.45 : 0.7,
                             ),
                             width: 1,
                           ),
@@ -398,10 +395,10 @@ class _WeekPickerSheetContentState extends State<_WeekPickerSheetContent> {
                         height: 34,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isDark ? const Color(0xFF252D3D) : Colors.white,
+                          color: colorScheme.surfaceContainerHighest,
                           border: Border.all(
-                            color: Colors.white.withValues(
-                              alpha: isDark ? 0.10 : 0.9,
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: isDark ? 0.45 : 0.7,
                             ),
                             width: 1,
                           ),
@@ -455,16 +452,16 @@ class _WeekPickerSheetContentState extends State<_WeekPickerSheetContent> {
                             gradient: isSelected
                                 ? LinearGradient(
                                     colors: [
-                                      colorScheme.primary.withValues(alpha: 0.18),
-                                      colorScheme.primary.withValues(alpha: 0.08),
+                                      colorScheme.primary
+                                          .withValues(alpha: 0.18),
+                                      colorScheme.primary
+                                          .withValues(alpha: 0.08),
                                     ],
                                   )
                                 : null,
                             color: isSelected
                                 ? null
-                                : (isDark
-                                    ? const Color(0xFF1E2430)
-                                    : Colors.white),
+                                : colorScheme.surfaceContainerHigh,
                             borderRadius: BorderRadius.circular(18),
                             border: Border.all(
                               color: isSelected
@@ -526,14 +523,12 @@ class _WeekPickerSheetContentState extends State<_WeekPickerSheetContent> {
                                       : null,
                                   color: isSelected
                                       ? null
-                                      : (isDark
-                                          ? const Color(0xFF262F3F)
-                                          : const Color(0xFFEDF1F7)),
+                                      : colorScheme.surfaceContainerHighest,
                                   border: Border.all(
                                     color: isSelected
                                         ? Colors.white.withValues(alpha: 0.3)
-                                        : Colors.white.withValues(
-                                            alpha: isDark ? 0.08 : 0.9,
+                                        : colorScheme.outlineVariant.withValues(
+                                            alpha: isDark ? 0.45 : 0.7,
                                           ),
                                     width: 1,
                                   ),

@@ -135,7 +135,8 @@ class _GoalSummarySheetState extends State<GoalSummarySheet> {
       initialData: VisionRepository.instance.visions,
       builder: (context, snapshot) {
         final visions = snapshot.data ?? VisionRepository.instance.visions;
-        final vision = visions.where((v) => v.id == widget.visionId).firstOrNull;
+        final vision =
+            visions.where((v) => v.id == widget.visionId).firstOrNull;
 
         if (vision == null) {
           return const SizedBox.shrink();
@@ -165,8 +166,9 @@ class _GoalSummarySheetState extends State<GoalSummarySheet> {
                 maxHeight: MediaQuery.of(context).size.height * 0.88,
               ),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF161A22) : Colors.white,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(28)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.12),
@@ -208,11 +210,13 @@ class _GoalSummarySheetState extends State<GoalSummarySheet> {
                             const SizedBox(height: 16),
 
                             // ── Overall Progress Card ──
-                            _buildProgressCard(context, vision, color, isDark, l10n),
+                            _buildProgressCard(
+                                context, vision, color, isDark, l10n),
                             const SizedBox(height: 18),
 
                             // ── Today's Steps Section (Prominent) ──
-                            if (todayHabits.isNotEmpty || uncompletedTasks.isNotEmpty) ...[
+                            if (todayHabits.isNotEmpty ||
+                                uncompletedTasks.isNotEmpty) ...[
                               _buildTodaySection(
                                 context,
                                 vision,
@@ -254,10 +258,12 @@ class _GoalSummarySheetState extends State<GoalSummarySheet> {
                                   Navigator.pop(context);
                                   widget.onOpenGoals?.call();
                                 },
-                                icon: const Icon(Icons.explore_outlined, size: 18),
+                                icon: const Icon(Icons.explore_outlined,
+                                    size: 18),
                                 label: Text(l10n.viewAllGoals),
                                 style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 14),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
                                   ),
@@ -340,7 +346,8 @@ class _GoalSummarySheetState extends State<GoalSummarySheet> {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
                       color: color.withValues(alpha: 0.14),
                       borderRadius: BorderRadius.circular(8),
@@ -375,8 +382,8 @@ class _GoalSummarySheetState extends State<GoalSummarySheet> {
                         widget.onLinkHabits?.call();
                       } else if (value == 'share') {
                         try {
-                          final tpl =
-                              VisionRepository.instance.exportAsTemplate(vision);
+                          final tpl = VisionRepository.instance
+                              .exportAsTemplate(vision);
                           final link = VisionTemplateRepository.instance
                               .toShareLink(tpl);
                           await SharePlus.instance.share(
@@ -636,7 +643,8 @@ class _GoalSummarySheetState extends State<GoalSummarySheet> {
                         ),
                         if (habit.habitType != HabitType.simple)
                           Text(
-                            'Hedef: ${habit.targetCount} ${habit.unit ?? ''}'.trim(),
+                            'Hedef: ${habit.targetCount} ${habit.unit ?? ''}'
+                                .trim(),
                             style: TextStyle(
                               fontSize: 11,
                               color: theme.colorScheme.onSurfaceVariant,
@@ -681,7 +689,8 @@ class _GoalSummarySheetState extends State<GoalSummarySheet> {
                   Expanded(
                     child: Text(
                       task.title,
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                      style: const TextStyle(
+                          fontSize: 13, fontWeight: FontWeight.w500),
                     ),
                   ),
                   IconButton(
@@ -779,7 +788,8 @@ class _GoalSummarySheetState extends State<GoalSummarySheet> {
                 ),
                 child: Row(
                   children: [
-                    Text(habit.emoji ?? '🎯', style: const TextStyle(fontSize: 20)),
+                    Text(habit.emoji ?? '🎯',
+                        style: const TextStyle(fontSize: 20)),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -808,7 +818,8 @@ class _GoalSummarySheetState extends State<GoalSummarySheet> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFF9500).withValues(alpha: 0.12),
+                          color:
+                              const Color(0xFFFF9500).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
@@ -931,7 +942,8 @@ class _GoalSummarySheetState extends State<GoalSummarySheet> {
             children: tasks.map((task) {
               return Container(
                 margin: const EdgeInsets.only(bottom: 6),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: isDark
                       ? Colors.white.withValues(alpha: 0.04)
