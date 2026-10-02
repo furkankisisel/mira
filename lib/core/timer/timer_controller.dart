@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart'; // Added for WidgetsBindingObserver
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/habit/domain/habit_repository.dart';
 import '../../features/habit/domain/habit_types.dart';
+import '../../features/social/data/room_service.dart';
 import '../../features/notifications/services/notification_service.dart';
 import 'package:vibration/vibration.dart';
 
@@ -527,7 +528,8 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
               _stopBackgroundService();
 
               final habit = _activeTimerHabitId != null
-                  ? HabitRepository.instance.findById(_activeTimerHabitId!)
+                  ? (HabitRepository.instance.findById(_activeTimerHabitId!) ??
+                      RoomService.instance.findHabitById(_activeTimerHabitId!))
                   : null;
               final habitName = habit?.title;
               final displayTitle = habitName != null
@@ -768,9 +770,21 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
     if (session.assigned) return false; // zaten kaydedildi
     final repo = HabitRepository.instance;
     final habit = repo.findById(habitId);
-    if (habit == null || habit.habitType != HabitType.timer) return false;
-    // Habit'e süre ekle
-    repo.addTimerProgress(habitId, session.duration);
+    if (habit != null && habit.habitType == HabitType.timer) {
+      repo.addTimerProgress(habitId, session.duration);
+    } else {
+      final roomHabit = RoomService.instance.findHabitById(habitId);
+      if (roomHabit == null ||
+          roomHabit.habitType != HabitType.timer ||
+          roomHabit.roomId == null) {
+        return false;
+      }
+      await RoomService.instance.addTimerProgressToRoomHabit(
+        roomHabit.roomId!,
+        roomHabit.id,
+        session.duration,
+      );
+    }
     session.assigned = true;
     // Pendingten düş
     if (_pending >= session.duration) {
@@ -788,7 +802,12 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
   Future<void> savePendingToHabit(String habitId) async {
     final repo = HabitRepository.instance;
     final habit = repo.findById(habitId);
-    if (habit == null || habit.habitType != HabitType.timer) return;
+    final roomHabit =
+        habit == null ? RoomService.instance.findHabitById(habitId) : null;
+
+    if (habit == null && roomHabit == null) return;
+    if (habit != null && habit.habitType != HabitType.timer) return;
+    if (roomHabit != null && roomHabit.habitType != HabitType.timer) return;
 
     // Include any elapsed time from current stopwatch session that hasn't been finished yet
     Duration totalToSave = _pending;
@@ -816,7 +835,16 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
 
     if (totalToSave <= Duration.zero) return;
 
-    repo.addTimerProgress(habitId, totalToSave);
+    if (habit != null) {
+      repo.addTimerProgress(habitId, totalToSave);
+    } else if (roomHabit != null && roomHabit.roomId != null) {
+      await RoomService.instance.addTimerProgressToRoomHabit(
+        roomHabit.roomId!,
+        roomHabit.id,
+        totalToSave,
+      );
+    }
+
     _pending = Duration.zero;
     _saveState();
     notifyListeners();

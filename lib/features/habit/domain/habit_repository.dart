@@ -86,6 +86,16 @@ class HabitRepository extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Removes any habits that were cloned from social rooms into the local repository.
+  Future<void> removeRoomHabits() async {
+    final roomItems = _habits.where((h) => h.id.startsWith('room_')).toList();
+    if (roomItems.isNotEmpty) {
+      _habits.removeWhere((h) => h.id.startsWith('room_'));
+      await _persist();
+      notifyListeners();
+    }
+  }
+
   bool getShowStreakIndicatorFor(String habitId) {
     return _perHabitStreakVisibility[habitId] ?? true;
   }

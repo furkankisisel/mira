@@ -208,6 +208,24 @@ class RoomRepository {
             snap.docs.map(MemberProgress.fromFirestore).toList());
   }
 
+  /// Stream a single member's progress for a specific habit.
+  Stream<MemberProgress?> streamMemberProgress(
+    String roomId,
+    String habitId,
+    String uid,
+  ) {
+    return _roomsRef
+        .doc(roomId)
+        .collection('habits')
+        .doc(habitId)
+        .collection('progress')
+        .doc(uid)
+        .snapshots()
+        .map((snap) => snap.exists && snap.data() != null
+            ? MemberProgress.fromFirestore(snap)
+            : null);
+  }
+
   /// Update a member's progress on a room habit.
   Future<void> updateMemberProgress({
     required String roomId,

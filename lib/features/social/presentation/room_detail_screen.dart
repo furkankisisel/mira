@@ -11,17 +11,14 @@ import '../domain/room_post_model.dart';
 import '../domain/room_progress_models.dart';
 import '../../habit/domain/habit_model.dart';
 import '../../habit/domain/habit_types.dart';
-import '../../habit/domain/habit_repository.dart';
-import '../../habit/domain/daily_task_model.dart';
-import '../../habit/domain/daily_task_repository.dart';
-import '../../habit/presentation/simple_habit_screen.dart';
+import '../../habit/domain/subtask_model.dart';
+import '../../habit/presentation/simple_habit_wizard_screen.dart';
 import '../../habit/presentation/advanced_habit_wizard_screen.dart';
-import '../../habit/presentation/widgets/daily_task_dialog.dart';
-import '../../../ui/premium_gate.dart';
+import '../../habit/presentation/simple_habit_screen.dart';
 import '../../habit/presentation/advanced_habit_screen.dart';
+import '../../habit/presentation/widgets/habit_card.dart';
 import '../../profile/profile_repository.dart';
 import 'room_stats_card.dart';
-import 'room_leaderboard_widget.dart';
 import 'member_profile_screen.dart';
 import '../../../design_system/components/banner_ad_widget.dart';
 import '../../../l10n/app_localizations.dart';
@@ -249,187 +246,9 @@ class RoomDetailScreen extends StatelessWidget {
   }
 
   void _showAddMenu(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Odaya Ekle',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 18,
-                  letterSpacing: -0.2,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Grup üyeleriyle birlikte takip edeceğiniz bir hedef belirleyin',
-                style: TextStyle(
-                  fontSize: 12.5,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 18),
-              _AddOptionCard(
-                icon: Icons.bolt_rounded,
-                iconColor: const Color(0xFF3B82F6),
-                title: l10n.simpleHabitTitle,
-                subtitle: l10n.simpleHabitSubtitle,
-                onTap: () {
-                  Navigator.pop(ctx);
-                  _addSimpleHabit(context);
-                },
-              ),
-              const SizedBox(height: 10),
-              _AddOptionCard(
-                icon: Icons.auto_graph_rounded,
-                iconColor: const Color(0xFF8B5CF6),
-                title: l10n.advancedHabitTitle,
-                subtitle: l10n.advancedHabitSubtitle,
-                trailingIcon: Icons.workspace_premium_rounded,
-                onTap: () {
-                  Navigator.pop(ctx);
-                  _addAdvancedHabit(context);
-                },
-              ),
-              const SizedBox(height: 10),
-              _AddOptionCard(
-                icon: Icons.task_alt_rounded,
-                iconColor: const Color(0xFF10B981),
-                title: l10n.dailyTaskTitle,
-                subtitle: l10n.dailyTaskSubtitle,
-                onTap: () {
-                  Navigator.pop(ctx);
-                  _addDailyTask(context);
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    _openRoomHabitCreationFlow(context, room.id);
   }
 
-  void _addSimpleHabit(BuildContext context) async {
-    final habit = await Navigator.of(context).push<Habit>(
-      MaterialPageRoute(builder: (_) => const SimpleHabitScreen()),
-    );
-    if (habit != null) {
-      // 1. Add to local repo FIRST (Bugün screen)
-      await HabitRepository.instance.addHabit(habit);
-      // 2. Add to room (Firestore) — best-effort
-      try {
-        await RoomService.instance.addHabitToRoom(room.id, habit);
-        await RoomService.instance.syncAllMyProgress();
-      } catch (e) {
-        debugPrint('Firestore write error: $e');
-      }
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${habit.title} odaya eklendi! 🎯')),
-        );
-      }
-    }
-  }
-
-  void _addAdvancedHabit(BuildContext context) async {
-    // Gate: only premium users can create advanced habits
-    final ok = await requirePremium(context);
-    if (!ok) return;
-
-    final habit = await Navigator.of(context).push<Habit>(
-      MaterialPageRoute(builder: (_) => const AdvancedHabitWizardScreen()),
-    );
-    if (habit != null) {
-      habit.isAdvanced = true;
-      // 1. Add to local repo FIRST (Bugün screen)
-      await HabitRepository.instance.addHabit(habit);
-      // 2. Add to room (Firestore) — best-effort
-      try {
-        await RoomService.instance.addHabitToRoom(room.id, habit);
-        await RoomService.instance.syncAllMyProgress();
-      } catch (e) {
-        debugPrint('Firestore write error: $e');
-      }
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${habit.title} odaya eklendi! 🎯')),
-        );
-      }
-    }
-  }
-
-  void _addDailyTask(BuildContext context) async {
-    final result = await showDialog<Map<String, dynamic>>(
-      context: context,
-      builder: (_) => const DailyTaskDialog(),
-    );
-    if (result != null) {
-      final title = (result['title'] as String?)?.trim() ?? '';
-      final description = (result['description'] as String?)?.trim() ?? '';
-      if (title.isEmpty) return;
-
-      final now = DateTime.now();
-      final dayKey =
-          '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
-
-      // 1. Create DailyTask for local repo FIRST
-      final task = DailyTask(
-        id: UniqueKey().toString(),
-        title: title,
-        description: description,
-        dateKey: dayKey,
-      );
-      await DailyTaskRepository.instance.addTask(task);
-
-      // 2. Also store as RoomHabit in Firestore — best-effort
-      try {
-        final dummyHabit = Habit(
-          id: 'task_${DateTime.now().millisecondsSinceEpoch}',
-          title: title,
-          description: description,
-          icon: Icons.task_alt,
-          emoji: '✅',
-          color: const Color(0xFF22C55E),
-          habitType: HabitType.simple,
-          targetCount: 1,
-          unit: '',
-          currentStreak: 0,
-          isCompleted: false,
-          progressDate: dayKey,
-          frequency: 'Günlük',
-          frequencyType: 'daily',
-          startDate: dayKey,
-        );
-        await RoomService.instance.addHabitToRoom(room.id, dummyHabit);
-        await RoomService.instance.syncAllMyProgress();
-      } catch (e) {
-        debugPrint('Firestore write error: $e');
-      }
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content:
-                  Text(AppLocalizations.of(context).taskAddedSnackbar(title))),
-        );
-      }
-    }
-  }
 
   void _addNote(BuildContext context) {
     final ctrl = TextEditingController();
@@ -846,7 +665,6 @@ class _AddOptionCard extends StatefulWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
-    this.trailingIcon,
   });
 
   final IconData icon;
@@ -854,7 +672,6 @@ class _AddOptionCard extends StatefulWidget {
   final String title;
   final String subtitle;
   final VoidCallback onTap;
-  final IconData? trailingIcon;
 
   @override
   State<_AddOptionCard> createState() => _AddOptionCardState();
@@ -935,14 +752,6 @@ class _AddOptionCardState extends State<_AddOptionCard>
                             letterSpacing: -0.2,
                           ),
                         ),
-                        if (widget.trailingIcon != null) ...[
-                          const SizedBox(width: 6),
-                          Icon(
-                            widget.trailingIcon,
-                            size: 16,
-                            color: const Color(0xFFFFB800),
-                          ),
-                        ],
                       ],
                     ),
                     const SizedBox(height: 3),
@@ -991,24 +800,45 @@ class _RoomBodyState extends State<RoomBody> {
   StreamSubscription? _membersSub;
   StreamSubscription? _habitsSub;
   final List<StreamSubscription> _progressSubs = [];
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
     _initStreams();
   }
 
   void _initStreams() {
     _membersSub =
         RoomService.instance.streamMembers(widget.roomId).listen((members) {
-      if (mounted) setState(() => _members = members);
+      if (mounted) {
+        final changed = _members.length != members.length ||
+            !_members.every((oldM) => members.any((newM) =>
+                newM.uid == oldM.uid &&
+                newM.displayName == oldM.displayName &&
+                newM.avatarUrl == oldM.avatarUrl));
+        _members = members;
+        if (changed) {
+          setState(() {});
+        }
+      }
     });
 
     _habitsSub =
         RoomService.instance.streamRoomHabits(widget.roomId).listen((habits) {
       if (mounted) {
-        setState(() => _habits = habits);
-        _updateProgressSubs(habits);
+        final changed = _habits.length != habits.length ||
+            !_habits.every((oldH) => habits.any((newH) =>
+                newH.id == oldH.id &&
+                newH.title == oldH.title &&
+                newH.targetCount == oldH.targetCount &&
+                newH.color == oldH.color));
+        _habits = habits;
+        if (changed) {
+          setState(() {});
+          _updateProgressSubs(habits);
+        }
       }
     });
   }
@@ -1023,7 +853,11 @@ class _RoomBodyState extends State<RoomBody> {
       final sub = RoomService.instance
           .streamHabitProgress(widget.roomId, h.id)
           .listen((list) {
-        if (mounted) setState(() => _progressMap[h.id] = list);
+        _progressMap[h.id] = list;
+        // Only trigger setState if currently viewing Leaderboard (tab 1), where scores depend on progressMap!
+        if (mounted && _selectedTab == 1) {
+          setState(() {});
+        }
       });
       _progressSubs.add(sub);
     }
@@ -1031,6 +865,7 @@ class _RoomBodyState extends State<RoomBody> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _membersSub?.cancel();
     _habitsSub?.cancel();
     for (final s in _progressSubs) {
@@ -1054,8 +889,9 @@ class _RoomBodyState extends State<RoomBody> {
     );
 
     return SingleChildScrollView(
+      controller: _scrollController,
       padding: const EdgeInsets.only(bottom: 110),
-      physics: const BouncingScrollPhysics(),
+      physics: const ClampingScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1071,7 +907,39 @@ class _RoomBodyState extends State<RoomBody> {
 
           // Tab Content
           if (_selectedTab == 0) ...[
-            // ── Tab 0: Liderlik Kürsüsü & Genel Lig ──
+            // ── Tab 0: Alışkanlıklar & İlerleme ──
+            RoomStatsCard(roomId: widget.roomId, habits: _habits),
+            const _AdBanner(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Row(
+                children: [
+                  Text(
+                    isTr ? 'Oda Alışkanlıkları' : 'Room Habits',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    '${_habits.length} ${isTr ? "hedef" : "habits"}',
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            _HabitsDashboard(
+              roomId: widget.roomId,
+              roomMembers: _members,
+              habits: _habits,
+            ),
+          ] else if (_selectedTab == 1) ...[
+            // ── Tab 1: Sıralama & Podyum ──
             RoomPodiumWidget(
               scores: scores,
               roomId: widget.roomId,
@@ -1084,21 +952,6 @@ class _RoomBodyState extends State<RoomBody> {
               isDark: isDark,
               isTr: isTr,
             ),
-          ] else if (_selectedTab == 1) ...[
-            // ── Tab 1: Alışkanlıklar & İstatistik ──
-            RoomStatsCard(roomId: widget.roomId),
-            const _AdBanner(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text(
-                l10n.rankingAndHabitsSection,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.2,
-                ),
-              ),
-            ),
-            _HabitsDashboard(roomId: widget.roomId),
           ] else ...[
             // ── Tab 2: Notlar & Paylaşımlar ──
             Padding(
@@ -1135,16 +988,16 @@ class _RoomBodyState extends State<RoomBody> {
         children: [
           _buildTabPill(
             index: 0,
-            icon: Icons.emoji_events_rounded,
-            label: isTr ? 'Sıralama' : 'Leaderboard',
-            activeColor: const Color(0xFFF59E0B),
+            icon: Icons.track_changes_rounded,
+            label: isTr ? 'Alışkanlıklar' : 'Habits',
+            activeColor: const Color(0xFF0284C7),
             isDark: isDark,
           ),
           _buildTabPill(
             index: 1,
-            icon: Icons.track_changes_rounded,
-            label: isTr ? 'Alışkanlıklar' : 'Habits',
-            activeColor: const Color(0xFF0284C7),
+            icon: Icons.emoji_events_rounded,
+            label: isTr ? 'Sıralama' : 'Leaderboard',
+            activeColor: const Color(0xFFF59E0B),
             isDark: isDark,
           ),
           _buildTabPill(
@@ -1205,21 +1058,25 @@ class _RoomBodyState extends State<RoomBody> {
             children: [
               Icon(
                 icon,
-                size: 16,
+                size: 15,
                 color: isSelected
                     ? activeColor
                     : (isDark ? Colors.white38 : Colors.black38),
               ),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                  letterSpacing: -0.2,
-                  color: isSelected
-                      ? (isDark ? Colors.white : const Color(0xFF0F172A))
-                      : (isDark ? Colors.white54 : Colors.black54),
+              const SizedBox(width: 5),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                    letterSpacing: -0.2,
+                    color: isSelected
+                        ? (isDark ? Colors.white : const Color(0xFF0F172A))
+                        : (isDark ? Colors.white54 : Colors.black54),
+                  ),
                 ),
               ),
             ],
@@ -1277,11 +1134,11 @@ class _MembersBar extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: 100,
+              height: 108,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
                 itemCount: members.length,
                 separatorBuilder: (context, _) => const SizedBox(width: 12),
                 itemBuilder: (context, index) {
@@ -1397,47 +1254,53 @@ class _MembersBar extends StatelessWidget {
 
 // ─── Habits Dashboard ─────────────────────────────────────
 
+// ─── Habits Dashboard ─────────────────────────────────────
+
 class _HabitsDashboard extends StatelessWidget {
-  const _HabitsDashboard({required this.roomId});
+  const _HabitsDashboard({
+    required this.roomId,
+    required this.roomMembers,
+    required this.habits,
+  });
+
   final String roomId;
+  final List<RoomMember> roomMembers;
+  final List<RoomHabit> habits;
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<RoomHabit>>(
-      stream: RoomService.instance.streamRoomHabits(roomId),
-      builder: (context, snap) {
-        if (snap.connectionState == ConnectionState.waiting) {
-          return const Padding(
-            padding: EdgeInsets.all(20),
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
-        final habits = snap.data ?? [];
-        if (habits.isEmpty) {
-          return _EmptyHabits();
-        }
-        return Column(
-          children:
-              habits.map((h) => _HabitCard(roomId: roomId, habit: h)).toList(),
-        );
-      },
+    if (habits.isEmpty) {
+      return _EmptyHabits(roomId: roomId);
+    }
+    return Column(
+      children: habits
+          .map((h) => _InteractiveRoomHabitCard(
+                key: ValueKey('room_habit_${h.id}'),
+                roomId: roomId,
+                habit: h,
+                roomMembers: roomMembers,
+              ))
+          .toList(),
     );
   }
 }
 
 class _EmptyHabits extends StatelessWidget {
+  const _EmptyHabits({required this.roomId});
+  final String roomId;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1B202D) : Colors.white,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: isDark
                 ? Colors.white.withValues(alpha: 0.08)
@@ -1446,43 +1309,60 @@ class _EmptyHabits extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.20 : 0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
+              color: Colors.black.withValues(alpha: isDark ? 0.20 : 0.04),
+              blurRadius: 14,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Column(
           children: [
             Container(
-              width: 56,
-              height: 56,
+              width: 60,
+              height: 60,
               decoration: BoxDecoration(
                 color: theme.colorScheme.primary.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.track_changes_rounded,
-                size: 28,
+                size: 30,
                 color: theme.colorScheme.primary,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Text(
-              'Henüz alışkanlık eklenmemiş',
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
+              'Oda Alışkanlığı Eklenmemiş',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+                fontSize: 16,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             Text(
-              'Alttaki dock üzerinden odaya bir alışkanlık veya günlük görev ekleyerek başlayın!',
+              'Odadaki arkadaşlarınızla birlikte takip etmek için bir alışkanlık veya hedef belirleyin!',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
-                fontSize: 12,
+                fontSize: 12.5,
+                height: 1.4,
               ),
               textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 18),
+            ElevatedButton.icon(
+              onPressed: () => _openRoomHabitCreationFlow(context, roomId),
+              icon: const Icon(Icons.add_rounded, size: 18),
+              label: const Text('İlk Alışkanlığı Ekle'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
             ),
           ],
         ),
@@ -1491,237 +1371,717 @@ class _EmptyHabits extends StatelessWidget {
   }
 }
 
-/// Card showing one room habit with leaderboard ranking.
-class _HabitCard extends StatelessWidget {
-  const _HabitCard({required this.roomId, required this.habit});
+/// Interactive room habit card with native-feeling animations, completion tracking,
+/// steppers, member completion drawer, and creator-only controls.
+class _InteractiveRoomHabitCard extends StatefulWidget {
+  const _InteractiveRoomHabitCard({
+    super.key,
+    required this.roomId,
+    required this.habit,
+    required this.roomMembers,
+  });
+
   final String roomId;
   final RoomHabit habit;
+  final List<RoomMember> roomMembers;
+
+  @override
+  State<_InteractiveRoomHabitCard> createState() =>
+      _InteractiveRoomHabitCardState();
+}
+
+class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
+  bool _isExpanded = false;
+  late Stream<List<MemberProgress>> _progressStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _progressStream = RoomService.instance
+        .streamHabitProgress(widget.roomId, widget.habit.id);
+  }
+
+  @override
+  void didUpdateWidget(covariant _InteractiveRoomHabitCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.roomId != widget.roomId ||
+        oldWidget.habit.id != widget.habit.id) {
+      _progressStream = RoomService.instance
+          .streamHabitProgress(widget.roomId, widget.habit.id);
+    }
+  }
+
+  Future<void> _openEditSheet() async {
+    final currentUid = FirebaseAuth.instance.currentUser?.uid;
+    if (widget.habit.createdBy != currentUid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Sadece alışkanlığı oluşturan kişi düzenleyebilir.'),
+        ),
+      );
+      return;
+    }
+
+    final habitToEdit = widget.habit.toHabit();
+    final edited = habitToEdit.habitType == HabitType.simple &&
+            !habitToEdit.isAdvanced
+        ? await Navigator.of(context).push<Habit>(
+            MaterialPageRoute(
+              builder: (_) => SimpleHabitScreen(existingHabit: habitToEdit),
+            ),
+          )
+        : await Navigator.of(context).push<Habit>(
+            MaterialPageRoute(
+              builder: (_) => AdvancedHabitScreen(existingHabit: habitToEdit),
+            ),
+          );
+
+    if (edited != null && mounted) {
+      final updated = RoomHabit.fromHabit(
+        edited,
+        createdBy: widget.habit.createdBy,
+        createdAt: widget.habit.createdAt,
+        id: widget.habit.id,
+      );
+      await RoomService.instance.updateRoomHabitFull(widget.roomId, updated);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Oda alışkanlığı güncellendi')),
+        );
+      }
+    }
+  }
+
+  Future<void> _confirmDelete() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Alışkanlığı Sil'),
+        content: Text(
+          '"${widget.habit.title}" alışkanlığı odadaki tüm üyeler için silinecek. Emin misiniz?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('İptal'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Herkes İçin Sil'),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true) {
+      await RoomService.instance.deleteRoomHabit(
+        widget.roomId,
+        widget.habit.id,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final habitColor = habit.color;
+    final habitColor = widget.habit.color;
+    final currentUid = FirebaseAuth.instance.currentUser?.uid;
+    final isCreator = currentUid != null && currentUid == widget.habit.createdBy;
+
+    return StreamBuilder<List<MemberProgress>>(
+      stream: _progressStream,
+      builder: (context, snap) {
+        final progressList = snap.data ?? [];
+        final myProgress = progressList.where((p) => p.uid == currentUid).firstOrNull;
+        final isCompletedToday = myProgress?.isCompletedToday ?? false;
+        final todayValue = myProgress?.todayValue ?? 0;
+        final streak = myProgress?.streak ?? 0;
+
+        final completedMembers = progressList.where((p) => p.isCompletedToday).toList();
+        final totalMembers = widget.roomMembers.isNotEmpty ? widget.roomMembers.length : 1;
+        final completedCount = completedMembers.length;
+
+        final habitSubtitle = widget.habit.isNumerical
+            ? 'Hedef: ${widget.habit.targetCount} ${widget.habit.unit ?? ""} • $completedCount/$totalMembers üye'
+            : '$completedCount / $totalMembers üye tamamladı';
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Exact same HabitCard as "Bugün" screen!
+            HabitCard(
+              key: ValueKey('habit_card_${widget.habit.id}'),
+              heroTag: 'room_${widget.roomId}_${widget.habit.id}',
+              title: widget.habit.title,
+              description: habitSubtitle,
+              icon: Icons.track_changes,
+              emoji: widget.habit.emoji,
+              color: habitColor,
+              currentStreak: todayValue,
+              streakCount: streak,
+              targetCount: widget.habit.targetCount,
+              isCompleted: isCompletedToday,
+              habitType: widget.habit.habitType,
+              numericalTargetType: widget.habit.numericalTargetType,
+              timerTargetType: widget.habit.timerTargetType,
+              unit: widget.habit.unit,
+              categoryName: 'Sosyal Hedef',
+              subtasks: widget.habit.subtasks.map((s) {
+                final isDone =
+                    myProgress?.completedSubtaskIds.contains(s.id) ?? false;
+                return Subtask(id: s.id, title: s.title, isCompleted: isDone);
+              }).toList(),
+              onSubtaskToggle: (subtaskId, completed) {
+                RoomService.instance.toggleMyRoomHabitSubtask(
+                  roomId: widget.roomId,
+                  habit: widget.habit,
+                  subtaskId: subtaskId,
+                  isCompleted: completed,
+                );
+              },
+              showStreakIndicator: false,
+              margin: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+              onTap: () {
+                RoomService.instance.updateMyRoomHabitProgress(
+                  roomId: widget.roomId,
+                  habit: widget.habit,
+                  isCompleted: !isCompletedToday,
+                );
+              },
+              onValueUpdate: (newValue) {
+                RoomService.instance.updateMyRoomHabitProgress(
+                  roomId: widget.roomId,
+                  habit: widget.habit,
+                  value: newValue,
+                );
+              },
+              onEdit: isCreator ? _openEditSheet : null,
+              onDelete: isCreator ? _confirmDelete : null,
+            ),
+
+            // Attached Social Progress & Member breakdown footer
+            _buildSocialProgressFooter(
+              theme,
+              isDark,
+              habitColor,
+              completedMembers,
+              progressList,
+              totalMembers,
+              isCreator,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildSocialProgressFooter(
+    ThemeData theme,
+    bool isDark,
+    Color habitColor,
+    List<MemberProgress> completedMembers,
+    List<MemberProgress> allProgress,
+    int totalMembers,
+    bool isCreator,
+  ) {
+    final completedCount = completedMembers.length;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-      clipBehavior: Clip.antiAlias,
+      margin: const EdgeInsets.fromLTRB(16, 2, 16, 8),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1B202D) : Colors.white,
-        borderRadius: BorderRadius.circular(22),
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.04)
+            : const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: habitColor.withValues(alpha: isDark ? 0.30 : 0.18),
-          width: 1.2,
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.black.withValues(alpha: 0.05),
+          width: 1,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
-          ),
-          if (!isDark)
-            const BoxShadow(
-              color: Colors.white,
-              blurRadius: 2,
-              offset: Offset(0, -1),
-            ),
-        ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Habit header
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  habitColor.withOpacity(isDark ? 0.15 : 0.10),
-                  habitColor.withOpacity(isDark ? 0.05 : 0.03),
+          InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () {
+              HapticFeedback.selectionClick();
+              setState(() => _isExpanded = !_isExpanded);
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.people_alt_rounded,
+                    size: 15,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '$completedCount / $totalMembers üye tamamladı',
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w700,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  // Avatar stack of completed members
+                  if (completedMembers.isNotEmpty)
+                    SizedBox(
+                      height: 22,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ...completedMembers.take(2).map((m) {
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 3),
+                              child: CircleAvatar(
+                                radius: 10,
+                                backgroundImage: m.avatarUrl != null
+                                    ? NetworkImage(m.avatarUrl!)
+                                    : null,
+                                backgroundColor:
+                                    habitColor.withValues(alpha: 0.3),
+                                child: m.avatarUrl == null
+                                    ? Text(
+                                        m.displayName.isNotEmpty
+                                            ? m.displayName[0].toUpperCase()
+                                            : '?',
+                                        style: const TextStyle(
+                                            fontSize: 9,
+                                            fontWeight: FontWeight.bold),
+                                      )
+                                    : null,
+                              ),
+                            );
+                          }),
+                          if (completedMembers.length > 2)
+                            Text(
+                              '+${completedMembers.length - 2}',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(width: 4),
+                  Icon(
+                    _isExpanded
+                        ? Icons.keyboard_arrow_up_rounded
+                        : Icons.keyboard_arrow_down_rounded,
+                    size: 18,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  if (isCreator) ...[
+                    const SizedBox(width: 2),
+                    PopupMenuButton<String>(
+                      icon: Icon(
+                        Icons.more_vert,
+                        size: 16,
+                        color: theme.colorScheme.onSurfaceVariant
+                            .withValues(alpha: 0.7),
+                      ),
+                      padding: EdgeInsets.zero,
+                      constraints:
+                          const BoxConstraints(minWidth: 28, minHeight: 28),
+                      tooltip: 'Alışkanlık İşlemleri',
+                      onSelected: (val) {
+                        if (val == 'edit') {
+                          _openEditSheet();
+                        } else if (val == 'delete') {
+                          _confirmDelete();
+                        }
+                      },
+                      itemBuilder: (_) => [
+                        const PopupMenuItem(
+                          value: 'edit',
+                          child: ListTile(
+                            dense: true,
+                            leading: Icon(Icons.edit_outlined, size: 18),
+                            title: Text('Düzenle'),
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        ),
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: ListTile(
+                            dense: true,
+                            leading: Icon(Icons.delete_outline,
+                                size: 18, color: Colors.red),
+                            title: Text('Herkes İçin Sil',
+                                style: TextStyle(color: Colors.red)),
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
-            child: Row(
-              children: [
-                Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    color: habitColor.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: habitColor.withOpacity(0.2),
-                      width: 1,
-                    ),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    habit.emoji ?? '🎯',
-                    style: const TextStyle(fontSize: 20),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        habit.title,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
+          ),
+
+          // Expanded Member Breakdown
+          if (_isExpanded)
+            Container(
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+              child: Column(
+                children: widget.roomMembers.map((member) {
+                  final mp = allProgress
+                      .where((p) => p.uid == member.uid)
+                      .firstOrNull;
+                  final isDone = mp?.isCompletedToday ?? false;
+                  final currentUid =
+                      FirebaseAuth.instance.currentUser?.uid;
+                  final isMe = member.uid == currentUid;
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 12,
+                          backgroundImage: member.avatarUrl != null
+                              ? NetworkImage(member.avatarUrl!)
+                              : null,
+                          backgroundColor:
+                              habitColor.withValues(alpha: 0.2),
+                          child: member.avatarUrl == null
+                              ? Text(
+                                  member.displayName.isNotEmpty
+                                      ? member.displayName[0].toUpperCase()
+                                      : '?',
+                                  style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              : null,
                         ),
-                      ),
-                      const SizedBox(height: 2),
-                      // Show overall completion summary
-                      StreamBuilder<List<MemberProgress>>(
-                        stream: RoomService.instance
-                            .streamHabitProgress(roomId, habit.id),
-                        builder: (ctx, snap) {
-                          final progress = snap.data ?? [];
-                          final completed =
-                              progress.where((p) => p.isCompleted).length;
-                          final total = progress.length;
-                          if (total == 0) return const SizedBox.shrink();
-                          return Text(
-                            '$completed/$total üye tamamladı',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontSize: 11,
-                              color: theme.colorScheme.onSurfaceVariant,
-                              fontWeight: FontWeight.w500,
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            isMe
+                                ? '${member.displayName} (Sen)'
+                                : member.displayName,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: isMe
+                                  ? FontWeight.w800
+                                  : FontWeight.w500,
                             ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                // Edit/Delete menu — only visible to creator
-                if (FirebaseAuth.instance.currentUser?.uid == habit.createdBy)
-                  PopupMenuButton<String>(
-                    icon: Icon(Icons.more_vert,
-                        size: 18, color: theme.colorScheme.onSurfaceVariant),
-                    tooltip: AppLocalizations.of(context).editDeleteTooltip,
-                    onSelected: (val) async {
-                      if (val == 'delete') {
-                        final confirm = await showDialog<bool>(
-                          context: context,
-                          builder: (_) => AlertDialog(
-                            title: Text(
-                                AppLocalizations.of(context).deleteHabitTitle),
-                            content: Text(AppLocalizations.of(context)
-                                .deleteHabitConfirm(habit.title)),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, false),
-                                child: Text(
-                                    AppLocalizations.of(context).cancelButton),
-                              ),
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, true),
-                                style: TextButton.styleFrom(
-                                    foregroundColor: Colors.red),
-                                child: Text(
-                                    AppLocalizations.of(context).deleteButton),
-                              ),
-                            ],
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        );
-                        if (confirm == true) {
-                          await RoomService.instance
-                              .deleteRoomHabit(roomId, habit.id);
-                        }
-                      } else if (val == 'edit') {
-                        final localHabit = HabitRepository.instance.habits
-                            .where((h) => h.title == habit.title)
-                            .firstOrNull;
-
-                        if (localHabit == null) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(AppLocalizations.of(context)
-                                      .editOnlyPersonalHabits)),
-                            );
-                          }
-                          return;
-                        }
-
-                        if (habit.isAdvanced) {
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => AdvancedHabitScreen(
-                                  existingHabit: localHabit),
-                            ),
-                          );
-                        } else {
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  SimpleHabitScreen(existingHabit: localHabit),
-                            ),
-                          );
-                        }
-
-                        final updatedLocal =
-                            HabitRepository.instance.findById(localHabit.id);
-                        if (updatedLocal != null) {
-                          await RoomService.instance.updateRoomHabit(
-                            roomId: roomId,
-                            habit: habit,
-                            newTitle: updatedLocal.title,
-                            newEmoji: updatedLocal.emoji,
-                            newColorValue: updatedLocal.color.value,
-                            newTargetCount: updatedLocal.targetCount,
-                          );
-                        }
-                      }
-                    },
-                    itemBuilder: (_) => [
-                      PopupMenuItem(
-                        value: 'edit',
-                        child: ListTile(
-                          dense: true,
-                          leading: const Icon(Icons.edit_outlined),
-                          title: Text(AppLocalizations.of(context).editButton),
-                          contentPadding: EdgeInsets.zero,
                         ),
-                      ),
-                      PopupMenuItem(
-                        value: 'delete',
-                        child: ListTile(
-                          dense: true,
-                          leading: const Icon(Icons.delete_outline,
-                              color: Colors.red),
-                          title: Text(AppLocalizations.of(context).deleteButton,
-                              style: const TextStyle(color: Colors.red)),
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                      ),
-                    ],
-                  ),
-              ],
+                        if (isDone)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF10B981)
+                                  .withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Text(
+                              'Tamamladı ✅',
+                              style: TextStyle(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF10B981),
+                              ),
+                            ),
+                          )
+                        else ...[
+                          Flexible(
+                            child: Text(
+                              widget.habit.isNumerical &&
+                                      (mp?.todayValue ?? 0) > 0
+                                  ? '${mp!.todayValue} / ${widget.habit.targetCount}'
+                                  : 'Tamamlamadı',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: theme.colorScheme.onSurfaceVariant
+                                    .withValues(alpha: 0.7),
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (!isMe) ...[
+                            const SizedBox(width: 6),
+                            PressableScale(
+                              onTap: () async {
+                                HapticFeedback.lightImpact();
+                                await RoomService.instance.sendNudge(
+                                  roomId: widget.roomId,
+                                  toUid: member.uid,
+                                  toName: member.displayName,
+                                );
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          '${member.displayName} dürtüldü! ⚡'),
+                                      duration: const Duration(seconds: 2),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFF6B35)
+                                      .withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.bolt_rounded,
+                                        size: 12, color: Color(0xFFFF6B35)),
+                                    SizedBox(width: 2),
+                                    Text(
+                                      'Dürt',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFFFF6B35),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
-          ),
-          // Leaderboard (replaces old flat progress tiles)
-          StreamBuilder<List<MemberProgress>>(
-            stream: RoomService.instance.streamHabitProgress(roomId, habit.id),
-            builder: (context, snap) {
-              final progress = snap.data ?? [];
-              return RoomLeaderboard(
-                progressList: progress,
-                roomId: roomId,
-                habitColor: habitColor,
-                habitTitle: habit.title,
-              );
-            },
-          ),
         ],
       ),
     );
+  }
+}
+
+// ─── Room Habit Creation Flow ─────────────────────────
+
+Future<void> _openRoomHabitCreationFlow(BuildContext context, String roomId) async {
+  final theme = Theme.of(context);
+  final isDark = theme.brightness == Brightness.dark;
+
+  final habitType = await showModalBottomSheet<String>(
+    context: context,
+    backgroundColor: theme.colorScheme.surfaceContainerHigh,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+    ),
+    builder: (ctx) => SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.onSurfaceVariant
+                      .withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Oda Alışkanlığı Oluştur',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Tüm oda üyeleri bu alışkanlığı takip edecek.',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            // Simple habit option
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: () => Navigator.pop(ctx, 'simple'),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.05)
+                        : Colors.black.withValues(alpha: 0.03),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: theme.colorScheme.outlineVariant
+                          .withValues(alpha: 0.4),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF6366F1)
+                              .withValues(alpha: 0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.check_circle_outline_rounded,
+                          color: Color(0xFF6366F1),
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Basit Alışkanlık',
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              'Evet / Hayır onay kutusu ile günlük takip',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 14,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Advanced habit option
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: () => Navigator.pop(ctx, 'advanced'),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.05)
+                        : Colors.black.withValues(alpha: 0.03),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: theme.colorScheme.outlineVariant
+                          .withValues(alpha: 0.4),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF8B5CF6)
+                              .withValues(alpha: 0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.auto_graph_rounded,
+                          color: Color(0xFF8B5CF6),
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Gelişmiş Alışkanlık',
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              'Sayısal hedef, zamanlayıcı veya alt görevler',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 14,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  if (habitType == null || !context.mounted) return;
+
+  final Habit? createdHabit = habitType == 'simple'
+      ? await Navigator.of(context).push<Habit>(
+          MaterialPageRoute(
+            builder: (_) => const SimpleHabitWizardScreen(),
+          ),
+        )
+      : await Navigator.of(context).push<Habit>(
+          MaterialPageRoute(
+            builder: (_) => const AdvancedHabitWizardScreen(),
+          ),
+        );
+
+  if (createdHabit != null && context.mounted) {
+    await RoomService.instance.addHabitToRoom(roomId, createdHabit);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('"${createdHabit.title}" odaya eklendi'),
+        ),
+      );
+    }
   }
 }
 

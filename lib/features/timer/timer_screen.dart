@@ -8,6 +8,7 @@ import '../../design_system/theme/theme_variations.dart';
 import '../../ui/premium_gate.dart';
 import '../habit/domain/habit_repository.dart';
 import '../habit/domain/habit_types.dart';
+import '../social/data/room_service.dart';
 import 'widgets/landscape_timer_screen.dart';
 import 'widgets/elite_timer_dial.dart';
 
@@ -207,7 +208,7 @@ class _TimerScreenState extends State<TimerScreen>
                     }
                     if (activeHabitId != null) {
                       final h =
-                          HabitRepository.instance.findById(activeHabitId);
+                          HabitRepository.instance.findById(activeHabitId) ?? RoomService.instance.findHabitById(activeHabitId);
                       if (h != null)
                         subtitleText = '${h.title} • $subtitleText';
                     }
@@ -1792,8 +1793,11 @@ class _TimerScreenState extends State<TimerScreen>
   void _showSaveDialog() {
     final l10n = AppLocalizations.of(context);
     final repo = HabitRepository.instance;
-    final timerHabits =
-        repo.habits.where((h) => h.habitType == HabitType.timer).toList();
+    final timerHabits = [
+      ...repo.habits.where((h) => h.habitType == HabitType.timer),
+      ...RoomService.instance.roomHabits
+          .where((h) => h.habitType == HabitType.timer),
+    ];
     if (timerHabits.isEmpty) {
       ScaffoldMessenger.of(
         context,
@@ -1872,7 +1876,15 @@ class _TimerScreenState extends State<TimerScreen>
               ),
               items: timerHabits
                   .map(
-                    (h) => DropdownMenuItem(value: h.id, child: Text(h.title)),
+                    (h) => DropdownMenuItem(
+                      value: h.id,
+                      child: Text(
+                        h.isRoomHabit
+                            ? '${h.title} (👥 ${h.roomName ?? "Oda"})'
+                            : h.title,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   )
                   .toList(),
               onChanged: (v) => selectedId = v,
@@ -1918,8 +1930,11 @@ class _TimerScreenState extends State<TimerScreen>
       return;
     }
     final repo = HabitRepository.instance;
-    final timerHabits =
-        repo.habits.where((h) => h.habitType == HabitType.timer).toList();
+    final timerHabits = [
+      ...repo.habits.where((h) => h.habitType == HabitType.timer),
+      ...RoomService.instance.roomHabits
+          .where((h) => h.habitType == HabitType.timer),
+    ];
     if (timerHabits.isEmpty) {
       ScaffoldMessenger.of(
         context,
@@ -1996,7 +2011,15 @@ class _TimerScreenState extends State<TimerScreen>
               ),
               items: timerHabits
                   .map(
-                    (h) => DropdownMenuItem(value: h.id, child: Text(h.title)),
+                    (h) => DropdownMenuItem(
+                      value: h.id,
+                      child: Text(
+                        h.isRoomHabit
+                            ? '${h.title} (👥 ${h.roomName ?? "Oda"})'
+                            : h.title,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   )
                   .toList(),
               onChanged: (v) => selectedId = v,

@@ -95,6 +95,14 @@ class Habit {
   // Rhythm window assignment
   RhythmWindow? rhythmWindow;
 
+  // Social Room integration
+  String? roomId;
+  String? roomName;
+  String? roomHabitCreatedBy;
+  bool get isRoomHabit => roomId != null && roomId!.isNotEmpty;
+  bool isRoomHabitCreator(String? currentUid) =>
+      isRoomHabit && currentUid != null && roomHabitCreatedBy == currentUid;
+
   void applyDailyReset(DateTime now) {
     final today = _dateStr(now);
     if (progressDate != today) {
@@ -189,6 +197,10 @@ class Habit {
         'focusMessage': focusMessage,
         'focusSetAt': focusSetAt?.toIso8601String(),
         if (rhythmWindow != null) 'rhythmWindow': rhythmWindow!.name,
+        if (roomId != null) 'roomId': roomId,
+        if (roomName != null) 'roomName': roomName,
+        if (roomHabitCreatedBy != null)
+          'roomHabitCreatedBy': roomHabitCreatedBy,
       };
 
   static Habit fromJson(Map<String, dynamic> json) {
@@ -304,7 +316,10 @@ class Habit {
               (w) => w.name == json['rhythmWindow'],
               orElse: () => RhythmWindow.focus,
             )
-          : null;
+          : null
+      ..roomId = json['roomId'] as String?
+      ..roomName = json['roomName'] as String?
+      ..roomHabitCreatedBy = json['roomHabitCreatedBy'] as String?;
   }
 
   static String _dateStr(DateTime d) =>

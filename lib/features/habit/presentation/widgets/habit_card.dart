@@ -51,6 +51,14 @@ class HabitCard extends StatefulWidget {
   final List<Subtask>? subtasks;
   final Function(String, bool)? onSubtaskToggle;
 
+  /// Custom hero tag to prevent collision across screens/rooms
+  final String? heroTag;
+
+  /// Social room integration
+  final bool isRoomHabit;
+  final String? roomName;
+  final VoidCallback? onGoToRoom;
+
   const HabitCard({
     super.key,
     required this.title,
@@ -83,6 +91,10 @@ class HabitCard extends StatefulWidget {
     this.onToggleStreakIndicator,
     this.subtasks,
     this.onSubtaskToggle,
+    this.heroTag,
+    this.isRoomHabit = false,
+    this.roomName,
+    this.onGoToRoom,
   });
 
   @override
@@ -979,7 +991,8 @@ class _HabitCardState extends State<HabitCard>
       context: context,
       backgroundColor: Colors.transparent,
       builder: (ctx) {
-        final cs = Theme.of(ctx).colorScheme;
+        final theme = Theme.of(ctx);
+        final cs = theme.colorScheme;
         final l10n = AppLocalizations.of(ctx);
         return SafeArea(
           child: Container(
@@ -1068,6 +1081,26 @@ class _HabitCardState extends State<HabitCard>
                   ),
 
                 // Set as Focus option
+                if (widget.onGoToRoom != null)
+                  ListTile(
+                    leading: Icon(Icons.meeting_room_outlined, color: widget.color),
+                    title: const Text('Odaya Git'),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      widget.onGoToRoom?.call();
+                    },
+                  ),
+                if (widget.isRoomHabit && widget.onEdit == null && widget.onDelete == null)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                    child: Text(
+                      'Bu bir oda alışkanlığıdır. Sadece oluşturan kişi düzenleyebilir veya silebilir.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: cs.onSurfaceVariant.withValues(alpha: 0.7),
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ),
                 if (widget.onSetAsFocus != null)
                   ListTile(
                     leading: Icon(
@@ -1081,14 +1114,15 @@ class _HabitCardState extends State<HabitCard>
                       widget.onSetAsFocus?.call();
                     },
                   ),
-                ListTile(
-                  leading: const Icon(Icons.edit_outlined),
-                  title: Text(l10n.edit),
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    widget.onEdit?.call();
-                  },
-                ),
+                if (widget.onEdit != null)
+                  ListTile(
+                    leading: const Icon(Icons.edit_outlined),
+                    title: Text(l10n.edit),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      widget.onEdit?.call();
+                    },
+                  ),
                 // Per-habit streak toggle (user can show/hide the flame for this habit)
                 if (widget.onToggleStreakIndicator != null)
                   ListTile(
@@ -1107,17 +1141,18 @@ class _HabitCardState extends State<HabitCard>
                       },
                     ),
                   ),
-                ListTile(
-                  leading: Icon(Icons.delete_outline, color: Colors.red[600]),
-                  title: Text(
-                    l10n.delete,
-                    style: TextStyle(color: Colors.red[600]),
+                if (widget.onDelete != null)
+                  ListTile(
+                    leading: Icon(Icons.delete_outline, color: Colors.red[600]),
+                    title: Text(
+                      l10n.delete,
+                      style: TextStyle(color: Colors.red[600]),
+                    ),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      widget.onDelete?.call();
+                    },
                   ),
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    widget.onDelete?.call();
-                  },
-                ),
                 const SizedBox(height: 6),
               ],
             ),
@@ -1371,7 +1406,7 @@ class _HabitCardState extends State<HabitCard>
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Hero(
-                                tag: 'habit_icon_${widget.title}',
+                                tag: widget.heroTag ?? 'habit_icon_${widget.title}',
                                 child: SizedBox(
                                   width: 44,
                                   height: 44,
@@ -1393,12 +1428,58 @@ class _HabitCardState extends State<HabitCard>
                               ),
                               const SizedBox(width: 12),
                               Expanded(
-                                child: SizedBox(
-                                  height: 44,
+                                child: ConstrainedBox(
+                                  constraints:
+                                      const BoxConstraints(minHeight: 44),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
+                                      if (widget.isRoomHabit)
+                                        Padding(
+                                          padding: const EdgeInsets.only(bottom: 3),
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 6,
+                                              vertical: 1.5,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: done
+                                                  ? onCompleted.withValues(alpha: 0.18)
+                                                  : widget.color.withValues(alpha: 0.12),
+                                              borderRadius: BorderRadius.circular(6),
+                                              border: Border.all(
+                                                color: done
+                                                    ? onCompleted.withValues(alpha: 0.3)
+                                                    : widget.color.withValues(alpha: 0.25),
+                                                width: 0.8,
+                                              ),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  Icons.groups_rounded,
+                                                  size: 11,
+                                                  color: done ? onCompleted : widget.color,
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  widget.roomName != null &&
+                                                          widget.roomName!.isNotEmpty
+                                                      ? widget.roomName!
+                                                      : 'Oda Alışkanlığı',
+                                                  style: TextStyle(
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: done ? onCompleted : widget.color,
+                                                    letterSpacing: 0.2,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
                                       Row(
                                         children: [
                                           Expanded(

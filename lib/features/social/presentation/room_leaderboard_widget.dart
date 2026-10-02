@@ -40,8 +40,8 @@ class RoomLeaderboard extends StatelessWidget {
     // Sort: completed first, then by completion ratio desc, then streak desc
     final sorted = List<MemberProgress>.from(progressList);
     sorted.sort((a, b) {
-      if (a.isCompleted && !b.isCompleted) return -1;
-      if (!a.isCompleted && b.isCompleted) return 1;
+      if (a.isCompletedToday && !b.isCompletedToday) return -1;
+      if (!a.isCompletedToday && b.isCompletedToday) return 1;
       final ratioCompare = b.completionRatio.compareTo(a.completionRatio);
       if (ratioCompare != 0) return ratioCompare;
       return b.streak.compareTo(a.streak);

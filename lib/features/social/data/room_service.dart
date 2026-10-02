@@ -1,7 +1,8 @@
+import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 import '../domain/room_model.dart';
 import '../domain/room_post_model.dart';
@@ -10,17 +11,62 @@ import '../domain/room_habit_model.dart';
 import '../domain/room_progress_models.dart';
 import 'room_repository.dart';
 import '../../profile/profile_repository.dart';
-import '../../habit/domain/habit_repository.dart';
 import '../../habit/domain/habit_model.dart';
 import '../../habit/domain/habit_types.dart';
-import '../../../services/premium_service.dart';
 
-/// Business-logic service for social rooms.
-class RoomService {
-  RoomService._();
+/// Business-logic service for social rooms with real-time reactive sync.
+class RoomService extends ChangeNotifier {
+  RoomService._() {
+    _initAuthListener();
+  }
   static final RoomService instance = RoomService._();
 
   final _repo = RoomRepository.instance;
+
+  StreamSubscription<User?>? _authSub;
+  StreamSubscription<List<Room>>? _roomsSub;
+  final Map<String, StreamSubscription<List<RoomHabit>>> _habitsSubs = {};
+  final Map<String, StreamSubscription<MemberProgress?>> _progressSubs = {};
+
+  List<Room> _myRooms = [];
+  final Map<String, List<RoomHabit>> _roomHabitsMap = {}; // roomId -> habits
+  final Map<String, MemberProgress> _memberProgressMap =
+      {}; // '$roomId:$habitId' -> progress
+
+  List<Habit> _cachedHabits = [];
+
+  List<Habit> get roomHabits => List.unmodifiable(_cachedHabits);
+
+  Habit? findHabitById(String habitId) {
+    return _cachedHabits.where((h) => h.id == habitId).firstOrNull;
+  }
+
+  RoomHabit? findRoomHabit(String roomId, String habitId) {
+    return _roomHabitsMap[roomId]?.where((h) => h.id == habitId).firstOrNull;
+  }
+
+  Room? findRoomById(String roomId) {
+    return _myRooms.where((r) => r.id == roomId).firstOrNull;
+  }
+
+  /// Returns room habits formatted as Habit objects that are valid for [date].
+  List<Habit> getRoomHabitsForDate(DateTime date) {
+    return _cachedHabits.where((h) {
+      try {
+        final start = DateTime.parse(h.startDate);
+        final dayOnly = DateTime(date.year, date.month, date.day);
+        final startOnly = DateTime(start.year, start.month, start.day);
+        if (dayOnly.isBefore(startOnly)) return false;
+
+        if (h.endDate != null) {
+          final end = DateTime.parse(h.endDate!);
+          final endOnly = DateTime(end.year, end.month, end.day);
+          if (dayOnly.isAfter(endOnly)) return false;
+        }
+      } catch (_) {}
+      return true;
+    }).toList();
+  }
 
   // ─── Helpers ────────────────────────────────────────────
 
@@ -34,15 +80,137 @@ class RoomService {
 
   String? get _avatarUrl {
     final profile = ProfileRepository.instance;
-    return profile.avatarUrl ??
-        FirebaseAuth.instance.currentUser?.photoURL;
+    return profile.avatarUrl ?? FirebaseAuth.instance.currentUser?.photoURL;
   }
 
-  /// Generate a 6-char alphanumeric invite code.
   String _generateInviteCode() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     final rng = Random.secure();
     return List.generate(6, (_) => chars[rng.nextInt(chars.length)]).join();
+  }
+
+  void _initAuthListener() {
+    _authSub?.cancel();
+    _authSub = FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user != null) {
+        _startRoomsSync();
+      } else {
+        _stopRoomsSync();
+      }
+    });
+  }
+
+  void _stopRoomsSync() {
+    _roomsSub?.cancel();
+    _roomsSub = null;
+    for (final sub in _habitsSubs.values) {
+      sub.cancel();
+    }
+    _habitsSubs.clear();
+    for (final sub in _progressSubs.values) {
+      sub.cancel();
+    }
+    _progressSubs.clear();
+    _myRooms.clear();
+    _roomHabitsMap.clear();
+    _memberProgressMap.clear();
+    _cachedHabits.clear();
+    notifyListeners();
+  }
+
+  void _startRoomsSync() {
+    final uid = _currentUid;
+    if (uid == null) return;
+
+    _roomsSub?.cancel();
+    _roomsSub = _repo.streamMyRooms(uid).listen((rooms) {
+      _myRooms = rooms;
+      final activeRoomIds = rooms.map((r) => r.id).toSet();
+
+      // Cancel and remove rooms user is no longer a member of
+      _habitsSubs.keys
+          .where((rId) => !activeRoomIds.contains(rId))
+          .toList()
+          .forEach((rId) {
+        _habitsSubs[rId]?.cancel();
+        _habitsSubs.remove(rId);
+        _roomHabitsMap.remove(rId);
+        final prefix = '$rId:';
+        _progressSubs.keys
+            .where((k) => k.startsWith(prefix))
+            .toList()
+            .forEach((k) {
+          _progressSubs[k]?.cancel();
+          _progressSubs.remove(k);
+          _memberProgressMap.remove(k);
+        });
+      });
+
+      // Subscribe to all active rooms
+      for (final room in rooms) {
+        if (!_habitsSubs.containsKey(room.id)) {
+          _habitsSubs[room.id] =
+              _repo.streamRoomHabits(room.id).listen((habits) {
+            _roomHabitsMap[room.id] = habits;
+            final activeHabitIds = habits.map((h) => h.id).toSet();
+
+            // Clean up removed habits' progress subs
+            final prefix = '${room.id}:';
+            _progressSubs.keys
+                .where((k) =>
+                    k.startsWith(prefix) &&
+                    !activeHabitIds.contains(k.substring(prefix.length)))
+                .toList()
+                .forEach((k) {
+              _progressSubs[k]?.cancel();
+              _progressSubs.remove(k);
+              _memberProgressMap.remove(k);
+            });
+
+            // Listen to current user's progress for each habit
+            for (final habit in habits) {
+              final progressKey = '${room.id}:${habit.id}';
+              if (!_progressSubs.containsKey(progressKey)) {
+                _progressSubs[progressKey] = _repo
+                    .streamMemberProgress(room.id, habit.id, uid)
+                    .listen((prog) {
+                  if (prog != null) {
+                    _memberProgressMap[progressKey] = prog;
+                  } else {
+                    _memberProgressMap.remove(progressKey);
+                  }
+                  _recomputeCachedHabits();
+                  notifyListeners();
+                });
+              }
+            }
+
+            _recomputeCachedHabits();
+            notifyListeners();
+          });
+        }
+      }
+
+      _recomputeCachedHabits();
+      notifyListeners();
+    });
+  }
+
+  void _recomputeCachedHabits() {
+    final list = <Habit>[];
+    for (final room in _myRooms) {
+      final habits = _roomHabitsMap[room.id] ?? [];
+      for (final habit in habits) {
+        final progress = _memberProgressMap['${room.id}:${habit.id}'];
+        final h = habit.toHabit(
+          myProgress: progress,
+          roomId: room.id,
+          roomName: room.name,
+        );
+        list.add(h);
+      }
+    }
+    _cachedHabits = list;
   }
 
   // ─── Room Actions ───────────────────────────────────────
@@ -75,7 +243,8 @@ class RoomService {
     final uid = _currentUid;
     if (uid == null) throw StateError('Giriş yapılmamış');
 
-    final room = await _repo.findByInviteCode(inviteCode.toUpperCase().trim());
+    final room =
+        await _repo.findByInviteCode(inviteCode.toUpperCase().trim());
     if (room == null) return null;
 
     if (room.memberIds.contains(uid)) return room.name;
@@ -103,26 +272,32 @@ class RoomService {
 
   // ─── Room Habits ────────────────────────────────────────
 
-  /// Add a habit to a room from a locally-created Habit object.
-  /// The Habit's title, emoji, color, and isAdvanced flag are stored.
+  /// Add a habit to a room from a Habit object with all configurations.
   Future<String> addHabitToRoom(String roomId, Habit habit) async {
     final uid = _currentUid;
     if (uid == null) throw StateError('Giriş yapılmamış');
 
-    final roomHabit = RoomHabit(
-      id: '',
-      title: habit.title,
-      emoji: habit.emoji,
-      colorValue: habit.color.value,
+    final roomHabit = RoomHabit.fromHabit(
+      habit,
       createdBy: uid,
       createdAt: DateTime.now(),
-      isAdvanced: habit.isAdvanced == true,
-      targetCount: habit.targetCount,
     );
     return _repo.addRoomHabit(roomId, roomHabit);
   }
 
-  /// Delete a room habit.
+  /// Update full details of a room habit in Firestore.
+  Future<void> updateRoomHabitFull(
+    String roomId,
+    RoomHabit updatedHabit,
+  ) async {
+    await _repo.updateRoomHabit(
+      roomId,
+      updatedHabit.id,
+      updatedHabit.toJson(),
+    );
+  }
+
+  /// Delete a room habit (creator only).
   Future<void> deleteRoomHabit(String roomId, String habitId) async {
     await _repo.deleteRoomHabit(roomId, habitId);
   }
@@ -136,60 +311,6 @@ class RoomService {
     await _repo.updateRoomHabitTitle(roomId, habitId, newTitle);
   }
 
-  /// Update a room habit completely (title, emoji, color) and sync locally.
-  Future<void> updateRoomHabit({
-    required String roomId,
-    required RoomHabit habit,
-    required String newTitle,
-    String? newEmoji,
-    required int newColorValue,
-    required int newTargetCount,
-  }) async {
-    await _repo.updateRoomHabit(roomId, habit.id, {
-      'title': newTitle,
-      'emoji': newEmoji,
-      'colorValue': newColorValue,
-      'targetCount': newTargetCount,
-    });
-    
-    // Attempt local sync (matches by OLD title)
-    try {
-      final habitsRepo = HabitRepository.instance;
-      // .habits provides the unmodifiable list
-      final localHabits = habitsRepo.habits;
-      // We look for any local habit that matches the OLD title of this room habit
-      for (final lh in localHabits) {
-        if (lh.title == habit.title) {
-            final updated = Habit(
-              id: lh.id,
-              title: newTitle, // apply the new title!
-              description: lh.description,
-              icon: lh.icon,
-              emoji: newEmoji,
-              color: Color(newColorValue),
-              targetCount: lh.targetCount,
-              habitType: lh.habitType,
-              unit: lh.unit,
-              currentStreak: lh.currentStreak,
-              isCompleted: lh.isCompleted,
-              progressDate: lh.progressDate,
-              startDate: lh.startDate,
-              endDate: lh.endDate,
-              dailyLog: Map.of(lh.dailyLog),
-              leftoverSeconds: lh.leftoverSeconds,
-              listId: lh.listId,
-              scheduledDates: lh.scheduledDates == null ? null : List<String>.from(lh.scheduledDates!),
-              reminderEnabled: lh.reminderEnabled,
-              reminderTime: lh.reminderTime,
-            )..isAdvanced = lh.isAdvanced;
-            await habitsRepo.updateHabit(updated);
-        }
-      }
-    } catch(e) {
-      debugPrint('Local habit sync failed on edit: $e');
-    }
-  }
-
   /// Get all habits for a room.
   Future<List<RoomHabit>> getRoomHabits(String roomId) async {
     return _repo.getRoomHabits(roomId);
@@ -197,181 +318,171 @@ class RoomService {
 
   // ─── Room Habit Progress Sync ───────────────────────
 
-  /// Sync the current user's progress for a specific room habit.
-  /// Finds the matching local habit by title and syncs its progress.
-  Future<void> syncMyProgress(String roomId, RoomHabit roomHabit) async {
+  /// Directly toggle or update the current user's progress on a room habit.
+  /// Works in real-time inside the social room and Today screen.
+  Future<void> updateMyRoomHabitProgress({
+    required String roomId,
+    required RoomHabit habit,
+    bool? isCompleted,
+    int? value,
+    Duration? timerDuration,
+    String? subtaskId,
+    bool? subtaskCompleted,
+  }) async {
     final uid = _currentUid;
     if (uid == null) return;
 
-    // Find matching local habit by title
-    final localHabits = HabitRepository.instance.habits;
-    final match = localHabits.where((h) => h.title == roomHabit.title).toList();
+    final now = DateTime.now();
+    final dayKey =
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
 
-    int value = 0;
-    int target = 1;
-    bool isCompleted = false;
-
-    if (match.isNotEmpty) {
-      final h = match.first;
-      value = h.currentStreak;
-      target = h.targetCount;
-      isCompleted = h.isCompleted;
-    }
-
-    // ── Streak calculation ──
-    int streak = 0;
+    MemberProgress? prev;
     try {
-      final prev = await _repo.getMemberProgress(roomId, roomHabit.id, uid);
-      if (prev != null) {
-        final lastDate = prev.lastUpdated;
-        final now = DateTime.now();
-        final dayDiff = DateTime(now.year, now.month, now.day)
-            .difference(DateTime(lastDate.year, lastDate.month, lastDate.day))
-            .inDays;
+      prev = await _repo.getMemberProgress(roomId, habit.id, uid);
+    } catch (_) {}
 
-        if (isCompleted) {
-          // Same day update — keep the streak
-          if (dayDiff == 0) {
-            streak = prev.streak > 0 ? prev.streak : 1;
-          }
-          // Next day — increment
-          else if (dayDiff == 1) {
-            streak = prev.streak + 1;
-          }
-          // Missed days — reset to 1
-          else {
-            streak = 1;
-          }
-        } else {
-          // Not completed today — keep old streak if same day, else 0
-          streak = dayDiff == 0 ? prev.streak : 0;
+    final target = habit.targetCount > 0 ? habit.targetCount : 1;
+    bool newCompleted = isCompleted ?? false;
+    int newValue = value ?? (prev?.isToday == true ? prev!.value : 0);
+    List<String> completedSubtasks = List<String>.from(
+      prev?.isToday == true ? prev!.completedSubtaskIds : [],
+    );
+
+    if (timerDuration != null) {
+      // Timer habit: add duration in minutes
+      int gainedMinutes = timerDuration.inMinutes;
+      if (gainedMinutes <= 0 && timerDuration.inSeconds > 0) {
+        gainedMinutes = 1;
+      }
+      newValue = (prev?.isToday == true ? prev!.value : 0) + gainedMinutes;
+      newCompleted = newValue >= target;
+    } else if (subtaskId != null) {
+      // Subtasks habit: toggle subtask
+      if (subtaskCompleted == true) {
+        if (!completedSubtasks.contains(subtaskId)) {
+          completedSubtasks.add(subtaskId);
         }
       } else {
-        streak = isCompleted ? 1 : 0;
+        completedSubtasks.remove(subtaskId);
       }
-    } catch (_) {
-      streak = isCompleted ? 1 : 0;
+      final allDone = habit.subtasks.isNotEmpty &&
+          habit.subtasks.every((s) => completedSubtasks.contains(s.id));
+      newCompleted = allDone;
+      newValue = completedSubtasks.length;
+    } else if (habit.isNumerical || habit.habitType == HabitType.timer) {
+      if (value != null) {
+        newValue = value;
+        newCompleted = newValue >= target;
+      } else if (isCompleted != null) {
+        newCompleted = isCompleted;
+        newValue = newCompleted ? target : 0;
+      }
+    } else {
+      if (isCompleted != null) {
+        newCompleted = isCompleted;
+        newValue = newCompleted ? 1 : 0;
+      } else {
+        final wasCompletedToday = prev?.isCompletedToday ?? false;
+        newCompleted = !wasCompletedToday;
+        newValue = newCompleted ? 1 : 0;
+      }
+    }
+
+    int streak = 0;
+    if (prev != null) {
+      final lastDate = prev.lastUpdated;
+      final dayDiff = DateTime(now.year, now.month, now.day)
+          .difference(DateTime(lastDate.year, lastDate.month, lastDate.day))
+          .inDays;
+
+      if (newCompleted) {
+        if (dayDiff == 0) {
+          streak = prev.streak > 0 ? prev.streak : 1;
+        } else if (dayDiff == 1) {
+          streak = prev.streak + 1;
+        } else {
+          streak = 1;
+        }
+      } else {
+        if (dayDiff == 0) {
+          streak = (prev.streak > 1) ? prev.streak - 1 : 0;
+        } else {
+          streak = 0;
+        }
+      }
+    } else {
+      streak = newCompleted ? 1 : 0;
     }
 
     final progress = MemberProgress(
       uid: uid,
       displayName: _displayName,
       avatarUrl: _avatarUrl,
-      value: value,
+      value: newValue,
       target: target,
-      isCompleted: isCompleted,
-      lastUpdated: DateTime.now(),
+      isCompleted: newCompleted,
+      lastUpdated: now,
       streak: streak,
+      completedSubtaskIds: completedSubtasks,
     );
+
+    // Optimistically update memory
+    final progressKey = '$roomId:${habit.id}';
+    _memberProgressMap[progressKey] = progress;
+    _recomputeCachedHabits();
+    notifyListeners();
 
     await _repo.updateMemberProgress(
       roomId: roomId,
-      habitId: roomHabit.id,
+      habitId: habit.id,
       uid: uid,
       progress: progress,
     );
 
-    // ── Save daily progress history (for charts) ──
     try {
-      final now = DateTime.now();
-      final dayKey =
-          '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
       final historyEntry = ProgressHistoryEntry(
         uid: uid,
         date: dayKey,
-        value: value,
+        value: newValue,
         target: target,
-        isCompleted: isCompleted,
+        isCompleted: newCompleted,
       );
       await _repo.saveProgressHistory(
         roomId: roomId,
-        habitId: roomHabit.id,
+        habitId: habit.id,
         entry: historyEntry,
       );
-    } catch (_) {
-      // Best-effort
-    }
+    } catch (_) {}
   }
 
-  /// Sync all of the current user's progress across all rooms.
-  Future<void> syncAllMyProgress() async {
-    final uid = _currentUid;
-    if (uid == null) return;
-
-    try {
-      final roomIds = await _repo.getMyRoomIds(uid);
-      for (final roomId in roomIds) {
-        final habits = await _repo.getRoomHabits(roomId);
-        for (final habit in habits) {
-          await syncMyProgress(roomId, habit);
-        }
-      }
-    } catch (_) {
-      // Silently fail — sync is best-effort
-    }
+  /// Add timer duration to a room habit (e.g. from Timer screen).
+  Future<void> addTimerProgressToRoomHabit(
+    String roomId,
+    String habitId,
+    Duration duration,
+  ) async {
+    final habit = findRoomHabit(roomId, habitId);
+    if (habit == null) return;
+    await updateMyRoomHabitProgress(
+      roomId: roomId,
+      habit: habit,
+      timerDuration: duration,
+    );
   }
 
-  /// Pull all room habits from Firestore and add missing ones to local repo.
-  /// This ensures every room member gets the room habits on their Bugün screen.
-  /// If the habit is advanced and the user is premium, syncs as advanced habit.
-  /// Otherwise always syncs as simple habit.
-  Future<void> syncRoomHabitsToLocal() async {
-    final uid = _currentUid;
-    if (uid == null) return;
-
-    try {
-      // Check if current user is premium (service-level, no BuildContext needed)
-      bool isPremium = false;
-      try {
-        isPremium = await PremiumService().checkIsPremium();
-      } catch (_) {}
-
-      final localHabits = HabitRepository.instance.habits;
-      final localTitles = localHabits.map((h) => h.title).toSet();
-
-      final roomIds = await _repo.getMyRoomIds(uid);
-      for (final roomId in roomIds) {
-        final roomHabits = await _repo.getRoomHabits(roomId);
-        for (final rh in roomHabits) {
-          // Skip if a local habit with the same title already exists
-          if (localTitles.contains(rh.title)) continue;
-
-          final now = DateTime.now();
-          final dayKey =
-              '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
-
-          // Use advanced type only if habit is marked advanced AND user is premium
-          final habitType = (rh.isAdvanced && isPremium)
-              ? HabitType.numerical
-              : HabitType.simple;
-
-          final habit = Habit(
-            id: 'room_${rh.id}_${now.millisecondsSinceEpoch}',
-            title: rh.title,
-            description: '',
-            icon: Icons.track_changes,
-            emoji: rh.emoji,
-            color: rh.color,
-            habitType: habitType,
-            targetCount: 1,
-            unit: '',
-            currentStreak: 0,
-            isCompleted: false,
-            progressDate: dayKey,
-            startDate: dayKey,
-            frequency: 'Günlük',
-            frequencyType: 'daily',
-          );
-          // isAdvanced is a mutable field, not a constructor param
-          habit.isAdvanced = rh.isAdvanced && isPremium;
-
-          await HabitRepository.instance.addHabit(habit);
-          localTitles.add(rh.title); // prevent duplicate adds
-        }
-      }
-    } catch (e) {
-      debugPrint('syncRoomHabitsToLocal error: $e');
-    }
+  /// Toggle a subtask for a room habit.
+  Future<void> toggleMyRoomHabitSubtask({
+    required String roomId,
+    required RoomHabit habit,
+    required String subtaskId,
+    required bool isCompleted,
+  }) {
+    return updateMyRoomHabitProgress(
+      roomId: roomId,
+      habit: habit,
+      subtaskId: subtaskId,
+      subtaskCompleted: isCompleted,
+    );
   }
 
   // ─── Notes ──────────────────────────────────────────────
@@ -421,7 +532,6 @@ class RoomService {
 
   // ─── Progress History ──────────────────────────────────
 
-  /// Get progress history for a specific member on a habit.
   Future<List<ProgressHistoryEntry>> getProgressHistory({
     required String roomId,
     required String habitId,
@@ -434,7 +544,6 @@ class RoomService {
     );
   }
 
-  /// Stream progress history for a specific member on a habit.
   Stream<List<ProgressHistoryEntry>> streamProgressHistory({
     required String roomId,
     required String habitId,
@@ -451,7 +560,6 @@ class RoomService {
 
   // ─── Nudges (Dürtme) ───────────────────────────────────
 
-  /// Send a nudge to another member.
   Future<void> sendNudge({
     required String roomId,
     required String toUid,
@@ -476,14 +584,12 @@ class RoomService {
     await _repo.sendNudge(roomId, nudge);
   }
 
-  /// Stream nudges sent TO the current user.
   Stream<List<RoomNudge>> streamMyNudges(String roomId) {
     final uid = _currentUid;
     if (uid == null) return const Stream.empty();
     return _repo.streamMyNudges(roomId, uid);
   }
 
-  /// Mark a nudge as read.
   Future<void> markNudgeRead(String roomId, String nudgeId) =>
       _repo.markNudgeRead(roomId, nudgeId);
 }

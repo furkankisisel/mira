@@ -68,11 +68,11 @@ class RoomMemberScore {
         final p = progressList.where((item) => item.uid == member.uid).firstOrNull;
 
         if (p != null) {
-          if (p.isCompleted) {
+          if (p.isCompletedToday) {
             points += 50; // Base completion points
             completedCount++;
-          } else if (p.target > 0 && p.value > 0) {
-            final ratio = (p.value / p.target).clamp(0.0, 1.0);
+          } else if (p.target > 0 && p.todayValue > 0) {
+            final ratio = (p.todayValue / p.target).clamp(0.0, 1.0);
             points += (ratio * 25).round(); // Partial progress points
           }
 

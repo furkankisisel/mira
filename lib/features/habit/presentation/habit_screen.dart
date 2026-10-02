@@ -24,6 +24,10 @@ import 'habit_analysis_screen.dart';
 import 'package:mira/l10n/app_localizations.dart';
 import '../domain/habit_types.dart';
 import '../domain/habit_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../social/data/room_service.dart';
+import '../../social/domain/room_habit_model.dart';
+import '../../social/presentation/room_detail_screen.dart';
 import '../domain/habit_model.dart';
 import '../domain/subtask_model.dart';
 import '../domain/list_repository.dart';
@@ -37,8 +41,6 @@ import '../../../ui/premium_gate.dart';
 import '../../rhythm/domain/live_rhythm_repository.dart';
 import '../../rhythm/domain/live_rhythm_model.dart';
 import 'dart:async';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../../social/data/room_service.dart';
 
 // removed unused imports
 
@@ -201,17 +203,15 @@ class HabitScreenState extends State<HabitScreen>
     _repo.addListener(_onRepoChange);
     _listRepo.addListener(_onRepoChange);
     _taskRepo.addListener(_onRepoChange);
+    RoomService.instance.addListener(_onRepoChange);
 
     Future.wait([
       _repo.initialize(),
       _listRepo.initialize(),
       _taskRepo.initialize(),
     ]).then((_) {
+      _repo.removeRoomHabits();
       if (mounted) setState(() {});
-      // Sync room habits from Firestore → local repo for all members
-      RoomService.instance.syncRoomHabitsToLocal().then((_) {
-        if (mounted) setState(() {});
-      });
     });
 
 
@@ -275,19 +275,9 @@ class HabitScreenState extends State<HabitScreen>
     }
   }
 
-  Timer? _syncDebounce;
-
   void _onRepoChange() {
     if (!mounted) return;
     setState(() {});
-    // Debounced sync of room progress to Firestore
-    _syncDebounce?.cancel();
-    _syncDebounce = Timer(const Duration(seconds: 2), () {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null && !user.isAnonymous) {
-        RoomService.instance.syncAllMyProgress();
-      }
-    });
   }
 
   (Habit?, DailyTask?) _findFocusedItem() {
@@ -420,8 +410,8 @@ class HabitScreenState extends State<HabitScreen>
     _repo.removeListener(_onRepoChange);
     _listRepo.removeListener(_onRepoChange);
     _taskRepo.removeListener(_onRepoChange);
+    RoomService.instance.removeListener(_onRepoChange);
     _rhythmTimer?.cancel();
-    _syncDebounce?.cancel();
     super.dispose();
   }
 
@@ -2225,7 +2215,7 @@ class HabitScreenState extends State<HabitScreen>
       };
 
   List<Habit> _filteredHabits() {
-    final list = _repo.habits
+    final personal = _repo.habits
         .where((h) => _selectedTypes.contains(h.habitType))
         .where(_matchesCompletionFilter)
         .where(
@@ -2234,12 +2224,27 @@ class HabitScreenState extends State<HabitScreen>
         .where((h) => _isHabitScheduledForDate(h, _selected))
         .toList();
 
+    final roomHabits = RoomService.instance
+        .getRoomHabitsForDate(_selected)
+        .where((h) => _selectedTypes.contains(h.habitType))
+        .where(_matchesCompletionFilter)
+        .where(
+          (h) => _selectedListId == null ? true : h.listId == _selectedListId,
+        )
+        .where((h) => _isHabitScheduledForDate(h, _selected))
+        .toList();
+
+    final list = [...personal, ...roomHabits];
+
     list.sort((a, b) {
       final timeA = _getHabitTimeInMinutes(a);
       final timeB = _getHabitTimeInMinutes(b);
       final diff = timeA.compareTo(timeB);
       if (diff != 0) return diff;
-      return _repo.habits.indexOf(a).compareTo(_repo.habits.indexOf(b));
+      final idxA = _repo.habits.indexOf(a);
+      final idxB = _repo.habits.indexOf(b);
+      if (idxA != -1 && idxB != -1) return idxA.compareTo(idxB);
+      return a.title.compareTo(b.title);
     });
     return list;
   }
@@ -4065,20 +4070,24 @@ class HabitScreenState extends State<HabitScreen>
                                   ),
                                 );
                                 // Progress value to display on the card
-                                final int dayProgress = isToday
+                                final int dayProgress = habit.isRoomHabit
                                     ? habit.currentStreak
-                                    : (habit.dailyLog[dayKey] ?? 0);
-                                final bool dayCompleted = isToday
-                                    ? (habit.isCompleted ||
-                                        HabitRepository
-                                            .evaluateCompletionFromLog(
-                                          habit,
-                                          dayKey,
-                                        ))
-                                    : HabitRepository.evaluateCompletionFromLog(
-                                        habit,
-                                        dayKey,
-                                      );
+                                    : (isToday
+                                        ? habit.currentStreak
+                                        : (habit.dailyLog[dayKey] ?? 0));
+                                final bool dayCompleted = habit.isRoomHabit
+                                    ? habit.isCompleted
+                                    : (isToday
+                                        ? (habit.isCompleted ||
+                                            HabitRepository
+                                                .evaluateCompletionFromLog(
+                                              habit,
+                                              dayKey,
+                                            ))
+                                        : HabitRepository.evaluateCompletionFromLog(
+                                            habit,
+                                            dayKey,
+                                          ));
                                 // Ice mechanic: number of missed days prior to selected
                                 final int missedBefore =
                                     _consecutiveMissedDaysBefore(
@@ -4095,13 +4104,17 @@ class HabitScreenState extends State<HabitScreen>
                                   icon: habit.icon,
                                   emoji: habit.emoji,
                                   categoryName: habit.categoryName,
+                                  isRoomHabit: habit.isRoomHabit,
+                                  roomName: habit.roomName,
                                   color: habit.color,
                                   currentStreak: dayProgress,
-                                  streakCount: HabitRepository.instance
-                                      .consecutiveStreak(
-                                    habit.id,
-                                    upTo: selectedDate,
-                                  ),
+                                  streakCount: habit.isRoomHabit
+                                      ? habit.currentStreak
+                                      : HabitRepository.instance
+                                          .consecutiveStreak(
+                                        habit.id,
+                                        upTo: selectedDate,
+                                      ),
                                   targetCount: habit.targetCount,
                                   isCompleted: dayCompleted,
                                   habitType: habit.habitType,
@@ -4114,14 +4127,46 @@ class HabitScreenState extends State<HabitScreen>
                                           ? habit.timerTargetType
                                           : null,
                                   unit: habit.unit,
-                                  readOnly: isFuture ||
-                                      isBeforeStart, // gelecek veya başlangıçtan önce günler kilitli
-                                  iceEnabled: !isFuture &&
+                                  readOnly: isFuture || isBeforeStart,
+                                  iceEnabled: !habit.isRoomHabit &&
+                                      !isFuture &&
                                       !isBeforeStart &&
                                       habit.habitType == HabitType.simple,
-                                  requiredBreakTaps: missedBefore,
+                                  requiredBreakTaps:
+                                      habit.isRoomHabit ? 0 : missedBefore,
+                                  onGoToRoom: habit.isRoomHabit &&
+                                          habit.roomId != null
+                                      ? () {
+                                          final room = RoomService.instance
+                                              .findRoomById(habit.roomId!);
+                                          if (room != null) {
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (_) =>
+                                                    RoomDetailScreen(room: room),
+                                              ),
+                                            );
+                                          }
+                                        }
+                                      : null,
                                   onTap: () {
                                     if (isFuture || isBeforeStart) return;
+                                    if (habit.isRoomHabit) {
+                                      if (habit.habitType == HabitType.simple ||
+                                          habit.habitType == HabitType.checkbox) {
+                                        RoomService.instance
+                                            .updateMyRoomHabitProgress(
+                                          roomId: habit.roomId!,
+                                          habit: RoomHabit.fromHabit(
+                                            habit,
+                                            createdBy:
+                                                habit.roomHabitCreatedBy ?? '',
+                                          ),
+                                          isCompleted: !dayCompleted,
+                                        );
+                                      }
+                                      return;
+                                    }
                                     if (habit.habitType == HabitType.simple) {
                                       if (isToday) {
                                         _repo.toggleSimple(habit.id);
@@ -4133,23 +4178,42 @@ class HabitScreenState extends State<HabitScreen>
                                       }
                                     }
                                   },
-                                  onAssignToList: () =>
-                                      _assignHabitToListDialog(habit),
-                                  showStreakIndicator:
-                                      _repo.getShowStreakIndicatorFor(habit.id),
-                                  onToggleStreakIndicator: (v) async {
-                                    await _repo.setShowStreakIndicatorFor(
-                                      habit.id,
-                                      v,
-                                    );
-                                  },
-                                  onSetAsFocus: isToday
+                                  onAssignToList: habit.isRoomHabit
+                                      ? null
+                                      : () => _assignHabitToListDialog(habit),
+                                  showStreakIndicator: habit.isRoomHabit
+                                      ? false
+                                      : _repo
+                                          .getShowStreakIndicatorFor(habit.id),
+                                  onToggleStreakIndicator: habit.isRoomHabit
+                                      ? null
+                                      : (v) async {
+                                          await _repo
+                                              .setShowStreakIndicatorFor(
+                                            habit.id,
+                                            v,
+                                          );
+                                        },
+                                  onSetAsFocus: isToday && !habit.isRoomHabit
                                       ? () {
                                           _setAsFocus(habit.id);
                                         }
                                       : null,
                                   onValueUpdate: (newValue) {
                                     if (isFuture || isBeforeStart) return;
+                                    if (habit.isRoomHabit) {
+                                      RoomService.instance
+                                          .updateMyRoomHabitProgress(
+                                        roomId: habit.roomId!,
+                                        habit: RoomHabit.fromHabit(
+                                          habit,
+                                          createdBy:
+                                              habit.roomHabitCreatedBy ?? '',
+                                        ),
+                                        value: newValue,
+                                      );
+                                      return;
+                                    }
                                     if (habit.habitType ==
                                             HabitType.numerical ||
                                         habit.habitType == HabitType.timer) {
@@ -4182,7 +4246,60 @@ class HabitScreenState extends State<HabitScreen>
                                       ),
                                     );
                                   },
-                                  onEdit: () async {
+                                  onEdit: habit.isRoomHabit &&
+                                          !habit.isRoomHabitCreator(
+                                              FirebaseAuth.instance.currentUser?.uid)
+                                      ? null
+                                      : () async {
+                                          if (habit.isRoomHabit) {
+                                            final editedHabit = habit.habitType ==
+                                                        HabitType.simple &&
+                                                    !habit.isAdvanced
+                                                ? await Navigator.of(context)
+                                                    .push<Habit>(
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          SimpleHabitScreen(
+                                                        existingHabit: habit,
+                                                      ),
+                                                    ),
+                                                  )
+                                                : await Navigator.of(context)
+                                                    .push<Habit>(
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          AdvancedHabitScreen(
+                                                        existingHabit: habit,
+                                                      ),
+                                                    ),
+                                                  );
+
+                                            if (editedHabit != null) {
+                                              final updatedRoomHabit =
+                                                  RoomHabit.fromHabit(
+                                                editedHabit,
+                                                createdBy:
+                                                    habit.roomHabitCreatedBy!,
+                                                id: habit.id,
+                                              );
+                                              await RoomService.instance
+                                                  .updateRoomHabitFull(
+                                                habit.roomId!,
+                                                updatedRoomHabit,
+                                              );
+                                              if (mounted) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                      'Oda alışkanlığı güncellendi',
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                            }
+                                            return;
+                                          }
                                     print(
                                       '🎯 [HabitScreen] onEdit called for: ${habit.title}',
                                     );
@@ -4511,7 +4628,39 @@ class HabitScreenState extends State<HabitScreen>
                                       await _repo.updateHabit(habit);
                                     }
                                   },
-                                  onDelete: () {
+                                  onDelete: habit.isRoomHabit &&
+                                          !habit.isRoomHabitCreator(
+                                              FirebaseAuth.instance.currentUser?.uid)
+                                      ? null
+                                      : () async {
+                                          if (habit.isRoomHabit) {
+                                            final confirmed =
+                                                await _confirmDelete(
+                                              title: 'Oda Alışkanlığını Sil',
+                                              message:
+                                                  '"${habit.title}" alışkanlığı odadaki tüm üyeler için silinecek. Emin misiniz?',
+                                              confirmText: 'Herkes İçin Sil',
+                                              cancelText: 'İptal',
+                                            );
+                                            if (confirmed) {
+                                              await RoomService.instance
+                                                  .deleteRoomHabit(
+                                                habit.roomId!,
+                                                habit.id,
+                                              );
+                                              if (mounted) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                      'Oda alışkanlığı silindi',
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                            }
+                                            return;
+                                          }
                                     final removed = habit;
                                     _repo.removeHabit(habit.id);
                                     ScaffoldMessenger.of(context).showSnackBar(

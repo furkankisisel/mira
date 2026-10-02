@@ -8,18 +8,23 @@ import '../../../l10n/app_localizations.dart';
 
 /// Mira-themed Room Stats Card with soft, organic, and "Cotton" style aesthetic.
 class RoomStatsCard extends StatelessWidget {
-  const RoomStatsCard({super.key, required this.roomId});
+  const RoomStatsCard({super.key, required this.roomId, this.habits});
   final String roomId;
+  final List<RoomHabit>? habits;
 
   @override
   Widget build(BuildContext context) {
+    if (habits != null) {
+      if (habits!.isEmpty) return const SizedBox.shrink();
+      return _StatsContent(roomId: roomId, habits: habits!);
+    }
     return StreamBuilder<List<RoomHabit>>(
       stream: RoomService.instance.streamRoomHabits(roomId),
       builder: (context, habitsSnap) {
-        final habits = habitsSnap.data ?? [];
-        if (habits.isEmpty) return const SizedBox.shrink();
+        final list = habitsSnap.data ?? [];
+        if (list.isEmpty) return const SizedBox.shrink();
 
-        return _StatsContent(roomId: roomId, habits: habits);
+        return _StatsContent(roomId: roomId, habits: list);
       },
     );
   }
@@ -95,7 +100,7 @@ class _StatsContentState extends State<_StatsContent> {
       final progress = _progressMap[h.id] ?? [];
       for (final p in progress) {
         totalPossible++;
-        if (p.isCompleted) {
+        if (p.isCompletedToday) {
           totalCompletions++;
           memberCompletions[p.displayName] =
               (memberCompletions[p.displayName] ?? 0) + 1;
