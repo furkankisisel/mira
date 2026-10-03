@@ -203,26 +203,6 @@ class _VisionScreenState extends State<VisionScreen> {
             ),
           ),
           actions: [
-            // Mode toggle (Board vs Freeform)
-            IconButton(
-              tooltip: _freeform
-                  ? AppLocalizations.of(context).visionBoardViewTooltip
-                  : AppLocalizations.of(context).visionFreeformTooltip,
-              icon: Icon(
-                _freeform
-                    ? Icons.grid_view_rounded
-                    : Icons.auto_awesome_mosaic_rounded,
-                size: 21,
-                color: colorScheme.onSurfaceVariant,
-              ),
-              onPressed: () {
-                HapticFeedback.lightImpact();
-                setState(() {
-                  _freeform = !_freeform;
-                  widget.freeformNotifier?.value = _freeform;
-                });
-              },
-            ),
             // Freeform settings button
             if (_freeform)
               IconButton(
@@ -279,76 +259,310 @@ class _VisionScreenState extends State<VisionScreen> {
             style: const TextStyle(fontWeight: FontWeight.w600),
           ),
         ),
-        body: StreamBuilder<List<Vision>>(
-          stream: _repo.stream,
-          initialData: _repo.all(),
-          builder: (context, snapshot) {
-            final visions = snapshot.data ?? const [];
-            return _freeform
-                ? StreamBuilder<List<FreeformImage>>(
-                    stream: _imageRepo.stream,
-                    initialData: _imageRepo.all(),
-                    builder: (context, imgSnap) {
-                      final images = imgSnap.data ?? const [];
-                      return StreamBuilder<List<FreeformText>>(
-                        stream: _textRepo.stream,
-                        initialData: _textRepo.all(),
-                        builder: (context, textSnap) {
-                          final texts = textSnap.data ?? const [];
-                          // Wrap only the board with a RepaintBoundary so captures exclude app bar, FAB, nav bar
-                          return RepaintBoundary(
-                            key: widget.boardBoundaryKey,
-                            child: SizedBox.expand(
-                              child: _FreeformBoard(
-                                visions: visions,
-                                images: images,
-                                texts: texts,
-                                onMenu: _menuFor,
-                                onTap: _openVision,
-                                onLink: _pickHabits,
-                                onChanged: (id, x, y, scale) =>
-                                    _repo.updateLayout(
-                                  id: id,
-                                  posX: x,
-                                  posY: y,
-                                  scale: scale,
-                                ),
-                                onImageChanged: (id, x, y, scale) =>
-                                    _imageRepo.updateLayout(
-                                  id: id,
-                                  posX: x,
-                                  posY: y,
-                                  scale: scale,
-                                ),
-                                onTextChanged: (id, x, y, scale) =>
-                                    _textRepo.updateLayout(
-                                  id: id,
-                                  posX: x,
-                                  posY: y,
-                                  scale: scale,
-                                ),
-                                onTextMenu: _showTextBottomSheet,
-                                onImageMenu: _showImageBottomSheet,
-                                roundCorners: _roundCorners,
-                                showText: _showText,
-                                showProgress: _showProgress,
-                              ),
-                            ),
-                          );
-                        },
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+              child: _buildVisionSegmentedTabs(
+                theme,
+                colorScheme,
+                AppLocalizations.of(context),
+                isDark,
+                AppLocalizations.of(context).localeName.startsWith('tr'),
+              ),
+            ),
+            Expanded(
+              child: StreamBuilder<List<Vision>>(
+                stream: _repo.stream,
+                initialData: _repo.all(),
+                builder: (context, snapshot) {
+                  final visions = snapshot.data ?? const [];
+                  return AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 240),
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeInCubic,
+                    transitionBuilder: (child, animation) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: child,
                       );
                     },
-                  )
-                : _Board(
-                    visions: visions,
-                    onTap: _openVision,
-                    onMenu: _menuFor,
-                    onLink: _pickHabits,
-                    onAddTask: _showQuickAddTask,
-                    onToggleTask: (v, taskId) async {
-                      await _repo.toggleTask(v.id, taskId);
-                    },
+                    child: _freeform
+                        ? KeyedSubtree(
+                            key: const ValueKey('vision_freeform_view'),
+                            child: StreamBuilder<List<FreeformImage>>(
+                              stream: _imageRepo.stream,
+                              initialData: _imageRepo.all(),
+                              builder: (context, imgSnap) {
+                                final images = imgSnap.data ?? const [];
+                                return StreamBuilder<List<FreeformText>>(
+                                  stream: _textRepo.stream,
+                                  initialData: _textRepo.all(),
+                                  builder: (context, textSnap) {
+                                    final texts = textSnap.data ?? const [];
+                                    // Wrap only the board with a RepaintBoundary so captures exclude app bar, FAB, nav bar
+                                    return RepaintBoundary(
+                                      key: widget.boardBoundaryKey,
+                                      child: SizedBox.expand(
+                                        child: _FreeformBoard(
+                                          visions: visions,
+                                          images: images,
+                                          texts: texts,
+                                          onMenu: _menuFor,
+                                          onTap: _openVision,
+                                          onLink: _pickHabits,
+                                          onChanged: (id, x, y, scale) =>
+                                              _repo.updateLayout(
+                                            id: id,
+                                            posX: x,
+                                            posY: y,
+                                            scale: scale,
+                                          ),
+                                          onImageChanged: (id, x, y, scale) =>
+                                              _imageRepo.updateLayout(
+                                            id: id,
+                                            posX: x,
+                                            posY: y,
+                                            scale: scale,
+                                          ),
+                                          onTextChanged: (id, x, y, scale) =>
+                                              _textRepo.updateLayout(
+                                            id: id,
+                                            posX: x,
+                                            posY: y,
+                                            scale: scale,
+                                          ),
+                                          onTextMenu: _showTextBottomSheet,
+                                          onImageMenu: _showImageBottomSheet,
+                                          roundCorners: _roundCorners,
+                                          showText: _showText,
+                                          showProgress: _showProgress,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          )
+                        : KeyedSubtree(
+                            key: const ValueKey('vision_board_view'),
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.translucent,
+                              onHorizontalDragEnd: (details) {
+                                final v = details.primaryVelocity ?? 0;
+                                if (v < -140) {
+                                  HapticFeedback.selectionClick();
+                                  setState(() {
+                                    _freeform = true;
+                                    widget.freeformNotifier?.value = true;
+                                  });
+                                }
+                              },
+                              child: _Board(
+                                visions: visions,
+                                onTap: _openVision,
+                                onMenu: _menuFor,
+                                onLink: _pickHabits,
+                                onAddTask: _showQuickAddTask,
+                                onToggleTask: (v, taskId) async {
+                                  await _repo.toggleTask(v.id, taskId);
+                                },
+                              ),
+                            ),
+                          ),
                   );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVisionSegmentedTabs(
+    ThemeData theme,
+    ColorScheme colorScheme,
+    AppLocalizations l10n,
+    bool isDark,
+    bool isTr,
+  ) {
+    final capsuleBgColor = isDark
+        ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.45)
+        : Colors.black.withValues(alpha: 0.05);
+    final capsuleBorderColor = isDark
+        ? Colors.white.withValues(alpha: 0.10)
+        : Colors.black.withValues(alpha: 0.06);
+    final activePillColor = isDark
+        ? colorScheme.surfaceContainerHigh
+        : Colors.white;
+    final activeTextColor = colorScheme.onSurface;
+    final inactiveTextColor = colorScheme.onSurfaceVariant.withValues(
+      alpha: isDark ? 0.65 : 0.85,
+    );
+
+    return GestureDetector(
+      onHorizontalDragEnd: (details) {
+        final v = details.primaryVelocity ?? 0;
+        if (v < -120 && !_freeform) {
+          HapticFeedback.selectionClick();
+          setState(() {
+            _freeform = true;
+            widget.freeformNotifier?.value = true;
+          });
+        } else if (v > 120 && _freeform) {
+          HapticFeedback.selectionClick();
+          setState(() {
+            _freeform = false;
+            widget.freeformNotifier?.value = false;
+          });
+        }
+      },
+      child: Container(
+        height: 44,
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          color: capsuleBgColor,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: capsuleBorderColor, width: 1.2),
+        ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final pillWidth = (constraints.maxWidth - 4) / 2;
+
+            return Stack(
+              children: [
+                AnimatedAlign(
+                  duration: const Duration(milliseconds: 240),
+                  curve: Curves.easeOutCubic,
+                  alignment: !_freeform
+                      ? Alignment.centerLeft
+                      : Alignment.centerRight,
+                  child: Container(
+                    width: pillWidth,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: activePillColor,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.12)
+                            : Colors.white.withValues(alpha: 0.95),
+                        width: 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(
+                            alpha: isDark ? 0.28 : 0.08,
+                          ),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Row(
+                  children: [
+                    // Tab 0: Kartlar / Cards
+                    Expanded(
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(20),
+                          onTap: () {
+                            if (_freeform) {
+                              HapticFeedback.selectionClick();
+                              setState(() {
+                                _freeform = false;
+                                widget.freeformNotifier?.value = false;
+                              });
+                            }
+                          },
+                          child: Container(
+                            height: 38,
+                            alignment: Alignment.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.grid_view_rounded,
+                                  size: 16,
+                                  color: !_freeform
+                                      ? colorScheme.primary
+                                      : inactiveTextColor,
+                                ),
+                                const SizedBox(width: 7),
+                                Text(
+                                  isTr ? 'Kartlar' : 'Cards',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: !_freeform
+                                        ? FontWeight.w700
+                                        : FontWeight.w500,
+                                    color: !_freeform
+                                        ? activeTextColor
+                                        : inactiveTextColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Tab 1: Serbest Pano / Board
+                    Expanded(
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(20),
+                          onTap: () {
+                            if (!_freeform) {
+                              HapticFeedback.selectionClick();
+                              setState(() {
+                                _freeform = true;
+                                widget.freeformNotifier?.value = true;
+                              });
+                            }
+                          },
+                          child: Container(
+                            height: 38,
+                            alignment: Alignment.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.auto_awesome_mosaic_rounded,
+                                  size: 16,
+                                  color: _freeform
+                                      ? colorScheme.primary
+                                      : inactiveTextColor,
+                                ),
+                                const SizedBox(width: 7),
+                                Text(
+                                  isTr ? 'Serbest Pano' : 'Board',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: _freeform
+                                        ? FontWeight.w700
+                                        : FontWeight.w500,
+                                    color: _freeform
+                                        ? activeTextColor
+                                        : inactiveTextColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            );
           },
         ),
       ),

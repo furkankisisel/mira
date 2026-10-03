@@ -616,10 +616,9 @@ class _PrototypeHomePageState extends State<PrototypeHomePage> {
   Widget _buildBody() => PageView.builder(
         controller: _pageController,
         onPageChanged: _onPageChanged,
-        // Disable swipe on Timer (index 1) and Future screen (index 3) to prevent accidental navigation
-        physics: (_currentIndex == 1 || _currentIndex == 3)
-            ? const NeverScrollableScrollPhysics()
-            : const PageScrollPhysics(),
+        // Disable outer swipe so child screens (HabitScreen today/weekly, Finance tabs)
+        // have full control over horizontal swipe gestures without navigating to Timer
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: 4,
         itemBuilder: (context, index) => _buildPage(index),
       );

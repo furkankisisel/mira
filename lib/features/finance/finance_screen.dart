@@ -53,8 +53,39 @@ class FinanceScreenState extends State<FinanceScreen>
   bool _loading = true;
   double? _plannedMonthlySpend;
 
-  // Selected filter tab: 0 = All, 1 = Expense, 2 = Income
+  // Selected filter tab: 0 = All, 1 = Income, 2 = Expense
   int _selectedFilterIndex = 0;
+  int _swipeDirection = 0;
+  double _horizontalDragDistance = 0;
+
+  void _nextFilterTab() {
+    if (_selectedFilterIndex < 2) {
+      HapticFeedback.selectionClick();
+      setState(() {
+        _swipeDirection = 1;
+        _selectedFilterIndex++;
+      });
+    }
+  }
+
+  void _prevFilterTab() {
+    if (_selectedFilterIndex > 0) {
+      HapticFeedback.selectionClick();
+      setState(() {
+        _swipeDirection = -1;
+        _selectedFilterIndex--;
+      });
+    }
+  }
+
+  void _setFilterTab(int index) {
+    if (_selectedFilterIndex == index) return;
+    HapticFeedback.selectionClick();
+    setState(() {
+      _swipeDirection = index > _selectedFilterIndex ? 1 : -1;
+      _selectedFilterIndex = index;
+    });
+  }
 
   DateTime get currentMonth => _currentMonth;
   bool get isViewingCurrentMonth =>
@@ -477,12 +508,12 @@ class FinanceScreenState extends State<FinanceScreen>
     final isViewingCurrentMonth =
         _currentMonth.year == now.year && _currentMonth.month == now.month;
 
-    // Filter items based on active tab
+    // Filter items based on active tab: 0 = All, 1 = Income, 2 = Expense
     List<FinanceTransaction> displayItems;
     if (_selectedFilterIndex == 1) {
-      displayItems = monthExpenses;
-    } else if (_selectedFilterIndex == 2) {
       displayItems = monthIncomes;
+    } else if (_selectedFilterIndex == 2) {
+      displayItems = monthExpenses;
     } else {
       displayItems = _loading ? const <FinanceTransaction>[] : _repo.forMonth(_currentMonth);
     }
@@ -497,33 +528,81 @@ class FinanceScreenState extends State<FinanceScreen>
               onRefresh: _initializeData,
               child: SafeArea(
                 bottom: false,
-                child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(
-                    parent: BouncingScrollPhysics(),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onHorizontalDragStart: (_) => _horizontalDragDistance = 0,
+                  onHorizontalDragUpdate: (details) {
+                    _horizontalDragDistance += details.primaryDelta ?? 0;
+                  },
+                  onHorizontalDragEnd: (details) {
+                    final velocity = details.primaryVelocity ?? 0;
+                    if (_horizontalDragDistance < -35 || velocity < -120) {
+                      _nextFilterTab();
+                    } else if (_horizontalDragDistance > 35 || velocity > 120) {
+                      _prevFilterTab();
+                    }
+                    _horizontalDragDistance = 0;
+                  },
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(
+                      parent: BouncingScrollPhysics(),
+                    ),
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 96),
+                    children: [
+                      // ── 1. Hero Net Balance & Overview Card ──
+                      _buildHeroOverviewCard(theme, scheme, isDark, netTotal, incomeTotal, expenseTotal, locale, isTr),
+
+                      const SizedBox(height: 8),
+
+                      // ── 2. Spending Advisor / Monthly Budget Card ──
+                      _buildBudgetAdvisorCard(theme, scheme, isDark, expenseTotal, locale, isTr),
+
+                      const SizedBox(height: 10),
+
+                      // ── 4. Aesthetic Segment Filter Switcher ──
+                      _buildSegmentFilter(theme, scheme, isDark, _loading ? 0 : _repo.forMonth(_currentMonth).length, monthExpenses.length, monthIncomes.length, isTr),
+
+                      const SizedBox(height: 12),
+
+                      // ── 5. Transactions List (Grouped by Day) ──
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 220),
+                        switchInCurve: Curves.easeOutCubic,
+                        switchOutCurve: Curves.easeInCubic,
+                        transitionBuilder: (child, animation) {
+                          final inFromRight = _swipeDirection >= 0;
+                          final beginOffset = inFromRight
+                              ? const Offset(0.08, 0.0)
+                              : const Offset(-0.08, 0.0);
+                          return SlideTransition(
+                            position: Tween<Offset>(
+                              begin: beginOffset,
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: KeyedSubtree(
+                          key: ValueKey('tx_tab_$_selectedFilterIndex'),
+                          child: displayItems.isEmpty
+                              ? _buildEmptyState(theme, scheme, isDark, isTr)
+                              : Column(
+                                  children: _buildGroupedTransactionCards(
+                                    theme,
+                                    scheme,
+                                    isDark,
+                                    displayItems,
+                                    catMap,
+                                    locale,
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ],
                   ),
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 96),
-                  children: [
-                    // ── 1. Hero Net Balance & Overview Card ──
-                    _buildHeroOverviewCard(theme, scheme, isDark, netTotal, incomeTotal, expenseTotal, locale, isTr),
-
-                    const SizedBox(height: 8),
-
-                    // ── 2. Spending Advisor / Monthly Budget Card ──
-                    _buildBudgetAdvisorCard(theme, scheme, isDark, expenseTotal, locale, isTr),
-
-                    const SizedBox(height: 10),
-
-                    // ── 4. Aesthetic Segment Filter Switcher ──
-                    _buildSegmentFilter(theme, scheme, isDark, displayItems.length, monthExpenses.length, monthIncomes.length, isTr),
-
-                    const SizedBox(height: 12),
-
-                    // ── 5. Transactions List (Grouped by Day) ──
-                    if (displayItems.isEmpty)
-                      _buildEmptyState(theme, scheme, isDark, isTr)
-                    else
-                      ..._buildGroupedTransactionCards(theme, scheme, isDark, displayItems, catMap, locale),
-                  ],
                 ),
               ),
             ),
@@ -954,8 +1033,8 @@ class FinanceScreenState extends State<FinanceScreen>
   ) {
     final tabs = [
       {'label': isTr ? 'Tümü' : 'All', 'count': allCount, 'icon': Icons.swap_horiz_rounded},
-      {'label': isTr ? 'Giderler' : 'Expenses', 'count': expenseCount, 'icon': Icons.arrow_upward_rounded},
       {'label': isTr ? 'Gelirler' : 'Incomes', 'count': incomeCount, 'icon': Icons.arrow_downward_rounded},
+      {'label': isTr ? 'Giderler' : 'Expenses', 'count': expenseCount, 'icon': Icons.arrow_upward_rounded},
     ];
 
     return Container(
@@ -974,10 +1053,7 @@ class FinanceScreenState extends State<FinanceScreen>
 
           return Expanded(
             child: GestureDetector(
-              onTap: () {
-                HapticFeedback.selectionClick();
-                setState(() => _selectedFilterIndex = index);
-              },
+              onTap: () => _setFilterTab(index),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(

@@ -702,7 +702,7 @@ class HabitRepository extends ChangeNotifier {
           case TimerTargetType.exact:
             return progress == habit.targetCount;
           case TimerTargetType.maximum:
-            return progress <= habit.targetCount;
+            return progress <= habit.targetCount && progress > 0;
         }
     }
   }

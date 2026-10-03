@@ -142,6 +142,21 @@ class Habit {
     if (habitType != HabitType.timer) return;
     final secs = duration.inSeconds;
     if (secs <= 0) return;
+
+    final isSecondsUnit = unit != null &&
+        (unit!.toLowerCase() == 'sn' ||
+            unit!.toLowerCase() == 'saniye' ||
+            unit!.toLowerCase() == 'sec' ||
+            unit!.toLowerCase() == 'seconds');
+
+    if (isSecondsUnit) {
+      final today = progressDate;
+      currentStreak += secs;
+      dailyLog[today] = (dailyLog[today] ?? 0) + secs;
+      if (currentStreak >= targetCount) isCompleted = true;
+      return;
+    }
+
     leftoverSeconds += secs;
     int gainedMinutes = 0;
     if (leftoverSeconds >= 60) {

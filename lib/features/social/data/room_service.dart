@@ -32,6 +32,8 @@ class RoomService extends ChangeNotifier {
   final Map<String, List<RoomHabit>> _roomHabitsMap = {}; // roomId -> habits
   final Map<String, MemberProgress> _memberProgressMap =
       {}; // '$roomId:$habitId' -> progress of current user
+  final Map<String, int> _roomHabitLeftoverSeconds =
+      {}; // '$roomId:$habitId' -> leftover seconds not yet completing a minute
   final Map<String, List<MemberProgress>> _allHabitProgressMap =
       {}; // '$roomId:$habitId' -> list of all members' progress
 
@@ -126,6 +128,7 @@ class RoomService extends ChangeNotifier {
     _myRooms.clear();
     _roomHabitsMap.clear();
     _memberProgressMap.clear();
+    _roomHabitLeftoverSeconds.clear();
     _allHabitProgressMap.clear();
     _cachedHabits.clear();
     notifyListeners();
@@ -420,13 +423,24 @@ class RoomService extends ChangeNotifier {
     );
 
     if (timerDuration != null) {
-      // Timer habit: add duration in minutes
-      int gainedMinutes = timerDuration.inMinutes;
-      if (gainedMinutes <= 0 && timerDuration.inSeconds > 0) {
-        gainedMinutes = 1;
+      final isSecondsUnit = actualHabit.unit != null &&
+          (actualHabit.unit!.toLowerCase() == 'sn' ||
+              actualHabit.unit!.toLowerCase() == 'saniye' ||
+              actualHabit.unit!.toLowerCase() == 'sec' ||
+              actualHabit.unit!.toLowerCase() == 'seconds');
+
+      if (isSecondsUnit) {
+        newValue = (prev?.isToday == true ? prev!.value : 0) + timerDuration.inSeconds;
+        newCompleted = _evaluateRoomHabitCompletion(actualHabit, newValue, completedSubtasks);
+      } else {
+        // Timer habit: accumulate seconds accurately into minutes without falsely rounding up
+        final totalSeconds = (_roomHabitLeftoverSeconds[progressKey] ?? 0) + timerDuration.inSeconds;
+        final gainedMinutes = totalSeconds ~/ 60;
+        _roomHabitLeftoverSeconds[progressKey] = totalSeconds % 60;
+
+        newValue = (prev?.isToday == true ? prev!.value : 0) + gainedMinutes;
+        newCompleted = _evaluateRoomHabitCompletion(actualHabit, newValue, completedSubtasks);
       }
-      newValue = (prev?.isToday == true ? prev!.value : 0) + gainedMinutes;
-      newCompleted = _evaluateRoomHabitCompletion(actualHabit, newValue, completedSubtasks);
     } else if (subtaskId != null) {
       // Subtasks habit: toggle subtask
       if (subtaskCompleted == true) {

@@ -1854,7 +1854,7 @@ class _TimerScreenState extends State<TimerScreen>
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    controller.formatDuration(controller.pendingDuration),
+                    controller.formatDuration(controller.totalPendingDuration),
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -1899,8 +1899,23 @@ class _TimerScreenState extends State<TimerScreen>
           ElevatedButton(
             onPressed: () async {
               if (selectedId != null) {
+                final durationToSave = controller.totalPendingDuration;
                 await controller.savePendingToHabit(selectedId!);
                 controller.setActiveTimerHabit(selectedId);
+                if (mounted) {
+                  final String feedback;
+                  if (durationToSave.inMinutes > 0) {
+                    feedback = 'Süre kaydedildi (+${durationToSave.inMinutes} dk)';
+                  } else {
+                    feedback = 'Süre kaydedildi (${durationToSave.inSeconds} sn)';
+                  }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(feedback),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                }
               }
               if (ctx.mounted) Navigator.pop(ctx);
             },
@@ -2034,8 +2049,23 @@ class _TimerScreenState extends State<TimerScreen>
           ElevatedButton(
             onPressed: () async {
               if (selectedId != null) {
+                final durationToSave = s.duration;
                 await controller.assignSessionToHabit(index, selectedId!);
                 controller.setActiveTimerHabit(selectedId);
+                if (mounted) {
+                  final String feedback;
+                  if (durationToSave.inMinutes > 0) {
+                    feedback = 'Oturum kaydedildi (+${durationToSave.inMinutes} dk)';
+                  } else {
+                    feedback = 'Oturum kaydedildi (${durationToSave.inSeconds} sn)';
+                  }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(feedback),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                }
               }
               if (ctx.mounted) Navigator.pop(ctx);
             },

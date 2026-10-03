@@ -277,6 +277,19 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
   Duration get pendingDuration => _pending;
   bool get hasPending => _pending > Duration.zero;
 
+  Duration get totalPendingDuration {
+    Duration total = _pending;
+    if (_activeMode == TimerMode.stopwatch && _elapsed > Duration.zero) {
+      total += _elapsed;
+    } else if (_activeMode == TimerMode.countdown) {
+      final done = _countdownTotal - _countdownRemaining;
+      if (done > Duration.zero) {
+        total += done;
+      }
+    }
+    return total;
+  }
+
   void setActiveTimerHabit(String? habitId) {
     _activeTimerHabitId = habitId;
     _saveState();

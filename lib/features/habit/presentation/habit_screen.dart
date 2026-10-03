@@ -116,6 +116,10 @@ class HabitScreenState extends State<HabitScreen>
     return DateTime(mon.year, mon.month, mon.day);
   }();
 
+  late final PageController _viewModePageController = PageController(
+    initialPage: _viewMode == HabitScreenViewMode.today ? 0 : 1,
+  );
+
   String title(BuildContext context, AppLocalizations l10n) {
     if (isWeeklyView) {
       final locale = Localizations.localeOf(context).toString();
@@ -133,6 +137,14 @@ class HabitScreenState extends State<HabitScreen>
       _viewMode = HabitScreenViewMode.today;
       _selected = DateTime(target.year, target.month, target.day);
     });
+    if (_viewModePageController.hasClients &&
+        (_viewModePageController.page?.round() ?? 0) != 0) {
+      _viewModePageController.animateToPage(
+        0,
+        duration: const Duration(milliseconds: 280),
+        curve: Curves.easeInOutCubic,
+      );
+    }
     widget.onViewModeChanged?.call(_viewMode);
     widget.onDateChanged?.call(_selected);
   }
@@ -145,6 +157,14 @@ class HabitScreenState extends State<HabitScreen>
       _viewMode = HabitScreenViewMode.weekly;
       _weeklyStartDate = DateTime(mon.year, mon.month, mon.day);
     });
+    if (_viewModePageController.hasClients &&
+        (_viewModePageController.page?.round() ?? 1) != 1) {
+      _viewModePageController.animateToPage(
+        1,
+        duration: const Duration(milliseconds: 280),
+        curve: Curves.easeInOutCubic,
+      );
+    }
     widget.onViewModeChanged?.call(_viewMode);
     widget.onDateChanged?.call(_weeklyStartDate);
   }
@@ -407,6 +427,7 @@ class HabitScreenState extends State<HabitScreen>
 
   @override
   void dispose() {
+    _viewModePageController.dispose();
     _repo.removeListener(_onRepoChange);
     _listRepo.removeListener(_onRepoChange);
     _taskRepo.removeListener(_onRepoChange);
@@ -3757,22 +3778,32 @@ class HabitScreenState extends State<HabitScreen>
               // ── Aesthetic Segmented View Switcher: [ ☀️ Bugün | 📅 Haftalık ] ──
               _buildViewSwitcher(theme, colorScheme, l10n),
 
-              // Animated view content between Today and Weekly
+              // Swipeable view content between Today and Weekly
               Expanded(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 260),
-                  switchInCurve: Curves.easeOutCubic,
-                  switchOutCurve: Curves.easeInCubic,
-                  transitionBuilder: (child, animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: child,
-                    );
+                child: PageView(
+                  controller: _viewModePageController,
+                  physics: const ClampingScrollPhysics(),
+                  onPageChanged: (index) {
+                    if (index == 0 && _viewMode != HabitScreenViewMode.today) {
+                      HapticFeedback.selectionClick();
+                      setState(() {
+                        _viewMode = HabitScreenViewMode.today;
+                      });
+                      widget.onViewModeChanged?.call(_viewMode);
+                      widget.onDateChanged?.call(_selected);
+                    } else if (index == 1 && _viewMode != HabitScreenViewMode.weekly) {
+                      HapticFeedback.selectionClick();
+                      setState(() {
+                        _viewMode = HabitScreenViewMode.weekly;
+                      });
+                      widget.onViewModeChanged?.call(_viewMode);
+                      widget.onDateChanged?.call(_weeklyStartDate);
+                    }
                   },
-                  child: _viewMode == HabitScreenViewMode.today
-                      ? KeyedSubtree(
-                          key: const ValueKey('today_content_view'),
-                          child: Builder(
+                  children: [
+                    KeyedSubtree(
+                      key: const ValueKey('today_content_view'),
+                      child: Builder(
                   builder: (context) {
                     final tasks = _filteredTasksForSelectedDay();
                     final habits = _filteredHabits();
@@ -4749,8 +4780,8 @@ class HabitScreenState extends State<HabitScreen>
                     );
                   },
                 ),
-              )
-            : KeyedSubtree(
+              ),
+              KeyedSubtree(
                 key: const ValueKey('weekly_content_view'),
                 child: WeeklyScheduleScreen(
                   variant: widget.variant,
@@ -4767,6 +4798,7 @@ class HabitScreenState extends State<HabitScreen>
                   },
                 ),
               ),
+            ],
           ),
         ),
       ],
