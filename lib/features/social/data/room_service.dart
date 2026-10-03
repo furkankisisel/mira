@@ -13,6 +13,7 @@ import 'room_repository.dart';
 import '../../profile/profile_repository.dart';
 import '../../habit/domain/habit_model.dart';
 import '../../habit/domain/habit_types.dart';
+import '../../notifications/services/notification_service.dart';
 
 /// Business-logic service for social rooms with real-time reactive sync.
 class RoomService extends ChangeNotifier {
@@ -27,6 +28,12 @@ class RoomService extends ChangeNotifier {
   StreamSubscription<List<Room>>? _roomsSub;
   final Map<String, StreamSubscription<List<RoomHabit>>> _habitsSubs = {};
   final Map<String, StreamSubscription<List<MemberProgress>>> _progressSubs = {};
+  final Map<String, StreamSubscription<List<RoomPost>>> _postsSubs = {};
+  final Map<String, StreamSubscription<List<RoomNudge>>> _nudgesSubs = {};
+  final Set<String> _initializedPostRooms = {};
+  final Set<String> _knownPostIds = {};
+  final Set<String> _initializedNudgeRooms = {};
+  final Set<String> _knownNudgeIds = {};
 
   List<Room> _myRooms = [];
   final Map<String, List<RoomHabit>> _roomHabitsMap = {}; // roomId -> habits
@@ -125,6 +132,18 @@ class RoomService extends ChangeNotifier {
       sub.cancel();
     }
     _progressSubs.clear();
+    for (final sub in _postsSubs.values) {
+      sub.cancel();
+    }
+    _postsSubs.clear();
+    _initializedPostRooms.clear();
+    _knownPostIds.clear();
+    for (final sub in _nudgesSubs.values) {
+      sub.cancel();
+    }
+    _nudgesSubs.clear();
+    _initializedNudgeRooms.clear();
+    _knownNudgeIds.clear();
     _myRooms.clear();
     _roomHabitsMap.clear();
     _memberProgressMap.clear();
@@ -151,6 +170,12 @@ class RoomService extends ChangeNotifier {
         _habitsSubs[rId]?.cancel();
         _habitsSubs.remove(rId);
         _roomHabitsMap.remove(rId);
+        _postsSubs[rId]?.cancel();
+        _postsSubs.remove(rId);
+        _initializedPostRooms.remove(rId);
+        _nudgesSubs[rId]?.cancel();
+        _nudgesSubs.remove(rId);
+        _initializedNudgeRooms.remove(rId);
         final prefix = '$rId:';
         _progressSubs.keys
             .where((k) => k.startsWith(prefix))
@@ -165,6 +190,79 @@ class RoomService extends ChangeNotifier {
 
       // Subscribe to all active rooms
       for (final room in rooms) {
+        // Subscribe to room posts for realtime notifications
+        if (!_postsSubs.containsKey(room.id)) {
+          _postsSubs[room.id] = _repo.streamRoomPosts(room.id).listen((posts) {
+            final isFirstLoad = !_initializedPostRooms.contains(room.id);
+            if (isFirstLoad) {
+              for (final p in posts) {
+                _knownPostIds.add(p.id);
+              }
+              _initializedPostRooms.add(room.id);
+              return;
+            }
+
+            for (final post in posts) {
+              if (!_knownPostIds.contains(post.id)) {
+                _knownPostIds.add(post.id);
+                // Only notify if post is from another member and recent (< 10 mins)
+                if (post.authorUid != uid) {
+                  final diff = DateTime.now().difference(post.createdAt).abs();
+                  if (diff.inMinutes < 10) {
+                    final notifId = post.id.hashCode.abs() % 2147483647;
+                    final currentRoomName =
+                        findRoomById(room.id)?.name ?? room.name;
+                    NotificationService.instance.showSocialNotification(
+                      id: notifId,
+                      title: '📝 ${post.authorName} • $currentRoomName',
+                      body: post.content,
+                      payload: 'room:${room.id}',
+                      subText: 'Mira • $currentRoomName Notu',
+                    );
+                  }
+                }
+              }
+            }
+          }, onError: (_) {});
+        }
+
+        // Subscribe to nudges sent to current user in this room
+        if (!_nudgesSubs.containsKey(room.id)) {
+          _nudgesSubs[room.id] =
+              _repo.streamMyNudges(room.id, uid).listen((nudges) {
+            final isFirstLoad = !_initializedNudgeRooms.contains(room.id);
+            if (isFirstLoad) {
+              for (final n in nudges) {
+                _knownNudgeIds.add(n.id);
+              }
+              _initializedNudgeRooms.add(room.id);
+              return;
+            }
+
+            for (final nudge in nudges) {
+              if (!_knownNudgeIds.contains(nudge.id)) {
+                _knownNudgeIds.add(nudge.id);
+                // Only notify if sent by someone else, unread, and recent (< 10 mins)
+                if (nudge.fromUid != uid && !nudge.isRead) {
+                  final diff = DateTime.now().difference(nudge.createdAt).abs();
+                  if (diff.inMinutes < 10) {
+                    final notifId = nudge.id.hashCode.abs() % 2147483647;
+                    final currentRoomName =
+                        findRoomById(room.id)?.name ?? room.name;
+                    NotificationService.instance.showSocialNotification(
+                      id: notifId,
+                      title: '👊 ${nudge.fromName} seni dürtüyor!',
+                      body: '$currentRoomName: ${nudge.message}',
+                      payload: 'room:${room.id}',
+                      subText: 'Mira • $currentRoomName Dürtme',
+                    );
+                  }
+                }
+              }
+            }
+          }, onError: (_) {});
+        }
+
         if (!_habitsSubs.containsKey(room.id)) {
           _habitsSubs[room.id] =
               _repo.streamRoomHabits(room.id).listen((habits) {

@@ -2529,6 +2529,10 @@ class HabitScreenState extends State<HabitScreen>
     // Non-focus items are now fully opaque
     const isMuted = false;
 
+    final String currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final bool canEditOrDelete =
+        !habit.isRoomHabit || habit.isRoomHabitCreator(currentUid);
+
     return HabitCard(
       title: habit.title,
       description: _buildHabitSubtitle(habit),
@@ -2536,12 +2540,16 @@ class HabitScreenState extends State<HabitScreen>
       icon: habit.icon,
       emoji: habit.emoji,
       categoryName: habit.categoryName,
+      isRoomHabit: habit.isRoomHabit,
+      roomName: habit.roomName,
       color: habit.color,
       currentStreak: dayProgress,
-      streakCount: HabitRepository.instance.consecutiveStreak(
-        habit.id,
-        upTo: selectedDate,
-      ),
+      streakCount: habit.isRoomHabit
+          ? habit.roomStreak
+          : HabitRepository.instance.consecutiveStreak(
+              habit.id,
+              upTo: selectedDate,
+            ),
       targetCount: habit.targetCount,
       isCompleted: dayCompleted,
       habitType: habit.habitType,
@@ -2552,13 +2560,37 @@ class HabitScreenState extends State<HabitScreen>
           habit.habitType == HabitType.timer ? habit.timerTargetType : null,
       unit: habit.unit,
       readOnly: isFuture || isBeforeStart,
-      iceEnabled: !isFuture &&
+      iceEnabled: !habit.isRoomHabit &&
+          !isFuture &&
           !isBeforeStart &&
           (habit.habitType == HabitType.simple ||
               habit.habitType == HabitType.checkbox),
-      requiredBreakTaps: missedBefore,
+      requiredBreakTaps: habit.isRoomHabit ? 0 : missedBefore,
+      onGoToRoom: habit.isRoomHabit && habit.roomId != null
+          ? () {
+              final room = RoomService.instance.findRoomById(habit.roomId!);
+              if (room != null) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => RoomDetailScreen(room: room),
+                  ),
+                );
+              }
+            }
+          : null,
       onTap: () {
         if (isFuture || isBeforeStart) return;
+        if (habit.isRoomHabit) {
+          if (habit.habitType == HabitType.simple ||
+              habit.habitType == HabitType.checkbox) {
+            RoomService.instance.updateMyRoomHabitProgress(
+              roomId: habit.roomId!,
+              habitId: habit.id,
+              isCompleted: !dayCompleted,
+            );
+          }
+          return;
+        }
         if (habit.habitType == HabitType.simple ||
             habit.habitType == HabitType.checkbox) {
           if (isToday) {
@@ -2568,13 +2600,25 @@ class HabitScreenState extends State<HabitScreen>
           }
         }
       },
-      onAssignToList: () => _assignHabitToListDialog(habit),
-      showStreakIndicator: _repo.getShowStreakIndicatorFor(habit.id),
-      onToggleStreakIndicator: (v) async {
-        await _repo.setShowStreakIndicatorFor(habit.id, v);
-      },
+      onAssignToList: habit.isRoomHabit ? null : () => _assignHabitToListDialog(habit),
+      showStreakIndicator: habit.isRoomHabit
+          ? false
+          : _repo.getShowStreakIndicatorFor(habit.id),
+      onToggleStreakIndicator: habit.isRoomHabit
+          ? null
+          : (v) async {
+              await _repo.setShowStreakIndicatorFor(habit.id, v);
+            },
       onValueUpdate: (newValue) {
         if (isFuture || isBeforeStart) return;
+        if (habit.isRoomHabit) {
+          RoomService.instance.updateMyRoomHabitProgress(
+            roomId: habit.roomId!,
+            habitId: habit.id,
+            value: newValue,
+          );
+          return;
+        }
         if (habit.habitType == HabitType.numerical ||
             habit.habitType == HabitType.timer) {
           if (isToday) {
@@ -2584,7 +2628,7 @@ class HabitScreenState extends State<HabitScreen>
           }
         }
       },
-      onSetAsFocus: isToday
+      onSetAsFocus: isToday && !habit.isRoomHabit
           ? () async {
               if (await requirePremium(context)) {
                 _setAsFocus(habit.id);
@@ -2607,11 +2651,20 @@ class HabitScreenState extends State<HabitScreen>
           ),
         );
       },
-      onEdit: () => _editHabit(habit),
-      onDelete: () => _deleteHabit(habit),
+      onEdit: canEditOrDelete ? () => _editHabit(habit) : null,
+      onDelete: canEditOrDelete ? () => _deleteHabit(habit) : null,
       subtasks: displaySubtasks,
       onSubtaskToggle: (subtaskId, completed) {
         if (isFuture || isBeforeStart) return;
+        if (habit.isRoomHabit) {
+          RoomService.instance.toggleMyRoomHabitSubtask(
+            roomId: habit.roomId!,
+            habitId: habit.id,
+            subtaskId: subtaskId,
+            isCompleted: completed,
+          );
+          return;
+        }
         if (isToday) {
           _repo.toggleSubtask(habit.id, subtaskId, completed);
         } else {
@@ -2622,6 +2675,44 @@ class HabitScreenState extends State<HabitScreen>
   }
 
   Future<void> _editHabit(Habit habit) async {
+    if (habit.isRoomHabit) {
+      if (habit.roomId == null || habit.roomHabitCreatedBy == null) return;
+      final editedHabit = habit.habitType == HabitType.simple && !habit.isAdvanced
+          ? await Navigator.of(context).push<Habit>(
+              MaterialPageRoute(
+                builder: (context) => SimpleHabitScreen(
+                  existingHabit: habit,
+                  isDateLocked: true,
+                ),
+              ),
+            )
+          : await Navigator.of(context).push<Habit>(
+              MaterialPageRoute(
+                builder: (context) => AdvancedHabitScreen(
+                  existingHabit: habit,
+                  isDateLocked: true,
+                ),
+              ),
+            );
+
+      if (editedHabit != null) {
+        final updatedRoomHabit = RoomHabit.fromHabit(
+          editedHabit,
+          createdBy: habit.roomHabitCreatedBy!,
+          id: habit.id,
+        );
+        await RoomService.instance.updateRoomHabitFull(
+          habit.roomId!,
+          updatedRoomHabit,
+        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Oda alışkanlığı güncellendi')),
+          );
+        }
+      }
+      return;
+    }
     // Vision habits: edit with AdvancedHabitScreen (vision context)
     if (habit.linkedVisionId != null) {
       final visionRepo = VisionRepository.instance;
@@ -2798,6 +2889,27 @@ class HabitScreenState extends State<HabitScreen>
   }
 
   Future<void> _deleteHabit(Habit habit) async {
+    if (habit.isRoomHabit) {
+      final confirmed = await _confirmDelete(
+        title: 'Oda Alışkanlığını Sil',
+        message:
+            '"${habit.title}" alışkanlığı odadaki tüm üyeler için silinecek. Emin misiniz?',
+        confirmText: 'Herkes İçin Sil',
+        cancelText: 'İptal',
+      );
+      if (confirmed && habit.roomId != null) {
+        await RoomService.instance.deleteRoomHabit(
+          habit.roomId!,
+          habit.id,
+        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Oda alışkanlığı silindi')),
+          );
+        }
+      }
+      return;
+    }
     print('DEBUG: _deleteHabit called for ${habit.title}');
     final confirmed = await _confirmDelete(
       title: AppLocalizations.of(context).delete,
@@ -2824,7 +2936,14 @@ class HabitScreenState extends State<HabitScreen>
   }
 
   String _buildHabitSubtitle(Habit habit) {
-    // Only show the habit's own description; do not append the list title.
+    if (habit.isRoomHabit && habit.roomName != null && habit.roomName!.trim().isNotEmpty) {
+      final rName = habit.roomName!.trim();
+      final desc = habit.description.trim();
+      if (desc.isNotEmpty) {
+        return '$rName • $desc';
+      }
+      return rName;
+    }
     return habit.description;
   }
 
@@ -3379,6 +3498,9 @@ class HabitScreenState extends State<HabitScreen>
   void _showTimelineHabitOptions(Habit habit) {
     HapticFeedback.mediumImpact();
     final l10n = AppLocalizations.of(context);
+    final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final canEditOrDelete =
+        !habit.isRoomHabit || habit.isRoomHabitCreator(currentUid);
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
@@ -3396,22 +3518,61 @@ class HabitScreenState extends State<HabitScreen>
                 style: const TextStyle(fontWeight: FontWeight.w700),
               ),
               subtitle: Text(
-                habit.description.isNotEmpty
-                    ? habit.description
-                    : (l10n.localeName.startsWith('tr')
-                        ? 'Alışkanlık'
-                        : 'Habit'),
+                habit.isRoomHabit && habit.roomName != null && habit.roomName!.isNotEmpty
+                    ? '${habit.roomName!}${habit.description.isNotEmpty ? " • ${habit.description}" : ""}'
+                    : (habit.description.isNotEmpty
+                        ? habit.description
+                        : (l10n.localeName.startsWith('tr')
+                            ? 'Alışkanlık'
+                            : 'Habit')),
               ),
             ),
             const Divider(),
-            ListTile(
-              leading: const Icon(Icons.edit_outlined),
-              title: Text(l10n.localeName.startsWith('tr') ? 'Düzenle' : 'Edit'),
-              onTap: () {
-                Navigator.pop(ctx);
-                _editHabit(habit);
-              },
-            ),
+            if (habit.isRoomHabit && habit.roomId != null)
+              ListTile(
+                leading: Icon(Icons.meeting_room_outlined, color: habit.color),
+                title: Text(l10n.localeName.startsWith('tr')
+                    ? 'Odaya Git'
+                    : 'Go to Room'),
+                subtitle: habit.roomName != null && habit.roomName!.isNotEmpty
+                    ? Text(habit.roomName!)
+                    : null,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  final room = RoomService.instance.findRoomById(habit.roomId!);
+                  if (room != null) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => RoomDetailScreen(room: room),
+                      ),
+                    );
+                  }
+                },
+              ),
+            if (habit.isRoomHabit && !canEditOrDelete)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                child: Text(
+                  'Bu bir oda alışkanlığıdır. Sadece oluşturan kişi düzenleyebilir veya silebilir.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurfaceVariant
+                        .withValues(alpha: 0.7),
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
+            if (canEditOrDelete)
+              ListTile(
+                leading: const Icon(Icons.edit_outlined),
+                title: Text(l10n.localeName.startsWith('tr') ? 'Düzenle' : 'Edit'),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _editHabit(habit);
+                },
+              ),
             ListTile(
               leading: const Icon(Icons.insights_outlined),
               title: Text(
@@ -3437,29 +3598,31 @@ class HabitScreenState extends State<HabitScreen>
                 );
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.label_outline),
-              title: Text(
-                l10n.localeName.startsWith('tr')
-                    ? 'Listeye Ata'
-                    : 'Assign to List',
+            if (!habit.isRoomHabit)
+              ListTile(
+                leading: const Icon(Icons.label_outline),
+                title: Text(
+                  l10n.localeName.startsWith('tr')
+                      ? 'Listeye Ata'
+                      : 'Assign to List',
+                ),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _assignHabitToListDialog(habit);
+                },
               ),
-              onTap: () {
-                Navigator.pop(ctx);
-                _assignHabitToListDialog(habit);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete_outline, color: Colors.redAccent),
-              title: Text(
-                l10n.localeName.startsWith('tr') ? 'Sil' : 'Delete',
-                style: const TextStyle(color: Colors.redAccent),
+            if (canEditOrDelete)
+              ListTile(
+                leading: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                title: Text(
+                  l10n.localeName.startsWith('tr') ? 'Sil' : 'Delete',
+                  style: const TextStyle(color: Colors.redAccent),
+                ),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _deleteHabit(habit);
+                },
               ),
-              onTap: () {
-                Navigator.pop(ctx);
-                _deleteHabit(habit);
-              },
-            ),
           ],
         ),
       ),
@@ -3923,6 +4086,21 @@ class HabitScreenState extends State<HabitScreen>
                                 currentProgress: dayProgress,
                                 isCompleted: dayCompleted,
                                 subtasks: displaySubtasks,
+                                onGoToRoom: habit.isRoomHabit &&
+                                        habit.roomId != null
+                                    ? () {
+                                        final room = RoomService.instance
+                                            .findRoomById(habit.roomId!);
+                                        if (room != null) {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (_) =>
+                                                  RoomDetailScreen(room: room),
+                                            ),
+                                          );
+                                        }
+                                      }
+                                    : null,
                                 onTap: () {
                                   if (habit.habitType == HabitType.simple ||
                                       habit.habitType == HabitType.checkbox) {

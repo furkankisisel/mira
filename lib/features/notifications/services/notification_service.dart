@@ -1,17 +1,24 @@
 import 'dart:typed_data';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
-import '../data/notification_settings_repository.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+
+import '../../../l10n/app_localizations.dart';
 import '../../habit/domain/habit_model.dart';
 import '../../habit/domain/habit_repository.dart';
-import '../../../l10n/app_localizations.dart';
+import '../../social/data/room_repository.dart';
+import '../../social/presentation/room_detail_screen.dart';
+import '../data/notification_settings_repository.dart';
 
 class NotificationService {
   NotificationService._();
   static final NotificationService instance = NotificationService._();
+
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
@@ -34,6 +41,11 @@ class NotificationService {
   static const String _timerCompletedChannelDescription =
       'Sound and vibration alerts when a countdown or pomodoro session completes';
   static const int _timerCompletedNotificationId = 9998;
+
+  static const String _socialChannelId = 'social_interactions';
+  static const String _socialChannelName = 'Oda ve Sosyal Bildirimler';
+  static const String _socialChannelDescription =
+      'Odalardaki notlar, dürtmeler ve sosyal etkileşim bildirimleri';
 
   Future<void> initialize() async {
     await _configureLocalTimeZone();
@@ -85,12 +97,23 @@ class NotificationService {
       showBadge: true,
     );
 
+    const socialChannel = AndroidNotificationChannel(
+      _socialChannelId,
+      _socialChannelName,
+      description: _socialChannelDescription,
+      importance: Importance.high,
+      playSound: true,
+      enableVibration: true,
+      showBadge: true,
+    );
+
     final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
 
     await androidPlugin?.createNotificationChannel(androidChannel);
     await androidPlugin?.createNotificationChannel(habitReminderChannel);
     await androidPlugin?.createNotificationChannel(timerCompletedChannel);
+    await androidPlugin?.createNotificationChannel(socialChannel);
 
     // Request notification permissions
     final notificationPermission =
@@ -134,6 +157,30 @@ class NotificationService {
       _onTimerAction?.call(response.actionId!);
     } else {
       print('   ⚠️ No actionId found');
+    }
+
+    // Room navigation on tap
+    final payload = response.payload;
+    if (payload != null && payload.startsWith('room:')) {
+      final roomId = payload.substring('room:'.length);
+      _handleRoomNavigation(roomId);
+    }
+  }
+
+  Future<void> _handleRoomNavigation(String roomId) async {
+    final nav = navigatorKey.currentState;
+    if (nav == null) return;
+    try {
+      final room = await RoomRepository.instance.getRoom(roomId);
+      if (room != null && nav.mounted) {
+        nav.push(
+          MaterialPageRoute(
+            builder: (_) => RoomDetailScreen(room: room),
+          ),
+        );
+      }
+    } catch (e) {
+      print('⚠️ Failed to open room from notification: $e');
     }
   }
 
@@ -328,6 +375,7 @@ class NotificationService {
     print('✅ Notification settings applied');
     print('   Master enabled: ${repo.enabled}');
     print('   Habit reminders: ${repo.habitReminders}');
+    print('   Social alerts: ${repo.socialAlerts}');
     print('   Sound: ${repo.sound}');
     print('   Vibration: ${repo.vibration}');
 
@@ -370,6 +418,11 @@ class NotificationService {
   bool _shouldShowHabitReminder() {
     return (_settingsRepo?.enabled ?? true) &&
         (_settingsRepo?.habitReminders ?? true);
+  }
+
+  bool _shouldShowSocialAlert() {
+    return (_settingsRepo?.enabled ?? true) &&
+        (_settingsRepo?.socialAlerts ?? true);
   }
 
   bool _shouldPlaySound() {
@@ -517,5 +570,57 @@ class NotificationService {
     if (!_initialized) return;
     // This will cancel all scheduled notifications
     await _plugin.cancelAll();
+  }
+
+  /// High-priority alert notification for room interactions (notes, nudges).
+  Future<void> showSocialNotification({
+    required int id,
+    required String title,
+    required String body,
+    String? payload,
+    String? subText,
+  }) async {
+    if (!_initialized) return;
+    if (!_shouldShowSocialAlert()) return;
+
+    final playSound = _shouldPlaySound();
+    final vibrate = _shouldVibrate();
+
+    final androidDetails = AndroidNotificationDetails(
+      _socialChannelId,
+      _socialChannelName,
+      channelDescription: _socialChannelDescription,
+      importance: Importance.high,
+      priority: Priority.high,
+      playSound: playSound,
+      enableVibration: vibrate,
+      subText: subText ?? 'Mira • Sosyal Oda',
+      largeIcon: const DrawableResourceAndroidBitmap(
+        '@drawable/ic_notification_large_v2',
+      ),
+      styleInformation: BigTextStyleInformation(
+        body,
+        contentTitle: title,
+      ),
+    );
+
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    final details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await _plugin.show(
+      id,
+      title,
+      body,
+      details,
+      payload: payload,
+    );
   }
 }

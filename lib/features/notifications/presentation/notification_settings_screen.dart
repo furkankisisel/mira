@@ -27,6 +27,7 @@ class _NotificationSettingsScreenState
   final _repo = NotificationSettingsRepository.instance;
   late bool _masterEnabled;
   late bool _habitReminders;
+  late bool _socialAlerts;
   late bool _sound;
   late bool _vibration;
 
@@ -42,6 +43,7 @@ class _NotificationSettingsScreenState
   void _loadSettings() {
     _masterEnabled = _repo.enabled;
     _habitReminders = _repo.habitReminders;
+    _socialAlerts = _repo.socialAlerts;
     _sound = _repo.sound;
     _vibration = _repo.vibration;
   }
@@ -82,6 +84,11 @@ class _NotificationSettingsScreenState
   Future<void> _toggleHabitReminders(bool value) async {
     await _repo.setHabitReminders(value);
     setState(() => _habitReminders = value);
+  }
+
+  Future<void> _toggleSocialAlerts(bool value) async {
+    await _repo.setSocialAlerts(value);
+    setState(() => _socialAlerts = value);
   }
 
   Future<void> _toggleSound(bool value) async {
@@ -149,6 +156,16 @@ class _NotificationSettingsScreenState
                         onChanged: _masterEnabled
                             ? _toggleHabitReminders
                             : null,
+                      ),
+                      const Divider(height: 1),
+                      SwitchListTile(
+                        secondary: const Icon(Icons.groups_rounded),
+                        title: const Text('Sosyal Oda Etkileşimleri'),
+                        subtitle: const Text(
+                          'Odalardaki notlar ve dürtmeler için anlık bildirimler',
+                        ),
+                        value: _socialAlerts && _masterEnabled,
+                        onChanged: _masterEnabled ? _toggleSocialAlerts : null,
                       ),
                     ],
                   ),

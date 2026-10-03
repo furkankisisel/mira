@@ -22,6 +22,7 @@ class TimelineHabitRow extends StatefulWidget {
   final VoidCallback? onToggle;
   final VoidCallback? onAdvancedTap;
   final VoidCallback? onLongPress;
+  final VoidCallback? onGoToRoom;
 
   const TimelineHabitRow({
     super.key,
@@ -36,6 +37,7 @@ class TimelineHabitRow extends StatefulWidget {
     this.onToggle,
     this.onAdvancedTap,
     this.onLongPress,
+    this.onGoToRoom,
   });
 
   @override
@@ -433,6 +435,16 @@ class _TimelineHabitRowState extends State<TimelineHabitRow>
     final habitDesc = habit.description.trim();
     final hasDescription = habitDesc.isNotEmpty;
     final metricProgress = _resolveMetricProgress();
+    final hasRoomName = habit.isRoomHabit &&
+        habit.roomName != null &&
+        habit.roomName!.trim().isNotEmpty;
+    final String? subtitleText = hasRoomName
+        ? (hasDescription
+            ? '${habit.roomName!.trim()} • $habitDesc'
+            : (metricProgress != null
+                ? '${habit.roomName!.trim()} • $metricProgress'
+                : habit.roomName!.trim()))
+        : (hasDescription ? habitDesc : metricProgress);
     final onCompleted =
         habitColor.computeLuminance() < 0.5 ? Colors.white : Colors.black;
 
@@ -695,32 +707,74 @@ class _TimelineHabitRowState extends State<TimelineHabitRow>
                                 child: Row(
                                   children: [
                                     // Circular Avatar Icon with matching pastel tint
-                                    Container(
-                                      width: 36,
-                                      height: 36,
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: isDone
-                                            ? Colors.white
-                                                .withValues(alpha: 0.22)
-                                            : habitColor.withOpacity(0.18),
-                                      ),
-                                      child: habit.emoji != null &&
-                                              habit.emoji!.isNotEmpty
-                                          ? Text(
-                                              habit.emoji!,
-                                              style: const TextStyle(
-                                                fontSize: 17,
+                                    Stack(
+                                      clipBehavior: Clip.none,
+                                      children: [
+                                        Container(
+                                          width: 36,
+                                          height: 36,
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: isDone
+                                                ? Colors.white
+                                                    .withValues(alpha: 0.22)
+                                                : habitColor.withOpacity(0.18),
+                                          ),
+                                          child: habit.emoji != null &&
+                                                  habit.emoji!.isNotEmpty
+                                              ? Text(
+                                                  habit.emoji!,
+                                                  style: const TextStyle(
+                                                    fontSize: 17,
+                                                  ),
+                                                )
+                                              : Icon(
+                                                  habit.icon,
+                                                  color: isDone
+                                                      ? onCompleted
+                                                      : habitColor,
+                                                  size: 18,
+                                                ),
+                                        ),
+                                        if (habit.isRoomHabit)
+                                          Positioned(
+                                            right: -2.5,
+                                            bottom: -2.5,
+                                            child: Container(
+                                              padding: const EdgeInsets.all(2.5),
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: isDark
+                                                    ? const Color(0xFF1E293B)
+                                                    : Colors.white,
+                                                border: Border.all(
+                                                  color: isDone
+                                                      ? onCompleted
+                                                          .withValues(alpha: 0.4)
+                                                      : habitColor
+                                                          .withValues(alpha: 0.35),
+                                                  width: 1,
+                                                ),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black
+                                                        .withValues(alpha: 0.18),
+                                                    blurRadius: 3,
+                                                    offset: const Offset(0, 1),
+                                                  ),
+                                                ],
                                               ),
-                                            )
-                                          : Icon(
-                                              habit.icon,
-                                              color: isDone
-                                                  ? onCompleted
-                                                  : habitColor,
-                                              size: 18,
+                                              child: Icon(
+                                                Icons.groups_rounded,
+                                                size: 9.5,
+                                                color: isDone
+                                                    ? onCompleted
+                                                    : habitColor,
+                                              ),
                                             ),
+                                          ),
+                                      ],
                                     ),
 
                                     const SizedBox(width: 12),
@@ -747,13 +801,11 @@ class _TimelineHabitRowState extends State<TimelineHabitRow>
                                                   : null,
                                             ),
                                           ),
-                                          if (hasDescription ||
-                                              metricProgress != null) ...[
+                                          if (subtitleText != null &&
+                                              subtitleText.isNotEmpty) ...[
                                             const SizedBox(height: 1.5),
                                             Text(
-                                              hasDescription
-                                                  ? habitDesc
-                                                  : metricProgress!,
+                                              subtitleText,
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(

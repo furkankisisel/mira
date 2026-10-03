@@ -1405,26 +1405,63 @@ class _HabitCardState extends State<HabitCard>
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Hero(
-                                tag: widget.heroTag ?? 'habit_icon_${widget.title}',
-                                child: SizedBox(
-                                  width: 44,
-                                  height: 44,
-                                  child: Center(
-                                    child: (widget.emoji != null &&
-                                            widget.emoji!.isNotEmpty)
-                                        ? Text(
-                                            widget.emoji!,
-                                            style: const TextStyle(fontSize: 24),
-                                          )
-                                        : Icon(
-                                            widget.icon,
-                                            color:
-                                                done ? onCompleted : widget.color,
-                                            size: 24,
-                                          ),
+                              Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Hero(
+                                    tag: widget.heroTag ?? 'habit_icon_${widget.title}',
+                                    child: SizedBox(
+                                      width: 44,
+                                      height: 44,
+                                      child: Center(
+                                        child: (widget.emoji != null &&
+                                                widget.emoji!.isNotEmpty)
+                                            ? Text(
+                                                widget.emoji!,
+                                                style: const TextStyle(fontSize: 24),
+                                              )
+                                            : Icon(
+                                                widget.icon,
+                                                color:
+                                                    done ? onCompleted : widget.color,
+                                                size: 24,
+                                              ),
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  if (widget.isRoomHabit)
+                                    Positioned(
+                                      right: -2,
+                                      bottom: -2,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(2.5),
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: isDark
+                                              ? const Color(0xFF1E293B)
+                                              : Colors.white,
+                                          border: Border.all(
+                                            color: done
+                                                ? onCompleted.withValues(alpha: 0.4)
+                                                : widget.color.withValues(alpha: 0.35),
+                                            width: 1,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withValues(alpha: 0.18),
+                                              blurRadius: 3,
+                                              offset: const Offset(0, 1),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Icon(
+                                          Icons.groups_rounded,
+                                          size: 10,
+                                          color: done ? onCompleted : widget.color,
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
                               const SizedBox(width: 12),
                               Expanded(
@@ -1435,51 +1472,6 @@ class _HabitCardState extends State<HabitCard>
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      if (widget.isRoomHabit)
-                                        Padding(
-                                          padding: const EdgeInsets.only(bottom: 3),
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 6,
-                                              vertical: 1.5,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: done
-                                                  ? onCompleted.withValues(alpha: 0.18)
-                                                  : widget.color.withValues(alpha: 0.12),
-                                              borderRadius: BorderRadius.circular(6),
-                                              border: Border.all(
-                                                color: done
-                                                    ? onCompleted.withValues(alpha: 0.3)
-                                                    : widget.color.withValues(alpha: 0.25),
-                                                width: 0.8,
-                                              ),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  Icons.groups_rounded,
-                                                  size: 11,
-                                                  color: done ? onCompleted : widget.color,
-                                                ),
-                                                const SizedBox(width: 4),
-                                                Text(
-                                                  widget.roomName != null &&
-                                                          widget.roomName!.isNotEmpty
-                                                      ? widget.roomName!
-                                                      : 'Oda Alışkanlığı',
-                                                  style: TextStyle(
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: done ? onCompleted : widget.color,
-                                                    letterSpacing: 0.2,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
                                       Row(
                                         children: [
                                           Expanded(

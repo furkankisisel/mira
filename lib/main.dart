@@ -307,6 +307,7 @@ class _MiraAppState extends State<MiraApp> {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
+        navigatorKey: NotificationService.navigatorKey,
         debugShowCheckedModeBanner: false,
         title: 'Mira',
         locale: _languageManager.currentLocale,
