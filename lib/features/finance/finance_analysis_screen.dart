@@ -869,7 +869,7 @@ class _FinancialSummaryCard extends StatelessWidget {
                   fontSize: 34,
                   fontWeight: FontWeight.w900,
                   letterSpacing: -1,
-                  color: isDark ? Colors.white : const Color(0xFF1E293B),
+                  color: scheme.onSurface,
                 ),
               ),
             ],
@@ -1415,9 +1415,7 @@ class _MonthlyTrendChart extends StatelessWidget {
                 ),
                 barTouchData: BarTouchData(
                   touchTooltipData: BarTouchTooltipData(
-                    getTooltipColor: (_) => isDark
-                        ? const Color(0xFF27272A)
-                        : const Color(0xFF1E293B),
+                    getTooltipColor: (_) => scheme.surfaceContainerHighest,
                     tooltipPadding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
@@ -1606,9 +1604,7 @@ class _YearlyTrendChart extends StatelessWidget {
                 ),
                 barTouchData: BarTouchData(
                   touchTooltipData: BarTouchTooltipData(
-                    getTooltipColor: (_) => isDark
-                        ? const Color(0xFF27272A)
-                        : const Color(0xFF1E293B),
+                    getTooltipColor: (_) => scheme.surfaceContainerHighest,
                     tooltipPadding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {

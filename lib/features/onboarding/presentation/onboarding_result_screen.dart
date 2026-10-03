@@ -252,7 +252,7 @@ class _OnboardingResultScreenState extends State<OnboardingResultScreen> {
         selectedWeekdays = [0, 1, 2, 3, 4, 5, 6];
     }
 
-    if (selectedWeekdays != null && !selectedWeekdays.contains(now.weekday - 1)) {
+    if (!selectedWeekdays.contains(now.weekday - 1)) {
       selectedWeekdays.add(now.weekday - 1);
       selectedWeekdays.sort();
     }

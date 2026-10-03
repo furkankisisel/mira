@@ -27,10 +27,13 @@ class ThemeVariations {
     final base = ThemeData.light(useMaterial3: true);
     final config = variant.config;
 
-    final scheme = ColorScheme.fromSeed(
-      seedColor: config.primary,
-      surface: config.lightSurface,
-      surfaceContainerHighest: config.lightBackground,
+    final scheme = _withNeutralSurfaces(
+      ColorScheme.fromSeed(
+        seedColor: config.primary,
+        surface: config.lightSurface,
+        surfaceContainerHighest: config.lightBackground,
+      ),
+      isDark: false,
     );
 
     return base.copyWith(
@@ -157,11 +160,14 @@ class ThemeVariations {
     final base = ThemeData.dark(useMaterial3: true);
     final config = variant.config;
 
-    final scheme = ColorScheme.fromSeed(
-      seedColor: config.primary,
-      brightness: Brightness.dark,
-      surface: config.darkSurface,
-      surfaceContainerHighest: config.darkBackground,
+    final scheme = _withNeutralSurfaces(
+      ColorScheme.fromSeed(
+        seedColor: config.primary,
+        brightness: Brightness.dark,
+        surface: config.darkSurface,
+        surfaceContainerHighest: config.darkBackground,
+      ),
+      isDark: true,
     );
 
     return base.copyWith(
@@ -287,6 +293,34 @@ class ThemeVariations {
       ),
     );
   }
+
+  /// Keeps theme choices as accents instead of letting their hue tint every
+  /// page and card. The palette is intentionally warm-neutral in light mode
+  /// and charcoal-neutral in dark mode.
+  static ColorScheme _withNeutralSurfaces(
+    ColorScheme scheme, {
+    required bool isDark,
+  }) {
+    if (isDark) {
+      return scheme.copyWith(
+        surface: const Color(0xFF181A19),
+        surfaceContainerLowest: const Color(0xFF0C0D0C),
+        surfaceContainerLow: const Color(0xFF121413),
+        surfaceContainer: const Color(0xFF171918),
+        surfaceContainerHigh: const Color(0xFF1D201E),
+        surfaceContainerHighest: const Color(0xFF242725),
+      );
+    }
+
+    return scheme.copyWith(
+      surface: const Color(0xFFFFFFFF),
+      surfaceContainerLowest: const Color(0xFFFFFFFF),
+      surfaceContainerLow: const Color(0xFFFBFBF9),
+      surfaceContainer: const Color(0xFFF5F5F3),
+      surfaceContainerHigh: const Color(0xFFEFEFEC),
+      surfaceContainerHighest: const Color(0xFFE8E8E5),
+    );
+  }
 }
 
 /// Available theme variants
@@ -365,59 +399,59 @@ extension ThemeVariantConfig on ThemeVariant {
   ThemeConfig get config => switch (this) {
         ThemeVariant.cotton => const ThemeConfig(
             primary: Color(0xFF5B6B4F),
-            lightBackground: Color(0xFFF7F5F0),
+            lightBackground: Color(0xFFF8F8F6),
             lightSurface: Color(0xFFFFFFFF),
-            darkBackground: Color(0xFF141713),
-            darkSurface: Color(0xFF1E221D),
+            darkBackground: Color(0xFF101110),
+            darkSurface: Color(0xFF181A19),
           ),
         ThemeVariant.terracotta => const ThemeConfig(
             primary: Color(0xFFC07355),
-            lightBackground: Color(0xFFFAF5F2),
+            lightBackground: Color(0xFFF8F8F6),
             lightSurface: Color(0xFFFFFFFF),
-            darkBackground: Color(0xFF1C1513),
-            darkSurface: Color(0xFF261D1A),
+            darkBackground: Color(0xFF101110),
+            darkSurface: Color(0xFF181A19),
           ),
         ThemeVariant.fjord => const ThemeConfig(
             primary: Color(0xFF4A6E82),
-            lightBackground: Color(0xFFF3F6F8),
+            lightBackground: Color(0xFFF8F8F6),
             lightSurface: Color(0xFFFFFFFF),
-            darkBackground: Color(0xFF12171C),
-            darkSurface: Color(0xFF1B2228),
+            darkBackground: Color(0xFF101110),
+            darkSurface: Color(0xFF181A19),
           ),
         ThemeVariant.sandstone => const ThemeConfig(
             primary: Color(0xFF9E846A),
-            lightBackground: Color(0xFFF9F7F3),
+            lightBackground: Color(0xFFF8F8F6),
             lightSurface: Color(0xFFFFFFFF),
-            darkBackground: Color(0xFF1A1713),
-            darkSurface: Color(0xFF24201A),
+            darkBackground: Color(0xFF101110),
+            darkSurface: Color(0xFF181A19),
           ),
         ThemeVariant.moss => const ThemeConfig(
             primary: Color(0xFF3F6D55),
-            lightBackground: Color(0xFFF3F7F5),
+            lightBackground: Color(0xFFF8F8F6),
             lightSurface: Color(0xFFFFFFFF),
-            darkBackground: Color(0xFF111814),
-            darkSurface: Color(0xFF19231D),
+            darkBackground: Color(0xFF101110),
+            darkSurface: Color(0xFF181A19),
           ),
         ThemeVariant.heather => const ThemeConfig(
             primary: Color(0xFF7A688A),
-            lightBackground: Color(0xFFF7F5F9),
+            lightBackground: Color(0xFFF8F8F6),
             lightSurface: Color(0xFFFFFFFF),
-            darkBackground: Color(0xFF17141C),
-            darkSurface: Color(0xFF211D27),
+            darkBackground: Color(0xFF101110),
+            darkSurface: Color(0xFF181A19),
           ),
         ThemeVariant.amber => const ThemeConfig(
             primary: Color(0xFFC28135),
-            lightBackground: Color(0xFFFAF7F2),
+            lightBackground: Color(0xFFF8F8F6),
             lightSurface: Color(0xFFFFFFFF),
-            darkBackground: Color(0xFF1A150F),
-            darkSurface: Color(0xFF251E16),
+            darkBackground: Color(0xFF101110),
+            darkSurface: Color(0xFF181A19),
           ),
         ThemeVariant.basalt => const ThemeConfig(
             primary: Color(0xFF525252),
-            lightBackground: Color(0xFFF5F5F5),
+            lightBackground: Color(0xFFF8F8F6),
             lightSurface: Color(0xFFFFFFFF),
-            darkBackground: Color(0xFF141414),
-            darkSurface: Color(0xFF1E1E1E),
+            darkBackground: Color(0xFF101110),
+            darkSurface: Color(0xFF181A19),
           ),
       };
 }

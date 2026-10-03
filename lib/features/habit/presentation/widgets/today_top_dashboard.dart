@@ -1488,12 +1488,12 @@ class _NotebookCover extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     // Harmonize leather tone with theme
-    final baseColor = isDark
-        ? const Color(0xFF1E222D)
-        : Color.lerp(theme.colorScheme.primary, const Color(0xFF2B3340), 0.70)!;
-    final darkerColor = isDark
-        ? const Color(0xFF141720)
-        : Color.lerp(theme.colorScheme.primary, const Color(0xFF1D222B), 0.85)!;
+    final baseColor = Color.lerp(
+      theme.colorScheme.surfaceContainerHigh,
+      theme.colorScheme.primary,
+      isDark ? 0.12 : 0.08,
+    )!;
+    final darkerColor = theme.colorScheme.surface;
 
     return GestureDetector(
       onTap: onTap,

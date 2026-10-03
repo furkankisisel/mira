@@ -26,12 +26,14 @@ class RoomService extends ChangeNotifier {
   StreamSubscription<User?>? _authSub;
   StreamSubscription<List<Room>>? _roomsSub;
   final Map<String, StreamSubscription<List<RoomHabit>>> _habitsSubs = {};
-  final Map<String, StreamSubscription<MemberProgress?>> _progressSubs = {};
+  final Map<String, StreamSubscription<List<MemberProgress>>> _progressSubs = {};
 
   List<Room> _myRooms = [];
   final Map<String, List<RoomHabit>> _roomHabitsMap = {}; // roomId -> habits
   final Map<String, MemberProgress> _memberProgressMap =
-      {}; // '$roomId:$habitId' -> progress
+      {}; // '$roomId:$habitId' -> progress of current user
+  final Map<String, List<MemberProgress>> _allHabitProgressMap =
+      {}; // '$roomId:$habitId' -> list of all members' progress
 
   List<Habit> _cachedHabits = [];
 
@@ -47,6 +49,16 @@ class RoomService extends ChangeNotifier {
 
   Room? findRoomById(String roomId) {
     return _myRooms.where((r) => r.id == roomId).firstOrNull;
+  }
+
+  /// Get cached current user's progress for a habit directly from memory (0 ms).
+  MemberProgress? getMemberProgressInMemory(String roomId, String habitId) {
+    return _memberProgressMap['$roomId:$habitId'];
+  }
+
+  /// Get cached all members' progress for a habit directly from memory (0 ms).
+  List<MemberProgress> getHabitProgressInMemory(String roomId, String habitId) {
+    return _allHabitProgressMap['$roomId:$habitId'] ?? const [];
   }
 
   /// Returns room habits formatted as Habit objects that are valid for [date].
@@ -114,6 +126,7 @@ class RoomService extends ChangeNotifier {
     _myRooms.clear();
     _roomHabitsMap.clear();
     _memberProgressMap.clear();
+    _allHabitProgressMap.clear();
     _cachedHabits.clear();
     notifyListeners();
   }
@@ -143,6 +156,7 @@ class RoomService extends ChangeNotifier {
           _progressSubs[k]?.cancel();
           _progressSubs.remove(k);
           _memberProgressMap.remove(k);
+          _allHabitProgressMap.remove(k);
         });
       });
 
@@ -165,17 +179,21 @@ class RoomService extends ChangeNotifier {
               _progressSubs[k]?.cancel();
               _progressSubs.remove(k);
               _memberProgressMap.remove(k);
+              _allHabitProgressMap.remove(k);
             });
 
-            // Listen to current user's progress for each habit
+            // Listen to all members' progress for each habit
             for (final habit in habits) {
               final progressKey = '${room.id}:${habit.id}';
               if (!_progressSubs.containsKey(progressKey)) {
                 _progressSubs[progressKey] = _repo
-                    .streamMemberProgress(room.id, habit.id, uid)
-                    .listen((prog) {
-                  if (prog != null) {
-                    _memberProgressMap[progressKey] = prog;
+                    .streamHabitProgress(room.id, habit.id)
+                    .listen((allProgress) {
+                  _allHabitProgressMap[progressKey] = allProgress;
+                  final myProg =
+                      allProgress.where((p) => p.uid == uid).firstOrNull;
+                  if (myProg != null) {
+                    _memberProgressMap[progressKey] = myProg;
                   } else {
                     _memberProgressMap.remove(progressKey);
                   }
@@ -286,14 +304,28 @@ class RoomService extends ChangeNotifier {
   }
 
   /// Update full details of a room habit in Firestore.
+  /// Strictly preserves existing startDate and endDate (dates can only be set at creation),
+  /// as well as createdBy and createdAt.
   Future<void> updateRoomHabitFull(
     String roomId,
     RoomHabit updatedHabit,
   ) async {
+    final existingHabit = await _repo.getRoomHabit(roomId, updatedHabit.id);
+    final habitData = updatedHabit.toJson();
+    if (existingHabit != null) {
+      habitData['startDate'] = existingHabit.startDate;
+      habitData['endDate'] = existingHabit.endDate;
+      habitData['createdBy'] = existingHabit.createdBy;
+      habitData['createdAt'] = existingHabit.createdAt.toIso8601String();
+    } else {
+      habitData.remove('startDate');
+      habitData.remove('endDate');
+    }
+
     await _repo.updateRoomHabit(
       roomId,
       updatedHabit.id,
-      updatedHabit.toJson(),
+      habitData,
     );
   }
 
@@ -318,11 +350,46 @@ class RoomService extends ChangeNotifier {
 
   // ─── Room Habit Progress Sync ───────────────────────
 
+  /// Helper to evaluate completion based on room habit target types
+  bool _evaluateRoomHabitCompletion(
+    RoomHabit habit,
+    int progress,
+    List<String> completedSubtaskIds,
+  ) {
+    switch (habit.habitType) {
+      case HabitType.simple:
+      case HabitType.checkbox:
+        return progress >= habit.targetCount;
+      case HabitType.subtasks:
+        return habit.subtasks.isNotEmpty &&
+            habit.subtasks.every((s) => completedSubtaskIds.contains(s.id));
+      case HabitType.numerical:
+        switch (habit.numericalTargetType) {
+          case NumericalTargetType.minimum:
+            return progress >= habit.targetCount;
+          case NumericalTargetType.exact:
+            return progress == habit.targetCount;
+          case NumericalTargetType.maximum:
+            return progress <= habit.targetCount && progress > 0;
+        }
+      case HabitType.timer:
+        switch (habit.timerTargetType) {
+          case TimerTargetType.minimum:
+            return progress >= habit.targetCount;
+          case TimerTargetType.exact:
+            return progress == habit.targetCount;
+          case TimerTargetType.maximum:
+            return progress <= habit.targetCount && progress > 0;
+        }
+    }
+  }
+
   /// Directly toggle or update the current user's progress on a room habit.
-  /// Works in real-time inside the social room and Today screen.
+  /// Works in real-time inside the social room and Today screen with 0 ms UI latency.
   Future<void> updateMyRoomHabitProgress({
     required String roomId,
-    required RoomHabit habit,
+    RoomHabit? habit,
+    String? habitId,
     bool? isCompleted,
     int? value,
     Duration? timerDuration,
@@ -332,16 +399,20 @@ class RoomService extends ChangeNotifier {
     final uid = _currentUid;
     if (uid == null) return;
 
+    final targetHabitId = habit?.id ?? habitId;
+    if (targetHabitId == null) return;
+
+    final actualHabit = findRoomHabit(roomId, targetHabitId) ?? habit;
+    if (actualHabit == null) return;
+
     final now = DateTime.now();
     final dayKey =
         '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
 
-    MemberProgress? prev;
-    try {
-      prev = await _repo.getMemberProgress(roomId, habit.id, uid);
-    } catch (_) {}
+    final progressKey = '$roomId:${actualHabit.id}';
+    final prev = _memberProgressMap[progressKey];
 
-    final target = habit.targetCount > 0 ? habit.targetCount : 1;
+    final target = actualHabit.targetCount > 0 ? actualHabit.targetCount : 1;
     bool newCompleted = isCompleted ?? false;
     int newValue = value ?? (prev?.isToday == true ? prev!.value : 0);
     List<String> completedSubtasks = List<String>.from(
@@ -355,7 +426,7 @@ class RoomService extends ChangeNotifier {
         gainedMinutes = 1;
       }
       newValue = (prev?.isToday == true ? prev!.value : 0) + gainedMinutes;
-      newCompleted = newValue >= target;
+      newCompleted = _evaluateRoomHabitCompletion(actualHabit, newValue, completedSubtasks);
     } else if (subtaskId != null) {
       // Subtasks habit: toggle subtask
       if (subtaskCompleted == true) {
@@ -365,14 +436,13 @@ class RoomService extends ChangeNotifier {
       } else {
         completedSubtasks.remove(subtaskId);
       }
-      final allDone = habit.subtasks.isNotEmpty &&
-          habit.subtasks.every((s) => completedSubtasks.contains(s.id));
-      newCompleted = allDone;
       newValue = completedSubtasks.length;
-    } else if (habit.isNumerical || habit.habitType == HabitType.timer) {
+      newCompleted = actualHabit.subtasks.isNotEmpty &&
+          actualHabit.subtasks.every((s) => completedSubtasks.contains(s.id));
+    } else if (actualHabit.isNumerical || actualHabit.habitType == HabitType.timer) {
       if (value != null) {
         newValue = value;
-        newCompleted = newValue >= target;
+        newCompleted = _evaluateRoomHabitCompletion(actualHabit, newValue, completedSubtasks);
       } else if (isCompleted != null) {
         newCompleted = isCompleted;
         newValue = newCompleted ? target : 0;
@@ -380,11 +450,11 @@ class RoomService extends ChangeNotifier {
     } else {
       if (isCompleted != null) {
         newCompleted = isCompleted;
-        newValue = newCompleted ? 1 : 0;
+        newValue = newCompleted ? target : 0;
       } else {
         final wasCompletedToday = prev?.isCompletedToday ?? false;
         newCompleted = !wasCompletedToday;
-        newValue = newCompleted ? 1 : 0;
+        newValue = newCompleted ? target : 0;
       }
     }
 
@@ -426,15 +496,25 @@ class RoomService extends ChangeNotifier {
       completedSubtaskIds: completedSubtasks,
     );
 
-    // Optimistically update memory
-    final progressKey = '$roomId:${habit.id}';
+    // 1. Optimistically update local memory immediately (0 ms UI response)
     _memberProgressMap[progressKey] = progress;
+    final currentList =
+        List<MemberProgress>.from(_allHabitProgressMap[progressKey] ?? []);
+    final idx = currentList.indexWhere((p) => p.uid == uid);
+    if (idx != -1) {
+      currentList[idx] = progress;
+    } else {
+      currentList.add(progress);
+    }
+    _allHabitProgressMap[progressKey] = currentList;
+
     _recomputeCachedHabits();
     notifyListeners();
 
-    await _repo.updateMemberProgress(
+    // 2. Persist to Firestore in the background
+    _repo.updateMemberProgress(
       roomId: roomId,
-      habitId: habit.id,
+      habitId: actualHabit.id,
       uid: uid,
       progress: progress,
     );
@@ -447,9 +527,9 @@ class RoomService extends ChangeNotifier {
         target: target,
         isCompleted: newCompleted,
       );
-      await _repo.saveProgressHistory(
+      _repo.saveProgressHistory(
         roomId: roomId,
-        habitId: habit.id,
+        habitId: actualHabit.id,
         entry: historyEntry,
       );
     } catch (_) {}
@@ -462,10 +542,10 @@ class RoomService extends ChangeNotifier {
     Duration duration,
   ) async {
     final habit = findRoomHabit(roomId, habitId);
-    if (habit == null) return;
     await updateMyRoomHabitProgress(
       roomId: roomId,
       habit: habit,
+      habitId: habitId,
       timerDuration: duration,
     );
   }
@@ -473,13 +553,15 @@ class RoomService extends ChangeNotifier {
   /// Toggle a subtask for a room habit.
   Future<void> toggleMyRoomHabitSubtask({
     required String roomId,
-    required RoomHabit habit,
+    RoomHabit? habit,
+    String? habitId,
     required String subtaskId,
     required bool isCompleted,
   }) {
     return updateMyRoomHabitProgress(
       roomId: roomId,
       habit: habit,
+      habitId: habitId,
       subtaskId: subtaskId,
       subtaskCompleted: isCompleted,
     );

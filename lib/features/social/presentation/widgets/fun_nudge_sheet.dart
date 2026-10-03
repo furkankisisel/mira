@@ -110,7 +110,7 @@ class _FunNudgeContentState extends State<_FunNudgeContent> {
               ],
             ),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: const Color(0xFF0F172A),
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
             ),
@@ -288,9 +288,7 @@ class _FunNudgeContentState extends State<_FunNudgeContent> {
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: isDark
-                                    ? const Color(0xFFF1F5F9)
-                                    : const Color(0xFF1E293B),
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           ],
@@ -314,9 +312,7 @@ class _FunNudgeContentState extends State<_FunNudgeContent> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.06)
-                  : const Color(0xFFF1F5F9),
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isDark

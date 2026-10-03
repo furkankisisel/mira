@@ -611,7 +611,7 @@ class _GoalSummarySheetState extends State<GoalSummarySheet> {
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF1B202D) : Colors.white,
+                color: Theme.of(context).colorScheme.surfaceContainerHigh,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
                   color: isDark
@@ -679,7 +679,7 @@ class _GoalSummarySheetState extends State<GoalSummarySheet> {
               margin: const EdgeInsets.only(bottom: 6),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF1B202D) : Colors.white,
+                color: Theme.of(context).colorScheme.surfaceContainerHigh,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Row(
@@ -898,9 +898,8 @@ class _GoalSummarySheetState extends State<GoalSummarySheet> {
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 10),
                     filled: true,
-                    fillColor: isDark
-                        ? Colors.white.withValues(alpha: 0.06)
-                        : const Color(0xFFF1F5F9),
+                    fillColor:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide: BorderSide.none,

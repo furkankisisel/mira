@@ -1008,7 +1008,7 @@ class HabitScreenState extends State<HabitScreen>
                         : null,
                     color: isSelected
                         ? null
-                        : (isDark ? const Color(0xFF1E2430) : const Color(0xFFF4F6F9)),
+                        : Theme.of(context).colorScheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                       color: isSelected
@@ -1170,9 +1170,7 @@ class HabitScreenState extends State<HabitScreen>
                           vertical: 7,
                         ),
                         decoration: BoxDecoration(
-                          color: isDark
-                              ? const Color(0xFF1E2430)
-                              : const Color(0xFFF2F4F7),
+                          color: Theme.of(context).colorScheme.surfaceContainerHigh,
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
                             color: Colors.white.withValues(
@@ -1210,7 +1208,7 @@ class HabitScreenState extends State<HabitScreen>
                         height: 34,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isDark ? const Color(0xFF1E2430) : Colors.white,
+                          color: Theme.of(context).colorScheme.surfaceContainerHigh,
                           border: Border.all(
                             color: Colors.white.withValues(
                               alpha: isDark ? 0.12 : 0.95,
@@ -1296,9 +1294,7 @@ class HabitScreenState extends State<HabitScreen>
                 const SizedBox(height: 10),
                 Container(
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF1E2430)
-                        : const Color(0xFFF7F8FA),
+                    color: Theme.of(context).colorScheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: Colors.white.withValues(
@@ -1369,9 +1365,7 @@ class HabitScreenState extends State<HabitScreen>
                 const SizedBox(height: 10),
                 Container(
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF1E2430)
-                        : const Color(0xFFF7F8FA),
+                    color: Theme.of(context).colorScheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
                       color: Colors.white.withValues(
@@ -1434,9 +1428,7 @@ class HabitScreenState extends State<HabitScreen>
                         child: Container(
                           height: 50,
                           decoration: BoxDecoration(
-                            color: isDark
-                                ? const Color(0xFF222938)
-                                : const Color(0xFFF2F4F7),
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(25),
                             border: Border.all(
                               color: Colors.white.withValues(
@@ -1542,9 +1534,8 @@ class HabitScreenState extends State<HabitScreen>
                 filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF141923).withValues(alpha: 0.94)
-                        : Colors.white.withValues(alpha: 0.94),
+                    color: Theme.of(context).colorScheme.surfaceContainerHigh
+                        .withValues(alpha: 0.94),
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
                     border: Border.all(
                       color: Colors.white.withValues(
@@ -1625,9 +1616,8 @@ class HabitScreenState extends State<HabitScreen>
                 filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF141923).withValues(alpha: 0.94)
-                        : Colors.white.withValues(alpha: 0.94),
+                    color: Theme.of(context).colorScheme.surfaceContainerHigh
+                        .withValues(alpha: 0.94),
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
                     border: Border.all(
                       color: Colors.white.withValues(
@@ -1709,9 +1699,7 @@ class HabitScreenState extends State<HabitScreen>
                               height: 34,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: isDark
-                                    ? const Color(0xFF1E2430)
-                                    : Colors.white,
+                                color: Theme.of(context).colorScheme.surfaceContainerHigh,
                                 border: Border.all(
                                   color: Colors.white.withValues(
                                     alpha: isDark ? 0.12 : 0.95,
@@ -1746,9 +1734,7 @@ class HabitScreenState extends State<HabitScreen>
                             horizontal: 16,
                           ),
                           decoration: BoxDecoration(
-                            color: isDark
-                                ? const Color(0xFF1E2430)
-                                : const Color(0xFFF7F8FA),
+                            color: Theme.of(context).colorScheme.surfaceContainerHigh,
                             borderRadius: BorderRadius.circular(18),
                             border: Border.all(
                               color: Colors.white.withValues(
@@ -1800,9 +1786,7 @@ class HabitScreenState extends State<HabitScreen>
                                   vertical: 10,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: isDark
-                                      ? const Color(0xFF1E2430)
-                                      : Colors.white,
+                                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
                                   borderRadius: BorderRadius.circular(18),
                                   border: Border.all(
                                     color: Colors.white.withValues(
@@ -1918,9 +1902,7 @@ class HabitScreenState extends State<HabitScreen>
                                         width: 32,
                                         height: 32,
                                         decoration: BoxDecoration(
-                                          color: isDark
-                                              ? const Color(0xFF2A3242)
-                                              : const Color(0xFFF2F4F7),
+                                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
                                           borderRadius:
                                               BorderRadius.circular(10),
                                         ),
@@ -3284,6 +3266,14 @@ class HabitScreenState extends State<HabitScreen>
       currentProgress: currentProgress,
       subtasks: subtasks,
       onValueUpdate: (newValue) {
+        if (habit.isRoomHabit) {
+          RoomService.instance.updateMyRoomHabitProgress(
+            roomId: habit.roomId!,
+            habitId: habit.id,
+            value: newValue,
+          );
+          return;
+        }
         if (isToday) {
           _repo.setManualProgress(habit.id, newValue);
         } else {
@@ -3291,6 +3281,15 @@ class HabitScreenState extends State<HabitScreen>
         }
       },
       onSubtaskToggle: (subtaskId, completed) {
+        if (habit.isRoomHabit) {
+          RoomService.instance.toggleMyRoomHabitSubtask(
+            roomId: habit.roomId!,
+            habitId: habit.id,
+            subtaskId: subtaskId,
+            isCompleted: completed,
+          );
+          return;
+        }
         if (isToday) {
           _repo.toggleSubtask(habit.id, subtaskId, completed);
         } else {
@@ -3311,6 +3310,26 @@ class HabitScreenState extends State<HabitScreen>
           int.parse(habit.startDate.substring(8, 10)),
         ));
     if (isFuture || isBeforeStart) return;
+
+    if (habit.isRoomHabit) {
+      if (habit.habitType == HabitType.simple ||
+          habit.habitType == HabitType.checkbox) {
+        RoomService.instance.updateMyRoomHabitProgress(
+          roomId: habit.roomId!,
+          habitId: habit.id,
+          isCompleted: !habit.isCompleted,
+        );
+      } else if (habit.habitType == HabitType.numerical ||
+          habit.habitType == HabitType.timer) {
+        final nextVal = habit.isCompleted ? 0 : habit.targetCount;
+        RoomService.instance.updateMyRoomHabitProgress(
+          roomId: habit.roomId!,
+          habitId: habit.id,
+          value: nextVal,
+        );
+      }
+      return;
+    }
 
     if (habit.habitType == HabitType.simple ||
         habit.habitType == HabitType.checkbox) {
@@ -3820,13 +3839,17 @@ class HabitScreenState extends State<HabitScreen>
                               final habit = habits[habitIndex];
                               final String dayKey =
                                   '${_selected.year}-${_selected.month.toString().padLeft(2, '0')}-${_selected.day.toString().padLeft(2, '0')}';
-                              final int dayProgress = isToday
+                              final int dayProgress = habit.isRoomHabit
                                   ? habit.currentStreak
-                                  : (habit.dailyLog[dayKey] ?? 0);
+                                  : (isToday
+                                      ? habit.currentStreak
+                                      : (habit.dailyLog[dayKey] ?? 0));
 
                               List<Subtask>? displaySubtasks;
                               if (habit.habitType == HabitType.subtasks) {
-                                if (isToday) {
+                                if (habit.isRoomHabit) {
+                                  displaySubtasks = habit.subtasks;
+                                } else if (isToday) {
                                   displaySubtasks = habit.subtasks;
                                 } else if (habit.subtasksLog.containsKey(dayKey)) {
                                   displaySubtasks = habit.subtasksLog[dayKey]!
@@ -3847,17 +3870,19 @@ class HabitScreenState extends State<HabitScreen>
                                 }
                               }
 
-                              final bool dayCompleted = isToday
-                                  ? (habit.isCompleted ||
-                                      HabitRepository
-                                          .evaluateCompletionFromLog(
-                                        habit,
-                                        dayKey,
-                                      ))
-                                  : HabitRepository.evaluateCompletionFromLog(
-                                      habit,
-                                      dayKey,
-                                    );
+                              final bool dayCompleted = habit.isRoomHabit
+                                  ? habit.isCompleted
+                                  : (isToday
+                                      ? (habit.isCompleted ||
+                                          HabitRepository
+                                              .evaluateCompletionFromLog(
+                                            habit,
+                                            dayKey,
+                                          ))
+                                      : HabitRepository.evaluateCompletionFromLog(
+                                          habit,
+                                          dayKey,
+                                        ));
 
                               childWidget = TimelineHabitRow(
                                 habit: habit,
@@ -4098,6 +4123,9 @@ class HabitScreenState extends State<HabitScreen>
                                 final isMuted = false;
                                 // Swipe-to-dismiss removed: present HabitCard directly.
                                 childWidget = HabitCard(
+                                  key: ValueKey(
+                                    'habit_${habit.id}_${habit.isRoomHabit ? "room" : "pers"}',
+                                  ),
                                   title: habit.title,
                                   description: _buildHabitSubtitle(habit),
                                   isMuted: isMuted,
@@ -4109,7 +4137,7 @@ class HabitScreenState extends State<HabitScreen>
                                   color: habit.color,
                                   currentStreak: dayProgress,
                                   streakCount: habit.isRoomHabit
-                                      ? habit.currentStreak
+                                      ? habit.roomStreak
                                       : HabitRepository.instance
                                           .consecutiveStreak(
                                         habit.id,
@@ -4134,6 +4162,34 @@ class HabitScreenState extends State<HabitScreen>
                                       habit.habitType == HabitType.simple,
                                   requiredBreakTaps:
                                       habit.isRoomHabit ? 0 : missedBefore,
+                                  subtasks: habit.subtasks,
+                                  onSubtaskToggle: (subtaskId, completed) {
+                                    if (isFuture || isBeforeStart) return;
+                                    if (habit.isRoomHabit) {
+                                      RoomService.instance
+                                          .toggleMyRoomHabitSubtask(
+                                        roomId: habit.roomId!,
+                                        habitId: habit.id,
+                                        subtaskId: subtaskId,
+                                        isCompleted: completed,
+                                      );
+                                      return;
+                                    }
+                                    if (isToday) {
+                                      _repo.toggleSubtask(
+                                        habit.id,
+                                        subtaskId,
+                                        completed,
+                                      );
+                                    } else {
+                                      _repo.toggleSubtaskForDate(
+                                        habit.id,
+                                        subtaskId,
+                                        completed,
+                                        _selected,
+                                      );
+                                    }
+                                  },
                                   onGoToRoom: habit.isRoomHabit &&
                                           habit.roomId != null
                                       ? () {
@@ -4157,11 +4213,7 @@ class HabitScreenState extends State<HabitScreen>
                                         RoomService.instance
                                             .updateMyRoomHabitProgress(
                                           roomId: habit.roomId!,
-                                          habit: RoomHabit.fromHabit(
-                                            habit,
-                                            createdBy:
-                                                habit.roomHabitCreatedBy ?? '',
-                                          ),
+                                          habitId: habit.id,
                                           isCompleted: !dayCompleted,
                                         );
                                       }
@@ -4205,11 +4257,7 @@ class HabitScreenState extends State<HabitScreen>
                                       RoomService.instance
                                           .updateMyRoomHabitProgress(
                                         roomId: habit.roomId!,
-                                        habit: RoomHabit.fromHabit(
-                                          habit,
-                                          createdBy:
-                                              habit.roomHabitCreatedBy ?? '',
-                                        ),
+                                        habitId: habit.id,
                                         value: newValue,
                                       );
                                       return;
@@ -4261,6 +4309,7 @@ class HabitScreenState extends State<HabitScreen>
                                                       builder: (context) =>
                                                           SimpleHabitScreen(
                                                         existingHabit: habit,
+                                                        isDateLocked: true,
                                                       ),
                                                     ),
                                                   )
@@ -4270,6 +4319,7 @@ class HabitScreenState extends State<HabitScreen>
                                                       builder: (context) =>
                                                           AdvancedHabitScreen(
                                                         existingHabit: habit,
+                                                        isDateLocked: true,
                                                       ),
                                                     ),
                                                   );

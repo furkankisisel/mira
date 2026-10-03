@@ -73,8 +73,8 @@ class RoomOverallLeaderboard extends StatelessWidget {
     final myIndex = myScore != null ? scores.indexOf(myScore) : -1;
     final aheadMember = myIndex > 0 ? scores[myIndex - 1] : null;
 
-    final titleColor = isDark ? const Color(0xFFF8FAFC) : const Color(0xFF0F172A);
-    final subtitleColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+    final titleColor = Theme.of(context).colorScheme.onSurface;
+    final subtitleColor = Theme.of(context).colorScheme.onSurfaceVariant;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -247,7 +247,7 @@ class RoomOverallLeaderboard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
-                      color: isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A),
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                     children: [
                       TextSpan(
@@ -311,6 +311,7 @@ class _LeagueMemberTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     Color rankColor;
     if (score.rank == 1) {
       rankColor = const Color(0xFFF59E0B);
@@ -326,12 +327,8 @@ class _LeagueMemberTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: isMe
-            ? (isDark
-                ? const Color(0xFF0284C7).withValues(alpha: 0.16)
-                : const Color(0xFFE0F2FE).withValues(alpha: 0.70))
-            : (isDark
-                ? const Color(0xFF161B26)
-                : Colors.white),
+            ? colorScheme.primary.withValues(alpha: isDark ? 0.16 : 0.10)
+            : colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: isMe

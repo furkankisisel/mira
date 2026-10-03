@@ -610,7 +610,7 @@ class _DockActionButtonState extends State<_DockActionButton>
             : const Color(0xFFF1F5F9));
     final fg = widget.isPrimary
         ? Colors.white
-        : (widget.isDark ? Colors.white : const Color(0xFF1E293B));
+        : Theme.of(context).colorScheme.onSurface;
 
     return GestureDetector(
       onTapDown: (_) => _ctrl.forward(),
@@ -850,6 +850,11 @@ class _RoomBodyState extends State<RoomBody> {
     _progressSubs.clear();
 
     for (final h in habits) {
+      final cached = RoomService.instance
+          .getHabitProgressInMemory(widget.roomId, h.id);
+      if (cached.isNotEmpty) {
+        _progressMap[h.id] = cached;
+      }
       final sub = RoomService.instance
           .streamHabitProgress(widget.roomId, h.id)
           .listen((list) {
@@ -972,11 +977,12 @@ class _RoomBodyState extends State<RoomBody> {
   }
 
   Widget _buildSegmentedTabs(bool isDark, bool isTr) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 10, 16, 4),
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF141924) : const Color(0xFFF1F5F9),
+        color: colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isDark
@@ -1020,6 +1026,7 @@ class _RoomBodyState extends State<RoomBody> {
     required bool isDark,
   }) {
     final isSelected = _selectedTab == index;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Expanded(
       child: PressableScale(
@@ -1032,7 +1039,7 @@ class _RoomBodyState extends State<RoomBody> {
           padding: const EdgeInsets.symmetric(vertical: 9),
           decoration: BoxDecoration(
             color: isSelected
-                ? (isDark ? const Color(0xFF1E2638) : Colors.white)
+                ? colorScheme.surfaceContainerHighest
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(16),
             border: isSelected
@@ -1074,7 +1081,7 @@ class _RoomBodyState extends State<RoomBody> {
                     fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
                     letterSpacing: -0.2,
                     color: isSelected
-                        ? (isDark ? Colors.white : const Color(0xFF0F172A))
+                        ? colorScheme.onSurface
                         : (isDark ? Colors.white54 : Colors.black54),
                   ),
                 ),
@@ -1299,7 +1306,7 @@ class _EmptyHabits extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1B202D) : Colors.white,
+          color: theme.colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: isDark
@@ -1422,17 +1429,23 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
       return;
     }
 
-    final habitToEdit = widget.habit.toHabit();
+    final habitToEdit = widget.habit.toHabit(roomId: widget.roomId);
     final edited = habitToEdit.habitType == HabitType.simple &&
             !habitToEdit.isAdvanced
         ? await Navigator.of(context).push<Habit>(
             MaterialPageRoute(
-              builder: (_) => SimpleHabitScreen(existingHabit: habitToEdit),
+              builder: (_) => SimpleHabitScreen(
+                existingHabit: habitToEdit,
+                isDateLocked: true,
+              ),
             ),
           )
         : await Navigator.of(context).push<Habit>(
             MaterialPageRoute(
-              builder: (_) => AdvancedHabitScreen(existingHabit: habitToEdit),
+              builder: (_) => AdvancedHabitScreen(
+                existingHabit: habitToEdit,
+                isDateLocked: true,
+              ),
             ),
           );
 
@@ -1491,9 +1504,18 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
 
     return StreamBuilder<List<MemberProgress>>(
       stream: _progressStream,
+      initialData: RoomService.instance
+          .getHabitProgressInMemory(widget.roomId, widget.habit.id),
       builder: (context, snap) {
-        final progressList = snap.data ?? [];
-        final myProgress = progressList.where((p) => p.uid == currentUid).firstOrNull;
+        final progressList = (snap.data != null && snap.data!.isNotEmpty)
+            ? snap.data!
+            : RoomService.instance
+                .getHabitProgressInMemory(widget.roomId, widget.habit.id);
+        final myProgress = progressList
+                .where((p) => p.uid == currentUid)
+                .firstOrNull ??
+            RoomService.instance
+                .getMemberProgressInMemory(widget.roomId, widget.habit.id);
         final isCompletedToday = myProgress?.isCompletedToday ?? false;
         final todayValue = myProgress?.todayValue ?? 0;
         final streak = myProgress?.streak ?? 0;
@@ -1536,6 +1558,7 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
               onSubtaskToggle: (subtaskId, completed) {
                 RoomService.instance.toggleMyRoomHabitSubtask(
                   roomId: widget.roomId,
+                  habitId: widget.habit.id,
                   habit: widget.habit,
                   subtaskId: subtaskId,
                   isCompleted: completed,
@@ -1546,6 +1569,7 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
               onTap: () {
                 RoomService.instance.updateMyRoomHabitProgress(
                   roomId: widget.roomId,
+                  habitId: widget.habit.id,
                   habit: widget.habit,
                   isCompleted: !isCompletedToday,
                 );
@@ -1553,6 +1577,7 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
               onValueUpdate: (newValue) {
                 RoomService.instance.updateMyRoomHabitProgress(
                   roomId: widget.roomId,
+                  habitId: widget.habit.id,
                   habit: widget.habit,
                   value: newValue,
                 );
@@ -1591,9 +1616,7 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 2, 16, 8),
       decoration: BoxDecoration(
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.04)
-            : const Color(0xFFF8FAFC),
+        color: theme.colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isDark
@@ -2254,7 +2277,7 @@ class _NoteCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1B202D) : Colors.white,
+        color: theme.colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: isDark

@@ -13,10 +13,16 @@ import '../domain/habit_types.dart';
 /// Minimalist basit alışkanlık oluşturma ekranı.
 /// Tek sayfa, akıcı scroll tasarımı.
 class SimpleHabitScreen extends StatefulWidget {
-  const SimpleHabitScreen({super.key, this.existingHabit});
+  const SimpleHabitScreen({
+    super.key,
+    this.existingHabit,
+    this.isDateLocked = false,
+  });
 
   final Habit? existingHabit;
+  final bool isDateLocked;
   bool get isEditing => existingHabit != null;
+  bool get dateLocked => isDateLocked || (existingHabit?.isRoomHabit ?? false);
 
   @override
   State<SimpleHabitScreen> createState() => _SimpleHabitScreenState();
@@ -1422,9 +1428,23 @@ class _SimpleHabitScreenState extends State<SimpleHabitScreen>
 
   Widget _buildStartDatePicker(ThemeData theme, ColorScheme colorScheme) {
     final isToday = _isSameDay(_startDate, DateTime.now());
+    final isLocked = widget.dateLocked;
 
     return GestureDetector(
       onTap: () async {
+        if (isLocked) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Oda alışkanlığı başlangıç tarihi sonradan değiştirilemez.',
+              ),
+              behavior: SnackBarBehavior.floating,
+              duration: Duration(seconds: 2),
+            ),
+          );
+          return;
+        }
+
         final picked = await showDatePicker(
           context: context,
           initialDate: _startDate,
@@ -1448,20 +1468,31 @@ class _SimpleHabitScreenState extends State<SimpleHabitScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: colorScheme.surfaceContainerHighest.withOpacity(0.4),
+          color: isLocked
+              ? colorScheme.surfaceContainerHighest.withOpacity(0.2)
+              : colorScheme.surfaceContainerHighest.withOpacity(0.4),
           borderRadius: BorderRadius.circular(14),
+          border: isLocked
+              ? Border.all(color: colorScheme.outline.withOpacity(0.12))
+              : null,
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: _selectedColor.withOpacity(0.12),
+                color: isLocked
+                    ? colorScheme.onSurface.withOpacity(0.08)
+                    : _selectedColor.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
-                Icons.calendar_today_rounded,
-                color: _selectedColor,
+                isLocked
+                    ? Icons.lock_outline_rounded
+                    : Icons.calendar_today_rounded,
+                color: isLocked
+                    ? colorScheme.onSurface.withOpacity(0.5)
+                    : _selectedColor,
                 size: 20,
               ),
             ),
@@ -1470,27 +1501,59 @@ class _SimpleHabitScreenState extends State<SimpleHabitScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Row(
+                    children: [
+                      Text(
+                        isToday
+                            ? AppLocalizations.of(context).today
+                            : _formatDate(_startDate),
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: isLocked
+                              ? colorScheme.onSurface.withOpacity(0.7)
+                              : colorScheme.onSurface,
+                        ),
+                      ),
+                      if (isLocked) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: colorScheme.onSurface.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            'Kilitli',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: colorScheme.onSurface.withOpacity(0.6),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                   Text(
-                    isToday
-                        ? AppLocalizations.of(context).today
-                        : _formatDate(_startDate),
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
+                    isLocked
+                        ? 'Oda alışkanlığı tarihi değiştirilemez'
+                        : (!isToday
+                            ? _getDaysFromNow(_startDate)
+                            : AppLocalizations.of(context).startDate),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurface.withOpacity(0.5),
                     ),
                   ),
-                  if (!isToday)
-                    Text(
-                      _getDaysFromNow(_startDate),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurface.withOpacity(0.5),
-                      ),
-                    ),
                 ],
               ),
             ),
             Icon(
-              Icons.chevron_right_rounded,
-              color: colorScheme.onSurface.withOpacity(0.4),
+              isLocked ? Icons.lock_rounded : Icons.chevron_right_rounded,
+              color: colorScheme.onSurface.withOpacity(0.3),
+              size: isLocked ? 18 : 24,
             ),
           ],
         ),
@@ -1874,8 +1937,15 @@ class _SimpleHabitScreenState extends State<SimpleHabitScreen>
   void _saveHabit() {
     if (_nameController.text.trim().isEmpty) return;
 
-    final startDateStr = _dateKey(_startDate);
-    final scheduled = _generateScheduledDates(start: _startDate);
+    final existingStart = widget.existingHabit?.startDate;
+    final startDateStr = (widget.dateLocked && existingStart != null)
+        ? existingStart
+        : _dateKey(_startDate);
+    final scheduled = _generateScheduledDates(
+      start: (widget.dateLocked && existingStart != null)
+          ? (DateTime.tryParse(existingStart) ?? _startDate)
+          : _startDate,
+    );
 
     String frequencyType;
     List<int>? selectedWeekdays;

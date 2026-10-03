@@ -21,6 +21,7 @@ class AdvancedHabitScreen extends StatefulWidget {
     this.useVisionDayOffsets = false,
     this.visionStartDate,
     this.returnAsMap = false,
+    this.isDateLocked = false,
   });
 
   /// Mevcut habit objesi (düzenleme modu)
@@ -38,7 +39,11 @@ class AdvancedHabitScreen extends StatefulWidget {
   /// True ise Habit yerine Map döndürür (vision modunda kullanılır)
   final bool returnAsMap;
 
+  /// Tarihler kilitli mi (oda alışkanlıkları vb.)
+  final bool isDateLocked;
+
   bool get isEditing => existingHabit != null || editingHabitMap != null;
+  bool get dateLocked => isDateLocked || (existingHabit?.isRoomHabit ?? false);
 
   @override
   State<AdvancedHabitScreen> createState() => _AdvancedHabitScreenState();
@@ -2725,21 +2730,63 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
 
   Widget _buildDateRangeSection(ThemeData theme, ColorScheme colorScheme) {
     final l10n = AppLocalizations.of(context);
+    final isLocked = widget.dateLocked;
+
     return Column(
       children: [
+        if (isLocked) ...[
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: colorScheme.outline.withOpacity(0.1)),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.lock_outline_rounded,
+                  size: 16,
+                  color: colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Oda alışkanlığı tarihleri oluşturulduktan sonra değiştirilemez.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurface.withOpacity(0.7),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
         _buildDateRow(
           theme,
           colorScheme,
           label: l10n.startDate,
           date: _startDate,
+          isLocked: isLocked,
           onTap: () async {
+            if (isLocked) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Oda alışkanlığı tarihleri sonradan değiştirilemez.',
+                  ),
+                  behavior: SnackBarBehavior.floating,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+              return;
+            }
             final picked = await showDatePicker(
               context: context,
               initialDate: _startDate,
               firstDate: DateTime(2020),
               lastDate: DateTime(2030),
-              // locale removed to use system default, or use:
-              // locale: Localizations.localeOf(context),
             );
             if (picked != null) {
               setState(() => _startDate = picked);
@@ -2753,20 +2800,31 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
           label: l10n.endDate,
           date: _endDate,
           isOptional: true,
+          isLocked: isLocked,
           onTap: () async {
+            if (isLocked) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Oda alışkanlığı tarihleri sonradan değiştirilemez.',
+                  ),
+                  behavior: SnackBarBehavior.floating,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+              return;
+            }
             final picked = await showDatePicker(
               context: context,
               initialDate: _endDate ?? _startDate.add(const Duration(days: 30)),
               firstDate: _startDate,
               lastDate: DateTime(2030),
-              // locale removed
-              // locale: Localizations.localeOf(context),
             );
             if (picked != null) {
               setState(() => _endDate = picked);
             }
           },
-          onClear: () => setState(() => _endDate = null),
+          onClear: isLocked ? null : () => setState(() => _endDate = null),
         ),
       ],
     );
@@ -2779,6 +2837,7 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
     required DateTime? date,
     required VoidCallback onTap,
     bool isOptional = false,
+    bool isLocked = false,
     VoidCallback? onClear,
   }) {
     return GestureDetector(
@@ -2786,27 +2845,58 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: colorScheme.surfaceContainerHighest.withOpacity(0.4),
+          color: isLocked
+              ? colorScheme.surfaceContainerHighest.withOpacity(0.2)
+              : colorScheme.surfaceContainerHighest.withOpacity(0.4),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: colorScheme.outline.withOpacity(0.1)),
+          border: Border.all(
+            color: colorScheme.outline.withOpacity(isLocked ? 0.15 : 0.1),
+          ),
         ),
         child: Row(
           children: [
             Icon(
-              Icons.calendar_today_rounded,
+              isLocked ? Icons.lock_outline_rounded : Icons.calendar_today_rounded,
               size: 18,
-              color: colorScheme.onSurface.withOpacity(0.6),
+              color: isLocked
+                  ? colorScheme.onSurface.withOpacity(0.4)
+                  : colorScheme.onSurface.withOpacity(0.6),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    label,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: colorScheme.onSurface.withOpacity(0.5),
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        label,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: colorScheme.onSurface.withOpacity(0.5),
+                        ),
+                      ),
+                      if (isLocked) ...[
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 1,
+                          ),
+                          decoration: BoxDecoration(
+                            color: colorScheme.onSurface.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'Kilitli',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w600,
+                              color: colorScheme.onSurface.withOpacity(0.6),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -2816,14 +2906,22 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w500,
                       color: date != null
-                          ? colorScheme.onSurface
+                          ? (isLocked
+                              ? colorScheme.onSurface.withOpacity(0.8)
+                              : colorScheme.onSurface)
                           : colorScheme.onSurface.withOpacity(0.4),
                     ),
                   ),
                 ],
               ),
             ),
-            if (isOptional && date != null && onClear != null)
+            if (isLocked)
+              Icon(
+                Icons.lock_rounded,
+                size: 16,
+                color: colorScheme.onSurface.withOpacity(0.35),
+              )
+            else if (isOptional && date != null && onClear != null)
               IconButton(
                 icon: const Icon(Icons.close, size: 18),
                 onPressed: onClear,
@@ -2849,9 +2947,19 @@ class _AdvancedHabitScreenState extends State<AdvancedHabitScreen>
   void _saveHabit() {
     if (_nameController.text.trim().isEmpty) return;
 
-    final startDateStr = _dateKey(_startDate);
-    final endDateStr = _endDate != null ? _dateKey(_endDate!) : null;
-    final scheduled = _generateScheduledDates(start: _startDate);
+    final existingStart = widget.existingHabit?.startDate;
+    final existingEnd = widget.existingHabit?.endDate;
+    final startDateStr = (widget.dateLocked && existingStart != null)
+        ? existingStart
+        : _dateKey(_startDate);
+    final endDateStr = (widget.dateLocked && widget.existingHabit != null)
+        ? existingEnd
+        : (_endDate != null ? _dateKey(_endDate!) : null);
+    final scheduled = _generateScheduledDates(
+      start: (widget.dateLocked && existingStart != null)
+          ? (DateTime.tryParse(existingStart) ?? _startDate)
+          : _startDate,
+    );
 
     String frequencyType;
     List<int>? selectedWeekdays;

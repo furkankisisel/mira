@@ -170,9 +170,7 @@ class _CapsuleNavItem extends StatelessWidget {
         ? scheme.surfaceContainerHigh
         : Colors.white;
 
-    final activeTextColor = isDark
-        ? scheme.onSurface
-        : const Color(0xFF1E293B);
+    final activeTextColor = scheme.onSurface;
 
     final inactiveIconColor = isDark
         ? scheme.onSurfaceVariant.withValues(alpha: 0.6)

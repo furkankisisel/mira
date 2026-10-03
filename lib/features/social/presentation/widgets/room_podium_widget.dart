@@ -307,9 +307,7 @@ class RoomPodiumWidget extends StatelessWidget {
               letterSpacing: -0.2,
               color: isCurrent
                   ? (isDark ? const Color(0xFF38BDF8) : const Color(0xFF0284C7))
-                  : (isDark
-                      ? const Color(0xFFF1F5F9)
-                      : const Color(0xFF1E293B)),
+                  : Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 2),

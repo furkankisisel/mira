@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:io' as io;
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../vision/data/vision_model.dart';
@@ -285,7 +286,7 @@ class _ActiveGoalCardState extends State<ActiveGoalCard>
                   child: Container(
                     padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF1B202D) : Colors.white,
+                      color: Theme.of(context).colorScheme.surfaceContainerHigh,
                       borderRadius: BorderRadius.circular(22),
                       border: Border.all(
                         color: color.withValues(alpha: isDark ? 0.30 : 0.20),
@@ -322,12 +323,17 @@ class _ActiveGoalCardState extends State<ActiveGoalCard>
                                   width: 1,
                                 ),
                               ),
-                              child: Center(
-                                child: Text(
-                                  v.emoji ?? '🎯',
-                                  style: const TextStyle(fontSize: 22),
-                                ),
-                              ),
+                              clipBehavior: Clip.antiAlias,
+                              child: v.coverImage != null && v.coverImage!.isNotEmpty
+                                  ? (v.coverImage!.startsWith('assets/')
+                                      ? Image.asset(v.coverImage!, fit: BoxFit.cover)
+                                      : Image.file(io.File(v.coverImage!), fit: BoxFit.cover))
+                                  : Center(
+                                      child: Text(
+                                        v.emoji ?? '🎯',
+                                        style: const TextStyle(fontSize: 22),
+                                      ),
+                                    ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(

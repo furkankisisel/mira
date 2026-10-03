@@ -99,7 +99,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                 height: 38,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isDark ? const Color(0xFF1E2430) : Colors.white,
+                  color: theme.colorScheme.surfaceContainerHigh,
                   border: Border.all(
                     color: Colors.white.withValues(alpha: isDark ? 0.12 : 0.95),
                     width: 1.2,
@@ -1236,8 +1236,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
-                color:
-                    isDark ? const Color(0xFF202735) : const Color(0xFFF7F9FC),
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: Colors.white.withValues(alpha: isDark ? 0.06 : 0.8),
@@ -1359,9 +1358,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
             child: Container(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
               decoration: BoxDecoration(
-                color: isDark
-                    ? const Color(0xFF161A22).withValues(alpha: 0.94)
-                    : Colors.white.withValues(alpha: 0.94),
+                color: theme.colorScheme.surfaceContainerHigh
+                    .withValues(alpha: 0.94),
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(32)),
                 border: Border(
@@ -1525,9 +1523,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
             child: Container(
               padding: const EdgeInsets.fromLTRB(22, 14, 22, 32),
               decoration: BoxDecoration(
-                color: isDark
-                    ? const Color(0xFF161A22).withValues(alpha: 0.95)
-                    : Colors.white.withValues(alpha: 0.95),
+                color: theme.colorScheme.surfaceContainerHigh
+                    .withValues(alpha: 0.95),
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(32)),
                 border: Border(
@@ -1590,9 +1587,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                             height: 50,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: isDark
-                                  ? const Color(0xFF222938)
-                                  : const Color(0xFFF1F4F9),
+                              color: theme.colorScheme.surfaceContainerHighest,
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
@@ -1682,9 +1677,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                     MediaQuery.of(ctx).viewInsets.bottom + 28,
                   ),
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF161A22).withValues(alpha: 0.96)
-                        : Colors.white.withValues(alpha: 0.96),
+                    color: theme.colorScheme.surfaceContainerHigh
+                        .withValues(alpha: 0.96),
                     borderRadius:
                         const BorderRadius.vertical(top: Radius.circular(32)),
                     border: Border(
@@ -1749,9 +1743,8 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                                                 ? mColor.withValues(alpha: 0.18)
                                                 : mColor.withValues(
                                                     alpha: 0.10))
-                                            : (isDark
-                                                ? const Color(0xFF222938)
-                                                : const Color(0xFFF6F8FB)),
+                                            : theme.colorScheme
+                                                .surfaceContainerHighest,
                                         borderRadius: BorderRadius.circular(18),
                                         border: Border.all(
                                           color: isSel
@@ -1868,9 +1861,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                                 decoration: BoxDecoration(
                                   color: isSel
                                       ? primaryColor
-                                      : (isDark
-                                          ? const Color(0xFF222938)
-                                          : const Color(0xFFF4F6F9)),
+                                      : theme.colorScheme.surfaceContainerHighest,
                                   borderRadius: BorderRadius.circular(14),
                                   border: Border.all(
                                     color: isSel
@@ -1940,9 +1931,7 @@ class _MoodAnalyticsScreenState extends State<MoodAnalyticsScreen>
                         // 3. Note Field
                         Container(
                           decoration: BoxDecoration(
-                            color: isDark
-                                ? const Color(0xFF222938)
-                                : const Color(0xFFF4F6FA),
+                            color: theme.colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(18),
                           ),
                           child: TextField(

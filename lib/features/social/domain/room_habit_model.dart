@@ -341,11 +341,13 @@ class RoomHabit {
       reminderEnabled: reminderEnabled,
       reminderTime: reminderTime,
       rhythmWindow: rhythmWindow,
+      dailyLog: {dateStr: progress},
     )..isAdvanced = isAdvanced;
 
     h.roomId = roomId;
     h.roomName = roomName;
     h.roomHabitCreatedBy = createdBy;
+    h.roomStreak = myProgress?.streak ?? 0;
     return h;
   }
 }
@@ -415,6 +417,15 @@ class MemberProgress {
             .toList() ??
         const <String>[];
 
+    DateTime parsedLastUpdated = DateTime.now();
+    if (d['lastUpdated'] is Timestamp) {
+      parsedLastUpdated = (d['lastUpdated'] as Timestamp).toDate().toLocal();
+    } else if (d['lastUpdated'] is String) {
+      parsedLastUpdated =
+          DateTime.tryParse(d['lastUpdated'] as String)?.toLocal() ??
+              DateTime.now();
+    }
+
     return MemberProgress(
       uid: doc.id,
       displayName: d['displayName'] as String? ?? '',
@@ -422,8 +433,7 @@ class MemberProgress {
       value: (d['value'] as num?)?.toInt() ?? 0,
       target: (d['target'] as num?)?.toInt() ?? 1,
       isCompleted: d['isCompleted'] as bool? ?? false,
-      lastUpdated:
-          (d['lastUpdated'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      lastUpdated: parsedLastUpdated,
       streak: (d['streak'] as num?)?.toInt() ?? 0,
       completedSubtaskIds: subtaskIds,
     );

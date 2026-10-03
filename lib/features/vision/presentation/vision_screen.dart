@@ -2373,18 +2373,37 @@ class _Board extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Container(
-                                        padding: const EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white
-                                              .withValues(alpha: 0.2),
-                                          shape: BoxShape.circle,
+                                      if (v.coverImage != null &&
+                                          v.coverImage!.isNotEmpty)
+                                        Container(
+                                          width: 56,
+                                          height: 56,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            border: Border.all(
+                                              color: Colors.white
+                                                  .withValues(alpha: 0.35),
+                                              width: 1.5,
+                                            ),
+                                          ),
+                                          clipBehavior: Clip.antiAlias,
+                                          child: _CoverImage(
+                                              path: v.coverImage!),
+                                        )
+                                      else
+                                        Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white
+                                                .withValues(alpha: 0.2),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Text(
+                                            v.emoji ?? '🎯',
+                                            style: const TextStyle(fontSize: 32),
+                                          ),
                                         ),
-                                        child: Text(
-                                          v.emoji ?? '🎯',
-                                          style: const TextStyle(fontSize: 32),
-                                        ),
-                                      ),
                                       const SizedBox(width: 16),
                                       Expanded(
                                         child: Column(

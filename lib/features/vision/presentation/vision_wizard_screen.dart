@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -60,21 +61,23 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
     Color(0xFF3B82F6),
   ];
 
-  static const List<String> _quickEmojis = [
-    '🎯',
-    '🚀',
-    '💪',
-    '🏆',
-    '⭐',
-    '💎',
-    '🌟',
-    '✨',
-    '🔥',
-    '💡',
-    '📚',
-    '🌱',
-    '🏔️',
-    '🌍',
+  static const List<Map<String, String>> _presetPhotos = [
+    {
+      'name': 'Vizyon',
+      'path': 'assets/images/onboarding_vision_v2.png',
+    },
+    {
+      'name': 'Rutin',
+      'path': 'assets/images/onboarding_routine_v2.png',
+    },
+    {
+      'name': 'Denge',
+      'path': 'assets/images/onboarding_balance_v2.png',
+    },
+    {
+      'name': 'Bağlantı',
+      'path': 'assets/images/onboarding_connection_v2.png',
+    },
   ];
 
   @override
@@ -162,10 +165,15 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
     }
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImage([ImageSource source = ImageSource.gallery]) async {
     try {
       final picker = ImagePicker();
-      final image = await picker.pickImage(source: ImageSource.gallery);
+      final image = await picker.pickImage(
+        source: source,
+        maxWidth: 1920,
+        maxHeight: 1080,
+        imageQuality: 85,
+      );
       if (image != null) {
         setState(() {
           _imagePath = image.path;
@@ -173,6 +181,477 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
         });
       }
     } catch (_) {}
+  }
+
+  void _showPhotoOptionsSheet() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDark ? const Color(0xFF1E2433) : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 38,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: colorScheme.onSurface.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Vizyon Fotoğrafı Ekle',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Hedefini zihninde canlandıracak bir fotoğraf seç',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurface.withOpacity(0.6),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildPhotoSourceButton(
+                        icon: Icons.photo_library_rounded,
+                        label: 'Galeri',
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          _pickImage(ImageSource.gallery);
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildPhotoSourceButton(
+                        icon: Icons.camera_alt_rounded,
+                        label: 'Kamera',
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          _pickImage(ImageSource.camera);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Veya Hazır İlham Görsellerinden Seç',
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.onSurface.withOpacity(0.7),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 80,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _presetPhotos.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 10),
+                    itemBuilder: (context, i) {
+                      final preset = _presetPhotos[i];
+                      final isSelected = _imagePath == preset['path'];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          setState(() {
+                            _imagePath = preset['path'];
+                            _useImage = true;
+                          });
+                        },
+                        child: Container(
+                          width: 80,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: isSelected
+                                  ? _selectedColor
+                                  : Colors.transparent,
+                              width: 2.5,
+                            ),
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              Image.asset(
+                                preset['path']!,
+                                fit: BoxFit.cover,
+                              ),
+                              if (isSelected)
+                                Container(
+                                  color: _selectedColor.withOpacity(0.4),
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.check_circle_rounded,
+                                      color: Colors.white,
+                                      size: 24,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPhotoSourceButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: isDark
+              ? Colors.white.withOpacity(0.06)
+              : colorScheme.surfaceContainerHighest.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: colorScheme.outline.withOpacity(0.12),
+          ),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, size: 28, color: _selectedColor),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPhotoSection(
+    ThemeData theme,
+    ColorScheme colorScheme,
+    bool isDark,
+  ) {
+    final hasImage = _useImage && _imagePath != null && _imagePath!.isNotEmpty;
+    final isFile = hasImage &&
+        (_imagePath!.startsWith('/') ||
+            _imagePath!.contains('\\') ||
+            _imagePath!.contains(':\\'));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Vizyon Fotoğrafı',
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                fontSize: 14,
+                letterSpacing: -0.2,
+              ),
+            ),
+            if (hasImage)
+              TextButton.icon(
+                onPressed: _showPhotoOptionsSheet,
+                icon: const Icon(Icons.sync_rounded, size: 16),
+                label: const Text('Değiştir'),
+                style: TextButton.styleFrom(
+                  foregroundColor: _selectedColor,
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        if (hasImage) ...[
+          // Selected Photo Preview Card
+          Container(
+            height: 190,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                color: _selectedColor.withOpacity(0.3),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(isDark ? 0.35 : 0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                isFile
+                    ? Image.file(File(_imagePath!), fit: BoxFit.cover)
+                    : Image.asset(_imagePath!, fit: BoxFit.cover),
+                // Gradient overlay
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.1),
+                        Colors.black.withOpacity(0.55),
+                      ],
+                    ),
+                  ),
+                ),
+                // Action Buttons Overlay
+                Positioned(
+                  left: 12,
+                  right: 12,
+                  bottom: 12,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      InkWell(
+                        onTap: _showPhotoOptionsSheet,
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.25),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.3),
+                            ),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.photo_library_rounded,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                              SizedBox(width: 6),
+                              Text(
+                                'Değiştir',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          setState(() {
+                            _imagePath = null;
+                            _useImage = false;
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.4),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.2),
+                            ),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.delete_outline_rounded,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                'Kaldır',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ] else ...[
+          // Empty State Photo Picker Card
+          GestureDetector(
+            onTap: _showPhotoOptionsSheet,
+            child: Container(
+              height: 155,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withOpacity(0.04)
+                    : _selectedColor.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(
+                  color: _selectedColor.withOpacity(0.35),
+                  width: 1.5,
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 54,
+                    height: 54,
+                    decoration: BoxDecoration(
+                      color: _selectedColor.withOpacity(0.14),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.add_a_photo_rounded,
+                      size: 26,
+                      color: _selectedColor,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Vizyon Fotoğrafı Ekle',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Hedefini görselleştirecek bir fotoğraf seç',
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      color: colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          // Quick Photo Sources & Presets Row
+          SizedBox(
+            height: 48,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _presetPhotos.length + 2,
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemBuilder: (context, i) {
+                if (i == 0) {
+                  return ActionChip(
+                    avatar: Icon(
+                      Icons.photo_library_rounded,
+                      size: 16,
+                      color: _selectedColor,
+                    ),
+                    label: const Text('Galeri'),
+                    onPressed: () => _pickImage(ImageSource.gallery),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  );
+                }
+                if (i == 1) {
+                  return ActionChip(
+                    avatar: Icon(
+                      Icons.camera_alt_rounded,
+                      size: 16,
+                      color: _selectedColor,
+                    ),
+                    label: const Text('Kamera'),
+                    onPressed: () => _pickImage(ImageSource.camera),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  );
+                }
+                final preset = _presetPhotos[i - 2];
+                return GestureDetector(
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    setState(() {
+                      _imagePath = preset['path'];
+                      _useImage = true;
+                    });
+                  },
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: _imagePath == preset['path']
+                            ? _selectedColor
+                            : Colors.transparent,
+                        width: 2,
+                      ),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Image.asset(preset['path']!, fit: BoxFit.cover),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ],
+    );
   }
 
   @override
@@ -211,11 +690,13 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
   Widget _buildNameAndDetailsPage() {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
     final isValid = _titleCtrl.text.trim().isNotEmpty;
+    final hasImage = _useImage && _imagePath != null && _imagePath!.isNotEmpty;
 
     return WizardPage(
-      emoji: '🎯',
+      emoji: hasImage ? '🖼️' : '🎯',
       title: l10n.nameYourVision,
       subtitle: l10n.nameYourVisionSubtitle,
       bottomWidget: WizardNavigationButtons(
@@ -259,6 +740,69 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
               onSubmitted: (_) {
                 if (isValid) _nextPage();
               },
+            ),
+            const SizedBox(height: 18),
+
+            // Prominent Photo Selector Section
+            _buildPhotoSection(theme, colorScheme, isDark),
+            const SizedBox(height: 18),
+
+            // Accent Theme Color Row
+            Row(
+              children: [
+                Text(
+                  l10n.chooseColor,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.onSurface.withOpacity(0.7),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Divider(
+                    color: isDark ? Colors.white12 : Colors.black12,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 38,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: _colors.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (context, i) {
+                  final color = _colors[i];
+                  final isSelected = color.value == _selectedColor.value;
+                  return GestureDetector(
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      setState(() => _selectedColor = color);
+                    },
+                    child: Container(
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                        border: isSelected
+                            ? Border.all(color: Colors.white, width: 2.5)
+                            : null,
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: color.withValues(alpha: 0.4),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
             const SizedBox(height: 18),
 
@@ -383,90 +927,6 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
                   horizontal: 16,
                   vertical: 12,
                 ),
-              ),
-            ),
-            const SizedBox(height: 14),
-
-            // Optional: Quick Emoji Picker Row
-            SizedBox(
-              height: 48,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: _quickEmojis.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, i) {
-                  final emoji = _quickEmojis[i];
-                  final isSelected = emoji == _selectedEmoji && !_useImage;
-                  return GestureDetector(
-                    onTap: () {
-                      HapticFeedback.selectionClick();
-                      setState(() {
-                        _selectedEmoji = emoji;
-                        _useImage = false;
-                      });
-                    },
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? _selectedColor.withValues(alpha: 0.15)
-                            : (isDark
-                                ? Colors.white.withValues(alpha: 0.05)
-                                : const Color(0xFFF1F5F9)),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color:
-                              isSelected ? _selectedColor : Colors.transparent,
-                          width: 1.5,
-                        ),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(emoji, style: const TextStyle(fontSize: 22)),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Optional: Colors Row
-            SizedBox(
-              height: 38,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: _colors.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, i) {
-                  final color = _colors[i];
-                  final isSelected = color.value == _selectedColor.value;
-                  return GestureDetector(
-                    onTap: () {
-                      HapticFeedback.selectionClick();
-                      setState(() => _selectedColor = color);
-                    },
-                    child: Container(
-                      width: 34,
-                      height: 34,
-                      decoration: BoxDecoration(
-                        color: color,
-                        shape: BoxShape.circle,
-                        border: isSelected
-                            ? Border.all(color: Colors.white, width: 2.5)
-                            : null,
-                        boxShadow: isSelected
-                            ? [
-                                BoxShadow(
-                                  color: color.withValues(alpha: 0.4),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ]
-                            : null,
-                      ),
-                    ),
-                  );
-                },
               ),
             ),
           ],
@@ -610,7 +1070,7 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1B202D) : Colors.white,
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isDark
@@ -830,6 +1290,7 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
         children: [
           WizardPreviewCard(
             emoji: _selectedEmoji,
+            imagePath: _useImage ? _imagePath : null,
             title: _titleCtrl.text.trim(),
             subtitle: _descriptionCtrl.text.trim().isNotEmpty
                 ? _descriptionCtrl.text.trim()
@@ -842,7 +1303,7 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1B202D) : Colors.white,
+              color: Theme.of(context).colorScheme.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: _selectedColor.withValues(alpha: 0.2),
@@ -851,19 +1312,32 @@ class _VisionWizardScreenState extends State<VisionWizardScreen> {
             ),
             child: Column(
               children: [
-                Container(
-                  width: 54,
-                  height: 54,
-                  decoration: BoxDecoration(
-                    color: _selectedColor.withValues(alpha: 0.15),
-                    shape: BoxShape.circle,
+                if (_useImage && _imagePath != null && _imagePath!.isNotEmpty) ...[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 130,
+                      child: _imagePath!.startsWith('assets/')
+                          ? Image.asset(_imagePath!, fit: BoxFit.cover)
+                          : Image.file(File(_imagePath!), fit: BoxFit.cover),
+                    ),
                   ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    _selectedEmoji,
-                    style: const TextStyle(fontSize: 26),
+                ] else ...[
+                  Container(
+                    width: 54,
+                    height: 54,
+                    decoration: BoxDecoration(
+                      color: _selectedColor.withValues(alpha: 0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      _selectedEmoji,
+                      style: const TextStyle(fontSize: 26),
+                    ),
                   ),
-                ),
+                ],
                 const SizedBox(height: 12),
                 Text(
                   _titleCtrl.text.trim(),

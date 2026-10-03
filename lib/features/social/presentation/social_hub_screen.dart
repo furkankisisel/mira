@@ -457,9 +457,7 @@ class _QuickActionButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: isPrimary
-                    ? Colors.white
-                    : (isDark ? Colors.white : const Color(0xFF1E293B)),
+                color: isPrimary ? Colors.white : Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ],

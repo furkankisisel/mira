@@ -148,6 +148,19 @@ class RoomRepository {
         .update({'title': newTitle});
   }
 
+  /// Get a single room habit by ID.
+  Future<RoomHabit?> getRoomHabit(String roomId, String habitId) async {
+    final doc = await _roomsRef
+        .doc(roomId)
+        .collection('habits')
+        .doc(habitId)
+        .get();
+    if (doc.exists && doc.data() != null) {
+      return RoomHabit.fromFirestore(doc);
+    }
+    return null;
+  }
+
   /// Update full details of a room habit.
   Future<void> updateRoomHabit(String roomId, String habitId, Map<String, dynamic> data) async {
     await _roomsRef

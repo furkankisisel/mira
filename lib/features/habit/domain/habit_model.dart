@@ -99,6 +99,7 @@ class Habit {
   String? roomId;
   String? roomName;
   String? roomHabitCreatedBy;
+  int roomStreak = 0;
   bool get isRoomHabit => roomId != null && roomId!.isNotEmpty;
   bool isRoomHabitCreator(String? currentUid) =>
       isRoomHabit && currentUid != null && roomHabitCreatedBy == currentUid;

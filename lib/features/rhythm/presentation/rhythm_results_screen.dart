@@ -708,15 +708,14 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
     Color titleColor,
     Color subtitleColor,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
     final now = DateTime.now();
     final currentHourRatio = (now.hour + now.minute / 60.0) / 24.0;
 
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: isDark
-            ? const Color(0xFF131926).withValues(alpha: 0.85)
-            : Colors.white,
+        color: colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: isDark
@@ -757,8 +756,6 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
               ),
             ],
           ),
-          const SizedBox(height: 14),
-
           // Multi-colored 24h Bar with Current Position Pin
           Stack(
             clipBehavior: Clip.none,
@@ -880,11 +877,10 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
     required Color titleColor,
     required Color subtitleColor,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        color: isDark
-            ? const Color(0xFF131722).withValues(alpha: 0.85)
-            : Colors.white,
+        color: colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: primary.withValues(alpha: isDark ? 0.22 : 0.16),
@@ -1043,6 +1039,7 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
     _ChronoVisuals visuals,
     bool isDark,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.fromLTRB(
         20,
@@ -1051,9 +1048,9 @@ class _RhythmResultsScreenState extends State<RhythmResultsScreen>
         14 + MediaQuery.paddingOf(context).bottom,
       ),
       decoration: BoxDecoration(
-        color: isDark
-            ? const Color(0xFF0F172A).withValues(alpha: 0.88)
-            : Colors.white.withValues(alpha: 0.90),
+        color: colorScheme.surfaceContainerHigh.withValues(
+          alpha: isDark ? 0.94 : 0.92,
+        ),
         border: Border(
           top: BorderSide(
             color: isDark

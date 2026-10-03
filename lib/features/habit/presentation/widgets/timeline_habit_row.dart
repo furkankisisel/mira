@@ -437,22 +437,20 @@ class _TimelineHabitRowState extends State<TimelineHabitRow>
         habitColor.computeLuminance() < 0.5 ? Colors.white : Colors.black;
 
     // Subtle pastel background tint tailored to habit color
-    final cardBg = isDark
-        ? Color.alphaBlend(
-            habitColor.withOpacity(0.14), const Color(0xFF1E2132))
-        : Color.alphaBlend(
-            habitColor.withOpacity(0.08), const Color(0xFFFAFAFE));
+    final cardBg = Color.alphaBlend(
+      habitColor.withOpacity(isDark ? 0.14 : 0.08),
+      theme.colorScheme.surfaceContainerHigh,
+    );
 
     final cardBorder =
         isDark ? habitColor.withOpacity(0.22) : habitColor.withOpacity(0.12);
 
-    final titleColor = isDone
-        ? onCompleted
-        : (isDark ? const Color(0xFFF1F5F9) : const Color(0xFF1E2540));
+    final titleColor =
+        isDone ? onCompleted : theme.colorScheme.onSurface;
 
     final subtitleColor = isDone
         ? onCompleted.withValues(alpha: 0.85)
-        : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B));
+        : theme.colorScheme.onSurfaceVariant;
 
     return IntrinsicHeight(
       child: Row(

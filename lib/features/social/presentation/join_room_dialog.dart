@@ -219,7 +219,7 @@ class _JoinRoomDialogState extends State<JoinRoomDialog> {
                           letterSpacing: 6,
                           fontFamily: 'monospace',
                           color:
-                              isDark ? Colors.white : const Color(0xFF0F172A),
+                              Theme.of(context).colorScheme.onSurface,
                         ),
                         onChanged: (_) {
                           if (_error != null) setState(() => _error = null);

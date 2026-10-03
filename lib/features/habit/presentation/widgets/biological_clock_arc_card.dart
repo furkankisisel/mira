@@ -31,6 +31,7 @@ class _BiologicalClockArcCardState extends State<BiologicalClockArcCard>
   late final AnimationController _shimmerController;
   late final Animation<double> _shimmerAnimation;
 
+
   @override
   void initState() {
     super.initState();
@@ -55,6 +56,7 @@ class _BiologicalClockArcCardState extends State<BiologicalClockArcCard>
       parent: _shimmerController,
       curve: Curves.linear,
     );
+
   }
 
   @override
@@ -109,14 +111,15 @@ class _BiologicalClockArcCardState extends State<BiologicalClockArcCard>
   _RhythmPalette _getPalette(RhythmWindow window, bool isDark, BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final isTr = l10n.localeName.startsWith('tr');
+    final colorScheme = Theme.of(context).colorScheme;
     switch (window) {
       case RhythmWindow.focus:
         return _RhythmPalette(
           primary: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0284C7),
           secondary: isDark ? const Color(0xFF818CF8) : const Color(0xFF6366F1),
           glow: const Color(0xFF0EA5E9),
-          bgStart: isDark ? const Color(0xFF131726) : const Color(0xFFF3F7FD),
-          bgEnd: isDark ? const Color(0xFF1B2034) : const Color(0xFFFAFBFD),
+          bgStart: colorScheme.surfaceContainerHigh,
+          bgEnd: colorScheme.surface,
           pillBg: isDark
               ? const Color(0xFF0284C7).withValues(alpha: 0.16)
               : const Color(0xFF0284C7).withValues(alpha: 0.10),
@@ -128,8 +131,8 @@ class _BiologicalClockArcCardState extends State<BiologicalClockArcCard>
           primary: isDark ? const Color(0xFFFBBF24) : const Color(0xFFD97706),
           secondary: isDark ? const Color(0xFFFB923C) : const Color(0xFFEA580C),
           glow: const Color(0xFFF59E0B),
-          bgStart: isDark ? const Color(0xFF231B15) : const Color(0xFFFEF8EE),
-          bgEnd: isDark ? const Color(0xFF2E2218) : const Color(0xFFFFFDF8),
+          bgStart: colorScheme.surfaceContainerHigh,
+          bgEnd: colorScheme.surface,
           pillBg: isDark
               ? const Color(0xFFD97706).withValues(alpha: 0.16)
               : const Color(0xFFD97706).withValues(alpha: 0.10),
@@ -141,8 +144,8 @@ class _BiologicalClockArcCardState extends State<BiologicalClockArcCard>
           primary: isDark ? const Color(0xFFC084FC) : const Color(0xFF9333EA),
           secondary: isDark ? const Color(0xFFF472B6) : const Color(0xFFDB2777),
           glow: const Color(0xFFA855F7),
-          bgStart: isDark ? const Color(0xFF1E172B) : const Color(0xFFFAF4FD),
-          bgEnd: isDark ? const Color(0xFF281E38) : const Color(0xFFFCF8FE),
+          bgStart: colorScheme.surfaceContainerHigh,
+          bgEnd: colorScheme.surface,
           pillBg: isDark
               ? const Color(0xFF9333EA).withValues(alpha: 0.16)
               : const Color(0xFF9333EA).withValues(alpha: 0.10),
@@ -154,8 +157,8 @@ class _BiologicalClockArcCardState extends State<BiologicalClockArcCard>
           primary: isDark ? const Color(0xFFA5B4FC) : const Color(0xFF4F46E5),
           secondary: isDark ? const Color(0xFF93C5FD) : const Color(0xFF2563EB),
           glow: const Color(0xFF6366F1),
-          bgStart: isDark ? const Color(0xFF141629) : const Color(0xFFF2F4FD),
-          bgEnd: isDark ? const Color(0xFF1B1E37) : const Color(0xFFF9FAFF),
+          bgStart: colorScheme.surfaceContainerHigh,
+          bgEnd: colorScheme.surface,
           pillBg: isDark
               ? const Color(0xFF4F46E5).withValues(alpha: 0.16)
               : const Color(0xFF4F46E5).withValues(alpha: 0.10),
@@ -184,13 +187,9 @@ class _BiologicalClockArcCardState extends State<BiologicalClockArcCard>
         final dayProgress = _calculateDayProgress();
         final palette = _getPalette(currentWindow, isDark, context);
 
-        final titleColor = isDark
-            ? const Color(0xFFF8FAFC)
-            : const Color(0xFF0F172A);
+        final titleColor = theme.colorScheme.onSurface;
 
-        final subtitleColor = isDark
-            ? const Color(0xFF94A3B8)
-            : const Color(0xFF475569);
+        final subtitleColor = theme.colorScheme.onSurfaceVariant;
 
         return AnimatedBuilder(
           animation: Listenable.merge([_pulseAnimation, _shimmerAnimation]),

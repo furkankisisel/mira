@@ -60,6 +60,11 @@ class _StatsContentState extends State<_StatsContent> {
 
   void _listenProgress() {
     for (final h in widget.habits) {
+      final cached = RoomService.instance
+          .getHabitProgressInMemory(widget.roomId, h.id);
+      if (cached.isNotEmpty) {
+        _progressMap[h.id] = cached;
+      }
       final sub = RoomService.instance
           .streamHabitProgress(widget.roomId, h.id)
           .listen((list) {

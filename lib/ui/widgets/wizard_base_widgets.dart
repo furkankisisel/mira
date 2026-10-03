@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../l10n/app_localizations.dart';
@@ -619,6 +620,7 @@ class WizardPreviewCard extends StatelessWidget {
   const WizardPreviewCard({
     super.key,
     required this.emoji,
+    this.imagePath,
     required this.title,
     this.subtitle,
     this.tags = const [],
@@ -626,6 +628,7 @@ class WizardPreviewCard extends StatelessWidget {
   });
 
   final String emoji;
+  final String? imagePath;
   final String title;
   final String? subtitle;
   final List<String> tags;
@@ -636,6 +639,12 @@ class WizardPreviewCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
+
+    final hasImage = imagePath != null && imagePath!.isNotEmpty;
+    final isFile = hasImage &&
+        (imagePath!.startsWith('/') ||
+            imagePath!.contains('\\') ||
+            imagePath!.contains(':\\'));
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
@@ -667,7 +676,7 @@ class WizardPreviewCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Emoji Container with rim border
+          // Photo or Emoji Container with rim border
           Container(
             width: 64,
             height: 64,
@@ -679,9 +688,28 @@ class WizardPreviewCard extends StatelessWidget {
                 width: 1.2,
               ),
             ),
-            child: Center(
-              child: Text(emoji, style: const TextStyle(fontSize: 32)),
-            ),
+            clipBehavior: Clip.antiAlias,
+            child: hasImage
+                ? (isFile
+                    ? Image.file(
+                        File(imagePath!),
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Center(
+                          child:
+                              Text(emoji, style: const TextStyle(fontSize: 32)),
+                        ),
+                      )
+                    : Image.asset(
+                        imagePath!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Center(
+                          child:
+                              Text(emoji, style: const TextStyle(fontSize: 32)),
+                        ),
+                      ))
+                : Center(
+                    child: Text(emoji, style: const TextStyle(fontSize: 32)),
+                  ),
           ),
           const SizedBox(width: 16),
           Expanded(
