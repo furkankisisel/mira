@@ -30,27 +30,31 @@ class NotificationService {
     _l10n = l10n;
   }
 
-  static const String _timerChannelId = 'mira_timer_channel';
+  static const String _timerChannelId = 'mira_timer_channel_v2';
   static const String _timerChannelName = 'Timer Notifications';
   static const String _timerChannelDescription =
       'Live timer notifications with controls';
   static const int _timerNotificationId = 9999;
 
-  static const String _timerCompletedChannelId = 'mira_timer_completed_channel';
+  static const String _timerCompletedChannelId = 'mira_timer_completed_channel_v2';
   static const String _timerCompletedChannelName = 'Timer Completed Alerts';
   static const String _timerCompletedChannelDescription =
       'Sound and vibration alerts when a countdown or pomodoro session completes';
   static const int _timerCompletedNotificationId = 9998;
 
-  static const String _socialChannelId = 'social_interactions';
+  static const String _socialChannelId = 'social_interactions_v2';
   static const String _socialChannelName = 'Oda ve Sosyal Bildirimler';
   static const String _socialChannelDescription =
       'Odalardaki notlar, dürtmeler ve sosyal etkileşim bildirimleri';
 
+  static const String _notificationIcon = 'ic_stat_mira';
+  static const String _largeIcon = 'ic_notification_large_v2';
+  static const Color _notificationColor = Color(0xFF2E7D32);
+
   Future<void> initialize() async {
     await _configureLocalTimeZone();
 
-    const androidSettings = AndroidInitializationSettings('ic_stat_mira_v2');
+    const androidSettings = AndroidInitializationSettings('@drawable/ic_stat_mira');
     const iosSettings = DarwinInitializationSettings(
       requestSoundPermission: true,
       requestBadgePermission: true,
@@ -139,8 +143,11 @@ class NotificationService {
       print('🕒 Local timezone set to $displayName');
     } catch (e) {
       print(
-        '⚠️ Failed to set local timezone from device. Using default. Error: $e',
+        '⚠️ Failed to set local timezone from device. Using UTC fallback. Error: $e',
       );
+      try {
+        tz.setLocalLocation(tz.getLocation('UTC'));
+      } catch (_) {}
     }
   }
 
@@ -195,6 +202,7 @@ class NotificationService {
   String? _lastTitle;
   String? _lastBody;
   bool? _lastIsRunning;
+  int? _lastWhen;
 
   Future<void> showTimerNotification({
     required String title,
@@ -205,20 +213,20 @@ class NotificationService {
     bool chronometerCountDown = false,
   }) async {
     if (!_initialized) return;
+    if (!_shouldShowTimerNotification()) return;
 
     // Optimization check (skip if identical update, mostly for pause/resume text changes)
     if (_lastTitle == title &&
         _lastBody == body &&
-        _lastIsRunning == isRunning) {
-      // NOTE: When using chronometer, we DON'T update repeatedly, so this check is stricter.
-      // But if 'when' changed (re-sync), we should proceed.
-      // For now, simple dedupe is fine as we won't call this often.
+        _lastIsRunning == isRunning &&
+        _lastWhen == when) {
       return;
     }
 
     _lastTitle = title;
     _lastBody = body;
     _lastIsRunning = isRunning;
+    _lastWhen = when;
 
     final androidDetails = AndroidNotificationDetails(
       _timerChannelId,
@@ -226,6 +234,8 @@ class NotificationService {
       channelDescription: _timerChannelDescription,
       importance: Importance.max, // Max importance for best visibility
       priority: Priority.max, // Max priority
+      icon: _notificationIcon,
+      color: _notificationColor,
 
       ongoing: true,
       autoCancel: false,
@@ -238,7 +248,7 @@ class NotificationService {
       chronometerCountDown: chronometerCountDown,
       when: when, // Milliseconds since epoch
       // The chronometer is the useful time indicator; a separate timestamp is noise.
-      showWhen: false,
+      showWhen: true,
       subText: 'Mira  •  Odak sayacı',
       // Use BigTextStyle for better text visibility instead of MediaStyle
       styleInformation: BigTextStyleInformation(
@@ -251,9 +261,7 @@ class NotificationService {
         htmlFormatSummaryText: false,
       ),
 
-      largeIcon: const DrawableResourceAndroidBitmap(
-        '@drawable/ic_notification_large_v2',
-      ),
+      largeIcon: const DrawableResourceAndroidBitmap(_largeIcon),
       actions: <AndroidNotificationAction>[
         if (isRunning)
           AndroidNotificationAction(
@@ -292,15 +300,49 @@ class NotificationService {
       iOS: iosDetails,
     );
 
-    await _plugin.show(
-      _timerNotificationId,
-      title,
-      // If using chronometer, body text is usually secondary.
-      // Android shows chronometer next to title/content info.
-      body,
-      details,
-      payload: 'timer',
-    );
+    try {
+      await _plugin.show(
+        _timerNotificationId,
+        title,
+        body,
+        details,
+        payload: 'timer',
+      );
+    } catch (e) {
+      debugPrint('⚠️ Error displaying timer notification: $e');
+      try {
+        final fallbackDetails = NotificationDetails(
+          android: AndroidNotificationDetails(
+            _timerChannelId,
+            _timerChannelName,
+            channelDescription: _timerChannelDescription,
+            importance: Importance.max,
+            priority: Priority.max,
+            icon: _notificationIcon,
+            color: _notificationColor,
+            ongoing: true,
+            autoCancel: false,
+            playSound: false,
+            enableVibration: false,
+            showWhen: true,
+            usesChronometer: usesChronometer,
+            chronometerCountDown: chronometerCountDown,
+            when: when,
+            subText: 'Mira • Odak Sayacı',
+          ),
+          iOS: iosDetails,
+        );
+        await _plugin.show(
+          _timerNotificationId,
+          title,
+          body,
+          fallbackDetails,
+          payload: 'timer',
+        );
+      } catch (e2) {
+        debugPrint('❌ Fatal timer notification error: $e2');
+      }
+    }
   }
 
   /// High-priority alert notification when a countdown or pomodoro session finishes.
@@ -319,14 +361,14 @@ class NotificationService {
       channelDescription: _timerCompletedChannelDescription,
       importance: Importance.max,
       priority: Priority.max,
+      icon: _notificationIcon,
+      color: _notificationColor,
       playSound: true,
       enableVibration: true,
       vibrationPattern: Int64List.fromList([0, 500, 250, 500, 250, 500]),
       autoCancel: true,
       ongoing: false,
-      largeIcon: const DrawableResourceAndroidBitmap(
-        '@drawable/ic_notification_large_v2',
-      ),
+      largeIcon: const DrawableResourceAndroidBitmap(_largeIcon),
       subText: 'Mira • Sayaç tamamlandı',
       styleInformation: BigTextStyleInformation(
         body,
@@ -345,13 +387,45 @@ class NotificationService {
       iOS: iosDetails,
     );
 
-    await _plugin.show(
-      _timerCompletedNotificationId,
-      title,
-      body,
-      details,
-      payload: 'timer_completed',
-    );
+    try {
+      await _plugin.show(
+        _timerCompletedNotificationId,
+        title,
+        body,
+        details,
+        payload: 'timer_completed',
+      );
+    } catch (e) {
+      debugPrint('⚠️ Error displaying timer completed notification: $e');
+      try {
+        final fallbackDetails = NotificationDetails(
+          android: AndroidNotificationDetails(
+            _timerCompletedChannelId,
+            _timerCompletedChannelName,
+            channelDescription: _timerCompletedChannelDescription,
+            importance: Importance.max,
+            priority: Priority.max,
+            icon: _notificationIcon,
+            color: _notificationColor,
+            playSound: true,
+            enableVibration: true,
+            autoCancel: true,
+            ongoing: false,
+            subText: 'Mira • Sayaç Tamamlandı',
+          ),
+          iOS: iosDetails,
+        );
+        await _plugin.show(
+          _timerCompletedNotificationId,
+          title,
+          body,
+          fallbackDetails,
+          payload: 'timer_completed',
+        );
+      } catch (e2) {
+        debugPrint('❌ Fatal timer completed notification error: $e2');
+      }
+    }
   }
 
   Future<void> cancelTimerNotification() async {
@@ -359,6 +433,7 @@ class NotificationService {
     _lastTitle = null;
     _lastBody = null;
     _lastIsRunning = null;
+    _lastWhen = null;
     await _plugin.cancel(_timerNotificationId);
   }
 
@@ -425,6 +500,32 @@ class NotificationService {
         (_settingsRepo?.socialAlerts ?? true);
   }
 
+  bool _shouldShowTimerNotification() {
+    return (_settingsRepo?.enabled ?? true) &&
+        (_settingsRepo?.timerEnabled ?? true);
+  }
+
+  Future<bool> requestPermission() async {
+    final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    final androidGranted =
+        await androidPlugin?.requestNotificationsPermission() ?? false;
+    final iosPlugin = _plugin.resolvePlatformSpecificImplementation<
+        IOSFlutterLocalNotificationsPlugin>();
+    final iosGranted = await iosPlugin?.requestPermissions(
+      alert: true,
+      badge: true,
+      sound: true,
+    ) ?? false;
+    return androidGranted || iosGranted;
+  }
+
+  Future<bool> areNotificationsEnabled() async {
+    final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    return await androidPlugin?.areNotificationsEnabled() ?? true;
+  }
+
   bool _shouldPlaySound() {
     return (_settingsRepo?.enabled ?? true) && (_settingsRepo?.sound ?? true);
   }
@@ -489,11 +590,11 @@ class NotificationService {
       channelDescription: 'Daily reminders for your habits',
       importance: Importance.high,
       priority: Priority.high,
+      icon: _notificationIcon,
+      color: _notificationColor,
       playSound: playSound,
       enableVibration: vibrate,
-      largeIcon: const DrawableResourceAndroidBitmap(
-        '@drawable/ic_notification_large_v2',
-      ),
+      largeIcon: const DrawableResourceAndroidBitmap(_largeIcon),
       // Makes the notification understandable even in its collapsed state.
       subText: 'Mira • Alışkanlık hatırlatıcısı',
     );
@@ -590,14 +691,14 @@ class NotificationService {
       _socialChannelId,
       _socialChannelName,
       channelDescription: _socialChannelDescription,
-      importance: Importance.high,
-      priority: Priority.high,
+      importance: Importance.max,
+      priority: Priority.max,
+      icon: _notificationIcon,
+      color: _notificationColor,
       playSound: playSound,
       enableVibration: vibrate,
       subText: subText ?? 'Mira • Sosyal Oda',
-      largeIcon: const DrawableResourceAndroidBitmap(
-        '@drawable/ic_notification_large_v2',
-      ),
+      largeIcon: const DrawableResourceAndroidBitmap(_largeIcon),
       styleInformation: BigTextStyleInformation(
         body,
         contentTitle: title,
@@ -615,12 +716,36 @@ class NotificationService {
       iOS: iosDetails,
     );
 
-    await _plugin.show(
-      id,
-      title,
-      body,
-      details,
-      payload: payload,
-    );
+    try {
+      await _plugin.show(
+        id,
+        title,
+        body,
+        details,
+        payload: payload,
+      );
+    } catch (e) {
+      debugPrint('⚠️ Error showing social notification: $e');
+      try {
+        final fallbackDetails = NotificationDetails(
+          android: AndroidNotificationDetails(
+            _socialChannelId,
+            _socialChannelName,
+            channelDescription: _socialChannelDescription,
+            importance: Importance.max,
+            priority: Priority.max,
+            icon: _notificationIcon,
+            color: _notificationColor,
+            playSound: playSound,
+            enableVibration: vibrate,
+            subText: subText ?? 'Mira • Sosyal Oda',
+          ),
+          iOS: iosDetails,
+        );
+        await _plugin.show(id, title, body, fallbackDetails, payload: payload);
+      } catch (e2) {
+        debugPrint('❌ Fatal social notification error: $e2');
+      }
+    }
   }
 }

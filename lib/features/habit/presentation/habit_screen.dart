@@ -2587,6 +2587,7 @@ class HabitScreenState extends State<HabitScreen>
               roomId: habit.roomId!,
               habitId: habit.id,
               isCompleted: !dayCompleted,
+              date: _selected,
             );
           }
           return;
@@ -2616,6 +2617,7 @@ class HabitScreenState extends State<HabitScreen>
             roomId: habit.roomId!,
             habitId: habit.id,
             value: newValue,
+            date: _selected,
           );
           return;
         }
@@ -2662,6 +2664,7 @@ class HabitScreenState extends State<HabitScreen>
             habitId: habit.id,
             subtaskId: subtaskId,
             isCompleted: completed,
+            date: _selected,
           );
           return;
         }
@@ -4381,6 +4384,7 @@ class HabitScreenState extends State<HabitScreen>
                                         habitId: habit.id,
                                         subtaskId: subtaskId,
                                         isCompleted: completed,
+                                        date: _selected,
                                       );
                                       return;
                                     }
@@ -4424,6 +4428,7 @@ class HabitScreenState extends State<HabitScreen>
                                           roomId: habit.roomId!,
                                           habitId: habit.id,
                                           isCompleted: !dayCompleted,
+                                          date: _selected,
                                         );
                                       }
                                       return;
@@ -4468,6 +4473,7 @@ class HabitScreenState extends State<HabitScreen>
                                         roomId: habit.roomId!,
                                         habitId: habit.id,
                                         value: newValue,
+                                        date: _selected,
                                       );
                                       return;
                                     }

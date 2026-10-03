@@ -34,6 +34,9 @@ class RoomService extends ChangeNotifier {
   final Set<String> _knownPostIds = {};
   final Set<String> _initializedNudgeRooms = {};
   final Set<String> _knownNudgeIds = {};
+  final Map<String, Map<String, int>> _lastKnownMemberValues = {};
+  final Map<String, Map<String, bool>> _lastKnownMemberCompleted = {};
+  final Set<String> _initializedHabitsForNotifications = {};
 
   List<Room> _myRooms = [];
   final Map<String, List<RoomHabit>> _roomHabitsMap = {}; // roomId -> habits
@@ -72,21 +75,23 @@ class RoomService extends ChangeNotifier {
 
   /// Returns room habits formatted as Habit objects that are valid for [date].
   List<Habit> getRoomHabitsForDate(DateTime date) {
-    return _cachedHabits.where((h) {
-      try {
-        final start = DateTime.parse(h.startDate);
-        final dayOnly = DateTime(date.year, date.month, date.day);
-        final startOnly = DateTime(start.year, start.month, start.day);
-        if (dayOnly.isBefore(startOnly)) return false;
-
-        if (h.endDate != null) {
-          final end = DateTime.parse(h.endDate!);
-          final endOnly = DateTime(end.year, end.month, end.day);
-          if (dayOnly.isAfter(endOnly)) return false;
-        }
-      } catch (_) {}
-      return true;
-    }).toList();
+    final dayOnly = DateTime(date.year, date.month, date.day);
+    final list = <Habit>[];
+    for (final room in _myRooms) {
+      final habits = _roomHabitsMap[room.id] ?? [];
+      for (final habit in habits) {
+        if (!habit.isScheduledForDate(dayOnly)) continue;
+        final progress = _memberProgressMap['${room.id}:${habit.id}'];
+        final h = habit.toHabit(
+          myProgress: progress,
+          roomId: room.id,
+          roomName: room.name,
+          date: date,
+        );
+        list.add(h);
+      }
+    }
+    return list;
   }
 
   // ─── Helpers ────────────────────────────────────────────
@@ -112,6 +117,9 @@ class RoomService extends ChangeNotifier {
 
   void _initAuthListener() {
     _authSub?.cancel();
+    if (_currentUid != null) {
+      _startRoomsSync();
+    }
     _authSub = FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) {
         _startRoomsSync();
@@ -144,6 +152,9 @@ class RoomService extends ChangeNotifier {
     _nudgesSubs.clear();
     _initializedNudgeRooms.clear();
     _knownNudgeIds.clear();
+    _lastKnownMemberValues.clear();
+    _lastKnownMemberCompleted.clear();
+    _initializedHabitsForNotifications.clear();
     _myRooms.clear();
     _roomHabitsMap.clear();
     _memberProgressMap.clear();
@@ -208,7 +219,7 @@ class RoomService extends ChangeNotifier {
                 // Only notify if post is from another member and recent (< 10 mins)
                 if (post.authorUid != uid) {
                   final diff = DateTime.now().difference(post.createdAt).abs();
-                  if (diff.inMinutes < 10) {
+                  if (diff.inMinutes < 120) {
                     final notifId = post.id.hashCode.abs() % 2147483647;
                     final currentRoomName =
                         findRoomById(room.id)?.name ?? room.name;
@@ -245,7 +256,7 @@ class RoomService extends ChangeNotifier {
                 // Only notify if sent by someone else, unread, and recent (< 10 mins)
                 if (nudge.fromUid != uid && !nudge.isRead) {
                   final diff = DateTime.now().difference(nudge.createdAt).abs();
-                  if (diff.inMinutes < 10) {
+                  if (diff.inMinutes < 120) {
                     final notifId = nudge.id.hashCode.abs() % 2147483647;
                     final currentRoomName =
                         findRoomById(room.id)?.name ?? room.name;
@@ -298,6 +309,81 @@ class RoomService extends ChangeNotifier {
                   } else {
                     _memberProgressMap.remove(progressKey);
                   }
+
+                  // Competitive Progress Notifications
+                  final isFirstProgressLoad =
+                      !_initializedHabitsForNotifications.contains(progressKey);
+                  if (isFirstProgressLoad) {
+                    final values = <String, int>{};
+                    final completed = <String, bool>{};
+                    for (final p in allProgress) {
+                      values[p.uid] = p.todayValue;
+                      completed[p.uid] = p.isCompletedToday;
+                    }
+                    _lastKnownMemberValues[progressKey] = values;
+                    _lastKnownMemberCompleted[progressKey] = completed;
+                    _initializedHabitsForNotifications.add(progressKey);
+                  } else {
+                    final prevValues =
+                        _lastKnownMemberValues[progressKey] ??= {};
+                    final prevCompletedMap =
+                        _lastKnownMemberCompleted[progressKey] ??= {};
+
+                    for (final p in allProgress) {
+                      if (p.uid == uid) continue; // Don't notify self
+
+                      final prevComp = prevCompletedMap[p.uid] ?? false;
+                      final prevVal = prevValues[p.uid] ?? 0;
+                      final nowComp = p.isCompletedToday;
+                      final nowVal = p.todayValue;
+                      final memberName = p.displayName.isNotEmpty
+                          ? p.displayName
+                          : 'Bir üye';
+                      final currentRoomName =
+                          findRoomById(room.id)?.name ?? room.name;
+
+                      // Completed habit
+                      if (!prevComp && nowComp) {
+                        final notifId =
+                            ('comp_${room.id}_${habit.id}_${p.uid}_${DateTime.now().minute}')
+                                    .hashCode
+                                    .abs() %
+                                2147483647;
+                        NotificationService.instance.showSocialNotification(
+                          id: notifId,
+                          title: '🏆 $memberName hedefini tamamladı!',
+                          body:
+                              '$currentRoomName odasında "${habit.title}" görevini bitirdi! Sıralamayı kaptırma, sen de yap! 🔥',
+                          payload: 'room:${room.id}',
+                          subText: 'Mira • $currentRoomName Rekabeti',
+                        );
+                      }
+                      // Progress step in numerical/timer habit
+                      else if (nowVal > prevVal && !nowComp) {
+                        final diff = nowVal - prevVal;
+                        final unit = (habit.unit != null && habit.unit!.isNotEmpty)
+                            ? ' ${habit.unit}'
+                            : '';
+                        final notifId =
+                            ('prog_${room.id}_${habit.id}_${p.uid}_${DateTime.now().minute}')
+                                    .hashCode
+                                    .abs() %
+                                2147483647;
+                        NotificationService.instance.showSocialNotification(
+                          id: notifId,
+                          title: '⚡ $memberName hız kesmiyor!',
+                          body:
+                              '$currentRoomName odasında "${habit.title}" için +$diff$unit ilerledi ($nowVal/${habit.targetCount}). Rekabete katıl! 🚀',
+                          payload: 'room:${room.id}',
+                          subText: 'Mira • $currentRoomName Rekabeti',
+                        );
+                      }
+
+                      prevValues[p.uid] = nowVal;
+                      prevCompletedMap[p.uid] = nowComp;
+                    }
+                  }
+
                   _recomputeCachedHabits();
                   notifyListeners();
                 });
@@ -496,6 +582,7 @@ class RoomService extends ChangeNotifier {
     Duration? timerDuration,
     String? subtaskId,
     bool? subtaskCompleted,
+    DateTime? date,
   }) async {
     final uid = _currentUid;
     if (uid == null) return;
@@ -507,8 +594,20 @@ class RoomService extends ChangeNotifier {
     if (actualHabit == null) return;
 
     final now = DateTime.now();
+    final todayDate = DateTime(now.year, now.month, now.day);
+    final targetDate = date ?? now;
+    final targetDayOnly =
+        DateTime(targetDate.year, targetDate.month, targetDate.day);
+
+    // Defense-in-depth: Never allow recording progress for future dates!
+    if (targetDayOnly.isAfter(todayDate)) {
+      debugPrint('[RoomService] Blocked attempt to update progress for future date: $targetDate');
+      return;
+    }
+
+    final isToday = targetDayOnly == todayDate;
     final dayKey =
-        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+        '${targetDayOnly.year}-${targetDayOnly.month.toString().padLeft(2, '0')}-${targetDayOnly.day.toString().padLeft(2, '0')}';
 
     final progressKey = '$roomId:${actualHabit.id}';
     final prev = _memberProgressMap[progressKey];
@@ -608,28 +707,30 @@ class RoomService extends ChangeNotifier {
       completedSubtaskIds: completedSubtasks,
     );
 
-    // 1. Optimistically update local memory immediately (0 ms UI response)
-    _memberProgressMap[progressKey] = progress;
-    final currentList =
-        List<MemberProgress>.from(_allHabitProgressMap[progressKey] ?? []);
-    final idx = currentList.indexWhere((p) => p.uid == uid);
-    if (idx != -1) {
-      currentList[idx] = progress;
-    } else {
-      currentList.add(progress);
+    if (isToday) {
+      // 1. Optimistically update local memory immediately (0 ms UI response)
+      _memberProgressMap[progressKey] = progress;
+      final currentList =
+          List<MemberProgress>.from(_allHabitProgressMap[progressKey] ?? []);
+      final idx = currentList.indexWhere((p) => p.uid == uid);
+      if (idx != -1) {
+        currentList[idx] = progress;
+      } else {
+        currentList.add(progress);
+      }
+      _allHabitProgressMap[progressKey] = currentList;
+
+      _recomputeCachedHabits();
+      notifyListeners();
+
+      // 2. Persist to Firestore in the background
+      _repo.updateMemberProgress(
+        roomId: roomId,
+        habitId: actualHabit.id,
+        uid: uid,
+        progress: progress,
+      );
     }
-    _allHabitProgressMap[progressKey] = currentList;
-
-    _recomputeCachedHabits();
-    notifyListeners();
-
-    // 2. Persist to Firestore in the background
-    _repo.updateMemberProgress(
-      roomId: roomId,
-      habitId: actualHabit.id,
-      uid: uid,
-      progress: progress,
-    );
 
     try {
       final historyEntry = ProgressHistoryEntry(
@@ -638,6 +739,7 @@ class RoomService extends ChangeNotifier {
         value: newValue,
         target: target,
         isCompleted: newCompleted,
+        completedSubtaskIds: completedSubtasks,
       );
       _repo.saveProgressHistory(
         roomId: roomId,
@@ -651,14 +753,16 @@ class RoomService extends ChangeNotifier {
   Future<void> addTimerProgressToRoomHabit(
     String roomId,
     String habitId,
-    Duration duration,
-  ) async {
+    Duration duration, {
+    DateTime? date,
+  }) async {
     final habit = findRoomHabit(roomId, habitId);
     await updateMyRoomHabitProgress(
       roomId: roomId,
       habit: habit,
       habitId: habitId,
       timerDuration: duration,
+      date: date,
     );
   }
 
@@ -669,6 +773,7 @@ class RoomService extends ChangeNotifier {
     String? habitId,
     required String subtaskId,
     required bool isCompleted,
+    DateTime? date,
   }) {
     return updateMyRoomHabitProgress(
       roomId: roomId,
@@ -676,8 +781,21 @@ class RoomService extends ChangeNotifier {
       habitId: habitId,
       subtaskId: subtaskId,
       subtaskCompleted: isCompleted,
+      date: date,
     );
   }
+
+  /// Stream of progress history for all members on a habit for a specific date.
+  Stream<List<ProgressHistoryEntry>> streamHabitProgressHistoryForDate({
+    required String roomId,
+    required String habitId,
+    required String date,
+  }) =>
+      _repo.streamHabitProgressHistoryForDate(
+        roomId: roomId,
+        habitId: habitId,
+        date: date,
+      );
 
   // ─── Notes ──────────────────────────────────────────────
 

@@ -127,24 +127,31 @@ void main() {
   }
   print('✅ Saved Android Large Notification Icons with smaller pillars');
 
-  // 7. Raster Status Bar Icons (scaled down to 13.5dp box)
+  // 7. Raster Status Bar Icons (high-fidelity origami silhouette)
+  final monoMaster = _createOrigamiSilhouette(pillarsLight);
   final statSizes = {
-    'mdpi': 24,
-    'hdpi': 36,
-    'xhdpi': 48,
-    'xxhdpi': 72,
-    'xxxhdpi': 96,
+    'mdpi': {'canvas': 24, 'targetW': 20},
+    'hdpi': {'canvas': 36, 'targetW': 30},
+    'xhdpi': {'canvas': 48, 'targetW': 40},
+    'xxhdpi': {'canvas': 72, 'targetW': 60},
+    'xxxhdpi': {'canvas': 96, 'targetW': 80},
   };
 
   for (final entry in statSizes.entries) {
     final density = entry.key;
-    final size = entry.value;
-    final statIcon = _createMonochromeNotificationRaster(size, scaleFactor: 0.75);
+    final canvasSize = entry.value['canvas']!;
+    final targetW = entry.value['targetW']!;
+    final statIcon = _createCenteredPillars(pillars: monoMaster, canvasSize: canvasSize, pillarsTargetWidth: targetW);
 
+    _savePng(statIcon, 'android/app/src/main/res/drawable-$density/ic_stat_mira.png');
     _savePng(statIcon, 'android/app/src/main/res/drawable-$density/ic_stat_mira_v2.png');
     _savePng(statIcon, 'android/app/src/main/res/drawable-$density/ic_stat_miralogo.png');
   }
-  print('✅ Saved Status Bar Raster Icons (Refined)');
+  final defaultSmallIcon = _createCenteredPillars(pillars: monoMaster, canvasSize: 96, pillarsTargetWidth: 80);
+  _savePng(defaultSmallIcon, 'android/app/src/main/res/drawable/ic_stat_mira.png');
+  _savePng(defaultSmallIcon, 'android/app/src/main/res/drawable/ic_stat_mira_v2.png');
+  _savePng(defaultSmallIcon, 'android/app/src/main/res/drawable/ic_stat_miralogo.png');
+  print('✅ Saved Status Bar Raster Icons (Refined Origami Silhouette)');
 
   // 8. Splash Screen Icons for Android 12+ and Native LaunchScreen
   final splashSizes = {
@@ -325,86 +332,46 @@ img.Image _createNotificationLargeIcon({
   return out;
 }
 
-img.Image _createMonochromeNotificationRaster(int size, {double scaleFactor = 0.75}) {
-  final out = img.Image(width: size, height: size, numChannels: 4);
-  for (int y = 0; y < size; y++) {
-    for (int x = 0; x < size; x++) {
-      out.setPixelRgba(x, y, 0, 0, 0, 0);
-    }
-  }
+img.Image _createOrigamiSilhouette(img.Image cropped) {
+  final isFoldMap = List.generate(
+    cropped.height,
+    (y) => List.generate(cropped.width, (x) {
+      final p = cropped.getPixel(x, y);
+      if (p.a <= 25) return null;
+      return (p.r > 100 && p.g > 120);
+    }),
+  );
 
-  final scale = (size / 24.0) * scaleFactor;
-  // Offset to center the scaled pillars in the viewport
-  final centerOffset = (size - 24.0 * scale) / 2.0;
+  final out = img.Image(width: cropped.width, height: cropped.height, numChannels: 4);
+  const r = 2;
 
-  bool inPillar(double vx, double vy) {
-    // Left Pillar: x: 3.0..8.0, y: 3.5..20.5, r=2.5
-    if (vx >= 3.0 && vx <= 8.0 && vy >= 3.5 && vy <= 20.5) {
-      if (vy < 6.0) {
-        final dx = vx - 5.5;
-        final dy = vy - 6.0;
-        if (dx * dx + dy * dy > 6.25) return false;
+  for (int y = 0; y < cropped.height; y++) {
+    for (int x = 0; x < cropped.width; x++) {
+      final myFold = isFoldMap[y][x];
+      if (myFold == null) {
+        out.setPixelRgba(x, y, 0, 0, 0, 0);
+        continue;
       }
-      if (vy > 18.0) {
-        final dx = vx - 5.5;
-        final dy = vy - 18.0;
-        if (dx * dx + dy * dy > 6.25) return false;
-      }
-      final cutY = 5.7 + (vx - 3.0) * 0.7;
-      if (vy >= cutY && vy <= cutY + 1.3) return false;
-      return true;
-    }
 
-    // Middle Pillar: x: 9.5..14.5, y: 8.0..20.5, r=2.5
-    if (vx >= 9.5 && vx <= 14.5 && vy >= 8.0 && vy <= 20.5) {
-      if (vy < 10.5) {
-        final dx = vx - 12.0;
-        final dy = vy - 10.5;
-        if (dx * dx + dy * dy > 6.25) return false;
-      }
-      if (vy > 18.0) {
-        final dx = vx - 12.0;
-        final dy = vy - 18.0;
-        if (dx * dx + dy * dy > 6.25) return false;
-      }
-      final cutY = 11.7 + (vx - 9.5) * 0.7;
-      if (vy >= cutY && vy <= cutY + 1.3) return false;
-      return true;
-    }
-
-    // Right Pillar: x: 16.0..21.0, y: 3.5..20.5, r=2.5
-    if (vx >= 16.0 && vx <= 21.0 && vy >= 3.5 && vy <= 20.5) {
-      if (vy < 6.0) {
-        final dx = vx - 18.5;
-        final dy = vy - 6.0;
-        if (dx * dx + dy * dy > 6.25) return false;
-      }
-      if (vy > 18.0) {
-        final dx = vx - 18.5;
-        final dy = vy - 18.0;
-        if (dx * dx + dy * dy > 6.25) return false;
-      }
-      final cutY = 9.2 - (vx - 16.0) * 0.7;
-      if (vy >= cutY && vy <= cutY + 1.3) return false;
-      return true;
-    }
-
-    return false;
-  }
-
-  for (int py = 0; py < size; py++) {
-    for (int px = 0; px < size; px++) {
-      int hits = 0;
-      for (double sy = 0.17; sy < 1.0; sy += 0.33) {
-        for (double sx = 0.17; sx < 1.0; sx += 0.33) {
-          final vx = (px + sx - centerOffset) / scale;
-          final vy = (py + sy - centerOffset) / scale;
-          if (inPillar(vx, vy)) hits++;
+      bool nearSeam = false;
+      for (int dy = -r; dy <= r && !nearSeam; dy++) {
+        for (int dx = -r; dx <= r && !nearSeam; dx++) {
+          final ny = y + dy;
+          final nx = x + dx;
+          if (ny >= 0 && ny < cropped.height && nx >= 0 && nx < cropped.width) {
+            final other = isFoldMap[ny][nx];
+            if (other != null && other != myFold) {
+              nearSeam = true;
+            }
+          }
         }
       }
-      if (hits > 0) {
-        final alpha = ((hits / 9.0) * 255).round().clamp(0, 255);
-        out.setPixelRgba(px, py, 255, 255, 255, alpha);
+
+      if (nearSeam) {
+        out.setPixelRgba(x, y, 0, 0, 0, 0);
+      } else {
+        final srcA = cropped.getPixel(x, y).a.toInt();
+        out.setPixelRgba(x, y, 255, 255, 255, srcA);
       }
     }
   }

@@ -360,6 +360,7 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
     // Eğer daha önce başlamış ve pause edilmişse _currentStart null ise yeniden başlat
     _currentStart ??= DateTime.now();
     _timer = Timer.periodic(const Duration(seconds: 1), _onTick);
+    NotificationService.instance.requestPermission();
     _updateNotification();
     _startBackgroundService();
     _saveState();
@@ -428,6 +429,7 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
     _countdownRunning = true;
     _currentStart ??= DateTime.now();
     _timer = Timer.periodic(const Duration(seconds: 1), _onTick);
+    NotificationService.instance.requestPermission();
     _updateNotification();
     _startBackgroundService();
     _saveState();
@@ -441,6 +443,7 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
     _pomodoroRunning = true;
     _currentStart ??= DateTime.now();
     _timer = Timer.periodic(const Duration(seconds: 1), _onTick);
+    NotificationService.instance.requestPermission();
     _updateNotification();
     _startBackgroundService();
     _saveState();
@@ -665,8 +668,8 @@ class TimerController extends ChangeNotifier with WidgetsBindingObserver {
     NotificationService.instance.showTimerNotification(
       title: modeLabel,
       body: _activeMode == TimerMode.stopwatch
-          ? 'Zaman geçiyor...'
-          : 'Kalan süre',
+          ? 'Süre: $formattedTime • Odaklanma zamanı'
+          : 'Kalan süre: $formattedTime',
       isRunning: true,
       when: when,
       usesChronometer: usesChronometer,

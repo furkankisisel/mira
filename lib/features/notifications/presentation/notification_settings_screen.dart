@@ -28,6 +28,7 @@ class _NotificationSettingsScreenState
   late bool _masterEnabled;
   late bool _habitReminders;
   late bool _socialAlerts;
+  late bool _timerEnabled;
   late bool _sound;
   late bool _vibration;
 
@@ -44,6 +45,7 @@ class _NotificationSettingsScreenState
     _masterEnabled = _repo.enabled;
     _habitReminders = _repo.habitReminders;
     _socialAlerts = _repo.socialAlerts;
+    _timerEnabled = _repo.timerEnabled;
     _sound = _repo.sound;
     _vibration = _repo.vibration;
   }
@@ -89,6 +91,11 @@ class _NotificationSettingsScreenState
   Future<void> _toggleSocialAlerts(bool value) async {
     await _repo.setSocialAlerts(value);
     setState(() => _socialAlerts = value);
+  }
+
+  Future<void> _toggleTimerEnabled(bool value) async {
+    await _repo.setTimerEnabled(value);
+    setState(() => _timerEnabled = value);
   }
 
   Future<void> _toggleSound(bool value) async {
@@ -159,10 +166,20 @@ class _NotificationSettingsScreenState
                       ),
                       const Divider(height: 1),
                       SwitchListTile(
+                        secondary: const Icon(Icons.timer_outlined),
+                        title: const Text('Zamanlayıcı ve Odaklanma'),
+                        subtitle: const Text(
+                          'Süreölçer, geri sayım ve pomodoro canlı durum bildirimleri',
+                        ),
+                        value: _timerEnabled && _masterEnabled,
+                        onChanged: _masterEnabled ? _toggleTimerEnabled : null,
+                      ),
+                      const Divider(height: 1),
+                      SwitchListTile(
                         secondary: const Icon(Icons.groups_rounded),
                         title: const Text('Sosyal Oda Etkileşimleri'),
                         subtitle: const Text(
-                          'Odalardaki notlar ve dürtmeler için anlık bildirimler',
+                          'Odalardaki notlar, dürtmeler ve üye ilerleme bildirimleri',
                         ),
                         value: _socialAlerts && _masterEnabled,
                         onChanged: _masterEnabled ? _toggleSocialAlerts : null,

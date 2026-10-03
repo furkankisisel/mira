@@ -9,6 +9,7 @@ class ProgressHistoryEntry {
     required this.value,
     required this.target,
     required this.isCompleted,
+    this.completedSubtaskIds = const [],
   });
 
   final String uid;
@@ -16,6 +17,7 @@ class ProgressHistoryEntry {
   final int value;
   final int target;
   final bool isCompleted;
+  final List<String> completedSubtaskIds;
 
   /// Completion ratio (0.0 – 1.0).
   double get completionRatio =>
@@ -27,6 +29,7 @@ class ProgressHistoryEntry {
         'value': value,
         'target': target,
         'isCompleted': isCompleted,
+        'completedSubtaskIds': completedSubtaskIds,
       };
 
   static ProgressHistoryEntry fromMap(Map<String, dynamic> d) {
@@ -36,6 +39,10 @@ class ProgressHistoryEntry {
       value: (d['value'] as num?)?.toInt() ?? 0,
       target: (d['target'] as num?)?.toInt() ?? 1,
       isCompleted: d['isCompleted'] as bool? ?? false,
+      completedSubtaskIds: (d['completedSubtaskIds'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
     );
   }
 }

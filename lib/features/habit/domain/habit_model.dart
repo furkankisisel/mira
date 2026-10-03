@@ -104,6 +104,72 @@ class Habit {
   bool isRoomHabitCreator(String? currentUid) =>
       isRoomHabit && currentUid != null && roomHabitCreatedBy == currentUid;
 
+  /// Checks whether this habit is scheduled to be performed on [date].
+  bool isScheduledForDate(DateTime date) {
+    // 1. Start/End Date Check
+    DateTime startOnly;
+    try {
+      final start = DateTime.parse(startDate);
+      startOnly = DateTime(start.year, start.month, start.day);
+    } catch (_) {
+      startOnly = DateTime(date.year, date.month, date.day);
+    }
+    final checkDate = DateTime(date.year, date.month, date.day);
+    if (checkDate.isBefore(startOnly)) return false;
+
+    if (endDate != null && endDate!.isNotEmpty) {
+      try {
+        final end = DateTime.parse(endDate!);
+        final endOnly = DateTime(end.year, end.month, end.day);
+        if (checkDate.isAfter(endOnly)) return false;
+      } catch (_) {}
+    }
+
+    // 2. Explicit Schedule Check provided by scheduledDates
+    final dayKey =
+        '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    if (scheduledDates != null && scheduledDates!.isNotEmpty) {
+      return scheduledDates!.contains(dayKey);
+    }
+
+    // 3. Frequency Logic
+    if (frequencyType == null) {
+      return true;
+    }
+
+    switch (frequencyType) {
+      case 'daily':
+        return true;
+      case 'weekly':
+      case 'specificWeekdays':
+        if (selectedWeekdays == null || selectedWeekdays!.isEmpty) {
+          return true;
+        }
+        final int weekdayIndex = date.weekday - 1; // 0=Mon, 6=Sun
+        return selectedWeekdays!.contains(weekdayIndex) ||
+            selectedWeekdays!.contains(date.weekday);
+      case 'monthly':
+      case 'specificMonthDays':
+        if (selectedMonthDays == null || selectedMonthDays!.isEmpty) {
+          return true;
+        }
+        return selectedMonthDays!.contains(date.day);
+      case 'specificYearDays':
+        final md =
+            '${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+        if (selectedYearDays == null || selectedYearDays!.isEmpty) {
+          return true;
+        }
+        return selectedYearDays!.contains(md);
+      case 'periodic':
+        if (periodicDays == null || periodicDays! <= 1) return true;
+        final diff = checkDate.difference(startOnly).inDays;
+        return (diff % periodicDays!) == 0;
+      default:
+        return true;
+    }
+  }
+
   void applyDailyReset(DateTime now) {
     final today = _dateStr(now);
     if (progressDate != today) {

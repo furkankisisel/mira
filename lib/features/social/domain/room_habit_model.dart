@@ -69,6 +69,78 @@ class RoomHabit {
 
   bool get isNumerical => habitType == HabitType.numerical || targetCount > 1;
 
+  /// Checks whether this room habit is scheduled to be performed on [date].
+  bool isScheduledForDate(DateTime date) {
+    final DateTime checkDate = DateTime(date.year, date.month, date.day);
+
+    // 1. Start Date Check
+    DateTime startOnly;
+    if (startDate != null && startDate!.isNotEmpty) {
+      try {
+        final start = DateTime.parse(startDate!);
+        startOnly = DateTime(start.year, start.month, start.day);
+      } catch (_) {
+        startOnly = DateTime(createdAt.year, createdAt.month, createdAt.day);
+      }
+    } else {
+      startOnly = DateTime(createdAt.year, createdAt.month, createdAt.day);
+    }
+    if (checkDate.isBefore(startOnly)) return false;
+
+    // 2. End Date Check
+    if (endDate != null && endDate!.isNotEmpty) {
+      try {
+        final end = DateTime.parse(endDate!);
+        final endOnly = DateTime(end.year, end.month, end.day);
+        if (checkDate.isAfter(endOnly)) return false;
+      } catch (_) {}
+    }
+
+    // 3. Explicit Schedule Check (scheduledDates)
+    final dayKey =
+        '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    if (scheduledDates != null && scheduledDates!.isNotEmpty) {
+      return scheduledDates!.contains(dayKey);
+    }
+
+    // 4. Frequency Logic
+    if (frequencyType == null) {
+      return true;
+    }
+
+    switch (frequencyType) {
+      case 'daily':
+        return true;
+      case 'weekly':
+      case 'specificWeekdays':
+        if (selectedWeekdays == null || selectedWeekdays!.isEmpty) {
+          return true;
+        }
+        final int weekdayIndex = date.weekday - 1; // 0=Mon, 6=Sun
+        return selectedWeekdays!.contains(weekdayIndex) ||
+            selectedWeekdays!.contains(date.weekday);
+      case 'monthly':
+      case 'specificMonthDays':
+        if (selectedMonthDays == null || selectedMonthDays!.isEmpty) {
+          return true;
+        }
+        return selectedMonthDays!.contains(date.day);
+      case 'specificYearDays':
+        final md =
+            '${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+        if (selectedYearDays == null || selectedYearDays!.isEmpty) {
+          return true;
+        }
+        return selectedYearDays!.contains(md);
+      case 'periodic':
+        if (periodicDays == null || periodicDays! <= 1) return true;
+        final diff = checkDate.difference(startOnly).inDays;
+        return (diff % periodicDays!) == 0;
+      default:
+        return true;
+    }
+  }
+
   RoomHabit copyWith({
     String? id,
     String? title,
@@ -299,12 +371,23 @@ class RoomHabit {
     MemberProgress? myProgress,
     String? roomId,
     String? roomName,
+    DateTime? date,
   }) {
-    final now = DateTime.now();
+    final targetDate = date ?? DateTime.now();
     final dateStr =
-        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
-    final progress = myProgress?.todayValue ?? 0;
-    final completed = myProgress?.isCompletedToday ?? false;
+        '${targetDate.year}-${targetDate.month.toString().padLeft(2, '0')}-${targetDate.day.toString().padLeft(2, '0')}';
+    final now = DateTime.now();
+    final todayDate = DateTime(now.year, now.month, now.day);
+    final targetDayOnly = DateTime(targetDate.year, targetDate.month, targetDate.day);
+    final isTargetToday = targetDayOnly == todayDate;
+    final isTargetFuture = targetDayOnly.isAfter(todayDate);
+
+    final progress = isTargetFuture
+        ? 0
+        : (isTargetToday ? (myProgress?.todayValue ?? 0) : (myProgress?.value ?? 0));
+    final completed = isTargetFuture
+        ? false
+        : (isTargetToday ? (myProgress?.isCompletedToday ?? false) : (myProgress?.isCompleted ?? false));
 
     final displaySubtasks = subtasks.map((s) {
       final isSubDone =

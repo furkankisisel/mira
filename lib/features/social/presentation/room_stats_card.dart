@@ -128,21 +128,21 @@ class _StatsContentState extends State<_StatsContent> {
     final completionPercent = (completionRatio * 100).round();
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
           // Soft "Cotton" Background
           Container(
-            height: 170,
+            height: 132,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(32),
+              borderRadius: BorderRadius.circular(22),
               color: isDark ? theme.colorScheme.surfaceContainer : AppColors.background,
               boxShadow: [
                 BoxShadow(
-                  color: (isDark ? Colors.black : theme.colorScheme.primary).withOpacity(0.06),
-                  blurRadius: 24,
-                  offset: const Offset(0, 8),
+                  color: (isDark ? Colors.black : theme.colorScheme.primary).withOpacity(0.04),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
@@ -150,13 +150,13 @@ class _StatsContentState extends State<_StatsContent> {
 
           // Content Layer
           Container(
-            height: 170,
-            padding: const EdgeInsets.all(22),
+            height: 132,
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(32),
+              borderRadius: BorderRadius.circular(22),
               border: Border.all(
-                color: isDark ? Colors.white.withOpacity(0.03) : Colors.white.withOpacity(0.6),
-                width: 1.5,
+                color: isDark ? Colors.white.withOpacity(0.04) : Colors.white.withOpacity(0.7),
+                width: 1.2,
               ),
             ),
             child: Row(
@@ -168,7 +168,7 @@ class _StatsContentState extends State<_StatsContent> {
                   primaryColor: theme.colorScheme.primary,
                 ),
 
-                const SizedBox(width: 24),
+                const SizedBox(width: 20),
 
                 // Stats Details
                 Expanded(
@@ -183,7 +183,7 @@ class _StatsContentState extends State<_StatsContent> {
                         accentColor: AppColors.accentGold,
                         isDark: isDark,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
                       _MiraStatTile(
                         icon: Icons.emoji_events_rounded,
                         label: AppLocalizations.of(context).mostActiveMemberLabel,
@@ -225,11 +225,11 @@ class _CompletionDisplay extends StatelessWidget {
           alignment: Alignment.center,
           children: [
             SizedBox(
-              width: 80,
-              height: 80,
+              width: 58,
+              height: 58,
               child: CircularProgressIndicator(
                 value: percent / 100,
-                strokeWidth: 8,
+                strokeWidth: 6,
                 backgroundColor: (isDark ? Colors.white : Colors.black).withOpacity(0.04),
                 color: isDark ? AppColors.accentMatcha : primaryColor,
                 strokeCap: StrokeCap.round,
@@ -237,20 +237,22 @@ class _CompletionDisplay extends StatelessWidget {
             ),
             Text(
               '%$percent',
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w900,
+                fontSize: 13.5,
                 color: isDark ? Colors.white : theme.colorScheme.onSurface,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 6),
         Text(
           AppLocalizations.of(context).roomSummaryHeader,
           style: theme.textTheme.labelSmall?.copyWith(
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1.5,
-            color: (isDark ? Colors.white : primaryColor).withOpacity(0.6),
+            fontWeight: FontWeight.w800,
+            fontSize: 9.5,
+            letterSpacing: 1.1,
+            color: (isDark ? Colors.white : primaryColor).withOpacity(0.65),
           ),
         ),
       ],
@@ -283,35 +285,35 @@ class _MiraStatTile extends StatelessWidget {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(7.5),
           decoration: BoxDecoration(
             color: accentColor.withOpacity(isDark ? 0.12 : 0.18),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(icon, size: 18, color: isDark ? accentColor : accentColor.withOpacity(0.9)),
+          child: Icon(icon, size: 16, color: isDark ? accentColor : accentColor.withOpacity(0.9)),
         ),
-        const SizedBox(width: 14),
+        const SizedBox(width: 11),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 value,
-                style: theme.textTheme.labelLarge?.copyWith(
+                style: theme.textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w900,
-                  fontSize: 14,
+                  fontSize: 13,
                   height: 1.1,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 1.5),
               Text(
                 label,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  fontSize: 10,
+                  fontSize: 9.5,
                   fontWeight: FontWeight.w500,
-                  color: surfaceColor.withOpacity(0.5),
+                  color: surfaceColor.withOpacity(0.55),
                 ),
               ),
               if (subtitle != null) ...[

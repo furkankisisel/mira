@@ -368,6 +368,26 @@ class RoomRepository {
     });
   }
 
+  /// Stream of progress history for all members on a habit for a specific date.
+  Stream<List<ProgressHistoryEntry>> streamHabitProgressHistoryForDate({
+    required String roomId,
+    required String habitId,
+    required String date,
+  }) {
+    return _roomsRef
+        .doc(roomId)
+        .collection('habits')
+        .doc(habitId)
+        .collection('progressHistory')
+        .where('date', isEqualTo: date)
+        .snapshots()
+        .map((snap) {
+      return snap.docs
+          .map((d) => ProgressHistoryEntry.fromMap(d.data()))
+          .toList();
+    });
+  }
+
   // ─── Nudges (Dürtme) ───────────────────────────────────
 
   /// Send a nudge to another room member.
@@ -381,12 +401,12 @@ class RoomRepository {
         .doc(roomId)
         .collection('nudges')
         .where('toUid', isEqualTo: uid)
-        .where('isRead', isEqualTo: false)
-        .orderBy('createdAt', descending: true)
-        .limit(20)
         .snapshots()
-        .map((snap) =>
-            snap.docs.map(RoomNudge.fromFirestore).toList());
+        .map((snap) {
+      final list = snap.docs.map(RoomNudge.fromFirestore).toList();
+      list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return list.where((n) => !n.isRead).take(20).toList();
+    });
   }
 
   /// Mark a nudge as read.

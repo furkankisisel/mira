@@ -27,6 +27,8 @@ import '../../../design_system/components/pressable_scale.dart';
 import '../domain/room_score_model.dart';
 import 'widgets/room_podium_widget.dart';
 import 'widgets/room_overall_leaderboard.dart';
+import 'widgets/room_date_selector_bar.dart';
+import 'package:intl/intl.dart';
 
 /// Detail view for a social room — live dashboard + notes.
 class RoomDetailScreen extends StatelessWidget {
@@ -187,6 +189,7 @@ class RoomDetailScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -218,7 +221,7 @@ class RoomDetailScreen extends StatelessWidget {
           // 1. Add Habit / Task Button
           _DockActionButton(
             icon: Icons.add_rounded,
-            label: 'Alışkanlık Ekle',
+            label: l10n.addHabit,
             isPrimary: true,
             accent: cs.primary,
             isDark: isDark,
@@ -231,7 +234,7 @@ class RoomDetailScreen extends StatelessWidget {
           // 2. Share Note Button
           _DockActionButton(
             icon: Icons.edit_note_rounded,
-            label: 'Not Paylaş',
+            label: l10n.shareNoteTitle,
             isPrimary: false,
             accent: const Color(0xFF10B981),
             isDark: isDark,
@@ -255,6 +258,7 @@ class RoomDetailScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isTr = l10n.localeName.startsWith('tr');
 
     showModalBottomSheet(
       context: context,
@@ -295,7 +299,9 @@ class RoomDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'Odadaki arkadaşlarına motivasyon verici bir not bırak',
+              isTr
+                  ? 'Odadaki arkadaşlarına motivasyon verici bir not bırak'
+                  : 'Leave an encouraging note for your room members',
               style: TextStyle(
                 fontSize: 12.5,
                 color: theme.colorScheme.onSurfaceVariant,
@@ -796,6 +802,11 @@ class _RoomBodyState extends State<RoomBody> {
   List<RoomMember> _members = [];
   List<RoomHabit> _habits = [];
   final Map<String, List<MemberProgress>> _progressMap = {};
+  DateTime _selectedDate = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+  );
 
   StreamSubscription? _membersSub;
   StreamSubscription? _habitsSub;
@@ -893,6 +904,10 @@ class _RoomBodyState extends State<RoomBody> {
       habitProgressMap: _progressMap,
     );
 
+    final habitsForDate = _habits
+        .where((h) => h.isScheduledForDate(_selectedDate))
+        .toList();
+
     return SingleChildScrollView(
       controller: _scrollController,
       padding: const EdgeInsets.only(bottom: 110),
@@ -913,26 +928,48 @@ class _RoomBodyState extends State<RoomBody> {
           // Tab Content
           if (_selectedTab == 0) ...[
             // ── Tab 0: Alışkanlıklar & İlerleme ──
-            RoomStatsCard(roomId: widget.roomId, habits: _habits),
+            RoomDateSelectorBar(
+              selectedDate: _selectedDate,
+              onDateSelected: (newDate) {
+                setState(() {
+                  _selectedDate = DateTime(
+                    newDate.year,
+                    newDate.month,
+                    newDate.day,
+                  );
+                });
+              },
+            ),
+            RoomStatsCard(roomId: widget.roomId, habits: habitsForDate),
             const _AdBanner(),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
               child: Row(
                 children: [
                   Text(
                     isTr ? 'Oda Alışkanlıkları' : 'Room Habits',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
+                      fontSize: 15,
                       letterSpacing: -0.2,
                     ),
                   ),
                   const Spacer(),
-                  Text(
-                    '${_habits.length} ${isTr ? "hedef" : "habits"}',
-                    style: TextStyle(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.onSurfaceVariant,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color:
+                          theme.colorScheme.primary.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      '${habitsForDate.length} ${isTr ? "hedef" : "goals"}',
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w700,
+                        color: theme.colorScheme.primary,
+                      ),
                     ),
                   ),
                 ],
@@ -941,7 +978,15 @@ class _RoomBodyState extends State<RoomBody> {
             _HabitsDashboard(
               roomId: widget.roomId,
               roomMembers: _members,
-              habits: _habits,
+              habits: habitsForDate,
+              allRoomHabitsCount: _habits.length,
+              selectedDate: _selectedDate,
+              onResetToToday: () {
+                setState(() {
+                  final now = DateTime.now();
+                  _selectedDate = DateTime(now.year, now.month, now.day);
+                });
+              },
             ),
           ] else if (_selectedTab == 1) ...[
             // ── Tab 1: Sıralama & Podyum ──
@@ -978,16 +1023,17 @@ class _RoomBodyState extends State<RoomBody> {
 
   Widget _buildSegmentedTabs(bool isDark, bool isTr) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context);
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 10, 16, 4),
-      padding: const EdgeInsets.all(4),
+      margin: const EdgeInsets.fromLTRB(16, 6, 16, 4),
+      padding: const EdgeInsets.all(3.5),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(20),
+        color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: isDark
-              ? Colors.white.withValues(alpha: 0.08)
-              : Colors.black.withValues(alpha: 0.05),
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.black.withValues(alpha: 0.04),
         ),
       ),
       child: Row(
@@ -995,7 +1041,7 @@ class _RoomBodyState extends State<RoomBody> {
           _buildTabPill(
             index: 0,
             icon: Icons.track_changes_rounded,
-            label: isTr ? 'Alışkanlıklar' : 'Habits',
+            label: l10n.habits,
             activeColor: const Color(0xFF0284C7),
             isDark: isDark,
           ),
@@ -1105,6 +1151,7 @@ class _MembersBar extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context);
+    final isTr = l10n.localeName.startsWith('tr');
 
     return StreamBuilder<List<RoomMember>>(
       stream: RoomService.instance.streamMembers(roomId),
@@ -1114,40 +1161,50 @@ class _MembersBar extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
+              padding: const EdgeInsets.fromLTRB(18, 8, 18, 4),
               child: Row(
                 children: [
-                  Icon(Icons.people_alt_rounded,
-                      size: 20, color: theme.colorScheme.primary),
-                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.people_alt_rounded,
+                    size: 15,
+                    color: theme.colorScheme.primary,
+                  ),
+                  const SizedBox(width: 6),
                   Text(
                     l10n.roomMembersLabel,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.2,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: theme.colorScheme.onSurface,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.2,
                     ),
                   ),
-                  const Spacer(),
-                  Text(
-                    l10n.membersCountText(members.length),
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color:
-                          theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
-                      fontWeight: FontWeight.bold,
+                  const SizedBox(width: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 6, vertical: 1.5),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${members.length}',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        color: theme.colorScheme.primary,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
             SizedBox(
-              height: 108,
+              height: 64,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: members.length,
-                separatorBuilder: (context, _) => const SizedBox(width: 12),
+                separatorBuilder: (context, _) => const SizedBox(width: 10),
                 itemBuilder: (context, index) {
                   final m = members[index];
                   final isMe = m.uid == FirebaseAuth.instance.currentUser?.uid;
@@ -1176,57 +1233,57 @@ class _MembersBar extends StatelessWidget {
                           avatar = NetworkImage(m.avatarUrl!);
                         }
 
-                        return Container(
-                          width: 85,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.surfaceContainerLow
-                                .withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: theme.colorScheme.outlineVariant
-                                  .withOpacity(0.3),
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.04),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
+                        return SizedBox(
+                          width: 52,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Hero(
                                 tag: 'member_avatar_${m.uid}',
-                                child: CircleAvatar(
-                                  radius: 22,
-                                  backgroundColor: avatar == null
-                                      ? theme.colorScheme.primaryContainer
-                                      : null,
-                                  backgroundImage: avatar,
-                                  child: avatar == null
-                                      ? Text(
-                                          name.isNotEmpty
-                                              ? name[0].toUpperCase()
-                                              : '?',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: theme
-                                                .colorScheme.onPrimaryContainer,
-                                          ),
-                                        )
-                                      : null,
+                                child: Container(
+                                  padding: const EdgeInsets.all(1.5),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: isMe
+                                          ? theme.colorScheme.primary
+                                          : theme.colorScheme.outlineVariant
+                                              .withValues(alpha: 0.35),
+                                      width: isMe ? 1.8 : 1.1,
+                                    ),
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 17,
+                                    backgroundColor: avatar == null
+                                        ? theme.colorScheme.primaryContainer
+                                        : null,
+                                    backgroundImage: avatar,
+                                    child: avatar == null
+                                        ? Text(
+                                            name.isNotEmpty
+                                                ? name[0].toUpperCase()
+                                                : '?',
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.bold,
+                                              color: theme
+                                                  .colorScheme.onPrimaryContainer,
+                                            ),
+                                          )
+                                        : null,
+                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 3),
                               Text(
-                                name,
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  fontWeight: FontWeight.w900,
+                                isMe ? (isTr ? 'Sen' : 'You') : name,
+                                style: TextStyle(
+                                  fontWeight:
+                                      isMe ? FontWeight.w800 : FontWeight.w600,
                                   fontSize: 10,
+                                  color: isMe
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.onSurfaceVariant,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -1268,26 +1325,152 @@ class _HabitsDashboard extends StatelessWidget {
     required this.roomId,
     required this.roomMembers,
     required this.habits,
+    required this.allRoomHabitsCount,
+    required this.selectedDate,
+    required this.onResetToToday,
   });
 
   final String roomId;
   final List<RoomMember> roomMembers;
   final List<RoomHabit> habits;
+  final int allRoomHabitsCount;
+  final DateTime selectedDate;
+  final VoidCallback onResetToToday;
 
   @override
   Widget build(BuildContext context) {
     if (habits.isEmpty) {
-      return _EmptyHabits(roomId: roomId);
+      if (allRoomHabitsCount == 0) {
+        return _EmptyHabits(roomId: roomId);
+      }
+      return _EmptyHabitsForDate(
+        roomId: roomId,
+        selectedDate: selectedDate,
+        onResetToToday: onResetToToday,
+      );
     }
     return Column(
       children: habits
           .map((h) => _InteractiveRoomHabitCard(
-                key: ValueKey('room_habit_${h.id}'),
+                key: ValueKey(
+                    'room_habit_${h.id}_${selectedDate.year}_${selectedDate.month}_${selectedDate.day}'),
                 roomId: roomId,
                 habit: h,
                 roomMembers: roomMembers,
+                selectedDate: selectedDate,
               ))
           .toList(),
+    );
+  }
+}
+
+class _EmptyHabitsForDate extends StatelessWidget {
+  const _EmptyHabitsForDate({
+    required this.roomId,
+    required this.selectedDate,
+    required this.onResetToToday,
+  });
+
+  final String roomId;
+  final DateTime selectedDate;
+  final VoidCallback onResetToToday;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final targetDay =
+        DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+    final isFuture = targetDay.isAfter(today);
+
+    final locale = Localizations.localeOf(context).toString();
+    final isTr = locale.startsWith('tr');
+    final dateStr = DateFormat.MMMMd(locale).format(selectedDate);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 26),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : Colors.black.withValues(alpha: 0.06),
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.20 : 0.04),
+              blurRadius: 14,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: isFuture
+                    ? const Color(0xFFF59E0B).withValues(alpha: 0.12)
+                    : theme.colorScheme.primary.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                isFuture
+                    ? Icons.event_available_rounded
+                    : Icons.calendar_today_rounded,
+                size: 26,
+                color: isFuture
+                    ? const Color(0xFFF59E0B)
+                    : theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              isTr ? 'Bu Tarihte Hedef Yok' : 'No Habits on this Date',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              isTr
+                  ? '$dateStr tarihinde odada planlanmış aktif bir alışkanlık veya görev bulunmuyor.'
+                  : 'No active habits scheduled for $dateStr in this room.',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontSize: 12.5,
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: onResetToToday,
+              icon: const Icon(Icons.today_rounded, size: 17),
+              label: Text(isTr ? 'Bugüne Dön' : 'Back to Today'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: Colors.white,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 11),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -1300,6 +1483,7 @@ class _EmptyHabits extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -1339,7 +1523,7 @@ class _EmptyHabits extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             Text(
-              'Oda Alışkanlığı Eklenmemiş',
+              l10n.noHabitsInRoom,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w800,
                 fontSize: 16,
@@ -1348,7 +1532,7 @@ class _EmptyHabits extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'Odadaki arkadaşlarınızla birlikte takip etmek için bir alışkanlık veya hedef belirleyin!',
+              l10n.addHabitToRoomPrompt,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
                 fontSize: 12.5,
@@ -1360,7 +1544,7 @@ class _EmptyHabits extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: () => _openRoomHabitCreationFlow(context, roomId),
               icon: const Icon(Icons.add_rounded, size: 18),
-              label: const Text('İlk Alışkanlığı Ekle'),
+              label: Text(l10n.addHabit),
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: Colors.white,
@@ -1386,11 +1570,13 @@ class _InteractiveRoomHabitCard extends StatefulWidget {
     required this.roomId,
     required this.habit,
     required this.roomMembers,
+    required this.selectedDate,
   });
 
   final String roomId;
   final RoomHabit habit;
   final List<RoomMember> roomMembers;
+  final DateTime selectedDate;
 
   @override
   State<_InteractiveRoomHabitCard> createState() =>
@@ -1399,37 +1585,85 @@ class _InteractiveRoomHabitCard extends StatefulWidget {
 
 class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
   bool _isExpanded = false;
-  late Stream<List<MemberProgress>> _progressStream;
+
+  DateTime get _targetDayOnly => DateTime(
+        widget.selectedDate.year,
+        widget.selectedDate.month,
+        widget.selectedDate.day,
+      );
+
+  DateTime get _todayDate {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day);
+  }
+
+  bool get _isToday => _targetDayOnly == _todayDate;
+  bool get _isFuture => _targetDayOnly.isAfter(_todayDate);
+
+  String get _dateStr =>
+      '${_targetDayOnly.year.toString().padLeft(4, "0")}-${_targetDayOnly.month.toString().padLeft(2, "0")}-${_targetDayOnly.day.toString().padLeft(2, "0")}';
+
+  Stream<List<MemberProgress>>? _progressStream;
+  Stream<List<ProgressHistoryEntry>>? _historyStream;
 
   @override
   void initState() {
     super.initState();
-    _progressStream = RoomService.instance
-        .streamHabitProgress(widget.roomId, widget.habit.id);
+    _initStreams();
+  }
+
+  void _initStreams() {
+    if (_isToday) {
+      _progressStream = RoomService.instance
+          .streamHabitProgress(widget.roomId, widget.habit.id);
+      _historyStream = null;
+    } else if (!_isFuture) {
+      _historyStream = RoomService.instance.streamHabitProgressHistoryForDate(
+        roomId: widget.roomId,
+        habitId: widget.habit.id,
+        date: _dateStr,
+      );
+      _progressStream = null;
+    } else {
+      _progressStream = null;
+      _historyStream = null;
+    }
   }
 
   @override
   void didUpdateWidget(covariant _InteractiveRoomHabitCard oldWidget) {
     super.didUpdateWidget(oldWidget);
+    final oldDay = DateTime(
+      oldWidget.selectedDate.year,
+      oldWidget.selectedDate.month,
+      oldWidget.selectedDate.day,
+    );
     if (oldWidget.roomId != widget.roomId ||
-        oldWidget.habit.id != widget.habit.id) {
-      _progressStream = RoomService.instance
-          .streamHabitProgress(widget.roomId, widget.habit.id);
+        oldWidget.habit.id != widget.habit.id ||
+        oldDay != _targetDayOnly) {
+      _initStreams();
     }
   }
 
   Future<void> _openEditSheet() async {
+    final l10n = AppLocalizations.of(context);
+    final isTr = l10n.localeName.startsWith('tr');
     final currentUid = FirebaseAuth.instance.currentUser?.uid;
     if (widget.habit.createdBy != currentUid) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Sadece alışkanlığı oluşturan kişi düzenleyebilir.'),
+        SnackBar(
+          content: Text(isTr
+              ? 'Sadece alışkanlığı oluşturan kişi düzenleyebilir.'
+              : 'Only the creator can edit this habit.'),
         ),
       );
       return;
     }
 
-    final habitToEdit = widget.habit.toHabit(roomId: widget.roomId);
+    final habitToEdit = widget.habit.toHabit(
+      roomId: widget.roomId,
+      date: widget.selectedDate,
+    );
     final edited = habitToEdit.habitType == HabitType.simple &&
             !habitToEdit.isAdvanced
         ? await Navigator.of(context).push<Habit>(
@@ -1459,29 +1693,36 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
       await RoomService.instance.updateRoomHabitFull(widget.roomId, updated);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Oda alışkanlığı güncellendi')),
+          SnackBar(
+            content: Text(
+                isTr ? 'Oda alışkanlığı güncellendi' : 'Room habit updated'),
+          ),
         );
       }
     }
   }
 
   Future<void> _confirmDelete() async {
+    final l10n = AppLocalizations.of(context);
+    final isTr = l10n.localeName.startsWith('tr');
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Alışkanlığı Sil'),
+        title: Text(isTr ? 'Alışkanlığı Sil' : 'Delete Habit'),
         content: Text(
-          '"${widget.habit.title}" alışkanlığı odadaki tüm üyeler için silinecek. Emin misiniz?',
+          isTr
+              ? '"${widget.habit.title}" alışkanlığı odadaki tüm üyeler için silinecek. Emin misiniz?'
+              : 'The habit "${widget.habit.title}" will be deleted for all members. Are you sure?',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('İptal'),
+            child: Text(l10n.cancelButton),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Herkes İçin Sil'),
+            child: Text(isTr ? 'Herkes İçin Sil' : 'Delete for Everyone'),
           ),
         ],
       ),
@@ -1501,116 +1742,249 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
     final habitColor = widget.habit.color;
     final currentUid = FirebaseAuth.instance.currentUser?.uid;
     final isCreator = currentUid != null && currentUid == widget.habit.createdBy;
+    final totalMembers =
+        widget.roomMembers.isNotEmpty ? widget.roomMembers.length : 1;
 
-    return StreamBuilder<List<MemberProgress>>(
-      stream: _progressStream,
-      initialData: RoomService.instance
-          .getHabitProgressInMemory(widget.roomId, widget.habit.id),
+    if (_isFuture) {
+      return _buildCardUI(
+        theme: theme,
+        isDark: isDark,
+        habitColor: habitColor,
+        isCompleted: false,
+        value: 0,
+        streak: 0,
+        completedSubtaskIds: const [],
+        completedUids: const {},
+        isCreator: isCreator,
+        totalMembers: totalMembers,
+        memberValues: const {},
+      );
+    }
+
+    if (_isToday) {
+      return StreamBuilder<List<MemberProgress>>(
+        stream: _progressStream,
+        initialData: RoomService.instance
+            .getHabitProgressInMemory(widget.roomId, widget.habit.id),
+        builder: (context, snap) {
+          final progressList = (snap.data != null && snap.data!.isNotEmpty)
+              ? snap.data!
+              : RoomService.instance
+                  .getHabitProgressInMemory(widget.roomId, widget.habit.id);
+          final myProgress = progressList
+                  .where((p) => p.uid == currentUid)
+                  .firstOrNull ??
+              RoomService.instance
+                  .getMemberProgressInMemory(widget.roomId, widget.habit.id);
+          final isCompletedToday = myProgress?.isCompletedToday ?? false;
+          final todayValue = myProgress?.todayValue ?? 0;
+          final streak = myProgress?.streak ?? 0;
+          final completedUids = progressList
+              .where((p) => p.isCompletedToday)
+              .map((p) => p.uid)
+              .toSet();
+          final memberValues = {
+            for (final p in progressList) p.uid: p.todayValue,
+          };
+          final completedSubtasks =
+              myProgress?.completedSubtaskIds ?? const <String>[];
+
+          return _buildCardUI(
+            theme: theme,
+            isDark: isDark,
+            habitColor: habitColor,
+            isCompleted: isCompletedToday,
+            value: todayValue,
+            streak: streak,
+            completedSubtaskIds: completedSubtasks,
+            completedUids: completedUids,
+            isCreator: isCreator,
+            totalMembers: totalMembers,
+            memberValues: memberValues,
+          );
+        },
+      );
+    }
+
+    // Past date: stream history
+    return StreamBuilder<List<ProgressHistoryEntry>>(
+      stream: _historyStream,
       builder: (context, snap) {
-        final progressList = (snap.data != null && snap.data!.isNotEmpty)
-            ? snap.data!
-            : RoomService.instance
-                .getHabitProgressInMemory(widget.roomId, widget.habit.id);
-        final myProgress = progressList
-                .where((p) => p.uid == currentUid)
-                .firstOrNull ??
-            RoomService.instance
-                .getMemberProgressInMemory(widget.roomId, widget.habit.id);
-        final isCompletedToday = myProgress?.isCompletedToday ?? false;
-        final todayValue = myProgress?.todayValue ?? 0;
-        final streak = myProgress?.streak ?? 0;
+        final historyList = snap.data ?? const <ProgressHistoryEntry>[];
+        final myEntry =
+            historyList.where((e) => e.uid == currentUid).firstOrNull;
+        final isCompleted = myEntry?.isCompleted ?? false;
+        final todayValue = myEntry?.value ?? 0;
+        final completedUids = historyList
+            .where((e) => e.isCompleted)
+            .map((e) => e.uid)
+            .toSet();
+        final memberValues = {
+          for (final e in historyList) e.uid: e.value,
+        };
+        final completedSubtasks =
+            myEntry?.completedSubtaskIds ?? const <String>[];
 
-        final completedMembers = progressList.where((p) => p.isCompletedToday).toList();
-        final totalMembers = widget.roomMembers.isNotEmpty ? widget.roomMembers.length : 1;
-        final completedCount = completedMembers.length;
-
-        final habitSubtitle = widget.habit.isNumerical
-            ? 'Hedef: ${widget.habit.targetCount} ${widget.habit.unit ?? ""} • $completedCount/$totalMembers üye'
-            : '$completedCount / $totalMembers üye tamamladı';
-
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Exact same HabitCard as "Bugün" screen!
-            HabitCard(
-              key: ValueKey('habit_card_${widget.habit.id}'),
-              heroTag: 'room_${widget.roomId}_${widget.habit.id}',
-              title: widget.habit.title,
-              description: habitSubtitle,
-              icon: Icons.track_changes,
-              emoji: widget.habit.emoji,
-              color: habitColor,
-              currentStreak: todayValue,
-              streakCount: streak,
-              targetCount: widget.habit.targetCount,
-              isCompleted: isCompletedToday,
-              habitType: widget.habit.habitType,
-              numericalTargetType: widget.habit.numericalTargetType,
-              timerTargetType: widget.habit.timerTargetType,
-              unit: widget.habit.unit,
-              categoryName: 'Sosyal Hedef',
-              subtasks: widget.habit.subtasks.map((s) {
-                final isDone =
-                    myProgress?.completedSubtaskIds.contains(s.id) ?? false;
-                return Subtask(id: s.id, title: s.title, isCompleted: isDone);
-              }).toList(),
-              onSubtaskToggle: (subtaskId, completed) {
-                RoomService.instance.toggleMyRoomHabitSubtask(
-                  roomId: widget.roomId,
-                  habitId: widget.habit.id,
-                  habit: widget.habit,
-                  subtaskId: subtaskId,
-                  isCompleted: completed,
-                );
-              },
-              showStreakIndicator: false,
-              margin: const EdgeInsets.fromLTRB(16, 6, 16, 0),
-              onTap: () {
-                RoomService.instance.updateMyRoomHabitProgress(
-                  roomId: widget.roomId,
-                  habitId: widget.habit.id,
-                  habit: widget.habit,
-                  isCompleted: !isCompletedToday,
-                );
-              },
-              onValueUpdate: (newValue) {
-                RoomService.instance.updateMyRoomHabitProgress(
-                  roomId: widget.roomId,
-                  habitId: widget.habit.id,
-                  habit: widget.habit,
-                  value: newValue,
-                );
-              },
-              onEdit: isCreator ? _openEditSheet : null,
-              onDelete: isCreator ? _confirmDelete : null,
-            ),
-
-            // Attached Social Progress & Member breakdown footer
-            _buildSocialProgressFooter(
-              theme,
-              isDark,
-              habitColor,
-              completedMembers,
-              progressList,
-              totalMembers,
-              isCreator,
-            ),
-          ],
+        return _buildCardUI(
+          theme: theme,
+          isDark: isDark,
+          habitColor: habitColor,
+          isCompleted: isCompleted,
+          value: todayValue,
+          streak: 0,
+          completedSubtaskIds: completedSubtasks,
+          completedUids: completedUids,
+          isCreator: isCreator,
+          totalMembers: totalMembers,
+          memberValues: memberValues,
         );
       },
     );
   }
 
-  Widget _buildSocialProgressFooter(
-    ThemeData theme,
-    bool isDark,
-    Color habitColor,
-    List<MemberProgress> completedMembers,
-    List<MemberProgress> allProgress,
-    int totalMembers,
-    bool isCreator,
-  ) {
+  Widget _buildCardUI({
+    required ThemeData theme,
+    required bool isDark,
+    required Color habitColor,
+    required bool isCompleted,
+    required int value,
+    required int streak,
+    required List<String> completedSubtaskIds,
+    required Set<String> completedUids,
+    required bool isCreator,
+    required int totalMembers,
+    required Map<String, int> memberValues,
+  }) {
+    final l10n = AppLocalizations.of(context);
+    final isTr = l10n.localeName.startsWith('tr');
+    final completedCount = completedUids.length;
+    final habitSubtitle = widget.habit.isNumerical
+        ? '${isTr ? "Hedef" : "Target"}: ${widget.habit.targetCount} ${widget.habit.unit ?? ""} • $completedCount/$totalMembers ${isTr ? "üye" : "members"}'
+        : l10n.membersCompletedStatus(completedCount, totalMembers);
+
+    final completedMembers = widget.roomMembers
+        .where((m) => completedUids.contains(m.uid))
+        .toList();
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        HabitCard(
+          key: ValueKey(
+              'habit_card_${widget.habit.id}_${widget.selectedDate.year}_${widget.selectedDate.month}_${widget.selectedDate.day}'),
+          heroTag:
+              'room_${widget.roomId}_${widget.habit.id}_${widget.selectedDate.millisecondsSinceEpoch}',
+          title: widget.habit.title,
+          description: habitSubtitle,
+          icon: Icons.track_changes,
+          emoji: widget.habit.emoji,
+          color: habitColor,
+          currentStreak: value,
+          streakCount: streak,
+          targetCount: widget.habit.targetCount,
+          isCompleted: isCompleted,
+          habitType: widget.habit.habitType,
+          numericalTargetType: widget.habit.numericalTargetType,
+          timerTargetType: widget.habit.timerTargetType,
+          unit: widget.habit.unit,
+          categoryName: isTr ? 'Sosyal Hedef' : 'Social Goal',
+          readOnly: _isFuture,
+          subtasks: widget.habit.subtasks.map((s) {
+            final isDone = completedSubtaskIds.contains(s.id);
+            return Subtask(id: s.id, title: s.title, isCompleted: isDone);
+          }).toList(),
+          onSubtaskToggle: (subtaskId, completed) {
+            if (_isFuture) return;
+            RoomService.instance.toggleMyRoomHabitSubtask(
+              roomId: widget.roomId,
+              habitId: widget.habit.id,
+              habit: widget.habit,
+              subtaskId: subtaskId,
+              isCompleted: completed,
+              date: widget.selectedDate,
+            );
+          },
+          showStreakIndicator: false,
+          margin: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+          onTap: () {
+            if (_isFuture) {
+              HapticFeedback.heavyImpact();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      const Icon(Icons.info_outline_rounded,
+                          color: Colors.white, size: 20),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          isTr
+                              ? 'Gelecek günlerin alışkanlıkları gününden önce işaretlenemez.'
+                              : 'Habits for future days cannot be marked in advance.',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ],
+                  ),
+                  behavior: SnackBarBehavior.floating,
+                  duration: const Duration(seconds: 2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+              );
+              return;
+            }
+            RoomService.instance.updateMyRoomHabitProgress(
+              roomId: widget.roomId,
+              habitId: widget.habit.id,
+              habit: widget.habit,
+              isCompleted: !isCompleted,
+              date: widget.selectedDate,
+            );
+          },
+          onValueUpdate: (newValue) {
+            if (_isFuture) return;
+            RoomService.instance.updateMyRoomHabitProgress(
+              roomId: widget.roomId,
+              habitId: widget.habit.id,
+              habit: widget.habit,
+              value: newValue,
+              date: widget.selectedDate,
+            );
+          },
+          onEdit: isCreator ? _openEditSheet : null,
+          onDelete: isCreator ? _confirmDelete : null,
+        ),
+
+        // Attached Social Progress & Member breakdown footer
+        _buildSocialProgressFooter(
+          theme: theme,
+          isDark: isDark,
+          habitColor: habitColor,
+          completedMembers: completedMembers,
+          completedUids: completedUids,
+          totalMembers: totalMembers,
+          isCreator: isCreator,
+          memberValues: memberValues,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSocialProgressFooter({
+    required ThemeData theme,
+    required bool isDark,
+    required Color habitColor,
+    required List<RoomMember> completedMembers,
+    required Set<String> completedUids,
+    required int totalMembers,
+    required bool isCreator,
+    required Map<String, int> memberValues,
+  }) {
+    final l10n = AppLocalizations.of(context);
+    final isTr = l10n.localeName.startsWith('tr');
     final completedCount = completedMembers.length;
 
     return Container(
@@ -1645,7 +2019,8 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      '$completedCount / $totalMembers üye tamamladı',
+                      l10n.membersCompletedStatus(
+                          completedCount, totalMembers),
                       style: TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w700,
@@ -1718,7 +2093,8 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
                       padding: EdgeInsets.zero,
                       constraints:
                           const BoxConstraints(minWidth: 28, minHeight: 28),
-                      tooltip: 'Alışkanlık İşlemleri',
+                      tooltip:
+                          isTr ? 'Alışkanlık İşlemleri' : 'Habit Actions',
                       onSelected: (val) {
                         if (val == 'edit') {
                           _openEditSheet();
@@ -1727,23 +2103,25 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
                         }
                       },
                       itemBuilder: (_) => [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'edit',
                           child: ListTile(
                             dense: true,
-                            leading: Icon(Icons.edit_outlined, size: 18),
-                            title: Text('Düzenle'),
+                            leading:
+                                const Icon(Icons.edit_outlined, size: 18),
+                            title: Text(l10n.editButton),
                             contentPadding: EdgeInsets.zero,
                           ),
                         ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'delete',
                           child: ListTile(
                             dense: true,
-                            leading: Icon(Icons.delete_outline,
+                            leading: const Icon(Icons.delete_outline,
                                 size: 18, color: Colors.red),
-                            title: Text('Herkes İçin Sil',
-                                style: TextStyle(color: Colors.red)),
+                            title: Text(
+                                isTr ? 'Herkes İçin Sil' : 'Delete for Everyone',
+                                style: const TextStyle(color: Colors.red)),
                             contentPadding: EdgeInsets.zero,
                           ),
                         ),
@@ -1761,13 +2139,11 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
               padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
               child: Column(
                 children: widget.roomMembers.map((member) {
-                  final mp = allProgress
-                      .where((p) => p.uid == member.uid)
-                      .firstOrNull;
-                  final isDone = mp?.isCompletedToday ?? false;
+                  final isDone = completedUids.contains(member.uid);
                   final currentUid =
                       FirebaseAuth.instance.currentUser?.uid;
                   final isMe = member.uid == currentUid;
+                  final memberVal = memberValues[member.uid] ?? 0;
 
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
@@ -1795,7 +2171,7 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
                         Expanded(
                           child: Text(
                             isMe
-                                ? '${member.displayName} (Sen)'
+                                ? '${member.displayName} (${isTr ? "Sen" : "You"})'
                                 : member.displayName,
                             style: TextStyle(
                               fontSize: 12,
@@ -1815,9 +2191,9 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
                                   .withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(6),
                             ),
-                            child: const Text(
-                              'Tamamladı ✅',
-                              style: TextStyle(
+                            child: Text(
+                              isTr ? 'Tamamladı ✅' : 'Completed ✅',
+                              style: const TextStyle(
                                 fontSize: 10.5,
                                 fontWeight: FontWeight.w700,
                                 color: Color(0xFF10B981),
@@ -1827,10 +2203,11 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
                         else ...[
                           Flexible(
                             child: Text(
-                              widget.habit.isNumerical &&
-                                      (mp?.todayValue ?? 0) > 0
-                                  ? '${mp!.todayValue} / ${widget.habit.targetCount}'
-                                  : 'Tamamlamadı',
+                              _isFuture
+                                  ? (isTr ? 'Bekliyor' : 'Upcoming')
+                                  : (widget.habit.isNumerical && memberVal > 0
+                                      ? '$memberVal / ${widget.habit.targetCount}'
+                                      : (isTr ? 'Tamamlamadı' : 'Incomplete')),
                               style: TextStyle(
                                 fontSize: 11,
                                 color: theme.colorScheme.onSurfaceVariant
@@ -1839,7 +2216,7 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          if (!isMe) ...[
+                          if (!isMe && !_isFuture) ...[
                             const SizedBox(width: 6),
                             PressableScale(
                               onTap: () async {
@@ -1852,8 +2229,9 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
                                 if (context.mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text(
-                                          '${member.displayName} dürtüldü! ⚡'),
+                                      content: Text(isTr
+                                          ? '${member.displayName} dürtüldü! ⚡'
+                                          : '${member.displayName} nudged! ⚡'),
                                       duration: const Duration(seconds: 2),
                                     ),
                                   );
@@ -1867,15 +2245,15 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
                                       .withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
-                                child: const Row(
+                                child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(Icons.bolt_rounded,
+                                    const Icon(Icons.bolt_rounded,
                                         size: 12, color: Color(0xFFFF6B35)),
-                                    SizedBox(width: 2),
+                                    const SizedBox(width: 2),
                                     Text(
-                                      'Dürt',
-                                      style: TextStyle(
+                                      isTr ? 'Dürt' : 'Nudge',
+                                      style: const TextStyle(
                                         fontSize: 10,
                                         fontWeight: FontWeight.w700,
                                         color: Color(0xFFFF6B35),
@@ -1904,6 +2282,8 @@ class _InteractiveRoomHabitCardState extends State<_InteractiveRoomHabitCard> {
 Future<void> _openRoomHabitCreationFlow(BuildContext context, String roomId) async {
   final theme = Theme.of(context);
   final isDark = theme.brightness == Brightness.dark;
+  final l10n = AppLocalizations.of(context);
+  final isTr = Localizations.localeOf(context).toString().startsWith('tr');
 
   final habitType = await showModalBottomSheet<String>(
     context: context,
@@ -1931,7 +2311,7 @@ Future<void> _openRoomHabitCreationFlow(BuildContext context, String roomId) asy
             ),
             const SizedBox(height: 16),
             Text(
-              'Oda Alışkanlığı Oluştur',
+              isTr ? 'Oda Alışkanlığı Oluştur' : 'Create Room Habit',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -1939,7 +2319,9 @@ Future<void> _openRoomHabitCreationFlow(BuildContext context, String roomId) asy
             ),
             const SizedBox(height: 6),
             Text(
-              'Tüm oda üyeleri bu alışkanlığı takip edecek.',
+              isTr
+                  ? 'Tüm oda üyeleri bu alışkanlığı takip edecek.'
+                  : 'All room members will track this habit.',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -1985,14 +2367,14 @@ Future<void> _openRoomHabitCreationFlow(BuildContext context, String roomId) asy
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Basit Alışkanlık',
+                              l10n.simpleHabitTitle,
                               style: theme.textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
                             const SizedBox(height: 3),
                             Text(
-                              'Evet / Hayır onay kutusu ile günlük takip',
+                              l10n.simpleHabitSubtitle,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
@@ -2050,14 +2432,14 @@ Future<void> _openRoomHabitCreationFlow(BuildContext context, String roomId) asy
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Gelişmiş Alışkanlık',
+                              l10n.advancedHabit,
                               style: theme.textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
                             const SizedBox(height: 3),
                             Text(
-                              'Sayısal hedef, zamanlayıcı veya alt görevler',
+                              l10n.advancedHabitSubtitle,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
@@ -2099,9 +2481,10 @@ Future<void> _openRoomHabitCreationFlow(BuildContext context, String roomId) asy
   if (createdHabit != null && context.mounted) {
     await RoomService.instance.addHabitToRoom(roomId, createdHabit);
     if (context.mounted) {
+      final l10nCtx = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('"${createdHabit.title}" odaya eklendi'),
+          content: Text(l10nCtx.addedToRoomSnackbar(createdHabit.title)),
         ),
       );
     }

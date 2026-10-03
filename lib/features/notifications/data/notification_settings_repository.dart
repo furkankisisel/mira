@@ -8,12 +8,14 @@ class NotificationSettingsRepository {
   static const _prefEnabled = 'notif_enabled_v1';
   static const _prefHabitReminders = 'notif_habit_reminders_v1';
   static const _prefSocialAlerts = 'notif_social_alerts_v1';
+  static const _prefTimer = 'notif_timer_v1';
   static const _prefSound = 'notif_sound_v1';
   static const _prefVibration = 'notif_vibration_v1';
 
   bool _enabled = true;
   bool _habitReminders = true;
   bool _socialAlerts = true;
+  bool _timerEnabled = true;
   bool _sound = true;
   bool _vibration = true;
 
@@ -23,6 +25,7 @@ class NotificationSettingsRepository {
   bool get enabled => _enabled;
   bool get habitReminders => _habitReminders;
   bool get socialAlerts => _socialAlerts;
+  bool get timerEnabled => _timerEnabled;
   bool get sound => _sound;
   bool get vibration => _vibration;
 
@@ -40,6 +43,7 @@ class NotificationSettingsRepository {
       _enabled = prefs.getBool(_prefEnabled) ?? true;
       _habitReminders = prefs.getBool(_prefHabitReminders) ?? true;
       _socialAlerts = prefs.getBool(_prefSocialAlerts) ?? true;
+      _timerEnabled = prefs.getBool(_prefTimer) ?? true;
       _sound = prefs.getBool(_prefSound) ?? true;
       _vibration = prefs.getBool(_prefVibration) ?? true;
     } catch (_) {
@@ -62,6 +66,12 @@ class NotificationSettingsRepository {
   Future<void> setSocialAlerts(bool value) async {
     _socialAlerts = value;
     await _save(_prefSocialAlerts, value);
+    _notifyChanged();
+  }
+
+  Future<void> setTimerEnabled(bool value) async {
+    _timerEnabled = value;
+    await _save(_prefTimer, value);
     _notifyChanged();
   }
 
