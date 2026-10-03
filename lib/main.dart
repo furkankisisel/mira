@@ -33,6 +33,7 @@ import 'ui/premium_gate.dart';
 import 'features/gamification/gamification_repository.dart';
 import 'features/notifications/data/notification_settings_repository.dart';
 import 'features/notifications/services/notification_service.dart';
+import 'features/notifications/services/fcm_service.dart';
 import 'features/habit/domain/habit_repository.dart';
 import 'features/quick_create/presentation/quick_create_sheet.dart';
 // Removed unused imports related to text/image sticker creation relocated to Vision FAB
@@ -166,6 +167,7 @@ class _MiraAppState extends State<MiraApp> {
       await NotificationService.instance.applySettings(
         NotificationSettingsRepository.instance,
       );
+      await FcmService.instance.initialize();
 
       // Initialize habit reminders
       await _initializeHabitReminders();
