@@ -62,6 +62,16 @@ class ThemeVariations {
           borderRadius: BorderRadius.circular(AppRadii.card),
         ),
       ),
+      chipTheme: ChipThemeData(
+        backgroundColor: Colors.white,
+        selectedColor: config.primary.withValues(alpha: 0.14),
+        side: BorderSide(color: Colors.black.withValues(alpha: 0.08)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        labelStyle: TextStyle(
+          color: scheme.onSurface,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
       iconTheme: IconThemeData(color: config.primary),
       appBarTheme: AppBarTheme(
         backgroundColor: config.lightSurface,
@@ -201,6 +211,16 @@ class ThemeVariations {
           borderRadius: BorderRadius.circular(AppRadii.card),
         ),
       ),
+      chipTheme: ChipThemeData(
+        backgroundColor: const Color(0xFF202321),
+        selectedColor: config.primary.withValues(alpha: 0.22),
+        side: BorderSide(color: Colors.white.withValues(alpha: 0.10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        labelStyle: TextStyle(
+          color: scheme.onSurface,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
       iconTheme: IconThemeData(color: config.primary),
       appBarTheme: AppBarTheme(
         backgroundColor: config.darkSurface,
@@ -309,6 +329,7 @@ class ThemeVariations {
         surfaceContainer: const Color(0xFF171918),
         surfaceContainerHigh: const Color(0xFF1D201E),
         surfaceContainerHighest: const Color(0xFF242725),
+        secondaryContainer: const Color(0xFF262927),
       );
     }
 
@@ -319,6 +340,7 @@ class ThemeVariations {
       surfaceContainer: const Color(0xFFF5F5F3),
       surfaceContainerHigh: const Color(0xFFEFEFEC),
       surfaceContainerHighest: const Color(0xFFE8E8E5),
+      secondaryContainer: const Color(0xFFF0F1EE),
     );
   }
 }

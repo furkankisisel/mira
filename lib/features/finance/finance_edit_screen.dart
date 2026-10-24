@@ -617,7 +617,11 @@ class _FinanceEditScreenState extends State<FinanceEditScreen> {
                     runSpacing: 8,
                     children: categories.map((cat) {
                       final isSel = _selectedCategory?.id == cat.id;
-                      final catColor = Color(cat.colorValue);
+                      final effectiveColor = _type == TransactionType.income
+                          ? const Color(0xFF10B981)
+                          : (_type == TransactionType.expense
+                              ? const Color(0xFFF43F5E)
+                              : Color(cat.colorValue));
 
                       return GestureDetector(
                         onTap: () {
@@ -625,36 +629,73 @@ class _FinanceEditScreenState extends State<FinanceEditScreen> {
                           setState(() => _selectedCategory = cat);
                         },
                         child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 150),
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          duration: const Duration(milliseconds: 180),
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                           decoration: BoxDecoration(
                             color: isSel
-                                ? catColor.withValues(alpha: isDark ? 0.25 : 0.15)
+                                ? effectiveColor.withValues(alpha: isDark ? 0.22 : 0.12)
                                 : (isDark
-                                    ? scheme.surfaceContainerHighest.withValues(alpha: 0.3)
-                                    : const Color(0xFFF1F5F9)),
-                            borderRadius: BorderRadius.circular(14),
+                                    ? const Color(0xFF222523)
+                                    : Colors.white),
+                            borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: isSel ? catColor : Colors.transparent,
-                              width: 1.5,
+                              color: isSel
+                                  ? effectiveColor
+                                  : (isDark
+                                      ? Colors.white.withValues(alpha: 0.10)
+                                      : Colors.black.withValues(alpha: 0.08)),
+                              width: isSel ? 1.8 : 1.0,
                             ),
+                            boxShadow: [
+                              if (isSel)
+                                BoxShadow(
+                                  color: effectiveColor.withValues(alpha: isDark ? 0.32 : 0.16),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                )
+                              else
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 1.5),
+                                ),
+                            ],
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               if (cat.emoji != null && cat.emoji!.isNotEmpty)
-                                Text(cat.emoji!, style: const TextStyle(fontSize: 16))
+                                Text(cat.emoji!, style: const TextStyle(fontSize: 17))
                               else
-                                Icon(cat.icon, size: 16, color: catColor),
-                              const SizedBox(width: 6),
+                                Icon(cat.icon, size: 17, color: isSel ? effectiveColor : Color(cat.colorValue)),
+                              const SizedBox(width: 8),
                               Text(
                                 cat.name,
                                 style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: isSel ? FontWeight.bold : FontWeight.w500,
-                                  color: isSel ? (isDark ? Colors.white : Colors.black87) : scheme.onSurfaceVariant,
+                                  fontSize: 13.5,
+                                  fontWeight: isSel ? FontWeight.w700 : FontWeight.w600,
+                                  letterSpacing: -0.1,
+                                  color: isSel
+                                      ? (isDark ? Colors.white : effectiveColor)
+                                      : (isDark ? Colors.white.withValues(alpha: 0.90) : const Color(0xFF27272A)),
                                 ),
                               ),
+                              if (isSel) ...[
+                                const SizedBox(width: 6),
+                                Container(
+                                  width: 16,
+                                  height: 16,
+                                  decoration: BoxDecoration(
+                                    color: effectiveColor,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.check_rounded,
+                                    size: 11,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
                             ],
                           ),
                         ),

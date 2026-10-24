@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/utils/emoji_presets.dart';
+import '../../design_system/components/pressable_scale.dart';
 import '../../l10n/app_localizations.dart';
 import '../../ui/widgets/wizard_base_widgets.dart';
 import 'data/finance_category.dart';
@@ -707,6 +708,7 @@ class _FinanceWizardScreenState extends State<FinanceWizardScreen> {
           _CategoryGrid(
             categories: categories,
             selected: _selectedCategory,
+            accentColor: _accentColor,
             onSelect: (cat) {
               HapticFeedback.lightImpact();
               setState(() => _selectedCategory = cat);
@@ -1333,6 +1335,7 @@ class _CategoryGrid extends StatelessWidget {
     required this.onSelect,
     this.onLongPress,
     required this.onCreateNew,
+    required this.accentColor,
   });
 
   final List<FinanceCategory> categories;
@@ -1340,79 +1343,165 @@ class _CategoryGrid extends StatelessWidget {
   final ValueChanged<FinanceCategory> onSelect;
   final ValueChanged<FinanceCategory>? onLongPress;
   final VoidCallback onCreateNew;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Wrap(
       spacing: 8,
-      runSpacing: 8,
-      alignment: WrapAlignment.center,
+      runSpacing: 10,
+      alignment: WrapAlignment.start,
       children: [
         for (final c in categories)
-          GestureDetector(
-            onLongPress: () => onLongPress?.call(c),
-            child: ChoiceChip(
-              selected: selected?.id == c.id,
-              showCheckmark: false,
-              label: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (c.hasEmoji)
-                    Text(c.emoji!, style: const TextStyle(fontSize: 17))
-                  else
-                    Icon(c.icon, size: 17, color: Color(c.colorValue)),
-                  const SizedBox(width: 8),
-                  Text(c.name,
-                      style: const TextStyle(fontWeight: FontWeight.w600)),
-                ],
-              ),
-              onSelected: (_) => onSelect(c),
+          _buildCategoryPill(context, c, isDark, scheme),
+        _buildCreateNewButton(context, isDark, scheme),
+      ],
+    );
+  }
+
+  Widget _buildCategoryPill(
+    BuildContext context,
+    FinanceCategory c,
+    bool isDark,
+    ColorScheme scheme,
+  ) {
+    final isSelected = selected?.id == c.id;
+
+    // Neutral clean background - NEVER reddish or pinkish!
+    final unselectedBg = isDark
+        ? const Color(0xFF222523)
+        : Colors.white;
+
+    final unselectedBorder = isDark
+        ? Colors.white.withValues(alpha: 0.10)
+        : Colors.black.withValues(alpha: 0.08);
+
+    // Selected state uses the current transaction type's accent color (green for income, rose for expense)
+    final selectedBg = accentColor.withValues(alpha: isDark ? 0.22 : 0.12);
+    final selectedBorder = accentColor;
+
+    return GestureDetector(
+      onLongPress: () => onLongPress?.call(c),
+      child: PressableScale(
+        scale: 0.94,
+        onTap: () => onSelect(c),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected ? selectedBg : unselectedBg,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isSelected ? selectedBorder : unselectedBorder,
+              width: isSelected ? 1.8 : 1.0,
             ),
+            boxShadow: [
+              if (isSelected)
+                BoxShadow(
+                  color: accentColor.withValues(alpha: isDark ? 0.32 : 0.16),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                )
+              else
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
+                  blurRadius: 4,
+                  offset: const Offset(0, 1.5),
+                ),
+            ],
           ),
-        Padding(
-          padding: const EdgeInsets.only(left: 4),
-          child: InkWell(
-            onTap: onCreateNew,
-            borderRadius: BorderRadius.circular(20),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-              decoration: BoxDecoration(
-                color: Theme.of(context)
-                    .colorScheme
-                    .primary
-                    .withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .primary
-                      .withValues(alpha: 0.4),
-                  width: 1,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (c.hasEmoji)
+                Text(c.emoji!, style: const TextStyle(fontSize: 18))
+              else
+                Icon(
+                  c.icon,
+                  size: 18,
+                  color: isSelected ? accentColor : Color(c.colorValue),
+                ),
+              const SizedBox(width: 8),
+              Text(
+                c.name,
+                style: TextStyle(
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                  fontSize: 13.5,
+                  letterSpacing: -0.1,
+                  color: isSelected
+                      ? (isDark ? Colors.white : accentColor)
+                      : (isDark
+                          ? Colors.white.withValues(alpha: 0.90)
+                          : const Color(0xFF27272A)),
                 ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.add_circle_outline_rounded,
-                    size: 18,
-                    color: Theme.of(context).colorScheme.primary,
+              if (isSelected) ...[
+                const SizedBox(width: 6),
+                Container(
+                  width: 16,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: accentColor,
+                    shape: BoxShape.circle,
                   ),
-                  const SizedBox(width: 6),
-                  Text(
-                    AppLocalizations.of(context).newCategory,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
-                    ),
+                  child: const Icon(
+                    Icons.check_rounded,
+                    size: 11,
+                    color: Colors.white,
                   ),
-                ],
-              ),
-            ),
+                ),
+              ],
+            ],
           ),
         ),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildCreateNewButton(
+    BuildContext context,
+    bool isDark,
+    ColorScheme scheme,
+  ) {
+    return PressableScale(
+      scale: 0.94,
+      onTap: onCreateNew,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: accentColor.withValues(alpha: isDark ? 0.14 : 0.08),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: accentColor.withValues(alpha: 0.35),
+            width: 1.2,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.add_circle_outline_rounded,
+              size: 18,
+              color: accentColor,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              AppLocalizations.of(context).newCategory,
+              style: TextStyle(
+                color: accentColor,
+                fontWeight: FontWeight.w700,
+                fontSize: 13.5,
+                letterSpacing: -0.1,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -192,8 +192,8 @@ Future<void> showQuickCreateSheet(
   }
 }
 
-/// The unified quick creation hub designed to match the floating frosted-glass
-/// capsule navbar with elevated tactile pill items.
+/// The unified quick creation hub designed as a sweet, aesthetic, tactile
+/// bento-launcher matching the floating frosted-glass capsule navbar.
 class QuickCreateSheet extends StatefulWidget {
   const QuickCreateSheet({
     super.key,
@@ -219,12 +219,15 @@ class _QuickCreateSheetState extends State<QuickCreateSheet> {
 
     // Translucent frosted glass background matching CottonBottomBar
     final capsuleBgColor = isDark
-        ? scheme.surfaceContainerHighest.withValues(alpha: 0.85)
-        : const Color(0xFFF1F3F5).withValues(alpha: 0.94);
+        ? Color.alphaBlend(
+            scheme.surfaceContainerHighest.withValues(alpha: 0.88),
+            const Color(0xFF141715),
+          )
+        : Colors.white.withValues(alpha: 0.95);
 
     final capsuleBorderColor = isDark
         ? Colors.white.withValues(alpha: 0.14)
-        : Colors.white.withValues(alpha: 0.85);
+        : Colors.white.withValues(alpha: 0.90);
 
     return SafeArea(
       top: false,
@@ -255,7 +258,7 @@ class _QuickCreateSheetState extends State<QuickCreateSheet> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(32),
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
               child: Container(
                 decoration: BoxDecoration(
                   color: capsuleBgColor,
@@ -276,23 +279,29 @@ class _QuickCreateSheetState extends State<QuickCreateSheet> {
                       // Sleek Drag Handle
                       Center(
                         child: Container(
-                          width: 38,
-                          height: 4,
+                          width: 40,
+                          height: 4.5,
                           decoration: BoxDecoration(
                             color: isDark
                                 ? Colors.white.withValues(alpha: 0.22)
                                 : Colors.black.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(2),
+                            borderRadius: BorderRadius.circular(3),
                           ),
                         ),
                       ),
                       const SizedBox(height: 14),
 
                       // Animated view transition between Main and Habit Types
-                      if (_showHabitTypes)
-                        _buildHabitTypesView(context, isTr, scheme, isDark, theme)
-                      else
-                        _buildMainView(context, isTr, scheme, isDark, theme),
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 220),
+                        switchInCurve: Curves.easeOutCubic,
+                        switchOutCurve: Curves.easeInCubic,
+                        child: _showHabitTypes
+                            ? _buildHabitTypesView(
+                                context, isTr, scheme, isDark, theme)
+                            : _buildMainView(
+                                context, isTr, scheme, isDark, theme),
+                      ),
                     ],
                   ),
                 ),
@@ -361,18 +370,27 @@ class _QuickCreateSheetState extends State<QuickCreateSheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    isTr ? 'Hızlı Oluştur' : 'Quick Create',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.3,
-                      color: scheme.onSurface,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        isTr ? 'Hızlı Oluştur' : 'Quick Create',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.3,
+                          color: scheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '✨',
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ],
                   ),
                   Text(
                     isTr
-                        ? 'Ne eklemek istersiniz?'
-                        : 'What would you like to add?',
+                        ? 'Bugün ne başlatmak istersin?'
+                        : 'What would you like to start?',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: scheme.onSurfaceVariant.withValues(alpha: 0.85),
                       fontSize: 12,
@@ -410,87 +428,110 @@ class _QuickCreateSheetState extends State<QuickCreateSheet> {
         ),
         const SizedBox(height: 18),
 
-        // Category 1: Gündelik & Rutin
-        _buildCategoryHeader(
-          context,
-          title: isTr ? 'RUTİN VE GÖREV' : 'ROUTINES & TASKS',
-          icon: Icons.wb_sunny_rounded,
+        // ── Bento Grid: Row 1 (Alışkanlık & Günlük Görev) ──
+        Row(
+          children: [
+            Expanded(
+              child: _QuickCreateGridCard(
+                icon: Icons.repeat_rounded,
+                iconGradient: const [
+                  Color(0xFF8B5CF6),
+                  Color(0xFF6D28D9),
+                ],
+                title: isTr ? 'Alışkanlık' : 'Habit',
+                subtitle: isTr
+                    ? 'Yeni rutin oluştur'
+                    : 'Track a routine',
+                trailingIcon: Icons.arrow_forward_ios_rounded,
+                trailingIconSize: 11,
+                onTap: () {
+                  setState(() {
+                    _showHabitTypes = true;
+                  });
+                },
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _QuickCreateGridCard(
+                icon: Icons.check_circle_outline_rounded,
+                iconGradient: const [
+                  Color(0xFF10B981),
+                  Color(0xFF059669),
+                ],
+                title: isTr ? 'Günlük Görev' : 'Daily Task',
+                subtitle: isTr
+                    ? 'Bugünün listesi'
+                    : 'Add to-do item',
+                trailingIcon: Icons.add_rounded,
+                trailingIconSize: 16,
+                onTap: () {
+                  Navigator.of(context).pop(QuickCreateAction.dailyTask);
+                },
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
 
-        _QuickCreateTile(
-          icon: Icons.repeat_rounded,
-          iconColor: const Color(0xFF8B5CF6),
-          title: isTr ? 'Alışkanlık' : 'Habit',
-          subtitle: isTr
-              ? 'Yeni rutin veya hedef takibi oluştur'
-              : 'Track a new daily routine or goal',
-          trailingIcon: Icons.arrow_forward_ios_rounded,
-          trailingIconSize: 13,
-          onTap: () {
-            setState(() {
-              _showHabitTypes = true;
-            });
-          },
+        // ── Bento Grid: Row 2 (Finans Kaydı & Yeni Liste) ──
+        Row(
+          children: [
+            Expanded(
+              child: _QuickCreateGridCard(
+                icon: Icons.account_balance_wallet_rounded,
+                iconGradient: const [
+                  Color(0xFFF43F5E),
+                  Color(0xFFE11D48),
+                ],
+                title: isTr ? 'Finans Kaydı' : 'Finance Entry',
+                subtitle: isTr
+                    ? 'Gelir veya gider'
+                    : 'Income or expense',
+                trailingIcon: Icons.add_rounded,
+                trailingIconSize: 16,
+                onTap: () {
+                  Navigator.of(context).pop(QuickCreateAction.finance);
+                },
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _QuickCreateGridCard(
+                icon: Icons.format_list_bulleted_rounded,
+                iconGradient: const [
+                  Color(0xFFF59E0B),
+                  Color(0xFFD97706),
+                ],
+                title: isTr ? 'Yeni Liste' : 'New List',
+                subtitle: isTr
+                    ? 'Ögeleri grupla'
+                    : 'Group your items',
+                trailingIcon: Icons.add_rounded,
+                trailingIconSize: 16,
+                onTap: () {
+                  Navigator.of(context).pop(QuickCreateAction.newList);
+                },
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
 
-        _QuickCreateTile(
-          icon: Icons.check_circle_outline_rounded,
-          iconColor: const Color(0xFF10B981),
-          title: isTr ? 'Günlük Görev' : 'Daily Task',
-          subtitle: isTr
-              ? 'Günün yapılacaklar listesine iş ekle'
-              : 'Add a to-do item for today',
-          onTap: () {
-            Navigator.of(context).pop(QuickCreateAction.dailyTask);
-          },
-        ),
-        const SizedBox(height: 8),
-
-        _QuickCreateTile(
-          icon: Icons.format_list_bulleted_rounded,
-          iconColor: const Color(0xFFF59E0B),
-          title: isTr ? 'Yeni Liste' : 'New List',
-          subtitle: isTr
-              ? 'Alışkanlık ve görevleri grupla'
-              : 'Group habits and tasks into a list',
-          onTap: () {
-            Navigator.of(context).pop(QuickCreateAction.newList);
-          },
-        ),
-        const SizedBox(height: 16),
-
-        // Category 2: Gelecek & Finans
-        _buildCategoryHeader(
-          context,
-          title: isTr ? 'GELECEK VE FİNANS' : 'FUTURE & WEALTH',
-          icon: Icons.auto_awesome,
-        ),
-        const SizedBox(height: 8),
-
-        _QuickCreateTile(
+        // ── Featured Banner: Vizyon Panosu ──
+        _QuickCreateBannerCard(
           icon: Icons.auto_awesome_mosaic_rounded,
-          iconColor: const Color(0xFF3B82F6),
-          title: isTr ? 'Vizyon' : 'Vision',
+          iconGradient: const [
+            Color(0xFF3B82F6),
+            Color(0xFF1D4ED8),
+          ],
+          title: isTr ? 'Vizyon Panosu' : 'Vision Board',
+          badge: 'PRO',
           subtitle: isTr
-              ? 'Uzun vadeli vizyon ve hedefler'
-              : 'Long-term vision and goals',
+              ? 'Büyük hedeflerini görselleştir & planla'
+              : 'Visualize long-term goals & dreams',
           onTap: () {
             Navigator.of(context).pop(QuickCreateAction.vision);
-          },
-        ),
-        const SizedBox(height: 8),
-
-        _QuickCreateTile(
-          icon: Icons.account_balance_wallet_rounded,
-          iconColor: const Color(0xFFEC4899),
-          title: isTr ? 'Finans Kaydı' : 'Finance Entry',
-          subtitle: isTr
-              ? 'Gelir veya harcama işlemi ekle'
-              : 'Log an income or expense transaction',
-          onTap: () {
-            Navigator.of(context).pop(QuickCreateAction.finance);
           },
         ),
       ],
@@ -537,7 +578,8 @@ class _QuickCreateSheetState extends State<QuickCreateSheet> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
+                      color: Colors.black
+                          .withValues(alpha: isDark ? 0.2 : 0.05),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
                     ),
@@ -598,8 +640,8 @@ class _QuickCreateSheetState extends State<QuickCreateSheet> {
                   ),
                   Text(
                     isTr
-                        ? 'Nasıl bir alışkanlık oluşturmak istersiniz?'
-                        : 'What kind of habit would you like?',
+                        ? 'Nasıl bir rutin başlatmak istersin? 🌱'
+                        : 'How would you like to track it? 🌱',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: scheme.onSurfaceVariant.withValues(alpha: 0.85),
                       fontSize: 11.5,
@@ -637,27 +679,42 @@ class _QuickCreateSheetState extends State<QuickCreateSheet> {
         ),
         const SizedBox(height: 18),
 
-        _QuickCreateTile(
+        _QuickCreateOptionCard(
           icon: Icons.check_circle_outline_rounded,
-          iconColor: scheme.primary,
+          iconGradient: const [
+            Color(0xFF10B981),
+            Color(0xFF059669),
+          ],
           title: isTr ? 'Basit Alışkanlık' : 'Simple Habit',
+          badge: isTr ? 'PRATİK' : 'EASY',
+          badgeGradient: const [
+            Color(0xFF10B981),
+            Color(0xFF059669),
+          ],
           subtitle: isTr
-              ? 'Günlük evet/hayır şeklinde pratik tamamlama'
-              : 'Quick yes/no completion for daily routines',
+              ? 'Günde tek dokunuşla evet/hayır tamamlama. Su içmek, kitap okumak gibi günlük rutinler için ideal.'
+              : 'Quick daily yes/no completion. Ideal for drinking water, reading, or waking early.',
           onTap: () {
             Navigator.of(context).pop(QuickCreateAction.simpleHabit);
           },
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 12),
 
-        _QuickCreateTile(
+        _QuickCreateOptionCard(
           icon: Icons.auto_graph_rounded,
-          iconColor: const Color(0xFF6366F1),
+          iconGradient: const [
+            Color(0xFF8B5CF6),
+            Color(0xFF6366F1),
+          ],
           badge: 'PRO',
+          badgeGradient: const [
+            Color(0xFFF59E0B),
+            Color(0xFFD97706),
+          ],
           title: isTr ? 'Gelişmiş Alışkanlık' : 'Advanced Habit',
           subtitle: isTr
-              ? 'Hedefli, alt görevli veya sayaç takipli'
-              : 'Target-based, numerical or with subtasks',
+              ? 'Hedefli sayaç (10.000 adım, 2 lt su) veya alt görevlerle detaylı takip.'
+              : 'Target-based counters (10,000 steps, 2L water) or checklists with subtasks.',
           onTap: () {
             Navigator.of(context).pop(QuickCreateAction.advancedHabit);
           },
@@ -665,75 +722,25 @@ class _QuickCreateSheetState extends State<QuickCreateSheet> {
       ],
     );
   }
-
-  Widget _buildCategoryHeader(
-    BuildContext context, {
-    required String title,
-    required IconData icon,
-  }) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
-
-    return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 2),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? scheme.primary.withValues(alpha: 0.18)
-                  : scheme.primary.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  icon,
-                  size: 11,
-                  color: scheme.primary,
-                ),
-                const SizedBox(width: 5),
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 10.5,
-                    letterSpacing: 0.7,
-                    fontWeight: FontWeight.w800,
-                    color: scheme.primary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
-/// An aesthetic tactile elevated pill tile used for each creation option,
-/// matching the active tab pill in CottonBottomBar.
-class _QuickCreateTile extends StatelessWidget {
-  const _QuickCreateTile({
+/// A compact, tactile bento grid card for quick creation actions.
+class _QuickCreateGridCard extends StatelessWidget {
+  const _QuickCreateGridCard({
     required this.icon,
-    required this.iconColor,
+    required this.iconGradient,
     required this.title,
     required this.subtitle,
     required this.onTap,
-    this.badge,
-    this.trailingIcon = Icons.add_rounded,
-    this.trailingIconSize = 17,
+    this.trailingIcon = Icons.arrow_forward_ios_rounded,
+    this.trailingIconSize = 11,
   });
 
   final IconData icon;
-  final Color iconColor;
+  final List<Color> iconGradient;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
-  final String? badge;
   final IconData trailingIcon;
   final double trailingIconSize;
 
@@ -743,34 +750,185 @@ class _QuickCreateTile extends StatelessWidget {
     final scheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
 
-    // Active pill background color matching CottonBottomBar
-    final pillColor = isDark ? scheme.surfaceContainerHigh : Colors.white;
+    final cardBg = isDark
+        ? const Color(0xFF1F2220)
+        : Colors.white;
 
     final borderColor = isDark
-        ? Colors.white.withValues(alpha: 0.12)
-        : Colors.white.withValues(alpha: 0.95);
+        ? Colors.white.withValues(alpha: 0.10)
+        : Colors.white.withValues(alpha: 0.90);
 
     return PressableScale(
-      scale: 0.96,
+      scale: 0.94,
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        height: 104,
+        padding: const EdgeInsets.all(13),
         decoration: BoxDecoration(
-          color: pillColor,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: borderColor,
-            width: 1.2,
-          ),
+          color: cardBg,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: borderColor, width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.06),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
+              color: iconGradient.first.withValues(alpha: isDark ? 0.18 : 0.08),
+              blurRadius: 14,
+              offset: const Offset(0, 4),
+            ),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.28 : 0.04),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
             if (!isDark)
               BoxShadow(
-                color: Colors.white.withValues(alpha: 0.7),
+                color: Colors.white.withValues(alpha: 0.8),
+                blurRadius: 2,
+                offset: const Offset(0, -1),
+              ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // 3D squircle icon badge
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: iconGradient,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.25),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: iconGradient.first.withValues(alpha: 0.38),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2.5),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Icon(icon, color: Colors.white, size: 19),
+                  ),
+                ),
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.06)
+                        : Colors.black.withValues(alpha: 0.04),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      trailingIcon,
+                      size: trailingIconSize,
+                      color: scheme.onSurfaceVariant.withValues(alpha: 0.6),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13.5,
+                    letterSpacing: -0.2,
+                    color: scheme.onSurface,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: scheme.onSurfaceVariant.withValues(alpha: 0.75),
+                    fontSize: 11,
+                    letterSpacing: -0.1,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// A sleek, tactile featured banner card spanning full width.
+class _QuickCreateBannerCard extends StatelessWidget {
+  const _QuickCreateBannerCard({
+    required this.icon,
+    required this.iconGradient,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    this.badge,
+  });
+
+  final IconData icon;
+  final List<Color> iconGradient;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  final String? badge;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    final cardBg = isDark
+        ? const Color(0xFF1F2220)
+        : Colors.white;
+
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.10)
+        : Colors.white.withValues(alpha: 0.90);
+
+    return PressableScale(
+      scale: 0.95,
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: cardBg,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: borderColor, width: 1.2),
+          boxShadow: [
+            BoxShadow(
+              color: iconGradient.first.withValues(alpha: isDark ? 0.16 : 0.08),
+              blurRadius: 14,
+              offset: const Offset(0, 4),
+            ),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.28 : 0.04),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+            if (!isDark)
+              BoxShadow(
+                color: Colors.white.withValues(alpha: 0.8),
                 blurRadius: 2,
                 offset: const Offset(0, -1),
               ),
@@ -778,27 +936,32 @@ class _QuickCreateTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Squircle icon container with soft colored tint
+            // 3D squircle icon container
             Container(
-              width: 44,
-              height: 44,
+              width: 42,
+              height: 42,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    iconColor.withValues(alpha: 0.18),
-                    iconColor.withValues(alpha: 0.08),
-                  ],
+                  colors: iconGradient,
                 ),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(13),
                 border: Border.all(
-                  color: iconColor.withValues(alpha: 0.20),
+                  color: Colors.white.withValues(alpha: 0.25),
                   width: 1,
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: iconGradient.first.withValues(alpha: 0.38),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2.5),
+                  ),
+                ],
               ),
-              alignment: Alignment.center,
-              child: Icon(icon, color: iconColor, size: 22),
+              child: Center(
+                child: Icon(icon, color: Colors.white, size: 21),
+              ),
             ),
             const SizedBox(width: 13),
             Expanded(
@@ -828,6 +991,201 @@ class _QuickCreateTile extends StatelessWidget {
                               colors: [Color(0xFFF59E0B), Color(0xFFD97706)],
                             ),
                             borderRadius: BorderRadius.circular(6),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFF59E0B)
+                                    .withValues(alpha: 0.35),
+                                blurRadius: 4,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            badge!,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: scheme.onSurfaceVariant.withValues(alpha: 0.75),
+                      fontSize: 11.5,
+                      letterSpacing: -0.1,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.06)
+                    : Colors.black.withValues(alpha: 0.04),
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 12,
+                  color: scheme.onSurfaceVariant.withValues(alpha: 0.6),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// A detailed tactile option card for habit sub-selection.
+class _QuickCreateOptionCard extends StatelessWidget {
+  const _QuickCreateOptionCard({
+    required this.icon,
+    required this.iconGradient,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    this.badge,
+    this.badgeGradient,
+  });
+
+  final IconData icon;
+  final List<Color> iconGradient;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  final String? badge;
+  final List<Color>? badgeGradient;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    final cardBg = isDark
+        ? const Color(0xFF1F2220)
+        : Colors.white;
+
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.12)
+        : Colors.white.withValues(alpha: 0.95);
+
+    return PressableScale(
+      scale: 0.96,
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: cardBg,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: borderColor,
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: iconGradient.first.withValues(alpha: isDark ? 0.16 : 0.08),
+              blurRadius: 14,
+              offset: const Offset(0, 4),
+            ),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.06),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+            if (!isDark)
+              BoxShadow(
+                color: Colors.white.withValues(alpha: 0.7),
+                blurRadius: 2,
+                offset: const Offset(0, -1),
+              ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // Squircle icon container
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: iconGradient,
+                ),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.25),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: iconGradient.first.withValues(alpha: 0.35),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2.5),
+                  ),
+                ],
+              ),
+              alignment: Alignment.center,
+              child: Icon(icon, color: Colors.white, size: 22),
+            ),
+            const SizedBox(width: 13),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        title,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                          letterSpacing: -0.2,
+                          color: scheme.onSurface,
+                        ),
+                      ),
+                      if (badge != null) ...[
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 1.5,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: badgeGradient ??
+                                  const [
+                                    Color(0xFFF59E0B),
+                                    Color(0xFFD97706),
+                                  ],
+                            ),
+                            borderRadius: BorderRadius.circular(6),
+                            boxShadow: [
+                              BoxShadow(
+                                color: (badgeGradient?.first ??
+                                        const Color(0xFFF59E0B))
+                                    .withValues(alpha: 0.35),
+                                blurRadius: 4,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
                           ),
                           child: Text(
                             badge!,
@@ -841,21 +1199,21 @@ class _QuickCreateTile extends StatelessWidget {
                       ],
                     ],
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 3),
                   Text(
                     subtitle,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: scheme.onSurfaceVariant.withValues(alpha: 0.8),
                       fontSize: 11.5,
+                      height: 1.3,
                     ),
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
             const SizedBox(width: 8),
-            // Tactile mini circular action icon
             Container(
               width: 30,
               height: 30,
@@ -872,9 +1230,9 @@ class _QuickCreateTile extends StatelessWidget {
                 ),
               ),
               child: Icon(
-                trailingIcon,
-                size: trailingIconSize,
-                color: iconColor,
+                Icons.add_rounded,
+                size: 17,
+                color: iconGradient.first,
               ),
             ),
           ],
